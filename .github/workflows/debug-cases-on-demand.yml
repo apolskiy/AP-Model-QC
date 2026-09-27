@@ -100,14 +100,22 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # THROUGH THE ENVIRONMENT, for the reason gate-on-change.yml gives at
+          # its resolver step. A dispatch input is free text from whoever started
+          # the run, and a ref is exactly the kind of value somebody pastes.
+          HARNESS_REF: ${{ inputs.harness_ref }}
+          CASE_REF: ${{ inputs.case_ref || github.ref_name }}
         run: |
-          if [ -n "${{ inputs.harness_ref }}" ]; then
-            echo "harness_repository=apolskiy/AP-Harness-QC" >> "$GITHUB_OUTPUT"
-            echo "harness_sha=${{ inputs.harness_ref }}" >> "$GITHUB_OUTPUT"
-            echo "source=input" >> "$GITHUB_OUTPUT"
+          # ONE REDIRECT, NOT THREE. shellcheck SC2129: a group writes once
+          # rather than reopening the file per line.
+          if [ -n "${HARNESS_REF}" ]; then
+            {
+              echo "harness_repository=apolskiy/AP-Harness-QC"
+              echo "harness_sha=${HARNESS_REF}"
+              echo "source=input"
+            } >> "$GITHUB_OUTPUT"
           else
-            python -m tools.harness_pin \
-              --case-branch "${{ inputs.case_ref || github.ref_name }}" || true
+            python -m tools.harness_pin --case-branch "${CASE_REF}" || true
             echo "source=mapping" >> "$GITHUB_OUTPUT"
           fi
 
@@ -175,10 +183,16 @@ jobs:
         continue-on-error: true
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # THROUGH THE ENVIRONMENT, as the resolver step above explains. A `-k`
+          # expression is free text somebody types, and the engine and mode are
+          # choices from a list this workflow does not enforce in the shell.
+          SELECTION: ${{ steps.resolve.outputs.expression }}
+          ENGINE: ${{ inputs.engine }}
+          RUN_MODE: ${{ inputs.mode }}
         run: |
-          pytest -k "${{ steps.resolve.outputs.expression }}" \
-            --engine "${{ inputs.engine }}" \
-            --mode "${{ inputs.mode }}" \
+          pytest -k "${SELECTION}" \
+            --engine "${ENGINE}" \
+            --mode "${RUN_MODE}" \
             --judge-on-failure \
             --out-dir debug-artifacts/ \
             --junitxml=debug-artifacts/junit-debug.xml
@@ -195,6 +209,14 @@ jobs:
       - name: Write the debug summary
         if: always()
         shell: bash
+        env:
+          # THE SAME RULE. A summary line is a shell command like any other.
+          CASE_REF_SHOWN: ${{ inputs.case_ref || github.ref_name }}
+          HARNESS_SHA: ${{ steps.pin.outputs.harness_sha }}
+          PIN_SOURCE: ${{ steps.pin.outputs.source }}
+          TESTS_REQUESTED: ${{ steps.resolve.outputs.count }}
+          ENGINE: ${{ inputs.engine }}
+          RUN_MODE: ${{ inputs.mode }}
         run: |
           {
             echo "# Case debug run"
@@ -204,10 +226,10 @@ jobs:
             echo ""
             echo "| Field | Value |"
             echo "|---|---|"
-            echo "| Case ref | ${{ inputs.case_ref || github.ref_name }} |"
-            echo "| Harness | ${{ steps.pin.outputs.harness_sha }} (${{ steps.pin.outputs.source }}) |"
-            echo "| Tests requested | ${{ steps.resolve.outputs.count }} |"
-            echo "| Engine, mode | ${{ inputs.engine }}, ${{ inputs.mode }} |"
+            echo "| Case ref | ${CASE_REF_SHOWN} |"
+            echo "| Harness | ${HARNESS_SHA} (${PIN_SOURCE}) |"
+            echo "| Tests requested | ${TESTS_REQUESTED} |"
+            echo "| Engine, mode | ${ENGINE}, ${RUN_MODE} |"
             echo "| Judged on failure | yes |"
             echo ""
             echo "### Reading the rubric on a failed case"

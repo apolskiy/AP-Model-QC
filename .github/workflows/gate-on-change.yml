@@ -81,21 +81,32 @@ jobs:
         id: pin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # THROUGH THE ENVIRONMENT, NEVER INTERPOLATED INTO THE SCRIPT. A pull
+          # request's branch name is chosen by whoever opened it, including from
+          # a fork, so a name carrying a command substitution would run with this
+          # job's token in scope. As an environment variable it is a value the
+          # shell reads, not text the shell parses.
+          CASE_BRANCH: ${{ github.head_ref || github.ref_name }}
+          BASE_BRANCH: ${{ github.base_ref }}
         run: |
           python -m tools.harness_pin \
-            --case-branch "${{ github.head_ref || github.ref_name }}" \
-            --base-branch "${{ github.base_ref }}"
+            --case-branch "${CASE_BRANCH}" \
+            --base-branch "${BASE_BRANCH}"
 
       - name: Say what this run is running against
         if: always()
         shell: bash
+        env:
+          # THE SAME REASON AS THE STEP ABOVE. A summary line is still a shell
+          # command, and the branch name is still chosen by a stranger.
+          CASE_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
           {
             echo "## Harness pairing"
             echo ""
             echo "| Field | Value |"
             echo "|---|---|"
-            echo "| Case branch | ${{ github.head_ref || github.ref_name }} |"
+            echo "| Case branch | ${CASE_BRANCH} |"
             echo "| Matched entry | ${{ steps.pin.outputs.matched_entry }} |"
             echo "| Harness ref | ${{ steps.pin.outputs.harness_ref }} |"
             echo "| Harness commit | ${{ steps.pin.outputs.harness_sha }} |"
