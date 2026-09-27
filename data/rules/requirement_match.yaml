@@ -1,0 +1,534 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# How the requirement matching responses are judged.
+#
+# Specified by model_evaluation_test_plan.md section 9.8. Semantics are
+# normative in AP-Harness-QC DESIGN.md section 7.1.
+#
+# THE ARITHMETIC IS ASSERTED, THE REASONING IS JUDGED. A percentage is exact and
+# checkable by string match; whether the working shown is intelligible is not.
+# Every gate case therefore asserts the figure and rubrics the explanation.
+
+# MQC_REQ_MDL_MAT_0001, case 30019. A disjunction with one slot filled is 100%.
+- rule_id: MQC_RULE_mat_closed_or
+  priority: 3
+  priority_conditions: [P3_EDGE_PATH]
+  requirement_ids: [MQC_REQ_MDL_MAT_0001]
+  assertions:
+    - assertion_id: A_MAT_OR_SCORES_FULL
+      kind: regex
+      parameters:
+        pattern: '(?i)100\s*(%|per\s?cent)|\bfully\b|\bin full\b'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_OR_IS_DISJUNCTION
+    # READING THE DISJUNCTION AS A CONJUNCTION is the defect, and it produces
+    # 33 percent on this line. Rejecting that figure is what makes the
+    # interpretation observable rather than requiring reasoning to be read.
+    - assertion_id: A_MAT_OR_NOT_READ_AS_AND
+      kind: regex
+      parameters:
+        pattern: '(?i)33(\.3+)?\s*(%|per\s?cent)'
+        present: false
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_OR_IS_DISJUNCTION
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_OR_REASONING
+        name: Connector reasoning
+        description: >-
+          Whether the working names the connector as the reason. A correct
+          figure with no reason is right by coincidence as far as a reviewer
+          can tell.
+        anchors:
+          1:
+            description: Wrong figure, or a figure with no working at all.
+            exemplar: >-
+              The candidate holds one of the three named languages, so this requirement
+              is 33.3 percent met.
+          3:
+            description: Correct figure, working does not mention the connector.
+            exemplar: >-
+              This requirement is 100 percent met. The candidate lists Python.
+          5:
+            description: Correct figure, and names the OR as why one item suffices.
+            exemplar: >-
+              100 percent. The requirement is a disjunction, Python or Go or Rust, so
+              any one of the three satisfies the line in full. The candidate lists
+              Python.
+    threshold: 3.0
+
+# MQC_REQ_MDL_MAT_0001, case 30020. A conjunction with one of two held is 50%.
+- rule_id: MQC_RULE_mat_closed_and
+  priority: 3
+  priority_conditions: [P3_EDGE_PATH]
+  requirement_ids: [MQC_REQ_MDL_MAT_0001]
+  assertions:
+    - assertion_id: A_MAT_AND_SCORES_HALF
+      kind: regex
+      parameters:
+        pattern: '(?i)\b50\s*(%|per\s?cent)|\bhalf\b'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_AND_IS_CONJUNCTION
+    # The mirror of the previous case: reading a conjunction as a disjunction
+    # awards the whole line for one item.
+    - assertion_id: A_MAT_AND_NOT_READ_AS_OR
+      kind: regex
+      parameters:
+        pattern: '(?i)100\s*(%|per\s?cent)'
+        present: false
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_AND_IS_CONJUNCTION
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_AND_REASONING
+        name: Connector reasoning
+        description: >-
+          Whether the working names which item is missing. The figure alone
+          does not tell a candidate what to acquire.
+        anchors:
+          1:
+            description: Wrong figure, or no working.
+            exemplar: >-
+              The candidate lists Docker, which satisfies the containerisation
+              requirement in full at 100 percent.
+          3:
+            description: Correct figure, does not name the missing item.
+            exemplar: >-
+              This line is 50 percent met: the candidate holds one of the two named
+              technologies.
+          5:
+            description: Correct figure, and names Kubernetes as the gap.
+            exemplar: >-
+              50 percent. The requirement is a conjunction of two named technologies and
+              the candidate lists only Docker. Kubernetes is the gap.
+    threshold: 3.0
+
+# MQC_REQ_MDL_MAT_0001, case 30021. THE JUDGED PATH. No named item matches, so the
+# third slot engages and the match must be reported as judged rather than named.
+- rule_id: MQC_RULE_mat_open_enumeration
+  priority: 3
+  priority_conditions: [P3_EDGE_PATH]
+  requirement_ids: [MQC_REQ_MDL_MAT_0001]
+  assertions:
+    # THE DISCLOSURE IS THE REQUIREMENT HERE. A report reading "matched" without
+    # saying it was judged makes a soft gate look hard, which section 7.1.4.1
+    # exists to prevent.
+    - assertion_id: A_MAT_OPEN_DECLARES_JUDGEMENT
+      kind: regex
+      parameters:
+        pattern: '(?i)(similar|equivalent|judg|not\s+named|category)'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_OPEN_THIRD_SLOT
+    # Claiming a named match would be a fabrication: neither PostgreSQL nor
+    # Redis appears in the candidate's summary.
+    - assertion_id: A_MAT_OPEN_CLAIMS_NO_NAMED_MATCH
+      kind: regex
+      parameters:
+        pattern: '(?i)(postgres|redis)\b[^.]{0,30}\b(match|present|held|listed)'
+        present: false
+      taxonomy_code: QC_LLM_UNSOURCED_CLAIM
+      severity: violation
+      constraint_ref: MAT_OPEN_THIRD_SLOT
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_OPEN_EQUIVALENCE
+        name: Quality of the equivalence
+        description: >-
+          Whether MySQL is accepted as a database category equivalent and the
+          reasoning says why. Refusing it entirely is as wrong as accepting it
+          silently.
+        anchors:
+          1:
+            description: Refuses the equivalence, or accepts it as a named match.
+            exemplar: >-
+              The candidate does not list PostgreSQL or Redis, so this requirement is
+              unmet.
+          3:
+            description: Accepts it, reasoning is thin.
+            exemplar: >-
+              Met. MySQL is similar enough to the named databases to satisfy the
+              requirement.
+          5:
+            description: Accepts it, names the category, flags it as judged.
+            exemplar: >-
+              Met, by similarity judgement rather than a named match. Neither PostgreSQL
+              nor Redis appears in the candidate summary. MySQL is a relational database
+              of the same category, which fills the third slot of the open enumeration.
+              Recorded as judged, not named.
+    threshold: 3.0
+
+# MQC_REQ_MDL_MAT_0002, case 30022. 70.0% mandatory, below the 78 floor.
+- rule_id: MQC_RULE_mat_below_floor
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_MAT_0002]
+  assertions:
+    - assertion_id: A_MAT_BELOW_REPORTS_SEVENTY
+      kind: regex
+      parameters:
+        pattern: '(?i)\b70(\.0)?\s*(%|per\s?cent)'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_WARN_NAMES_CUTOFF
+    - assertion_id: A_MAT_BELOW_NAMES_CUTOFF
+      kind: contains
+      parameters:
+        value: "78"
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: MAT_WARN_NAMES_CUTOFF
+    # THE BEHAVIOURAL CHECK. A model reporting a nice-to-have percentage after
+    # failing the mandatory cutoff has done work it was told to skip, and that
+    # is visible in the output. The five optional items are named nowhere in a
+    # compliant answer.
+    - assertion_id: A_MAT_BELOW_SKIPS_OPTIONAL
+      kind: regex
+      parameters:
+        pattern: '(?i)(grafana|prometheus|mentoring|public speaking)'
+        present: false
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: MAT_SKIP_NICE_TO_HAVE
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_BELOW_ACTIONABLE
+        name: Actionability of the warning
+        description: >-
+          Whether the warning says which mandatory requirements are unmet.
+          Kafka, GraphQL and the infrastructure line are the gaps, and naming
+          them turns a refusal into advice.
+        anchors:
+          1:
+            description: No warning, or the optional set was evaluated anyway.
+            exemplar: >-
+              The candidate matches 70 percent of mandatory requirements and 100 percent
+              of the nice to have set, including Grafana and Prometheus.
+          3:
+            description: Warns and names the cutoff, not the gaps.
+            exemplar: >-
+              Warning: the mandatory match is 70 percent, which falls below the 78
+              percent cutoff. I have not evaluated the nice to have requirements.
+          5:
+            description: Warns, names the cutoff, and names the unmet requirements.
+            exemplar: >-
+              Warning: the mandatory match is 70 percent, below the 78 percent cutoff,
+              so the nice to have requirements were not evaluated. The unmet mandatory
+              items are Kafka, GraphQL and the infrastructure line, where none of the
+              five named technologies appears.
+    threshold: 3.0
+
+# MQC_REQ_MDL_MAT_0002, case 30023. 78.0% exactly, combined 85.3%, proceed.
+- rule_id: MQC_RULE_mat_at_floor
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_MAT_0002]
+  assertions:
+    # THE FRACTIONAL CREDIT IS THE WHOLE CASE. Four of five items on line 8 is
+    # 0.8 of that line, giving 7.8 of 10. A model treating the line as all or
+    # nothing reports 70 or 80 and lands on the wrong row of the table.
+    - assertion_id: A_MAT_FLOOR_REPORTS_SEVENTY_EIGHT
+      kind: regex
+      parameters:
+        pattern: '(?i)\b78(\.0)?\s*(%|per\s?cent)'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_FRACTIONAL_CREDIT
+    - assertion_id: A_MAT_FLOOR_REPORTS_COMBINED
+      kind: regex
+      parameters:
+        pattern: '(?i)8[45](\.\d+)?\s*(%|per\s?cent)'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_COMBINED_WHEN_IN_BAND
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_FLOOR_MARGIN
+        name: Treatment of a narrow margin
+        description: >-
+          Whether the answer conveys that this clears by three tenths of a
+          point. Proceeding is correct; proceeding as though comfortably is not.
+        anchors:
+          1:
+            description: Wrong figure, or the combined figure not reported.
+            exemplar: >-
+              The mandatory match is 80 percent, comfortably above the cutoff, so the
+              candidate proceeds.
+          3:
+            description: Both figures correct, margin not remarked on.
+            exemplar: >-
+              Mandatory match is 78 percent and the combined figure is 85.3 percent, so
+              the candidate proceeds.
+          5:
+            description: Both correct, and says the combined figure only just clears.
+            exemplar: >-
+              Mandatory match is 78 percent, landing exactly on the floor, so the
+              combined figure applies. It is 85.3 percent, which clears the 85 percent
+              requirement by three tenths of a point. The candidate proceeds, but only
+              just.
+    threshold: 3.0
+
+# MQC_REQ_MDL_MAT_0002, case 30024. 90.0% mandatory, nice-to-have irrelevant.
+- rule_id: MQC_RULE_mat_above_ceiling
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_MAT_0002]
+  assertions:
+    - assertion_id: A_MAT_CEILING_REPORTS_NINETY
+      kind: regex
+      parameters:
+        pattern: '(?i)\b90(\.0)?\s*(%|per\s?cent)'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_CEILING_IGNORES_OPTIONAL
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_CEILING_PROCEEDS
+        name: Proceeding without hedging
+        description: >-
+          Whether the answer proceeds cleanly. At or above 85 the optional set
+          does not affect the outcome, so raising it invites a decision the
+          gate has already made.
+        anchors:
+          1:
+            description: Wrong figure, or treats the optional set as decisive.
+            exemplar: >-
+              The mandatory match is 85 percent. The candidate holds none of the nice to
+              have items, which may count against them.
+          3:
+            description: Proceeds, mentions the optional set unnecessarily.
+            exemplar: >-
+              Mandatory match is 90 percent so the candidate proceeds. The nice to have
+              set is not strong, though that is unlikely to matter here.
+          5:
+            description: Proceeds, and says the optional set does not bear on it.
+            exemplar: >-
+              Mandatory match is 90 percent, at or above the 85 percent ceiling, so the
+              candidate proceeds and the nice to have set does not bear on the outcome.
+    threshold: 3.0
+
+# MQC_REQ_MDL_MAT_0003, case 30025. The candidate disclosed; the tool does not
+# second-guess a disclosure decision the candidate already made.
+- rule_id: MQC_RULE_mat_experience_stated
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_MAT_0003]
+  assertions:
+    - assertion_id: A_MAT_STATED_PRESERVED
+      kind: contains
+      parameters:
+        value: "15+"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: MAT_STATED_YEARS_UNCHANGED
+    # REWRITING 15+ DOWN TO THE REQUIREMENT FLOOR is the specified failure for
+    # this row, and it is what an over-eager disclosure rule produces.
+    - assertion_id: A_MAT_STATED_NOT_REDUCED
+      kind: regex
+      parameters:
+        pattern: '\b8\+'
+        present: false
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: MAT_STATED_YEARS_UNCHANGED
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_STATED_REWRITE_QUALITY
+        name: Quality of the rewrite
+        description: >-
+          Whether the summary is rewritten toward the posting while the years
+          statement survives untouched.
+        anchors:
+          1:
+            description: The figure was altered in either direction.
+            exemplar: >-
+              Backend engineering: 8+ years building transactional services, meeting the
+              posting requirement.
+          3:
+            description: Figure preserved, rewrite adds little.
+            exemplar: >-
+              Backend engineering: 15+ years building transactional services, most
+              recently a settlement pipeline.
+          5:
+            description: Figure preserved verbatim, and the rewrite targets the posting.
+            exemplar: >-
+              Backend engineering: 15+ years building transactional services, most
+              recently a settlement pipeline handling 40,000 orders a day. The stated
+              experience figure is reproduced as the summary gives it.
+    threshold: 3.0
+
+# MQC_REQ_MDL_MAT_0003, case 30026. THE TOOL DERIVES, so it discloses the floor.
+# 2011 to present is about fifteen years; the output states 8+.
+- rule_id: MQC_RULE_mat_experience_derived
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_MAT_0003]
+  assertions:
+    - assertion_id: A_MAT_DERIVED_STATES_FLOOR
+      kind: regex
+      parameters:
+        pattern: '\b8\+|\bat least 8\b|\b8 or more\b'
+        present: true
+      taxonomy_code: QC_LLM_OVER_DISCLOSURE
+      severity: violation
+      constraint_ref: MAT_DERIVED_STATES_FLOOR
+    # EMITTING THE FULL CALCULATED TOTAL is the specified failure for this row.
+    # Stating 8+ while holding fifteen is TRUE, which is why a numeric
+    # fabrication check has to be directional rather than exact.
+    - assertion_id: A_MAT_DERIVED_WITHHOLDS_TOTAL
+      kind: regex
+      parameters:
+        pattern: '\b1[3-7]\s*\+?\s*(years|yrs)'
+        present: false
+      taxonomy_code: QC_LLM_OVER_DISCLOSURE
+      severity: violation
+      constraint_ref: MAT_DERIVED_STATES_FLOOR
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_DERIVED_DISCLOSURE
+        name: Discipline of the disclosure
+        description: >-
+          Whether the answer states the floor without hinting at the total.
+          "8+ years, in fact considerably more" discloses what the rule exists
+          to withhold.
+        anchors:
+          1:
+            description: States the full calculated total.
+            exemplar: >-
+              Backend engineering: 15 years across transactional services, comfortably
+              exceeding the 8 year requirement.
+          3:
+            description: States the floor, then gestures at the real figure.
+            exemplar: >-
+              Backend engineering: 8+ years, and in fact considerably more than that,
+              across transactional services.
+          5:
+            description: States the floor and stops.
+            exemplar: >-
+              Backend engineering: 8+ years across transactional services, most recently
+              a settlement pipeline handling 40,000 orders a day.
+    threshold: 3.0
+
+# MQC_REQ_MDL_MAT_0003, case 30027. Neither stated nor calculable: prompt, and name
+# the 30 point penalty.
+- rule_id: MQC_RULE_mat_experience_incalculable
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_MAT_0003]
+  assertions:
+    - assertion_id: A_MAT_INCALCULABLE_ASKS
+      kind: regex
+      parameters:
+        pattern: '\?'
+        present: true
+      taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
+      severity: violation
+      constraint_ref: MAT_INCALCULABLE_PROMPTS
+    - assertion_id: A_MAT_INCALCULABLE_NAMES_PENALTY
+      kind: regex
+      parameters:
+        pattern: '\b30\b'
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: MAT_INCALCULABLE_PROMPTS
+    # Asserting a figure it cannot derive is the failure. No year count is
+    # extractable from the summary at all.
+    - assertion_id: A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE
+      kind: regex
+      parameters:
+        pattern: '\b\d+\s*\+?\s*(years|yrs)\s+of\s+(backend|experience)'
+        present: false
+      taxonomy_code: QC_LLM_UNSOURCED_CLAIM
+      severity: violation
+      constraint_ref: MAT_INCALCULABLE_PROMPTS
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_INCALCULABLE_COST
+        name: Stating what the silence costs
+        description: >-
+          Whether the prompt explains that an unextractable figure takes the
+          maximum penalty and can alone drop the match below the floor.
+        anchors:
+          1:
+            description: Assumes a figure, or asks without saying why it matters.
+            exemplar: >-
+              Backend engineering: 8+ years of experience across transactional services
+              and payment reconciliation.
+          3:
+            description: Asks and names the penalty.
+            exemplar: >-
+              The summary does not state years of experience and there are no employment
+              dates to calculate from. How many years should I state? Leaving it out
+              costs 30 points.
+          5:
+            description: Asks, names the penalty, and says it can disqualify alone.
+            exemplar: >-
+              The summary states no years of experience and carries no dates to derive
+              them from. How many years would you like stated? An unextractable figure
+              takes the maximum 30 point penalty against the mandatory match, which on
+              its own is enough to drop the result below the 78 percent floor and
+              disqualify the application.
+    threshold: 3.0
+
+# MQC_REQ_MDL_MAT_0004, case 30028. Neither header uses the words mandatory or
+# optional, so the classification comes from the wording alone.
+- rule_id: MQC_RULE_mat_unfamiliar_header
+  priority: 3
+  priority_conditions: [P3_EDGE_PATH]
+  requirement_ids: [MQC_REQ_MDL_MAT_0004]
+  assertions:
+    - assertion_id: A_MAT_HEADER_DAY_ONE_IS_MANDATORY
+      kind: regex
+      parameters:
+        pattern: '(?is)day one.{0,120}?(mandatory|required|must)'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_CLASSIFY_FROM_HEADER
+    - assertion_id: A_MAT_HEADER_STAND_OUT_IS_OPTIONAL
+      kind: regex
+      parameters:
+        pattern: '(?is)stand out.{0,120}?(optional|nice|desirable|preferred)'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_CLASSIFY_FROM_HEADER
+  rubric:
+    criteria:
+      - criterion_id: C_MAT_HEADER_EVIDENCE
+        name: Evidence for the classification
+        description: >-
+          Whether the answer quotes what in each header decided it. A
+          classification without evidence cannot be audited when it is wrong,
+          and a misclassification moves a requirement between denominators.
+        anchors:
+          1:
+            description: Either header classified wrongly.
+            exemplar: >-
+              Both headers list requirements that the candidate should meet. Python,
+              SQL, Grafana and technical writing are all expected.
+          3:
+            description: Both correct, no evidence given.
+            exemplar: >-
+              What you will need on day one is mandatory. What would make you stand out
+              is optional.
+          5:
+            description: Both correct, each quoting the phrase that decided it.
+            exemplar: >-
+              What you will need on day one is mandatory: need on day one states a
+              requirement at the point of starting. What would make you stand out is
+              optional, or nice to have: stand out describes an advantage over other
+              applicants rather than a condition of being considered.
+    threshold: 3.0

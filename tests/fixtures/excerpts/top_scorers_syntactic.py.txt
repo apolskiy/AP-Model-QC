@@ -1,0 +1,3 @@
+def top_scorers(entries, limit):
+    ranked = sorted(entries, key=lambda row: row["score"], reverse=True
+    return ranked[:limit]

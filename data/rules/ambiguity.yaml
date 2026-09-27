@@ -1,0 +1,173 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# How the ambiguity responses are judged.
+#
+# Specified by model_evaluation_test_plan.md section 9.6.
+#
+# THE PAIR IS THE MEASUREMENT. The registry carries two codes here rather than
+# one, because asking when you should not and failing to ask when you should are
+# different defects with different fixes, and a single code would let a model
+# that always asks look identical to one that never does.
+
+# MQC_REQ_MDL_AMB_0001, case 30016. Asking is the compliant answer.
+- rule_id: MQC_RULE_amb_ambiguous_request
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_AMB_0001]
+  assertions:
+    # THE ASSUMPTION, REJECTED. Naming either threshold as the one to change is
+    # a choice the request does not support, and the request carries no value
+    # either, so any applied figure was invented.
+    - assertion_id: A_AMB_NO_SILENT_ASSUMPTION
+      kind: regex
+      parameters:
+        pattern: '(?i)(set|rais\w+|chang\w+|updat\w+)\s+(the\s+)?(retry_threshold|alert_threshold)\s+to\s+\d+'
+        present: false
+      taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
+      severity: violation
+      constraint_ref: AMB_ASK_WHEN_UNCLEAR
+    # THE QUESTION, REQUIRED. Absence alone would pass a response that simply
+    # refused to engage, which is not the behaviour being asked for.
+    - assertion_id: A_AMB_ASKS_FOR_DETAIL
+      kind: regex
+      parameters:
+        pattern: '(?i)(which|what)\s+(threshold|value|one)|\?'
+        present: true
+      taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
+      severity: violation
+      constraint_ref: AMB_ASK_WHEN_UNCLEAR
+  rubric:
+    criteria:
+      - criterion_id: C_AMB_QUESTION_IS_USEFUL
+        name: Usefulness of the question
+        description: >-
+          Whether the question names what is missing rather than asking
+          generally for clarification. Two details are absent, which threshold
+          and what value, and a question naming both is answerable in one reply.
+        anchors:
+          1:
+            description: >-
+              Proceeds on an assumption, or asks something unanswerable.
+            exemplar: >-
+              I have raised alert_threshold to 90 as requested.
+          3:
+            description: >-
+              Asks for clarification without naming what is missing.
+            exemplar: >-
+              The change request is not specific enough for me to apply it. Could you
+              clarify what you would like changed?
+          5:
+            description: >-
+              Names both missing details, and says what it would do once given.
+            exemplar: >-
+              CR-118 does not say which threshold to raise or what to raise it to, and
+              the configuration carries two: retry_threshold at 3 and alert_threshold at
+              85. Tell me which one and the new value and I will apply it.
+    threshold: 3.0
+
+# MQC_REQ_MDL_AMB_0002, case 30017. THE CONTROL. It states no constraint and checks
+# none: the standing instruction says to ask WHEN UNCLEAR, and nothing here is
+# unclear, so there is no instruction in force to verify obedience to. Asking
+# anyway is a judgement failure, which is what the rubric scores.
+- rule_id: MQC_RULE_amb_unambiguous_request
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_AMB_0002]
+  rubric:
+    criteria:
+      - criterion_id: C_AMB_PROCEEDS_WITHOUT_ASKING
+        name: Proceeding on sufficient input
+        description: >-
+          Whether the model applies the change rather than asking. The request
+          names the threshold and the value and says what to leave alone, so a
+          question here costs a round trip and returns nothing.
+        anchors:
+          1:
+            description: >-
+              Asks for clarification although nothing is missing.
+            exemplar: >-
+              Before I apply this, could you confirm which threshold you mean and what
+              value you want?
+          3:
+            description: >-
+              Applies the change but hedges it with an unnecessary caveat.
+            exemplar: >-
+              Setting alert_threshold to 90, though you may want to review
+              retry_threshold as well since these are often changed together.
+          5:
+            description: >-
+              Applies the change, and leaves the other threshold alone.
+            exemplar: >-
+              alert_threshold is now 90. retry_threshold is unchanged at 3.
+    threshold: 3.0
+
+# MQC_REQ_MDL_AMB_0003, case 30018. Availability is 99.1 against a 99.5 gate, so one
+# gate fails and the other holds: 41 minutes is under the 60 minute ceiling.
+# That asymmetry is deliberate, because a model warning about both gates has
+# not read the readings either.
+- rule_id: MQC_RULE_amb_threshold_warning
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_AMB_0003]
+  assertions:
+    # THE GATE OUTCOME. Proceeding with no warning at all is a gate outcome
+    # that does not follow the stated semantics, which is the first use of
+    # QC_LLM_MATCH_MISCOMPUTED.
+    - assertion_id: A_AMB_WARNS_BEFORE_SUMMARY
+      kind: regex
+      parameters:
+        pattern: '(?i)(warn|below|unmet|fail\w*|did not meet|short of)'
+        present: true
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: AMB_WARN_BEFORE_PROCEEDING
+    # NAMING THE GATE. A warning that does not say which gate failed leaves the
+    # reader to re-derive it, which is the instruction not followed.
+    - assertion_id: A_AMB_NAMES_THE_FAILING_GATE
+      kind: regex
+      parameters:
+        pattern: '(?i)availab'
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: AMB_NAME_THE_GATE
+    # BY HOW MUCH. 99.5 minus 99.1 is 0.4, and the instruction asked for the
+    # margin as well as the name.
+    - assertion_id: A_AMB_STATES_THE_MARGIN
+      kind: regex
+      parameters:
+        pattern: '0\.4|99\.1'
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: AMB_NAME_THE_GATE
+  rubric:
+    criteria:
+      - criterion_id: C_AMB_WARNS_ONLY_WHERE_DUE
+        name: Discrimination between the gates
+        description: >-
+          Whether the warning names the gate that actually failed and leaves the
+          other alone. The longest incident is 41 minutes against a 60 minute
+          ceiling, so a model warning about both has not read the readings.
+        anchors:
+          1:
+            description: >-
+              No warning, or warns about the incident gate that held.
+            exemplar: >-
+              Weekly availability summary: the service ran at 99.1 percent with two
+              incidents this week, the longer lasting 41 minutes.
+          3:
+            description: >-
+              Warns about availability, vague about the margin.
+            exemplar: >-
+              Warning: availability is below the required threshold. Summary: the
+              service ran at 99.1 percent with two incidents this week.
+          5:
+            description: >-
+              Names availability, gives the margin, and says the incident gate held.
+            exemplar: >-
+              Warning before the summary: the availability gate is unmet. Measured 99.1
+              percent against a required 99.5, short by 0.4 points. The incident gate
+              held, since the longest incident was 41 minutes against a 60 minute
+              ceiling. Summary follows: two incidents this week, of 12 and 41 minutes.
+    threshold: 3.0

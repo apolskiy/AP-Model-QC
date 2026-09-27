@@ -1,0 +1,326 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# What the model is sent for the requirement matching family.
+#
+# Specified by model_evaluation_test_plan.md section 9.8. The semantics are
+# normative in AP-Harness-QC DESIGN.md section 7.1 and are not restated here.
+#
+# THE GATE BOUNDARIES ARE HIT EXACTLY. One posting carries ten mandatory
+# requirements and five nice-to-have, and three resumes land on the three rows
+# of the decision table at 70.0, 78.0 and 90.0 percent. The 7.8 is a fractional
+# credit on a five-item AND list of which four are held, which is the specified
+# arithmetic and the only way a ten-requirement posting reaches exactly 78.
+#
+# THE CANDIDATE IS HELD FIXED IN THE CONNECTOR CASES and only the requirement
+# phrasing varies, because the connector decides the arithmetic entirely.
+
+# MQC_REQ_MDL_MAT_0001, case 30019. Closed OR: one slot filled satisfies the line.
+- task_id: MQC_TASK_mat_closed_or
+  rubric_ids: [MQC_RULE_mat_closed_or]
+  user_prompt: |
+    State what percentage of the requirement below the candidate meets, and
+    show how you arrived at it.
+  constraints:
+    - constraint_id: MAT_OR_IS_DISJUNCTION
+      text: A closed OR list is satisfied in full by any one named item
+      kind: requirement
+  context_documents:
+    - document_id: DOC_req_closed_or
+      title: Posting requirement
+      content: |
+        Required: Python, Go, or Rust.
+    - document_id: DOC_candidate_python
+      title: Candidate technical summary
+      content: |
+        Languages: Python, SQL, Bash.
+  tags: [requirement_match, connector, closed_or]
+
+# MQC_REQ_MDL_MAT_0001, case 30020. Closed AND: one of two is half the line.
+- task_id: MQC_TASK_mat_closed_and
+  rubric_ids: [MQC_RULE_mat_closed_and]
+  user_prompt: |
+    State what percentage of the requirement below the candidate meets, and
+    show how you arrived at it.
+  constraints:
+    - constraint_id: MAT_AND_IS_CONJUNCTION
+      text: A closed AND list scores the fraction of its items that are held
+      kind: requirement
+  context_documents:
+    - document_id: DOC_req_closed_and
+      title: Posting requirement
+      content: |
+        Required: Docker, Kubernetes.
+    - document_id: DOC_candidate_docker
+      title: Candidate technical summary
+      content: |
+        Containers and orchestration: Docker.
+  tags: [requirement_match, connector, closed_and]
+
+# MQC_REQ_MDL_MAT_0001, case 30021. THE JUDGED PATH, and the only one in this family.
+# No named item matches, so the third slot engages and category equivalence is
+# judged rather than matched.
+- task_id: MQC_TASK_mat_open_enumeration
+  rubric_ids: [MQC_RULE_mat_open_enumeration]
+  user_prompt: |
+    State whether the candidate meets the requirement below, and say whether
+    you matched a named item or judged something equivalent.
+  constraints:
+    - constraint_id: MAT_OPEN_THIRD_SLOT
+      text: An open enumeration has a third slot fillable by a category equivalent
+      kind: requirement
+  context_documents:
+    - document_id: DOC_req_open_enum
+      title: Posting requirement
+      content: |
+        Required: PostgreSQL, Redis or similar databases.
+    - document_id: DOC_candidate_mysql
+      title: Candidate technical summary
+      content: |
+        Data stores: MySQL.
+  tags: [requirement_match, connector, open_enumeration]
+
+# The posting the three gate cases share. Ten mandatory, five nice-to-have.
+# MQC_REQ_MDL_MAT_0002, case 30022. Mandatory 7.0/10 = 70.0%, below the 78 floor.
+- task_id: MQC_TASK_mat_below_floor
+  rubric_ids: [MQC_RULE_mat_below_floor]
+  user_prompt: |
+    Assess the candidate against the posting below. Report the mandatory match
+    percentage. If it falls below 78 percent, warn me and name that cutoff, and
+    do not evaluate the nice-to-have requirements at all.
+  constraints:
+    - constraint_id: MAT_WARN_NAMES_CUTOFF
+      text: Warn and name the mandatory cutoff when the figure falls below it
+      kind: requirement
+    - constraint_id: MAT_SKIP_NICE_TO_HAVE
+      text: Do not evaluate nice-to-have requirements below the mandatory floor
+      kind: prohibition
+  context_documents:
+    - document_id: DOC_posting_ten_five
+      title: Posting PD-400
+      content: |
+        Mandatory requirements.
+        1. Python.
+        2. SQL.
+        3. Linux administration.
+        4. Git.
+        5. REST API design.
+        6. Unit testing.
+        7. CI pipelines.
+        8. Docker, Kubernetes, Terraform, Ansible, Helm.
+        9. Kafka.
+        10. GraphQL.
+
+        Nice to have.
+        11. Grafana.
+        12. Prometheus.
+        13. Technical writing.
+        14. Mentoring.
+        15. Public speaking.
+    - document_id: DOC_resume_seventy
+      title: Candidate B technical summary
+      content: |
+        Languages: Python, SQL.
+        Platform: Linux administration, Git.
+        Services: REST API design, unit testing, CI pipelines.
+        Observability: Grafana, Prometheus.
+        Other: technical writing, mentoring, public speaking.
+  tags: [requirement_match, gate, below_floor]
+
+# MQC_REQ_MDL_MAT_0002, case 30023. Mandatory 7.8/10 = 78.0% exactly, at the floor.
+# Combined 12.8/15 = 85.3%, clearing 85 by three tenths of a point.
+- task_id: MQC_TASK_mat_at_floor
+  rubric_ids: [MQC_RULE_mat_at_floor]
+  user_prompt: |
+    Assess the candidate against the posting below. Report the mandatory match
+    percentage. If it lands between 78 and 84 percent, also report the combined
+    figure over all requirements and proceed only if that reaches 85 percent.
+  constraints:
+    - constraint_id: MAT_COMBINED_WHEN_IN_BAND
+      text: Report the combined figure when mandatory lands between 78 and 84
+      kind: requirement
+    - constraint_id: MAT_FRACTIONAL_CREDIT
+      text: A list-bearing line scores the fraction of its items that are held
+      kind: requirement
+  context_documents:
+    - document_id: DOC_posting_ten_five
+      title: Posting PD-400
+      content: |
+        Mandatory requirements.
+        1. Python.
+        2. SQL.
+        3. Linux administration.
+        4. Git.
+        5. REST API design.
+        6. Unit testing.
+        7. CI pipelines.
+        8. Docker, Kubernetes, Terraform, Ansible, Helm.
+        9. Kafka.
+        10. GraphQL.
+
+        Nice to have.
+        11. Grafana.
+        12. Prometheus.
+        13. Technical writing.
+        14. Mentoring.
+        15. Public speaking.
+    - document_id: DOC_resume_at_floor
+      title: Candidate A technical summary
+      content: |
+        Languages: Python, SQL.
+        Platform: Linux administration, Git.
+        Services: REST API design, unit testing, CI pipelines.
+        Infrastructure: Docker, Kubernetes, Terraform, Ansible.
+        Observability: Grafana, Prometheus.
+        Other: technical writing, mentoring, public speaking.
+  tags: [requirement_match, gate, at_floor]
+
+# MQC_REQ_MDL_MAT_0002, case 30024. Mandatory 9.0/10 = 90.0%, at or above 85, so
+# the nice-to-have set is irrelevant and the combined figure is not consulted.
+- task_id: MQC_TASK_mat_above_ceiling
+  rubric_ids: [MQC_RULE_mat_above_ceiling]
+  user_prompt: |
+    Assess the candidate against the posting below. Report the mandatory match
+    percentage. If it reaches 85 percent, proceed: the nice-to-have set does
+    not affect the outcome.
+  constraints:
+    - constraint_id: MAT_CEILING_IGNORES_OPTIONAL
+      text: At or above 85 percent mandatory the nice-to-have set is irrelevant
+      kind: requirement
+  context_documents:
+    - document_id: DOC_posting_ten_five
+      title: Posting PD-400
+      content: |
+        Mandatory requirements.
+        1. Python.
+        2. SQL.
+        3. Linux administration.
+        4. Git.
+        5. REST API design.
+        6. Unit testing.
+        7. CI pipelines.
+        8. Docker, Kubernetes, Terraform, Ansible, Helm.
+        9. Kafka.
+        10. GraphQL.
+
+        Nice to have.
+        11. Grafana.
+        12. Prometheus.
+        13. Technical writing.
+        14. Mentoring.
+        15. Public speaking.
+    - document_id: DOC_resume_ninety
+      title: Candidate C technical summary
+      content: |
+        Languages: Python, SQL.
+        Platform: Linux administration, Git.
+        Services: REST API design, unit testing, CI pipelines.
+        Infrastructure: Docker, Kubernetes, Terraform, Ansible, Helm.
+        Streaming: Kafka.
+  tags: [requirement_match, gate, above_ceiling]
+
+# MQC_REQ_MDL_MAT_0003, case 30025. The candidate stated the figure, so it stands.
+- task_id: MQC_TASK_mat_experience_stated
+  rubric_ids: [MQC_RULE_mat_experience_stated]
+  user_prompt: |
+    Rewrite the candidate summary below to match the posting requirement.
+
+    Where the summary states years of experience, reproduce that statement
+    unchanged. Do not recalculate it and do not restate it in another form.
+  constraints:
+    - constraint_id: MAT_STATED_YEARS_UNCHANGED
+      text: Reproduce a stated years figure unchanged
+      kind: prohibition
+  context_documents:
+    - document_id: DOC_req_years_eight
+      title: Posting requirement
+      content: |
+        Required: 8 years of backend engineering experience.
+    - document_id: DOC_summary_states_fifteen
+      title: Candidate summary
+      content: |
+        Backend engineering: 15+ years building transactional services, most
+        recently a settlement pipeline handling 40,000 orders a day.
+  tags: [requirement_match, experience, stated]
+
+# MQC_REQ_MDL_MAT_0003, case 30026. THE TOOL DERIVES THE FIGURE, so it discloses
+# only the requirement floor. Stating 8+ while holding fifteen is TRUE, which
+# is why a numeric fabrication check must be directional.
+- task_id: MQC_TASK_mat_experience_derived
+  rubric_ids: [MQC_RULE_mat_experience_derived]
+  user_prompt: |
+    Rewrite the candidate summary below to match the posting requirement.
+
+    The summary does not state years of experience. Where you derive the figure
+    from employment dates, state the requirement minimum with a plus rather than
+    the full calculated total.
+  constraints:
+    - constraint_id: MAT_DERIVED_STATES_FLOOR
+      text: State the requirement minimum with a plus when deriving the figure
+      kind: requirement
+  context_documents:
+    - document_id: DOC_req_years_eight
+      title: Posting requirement
+      content: |
+        Required: 8 years of backend engineering experience.
+    - document_id: DOC_summary_no_years
+      title: Candidate summary
+      content: |
+        Backend engineering across transactional services, most recently a
+        settlement pipeline handling 40,000 orders a day.
+    - document_id: DOC_employment_dates
+      title: Employment history
+      content: |
+        Backend Engineer, Northwind Systems, 2011 to 2018.
+        Senior Backend Engineer, Corvus Data, 2018 to present.
+  tags: [requirement_match, experience, derived]
+
+# MQC_REQ_MDL_MAT_0003, case 30027. Neither stated nor calculable, so the model
+# prompts rather than asserting a figure it cannot derive.
+- task_id: MQC_TASK_mat_experience_incalculable
+  rubric_ids: [MQC_RULE_mat_experience_incalculable]
+  user_prompt: |
+    Rewrite the candidate summary below to match the posting requirement.
+
+    If years of experience are neither stated nor calculable, ask me for the
+    figure and tell me what it costs not to supply it.
+  constraints:
+    - constraint_id: MAT_INCALCULABLE_PROMPTS
+      text: Ask for the figure when it is neither stated nor calculable
+      kind: requirement
+  context_documents:
+    - document_id: DOC_req_years_eight
+      title: Posting requirement
+      content: |
+        Required: 8 years of backend engineering experience.
+    - document_id: DOC_summary_no_dates
+      title: Candidate summary
+      content: |
+        Backend engineering across transactional services, most recently a
+        settlement pipeline handling 40,000 orders a day. Previously worked on
+        payment reconciliation and inventory systems.
+  tags: [requirement_match, experience, incalculable]
+
+# MQC_REQ_MDL_MAT_0004, case 30028. A header the posting does not use, classified
+# from its wording alone.
+- task_id: MQC_TASK_mat_unfamiliar_header
+  rubric_ids: [MQC_RULE_mat_unfamiliar_header]
+  user_prompt: |
+    The posting below groups its requirements under headers. Say for each
+    header whether the requirements under it are mandatory or optional, and
+    say what in the header told you.
+  constraints:
+    - constraint_id: MAT_CLASSIFY_FROM_HEADER
+      text: Classify each header as mandatory or optional from its wording
+      kind: requirement
+  context_documents:
+    - document_id: DOC_posting_odd_headers
+      title: Posting PD-401
+      content: |
+        What you will need on day one.
+        1. Python.
+        2. SQL.
+
+        What would make you stand out.
+        3. Grafana.
+        4. Technical writing.
+  tags: [requirement_match, classification]

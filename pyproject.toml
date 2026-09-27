@@ -1,0 +1,53 @@
+# The evaluation cases. The harness is a DEPENDENCY, pinned by reference.
+#
+# That pinning is the whole point of the split (AP-Harness-QC, DESIGN.md
+# section 5.1): the harness reference is an input, so a case set can be run
+# against a release, a stabilization branch or a commit, and a regression can be
+# attributed by holding one side fixed and moving the other.
+[project]
+name = "ap-model-qc"
+version = "0.1.0"
+description = "Evaluation cases for the AP-Harness-QC foundation model harness"
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Aleksandr Polskiy" }]
+classifiers = [
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Intended Audience :: Developers",
+]
+
+dependencies = [
+    # THE FLOOR, NOT THE PAIRING. config/harness_pin.yaml maps each branch of
+    # this repository to the harness ref it runs against, and CI installs the
+    # COMMIT that mapping resolves to. This line is what a clone installs when
+    # nothing resolves a pin, and main is the right default precisely because
+    # main is the branch required to be green (consumer_ci.md section 2.1).
+    "ap-harness-qc @ git+https://github.com/apolskiy/AP-Harness-QC@main",
+]
+
+[project.optional-dependencies]
+# The harness brings pytest and its plugins, so this extra carries only what is
+# specific to authoring cases here.
+dev = [
+    "pylint>=3.3,<4.0",
+    # tools/harness_pin.py reads config/harness_pin.yaml. Declared here as well
+    # as installed on its own line in CI, because the gate installs it BEFORE
+    # this package exists in the environment: the resolver runs before the
+    # harness does, so it cannot depend on this extra having been resolved.
+    "pyyaml>=6.0,<7.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+# Named explicitly. An auto-discovered layout silently omitted a subpackage from
+# a built wheel in the harness, and every consumer would have installed a
+# package missing its adapters.
+include = ["tools*"]
+exclude = ["tests*", "docs*", "config*"]

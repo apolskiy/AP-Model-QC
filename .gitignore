@@ -216,3 +216,47 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---------------------------------------------------------------------------
+# AP-Model-QC artifacts
+# ---------------------------------------------------------------------------
+
+# The evaluation cases. The harness is a dependency, pinned by reference in
+# pyproject.toml, and is never vendored here.
+
+# Test-design documents are tracked project output, not scratch work.
+!docs/
+!docs/testing/
+!docs/testing/**
+
+# The code excerpts are DELIBERATELY DEFECTIVE and are tracked. Their .txt
+# suffix keeps every formatter and linter away from them; see
+# tests/fixtures/excerpts/README.md for why that matters.
+!tests/fixtures/
+!tests/fixtures/**
+
+# CI-generated test artifacts, regenerated every run.
+reports/
+allure-results/
+allure-report/
+junit_*.xml
+
+# Recorded provider responses are tracked, because replay depends on them and
+# a fixture changing changes every replay outcome. Nothing here is ignored.
+
+# Provider credentials. Never committed.
+.env
+.env.*
+!.env.example
+
+# JetBrains IDE settings. Machine-local and developer-specific: committing
+# them makes every teammate editor state a source of merge conflicts. The
+# GitHub template ships this line commented out, which reads as present to a
+# careless grep and ignores nothing.
+.idea/
+
+# Verbatim prompts and working notes. NEVER TRACKED, and the reason is narrow:
+# this is the one file a credential could reach by being pasted into a prompt.
+# The harness carries the same rule; both repositories need it, because either
+# one alone leaves the other able to commit the file.
+.claude/logs/

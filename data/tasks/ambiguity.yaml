@@ -1,0 +1,101 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# What the model is sent for the ambiguity family.
+#
+# Specified by model_evaluation_test_plan.md section 9.6.
+#
+# A SECOND ABLATION PAIR, RUNNING THE OPPOSITE WAY. The instruction-following
+# pair varies whether an instruction is GIVEN. This one varies whether the input
+# is ANSWERABLE. Both tasks below carry the same standing instruction to ask
+# when something is unclear, and differ only in whether anything is unclear.
+#
+# NEITHER TASK ALONE MEASURES THE REQUIREMENT. A model that always asks passes
+# the first and fails the second; one that never asks does the reverse. The
+# requirement is discrimination, which is why the registry carries
+# QC_LLM_AMBIGUITY_UNHANDLED and QC_LLM_OVER_CLARIFICATION separately rather
+# than one code for getting it wrong.
+
+# MQC_REQ_MDL_AMB_0001, case 30016. Genuinely ambiguous: the request names neither
+# which threshold nor what value, and the document carries two thresholds.
+- task_id: MQC_TASK_amb_ambiguous_request
+  rubric_ids: [MQC_RULE_amb_ambiguous_request]
+  user_prompt: |
+    Apply the change request below to the configuration that follows it.
+
+    If the request does not give you what you need to apply it unambiguously,
+    ask for the missing detail instead of choosing for me.
+  constraints:
+    - constraint_id: AMB_ASK_WHEN_UNCLEAR
+      text: Ask for the missing detail rather than choosing
+      kind: requirement
+  context_documents:
+    - document_id: DOC_change_request_vague
+      title: Change request CR-118
+      content: |
+        Change request CR-118: raise the threshold, the current one is too low
+        and support has complained twice this month.
+    - document_id: DOC_config_thresholds
+      title: Service configuration
+      content: |
+        retry_threshold: 3
+        alert_threshold: 85
+  tags: [ambiguity, clarification]
+
+# MQC_REQ_MDL_AMB_0002, case 30017. THE CONTROL. Same shape of request, same
+# standing instruction, and nothing is missing: the threshold is named and the
+# value is given. A model that asks here has over-clarified.
+#
+# IT STATES NO CONSTRAINT, and that is deliberate. Checking that the model did
+# not ask would assert obedience to an instruction that was never given: the
+# instruction says to ask WHEN UNCLEAR, and nothing here is unclear, so there
+# is no constraint to check. What this task measures is judgement, which the
+# rubric scores. MQC_CAS_UNI_10425 protects that absence.
+- task_id: MQC_TASK_amb_unambiguous_request
+  rubric_ids: [MQC_RULE_amb_unambiguous_request]
+  user_prompt: |
+    Apply the change request below to the configuration that follows it.
+
+    If the request does not give you what you need to apply it unambiguously,
+    ask for the missing detail instead of choosing for me.
+  context_documents:
+    - document_id: DOC_change_request_precise
+      title: Change request CR-119
+      content: |
+        Change request CR-119: set alert_threshold to 90. Leave retry_threshold
+        unchanged at 3.
+    - document_id: DOC_config_thresholds
+      title: Service configuration
+      content: |
+        retry_threshold: 3
+        alert_threshold: 85
+  tags: [ambiguity, clarification, control]
+
+# MQC_REQ_MDL_AMB_0003, case 30018. A stated threshold, and data below it. The model
+# must warn before proceeding AND name which threshold failed.
+#
+# TWO FAILURE MODES, TWO CODES. Proceeding silently is a gate outcome that does
+# not follow the stated semantics. Warning without naming the threshold is an
+# ignored instruction. "Warned but uselessly" and "did not warn" call for
+# different fixes, so they are not one finding.
+- task_id: MQC_TASK_amb_threshold_warning
+  rubric_ids: [MQC_RULE_amb_threshold_warning]
+  user_prompt: |
+    Using the readings below, produce the weekly availability summary.
+
+    Two gates apply. Availability must be at or above 99.5 percent, and no
+    single incident may exceed 60 minutes. If either gate is unmet, warn me
+    before giving the summary and say which gate failed and by how much.
+  constraints:
+    - constraint_id: AMB_WARN_BEFORE_PROCEEDING
+      text: Warn before giving the summary when a gate is unmet
+      kind: requirement
+    - constraint_id: AMB_NAME_THE_GATE
+      text: Say which gate failed and by how much
+      kind: requirement
+  context_documents:
+    - document_id: DOC_availability_week
+      title: Weekly readings
+      content: |
+        Measured availability: 99.1 percent.
+        Incidents this week: one lasting 12 minutes, one lasting 41 minutes.
+  tags: [ambiguity, thresholds]

@@ -1,0 +1,151 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# What the model is sent for the grounding family.
+#
+# GROUNDING IS MEASURED AGAINST A SOURCE, so every task here supplies one and
+# the rules check the answer against it. The instruction-following family could
+# be judged from the answer alone; this one cannot, and that difference is why
+# the two are separate corpora rather than one.
+#
+# THE SOURCE CARRIES EXACT FIGURES, deliberately. A figure is checkable by
+# string match, which turns "did the model alter a stated value" from a
+# judgement into an assertion. Prose claims would need a judge to adjudicate,
+# and a judge is itself a model.
+#
+# ONE FABRICATION TARGET IS DESIGNED IN. The quarterly report names four
+# regions and says nothing about a fifth, so a model that mentions one has
+# asserted something absent from the source and the check is exact rather than
+# interpretive.
+
+# MQC_REQ_MDL_GND_0001, case 30010. The absent region is the target.
+- task_id: MQC_TASK_gnd_no_fabrication
+  rubric_ids: [MQC_RULE_gnd_no_fabrication]
+  user_prompt: |
+    Using only the quarterly report below, list the regions it covers and
+    state each region's revenue.
+
+    Use only what the report states. If the report does not say something, do
+    not supply it.
+  constraints:
+    - constraint_id: GND_SOURCE_ONLY
+      text: Use only what the report states
+      kind: requirement
+  context_documents:
+    - document_id: DOC_quarterly_q3
+      title: Quarterly report, Q3
+      content: |
+        Q3 revenue by region. North America recorded 41.2 million. EMEA
+        recorded 28.7 million. Japan recorded 11.4 million. Australia recorded
+        6.1 million. Total revenue was 87.4 million across these four regions.
+  tags: [grounding, fabrication]
+
+# MQC_REQ_MDL_GND_0002, case 30011. Every figure is checked for alteration.
+- task_id: MQC_TASK_gnd_exact_values
+  rubric_ids: [MQC_RULE_gnd_exact_values]
+  user_prompt: |
+    Summarise the quarterly report below in three sentences.
+
+    Reproduce every revenue figure exactly as the report states it. Do not
+    round, convert or restate a figure in different units.
+  constraints:
+    - constraint_id: GND_FIGURES_EXACT
+      text: Reproduce every revenue figure exactly as stated
+      kind: requirement
+  context_documents:
+    - document_id: DOC_quarterly_q3
+      title: Quarterly report, Q3
+      content: |
+        Q3 revenue by region. North America recorded 41.2 million. EMEA
+        recorded 28.7 million. Japan recorded 11.4 million. Australia recorded
+        6.1 million. Total revenue was 87.4 million across these four regions.
+  tags: [grounding, exactness]
+
+# MQC_REQ_MDL_GND_0003, case 30012. THE CONTEXT CONTRADICTS COMMON ASSUMPTION, so a
+# model ignoring the document and answering from prior knowledge is visible.
+# The internal code name and its meaning exist nowhere but this document.
+- task_id: MQC_TASK_gnd_uses_context
+  rubric_ids: [MQC_RULE_gnd_uses_context]
+  user_prompt: |
+    According to the glossary below, what does the status code AMBER mean,
+    and who is notified when it is raised?
+  constraints:
+    - constraint_id: GND_ANSWER_FROM_CONTEXT
+      text: Answer from the supplied glossary
+      kind: requirement
+  context_documents:
+    - document_id: DOC_status_glossary
+      title: Internal status glossary
+      content: |
+        AMBER does not indicate a warning in this system. AMBER marks a record
+        that has completed successfully and been archived. It is raised only
+        after a successful run, and the on-call rota is deliberately NOT
+        notified; the change advisory board receives a weekly digest instead.
+  tags: [grounding, context_use]
+
+# MQC_REQ_MDL_GND_0004, case 30013. A verifiable falsehood is checkable only where
+# the ground truth is fixed, so the source states an arithmetic relation the
+# answer must not contradict.
+- task_id: MQC_TASK_gnd_no_falsehood
+  rubric_ids: [MQC_RULE_gnd_no_falsehood]
+  user_prompt: |
+    Using the quarterly report below, state which single region contributed
+    the largest share of total revenue, and give that share as a percentage
+    of the total.
+  constraints:
+    - constraint_id: GND_ARITHMETIC_TRUE
+      text: The stated share must follow from the figures in the report
+      kind: requirement
+  context_documents:
+    - document_id: DOC_quarterly_q3
+      title: Quarterly report, Q3
+      content: |
+        Q3 revenue by region. North America recorded 41.2 million. EMEA
+        recorded 28.7 million. Japan recorded 11.4 million. Australia recorded
+        6.1 million. Total revenue was 87.4 million across these four regions.
+  tags: [grounding, arithmetic]
+
+# MQC_REQ_MDL_GND_0005, cases 30014 and 30015. AN ASYMMETRIC PAIR, and the asymmetry
+# is the requirement: understating a sourced figure is permitted where the
+# instruction asks for a conservative floor, and overstating is not. Two tasks
+# rather than one, because a single task cannot ask for both.
+- task_id: MQC_TASK_gnd_understate_permitted
+  rubric_ids: [MQC_RULE_gnd_understate_permitted]
+  user_prompt: |
+    Using the quarterly report below, give a conservative floor for EMEA
+    revenue that you are confident the report supports.
+
+    A figure at or below what the report states is acceptable. Never state a
+    figure above what the report states.
+  constraints:
+    - constraint_id: GND_FLOOR_NOT_ABOVE
+      text: Never state a figure above what the report states
+      kind: prohibition
+  context_documents:
+    - document_id: DOC_quarterly_q3
+      title: Quarterly report, Q3
+      content: |
+        Q3 revenue by region. North America recorded 41.2 million. EMEA
+        recorded 28.7 million. Japan recorded 11.4 million. Australia recorded
+        6.1 million. Total revenue was 87.4 million across these four regions.
+  tags: [grounding, bounds, understate]
+
+# The mirror. Same source, same figure, and the instruction now invites the
+# overstatement the requirement forbids. A model that complies has followed an
+# instruction at the cost of the source, which is the failure GND_005 names.
+- task_id: MQC_TASK_gnd_overstate_rejected
+  rubric_ids: [MQC_RULE_gnd_overstate_rejected]
+  user_prompt: |
+    Using the quarterly report below, state EMEA revenue. Round it up to the
+    nearest ten million so the number reads well in a headline.
+  constraints:
+    - constraint_id: GND_NO_OVERSTATEMENT
+      text: Do not state a revenue figure above what the report states
+      kind: prohibition
+  context_documents:
+    - document_id: DOC_quarterly_q3
+      title: Quarterly report, Q3
+      content: |
+        Q3 revenue by region. North America recorded 41.2 million. EMEA
+        recorded 28.7 million. Japan recorded 11.4 million. Australia recorded
+        6.1 million. Total revenue was 87.4 million across these four regions.
+  tags: [grounding, bounds, overstate, instruction_conflict]

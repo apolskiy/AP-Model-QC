@@ -1,0 +1,214 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# The blocking gate for the case repository.
+#
+# Specified by docs/design/consumer_ci.md.
+#
+# WHAT MAKES THIS DIFFERENT FROM THE HARNESS GATE: the harness IS the code it
+# tests, so its gate installs itself. This repository's instrument is a
+# dependency, and pip resolves a branch pin to whatever the head is at install
+# time with no notion of whether that commit passed anything. A red harness
+# main would silently become the instrument, and every finding produced with it
+# would be attributed to the model under test.
+#
+# The resolve step closes that: the paired harness ref is resolved to a COMMIT,
+# the commit's gate conclusion is what gets asked about, and the same commit is
+# what gets installed.
+name: gate-on-change
+
+on:
+  push:
+    branches:
+      - main
+      - "stabilization-*"
+      - "expand-*"
+      - "extend-*"
+      - "debug-*"
+  # EVERY BASE A BRANCH MAY TARGET. main is reachable only from a stabilization
+  # branch, and the gate reports the route rather than relying on the trigger
+  # list to express it: a trigger that does not fire reports nothing, and a
+  # rule enforced by silence is a rule nobody can see failing.
+  pull_request:
+    branches: [main, "stabilization-*"]
+  workflow_dispatch:
+
+concurrency:
+  group: gate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  # Reading another repository's run conclusions. The harness is public, so this
+  # is the default token's own scope rather than a cross-repository grant.
+  actions: read
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  # GATE 0. It precedes static analysis because it decides what static analysis
+  # would even be run against. Nothing below installs the harness by branch
+  # name: every job takes the SHA this job resolved.
+  resolve:
+    name: resolve the paired harness
+    runs-on: ubuntu-latest
+    outputs:
+      harness_repository: ${{ steps.pin.outputs.harness_repository }}
+      harness_ref: ${{ steps.pin.outputs.harness_ref }}
+      harness_sha: ${{ steps.pin.outputs.harness_sha }}
+      green: ${{ steps.pin.outputs.green }}
+      gated: ${{ steps.pin.outputs.gated }}
+      reason: ${{ steps.pin.outputs.reason }}
+      matched_entry: ${{ steps.pin.outputs.matched_entry }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # PyYAML alone, and the harness deliberately NOT installed. The check runs
+      # before the harness exists here, and a check fetched from the harness
+      # would be asking an unverified ref to vouch for itself.
+      - name: Install the resolver's only dependency
+        run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
+
+      - name: Resolve the pairing and assess it
+        id: pin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m tools.harness_pin \
+            --case-branch "${{ github.head_ref || github.ref_name }}" \
+            --base-branch "${{ github.base_ref }}"
+
+      - name: Say what this run is running against
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Harness pairing"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Case branch | ${{ github.head_ref || github.ref_name }} |"
+            echo "| Matched entry | ${{ steps.pin.outputs.matched_entry }} |"
+            echo "| Harness ref | ${{ steps.pin.outputs.harness_ref }} |"
+            echo "| Harness commit | ${{ steps.pin.outputs.harness_sha }} |"
+            echo "| Gate green | ${{ steps.pin.outputs.green }} |"
+            echo ""
+            echo "${{ steps.pin.outputs.reason }}"
+            if [ "${{ steps.pin.outputs.green }}" != "true" ]; then
+              echo ""
+              echo "### This run is UNGATED and yields no verdict"
+              echo ""
+              echo "The instrument was never established, so what it measures"
+              echo "cannot be counted. This is the same object a manual"
+              echo "selection produces, and it is a QC_HARNESS_* event rather"
+              echo "than a finding about any model."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Gate 1. Identical configuration to the harness, deliberately: one project
+  # across two repositories, and a naming rule enforced on one side only is a
+  # rule that holds until somebody moves a file.
+  lint:
+    name: lint (${{ matrix.os }})
+    needs: resolve
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # BY COMMIT, NEVER BY BRANCH. The branch may have moved since resolve ran,
+      # and installing the branch would install something no gate has seen.
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable ".[dev]"
+
+      - name: Gate 1, static analysis and naming
+        run: python -m pylint tests/ tools/ conftest.py --rcfile=.pylintrc
+
+      - name: Lint workflow definitions
+        if: runner.os == 'Linux'
+        uses: raven-actions/actionlint@v2
+
+  # Gates 2 and 3. Deterministic, no credentials, both platforms.
+  preconditions:
+    name: preconditions (${{ matrix.os }})
+    needs: [resolve, lint]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable ".[dev]"
+
+      - name: Gate 2, unit preconditions
+        run: pytest -m unit --junitxml=reports/junit_mqc_unit.xml --alluredir=reports/allure-results
+
+      # GATE 3 IS NOT HERE, AND THAT IS THE BOUNDARY RATHER THAN AN OMISSION.
+      # It ran `pytest -m system`, which collects nothing in this repository:
+      # every case here is either a `UNI` precondition over the shipped corpus or
+      # a graded case in Gate 4. A marker matching zero tests exits 5, so the
+      # step failed the job it was meant to complete, every run.
+      #
+      # WIRING IS THE HARNESS'S SUBJECT, NOT THIS ONE'S. `SYS` covers dispatch,
+      # normalization and pipeline wiring, which this repository does not own,
+      # and `MQC_CMN_SYS_20301` to `20303` over there now run the whole chain to
+      # both a green and a red verdict.
+      #
+      # WHAT THIS REPOSITORY PROVES INSTEAD IS THAT ITS OWN CORPUS COMPOSES, and
+      # that is Gate 4 below: every graded case, both sides replayed, against the
+      # pinned harness resolved above.
+
+      # RUNG 1 OF THE LADDER, and the only rung that fits in a gate.
+      #
+      # BOTH SIDES REPLAYED, so this needs no provider credential and costs
+      # nothing. Before judge fixtures existed a graded gate meant a live judge
+      # call for every case whose assertions passed, which is quota on every
+      # push and a verdict that could differ between two runs of one commit.
+      #
+      # --judge-mode follows --mode when absent, so replay here means replay
+      # both. consumer_ci.md sections 7.1 and 7.3.
+      - name: Gate 4, graded layers, both sides replayed
+        if: always()
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine gemini \
+            --mode replay \
+            --junitxml=reports/junit_mqc_graded.xml \
+            --alluredir=reports/allure-results
+
+      # THE ARTIFACT NAME CARRIES WHETHER THE RUN WAS GATED. A run against an
+      # unverified harness must not be collected as though it were part of the
+      # durable record, and a name the collector does not match is the
+      # structural half of that exclusion.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: >-
+            ${{ needs.resolve.outputs.gated == 'true'
+                && format('mqc-reports-cases-none-replay-{0}', matrix.os)
+                || format('scratch-ungated-cases-{0}-{1}', matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90

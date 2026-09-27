@@ -1,0 +1,204 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Running one case, or a few, without touching CI.
+#
+# Specified by docs/design/consumer_ci.md section 6.
+#
+# SEPARATE WORKFLOW, SEPARATE JOBS. Nothing this run does can contribute to,
+# cancel or colour a gate run on the same commit. That is why it is a workflow
+# rather than an input to gate-on-change.yml.
+#
+# THIS RUN YIELDS NO VERDICT AND REFUSES TO PRETEND OTHERWISE. A hand-typed set
+# of test identifiers is a manual selection, so the three independent exclusions
+# apply: an artifact name the collector does not match, marking that carries
+# run_context ci_debug with gated false, and no status check reported.
+#
+# IT JUDGES A FAILED CASE, AND THE GATE NEVER DOES. A failed assertion says the
+# case did not pass; it does not say whether the case is wrong or the model is
+# wrong, and those prompt entirely different fixes. The rubric is what separates
+# them, which is the whole reason to spend a judge request here.
+name: debug-cases-on-demand
+
+on:
+  workflow_dispatch:
+    inputs:
+      tests:
+        description: "Test identifiers or nodeids, one per line or comma separated"
+        required: true
+        type: string
+      case_ref:
+        description: "Branch of THIS repository. Defaults to the dispatching ref"
+        required: false
+        default: ""
+        type: string
+      harness_ref:
+        description: "Harness ref to pin. Empty resolves it from config/harness_pin.yaml"
+        required: false
+        default: ""
+        type: string
+      engine:
+        description: "Engine to run against"
+        required: false
+        default: gemini
+        type: choice
+        options: [gemini, openai, claude]
+      mode:
+        description: "live or replay. A judged replay run still spends judge quota"
+        required: false
+        default: replay
+        type: choice
+        options: [replay, live]
+
+run-name: "DEBUG (no verdict) ${{ inputs.tests }} on ${{ inputs.case_ref || github.ref_name }}"
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  debug:
+    name: debug
+    runs-on: ubuntu-latest
+    # Named because the judge is a live call whatever the mode, so a judged
+    # replay run needs a credential. Gating derives from selection mode and run
+    # context, neither of which a credential touches, so this stays ungated.
+    environment: live
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.case_ref || github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install the resolver's only dependency
+        run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
+
+      # BOTH REFS ARE INPUTS, because the pairing is what is under suspicion.
+      # The mapping answers "which harness does this branch use", and the common
+      # debugging question is whether a case fails against one harness and
+      # passes against another, which a mapping cannot be used to ask.
+      #
+      # THE GREEN GATE DOES NOT APPLY. Refusing to debug against a harness that
+      # is not green would withhold the tool exactly when it is needed. The run
+      # records what it used and yields no verdict, and those two facts together
+      # are what make that safe.
+      - name: Resolve the harness to pin
+        id: pin
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "${{ inputs.harness_ref }}" ]; then
+            echo "harness_repository=apolskiy/AP-Harness-QC" >> "$GITHUB_OUTPUT"
+            echo "harness_sha=${{ inputs.harness_ref }}" >> "$GITHUB_OUTPUT"
+            echo "source=input" >> "$GITHUB_OUTPUT"
+          else
+            python -m tools.harness_pin \
+              --case-branch "${{ inputs.case_ref || github.ref_name }}" || true
+            echo "source=mapping" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install the harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc @ git+https://github.com/${{ steps.pin.outputs.harness_repository }}@${{ steps.pin.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable ".[dev]"
+
+      # A MISTYPED IDENTIFIER SELECTS NOTHING and pytest exits cleanly having
+      # run zero tests, which reads exactly like a run where everything passed.
+      - name: Resolve and validate the requested tests
+        id: resolve
+        shell: bash
+        env:
+          REQUESTED: ${{ inputs.tests }}
+        run: |
+          python - <<'PYTHON' >> "$GITHUB_OUTPUT"
+          import os
+          import re
+          import subprocess
+          import sys
+
+          requested = [
+              entry.strip()
+              for entry in re.split(r"[,\n]", os.environ["REQUESTED"])
+              if entry.strip()
+          ]
+          if not requested:
+              print("::error::no test identifiers were supplied")
+              sys.exit(1)
+
+          collected = subprocess.run(
+              [sys.executable, "-m", "pytest", "--collect-only", "-q"],
+              capture_output=True, text=True, check=False, shell=False,
+          ).stdout
+
+          unmatched = [name for name in requested if name not in collected]
+          if unmatched:
+              print("::error::these identifiers matched no collected test: "
+                    + ", ".join(unmatched))
+              sys.exit(1)
+
+          print("expression=" + " or ".join(requested))
+          print(f"count={len(requested)}")
+          PYTHON
+
+      - name: Run the selected cases, judging failures
+        id: run
+        continue-on-error: true
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          pytest -k "${{ steps.resolve.outputs.expression }}" \
+            --engine "${{ inputs.engine }}" \
+            --mode "${{ inputs.mode }}" \
+            --judge-on-failure \
+            --out-dir debug-artifacts/ \
+            --junitxml=debug-artifacts/junit-debug.xml
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          # Does not begin with the collector prefix, so exclusion from the
+          # durable record does not depend on a negative match.
+          name: scratch-debug-cases-${{ github.run_id }}
+          path: debug-artifacts/
+          retention-days: 14
+
+      - name: Write the debug summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "# Case debug run"
+            echo ""
+            echo "**This run carries no verdict and gates nothing.**"
+            echo "A hand-typed selection yields no verdict, whatever its result."
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Case ref | ${{ inputs.case_ref || github.ref_name }} |"
+            echo "| Harness | ${{ steps.pin.outputs.harness_sha }} (${{ steps.pin.outputs.source }}) |"
+            echo "| Tests requested | ${{ steps.resolve.outputs.count }} |"
+            echo "| Engine, mode | ${{ inputs.engine }}, ${{ inputs.mode }} |"
+            echo "| Judged on failure | yes |"
+            echo ""
+            echo "### Reading the rubric on a failed case"
+            echo ""
+            echo "A failed assertion says the case did not pass. The rubric says"
+            echo "whether the case is wrong or the model is wrong:"
+            echo ""
+            echo "| Rubric shows | Likely fix |"
+            echo "|---|---|"
+            echo "| Good content, failed a shape assertion | The assertion or the case |"
+            echo "| Content that was poor as well | The model |"
+            echo ""
+            echo "**A judged run spends quota even in replay.** The candidate is"
+            echo "replayed from a fixture; the judge has no fixture kind and is a"
+            echo "live call whatever the mode. consumer_ci.md section 6.4."
+          } >> "$GITHUB_STEP_SUMMARY"

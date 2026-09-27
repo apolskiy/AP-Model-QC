@@ -1,0 +1,124 @@
+# DELIBERATELY IDENTICAL TO THE HARNESS .pylintrc, and that is the requirement
+# rather than a convenience. One project spans two repositories: the same
+# authors write cases here and harness code there, and a naming rule enforced
+# on one side and not the other is a rule that holds until somebody moves a
+# file. The MQC_ patterns below are normative in the harness
+# docs/design/test_taxonomy.md section 2.1 and are not restated there twice.
+#
+# The rules pylint cannot express (annotation presence, PEP 563 selection, SPDX
+# headers) are enforced by cmn/code_standards.py, which both repositories call
+# with their own root and licence. See docs/design/consumer_ci.md section 5.
+[MAIN]
+# Gate 1 of the CI pipeline fails the build below a perfect score.
+fail-under=10.0
+
+# B3 confirmed 3.14. Stated rather than inferred: pylint otherwise reads the running
+# interpreter, so a runner on a different version would silently analyse against it.
+py-version=3.14
+
+[FORMAT]
+# Matches the 100-character limit declared in .claude/rules/code-style.md.
+max-line-length=100
+
+[BASIC]
+# The >= 3 character rule from .claude/rules/code-style.md, enforced mechanically
+# rather than left to review. Length is the half a linter can actually check;
+# `for idx in rows` and `except ValueError as err` are the habits these patterns
+# exist to stop, and both are invisible in a diff until someone is debugging.
+#
+# inlinevar-rgx is set deliberately: it governs comprehension and generator
+# targets, which the default configuration permits to be single letters. Without
+# it, `[row for r in rows]` passes a 10.00/10 run while violating the rule.
+variable-rgx=^[a-z_][a-z0-9_]{2,40}$
+argument-rgx=^[a-z_][a-z0-9_]{2,40}$
+# THE ONE EXCEPTION TO THE THREE-CHARACTER RULE, AND ITS LIMIT: `id` is
+# admitted as an ATTRIBUTE name only, because a record mirroring a provider's
+# wire contract does not get to rename that provider's field. It is not
+# admitted for variables, arguments or inline bindings, where the name would
+# be ours to choose and would also shadow the builtin. See code-style.md
+# section 1.
+attr-rgx=^_?[a-z_][a-z0-9_]{2,40}$|^id$
+inlinevar-rgx=^[a-z_][a-z0-9_]{2,40}$
+class-attribute-rgx=^_?[a-z_][a-z0-9_]{2,40}$|^_?[A-Z][A-Z0-9_]{2,40}$|^id$
+
+# Test callables use MQC_<LAYER>_<5DIGIT_ID>_<behavior> and are therefore
+# uppercase by design. pytest.ini already discovers them; pylint must accept the
+# same identifiers or every test module fails Gate 1 on naming alone.
+#
+# Format: MQC_<MODULE>_<LAYER>_<5DIGIT>_<behavior>
+#   MQC    - this repository's project identifier, matched literally
+#   MODULE - ING / EXE / EVL / CMN, three characters
+#   LAYER  - UNI / SYS / EVAL / TOOL, three to five characters
+#
+# The `MQC_` prefix is the mandatory, non-negotiable part and is matched
+# literally. The layer token is `[A-Z]{3,5}` rather than an enumerated list on
+# purpose: the layer registry in .claude/rules/testing-standards.md is extensible,
+# and hardcoding (UNI|SYS|EVAL) here would make adding a layer a lint failure on a
+# correctly named test - the enumeration would silently become the real rule.
+# Layer validity is governed by the registry and by marker registration in
+# pytest.ini; this pattern governs the prefix, the 5-digit ID, and the shape.
+# The leading negative lookaheads close a silent-skip hole. Without `(?!test_)`,
+# a `test_`-prefixed callable matches the ordinary snake_case branch and passes
+# Gate 1 at 10.00/10 - while pytest.ini (python_functions = MQC_*) never collects
+# it. The test would lint clean, report nothing, and never run. Same reasoning for
+# `(?!Test(?!MQC))` on classes and `(?!test_)` on modules: anything named for
+# pytest's defaults rather than this project's prefix is now a lint failure rather
+# than a test that quietly does not exist.
+function-rgx=^(?!test_)(_?[a-z_][a-z0-9_]{2,60}|MQC_[A-Z]{3}_[A-Z]{3,5}_\d{5}_[a-z0-9_]{3,60})$
+method-rgx=^(?!test_)(_?[a-z_][a-z0-9_]{2,60}|MQC_[A-Z]{3}_[A-Z]{3,5}_\d{5}_[a-z0-9_]{3,60})$
+
+# Test classes carry the project prefix too: TestMQC<Component>, matching the
+# python_classes pattern in pytest.ini.
+class-rgx=^(?!Test(?!MQC))(_?[A-Z][a-zA-Z0-9]{2,40}|TestMQC[A-Z][a-zA-Z0-9]{2,40})$
+
+# One pattern, two branches, one rule: a basename says what the file is.
+#
+#   Harness module   <component>.py          tier comes from the directory
+#   Test module      mqc_<layer>_<comp>.py   layer comes from the filename
+#
+# The module is deliberately NOT in either name. tests/ingestion/ already says
+# ING, and test_taxonomy.md section 2 rejects duplicating the path.
+#
+# The layer IS in the test filename because nothing else carries it. A reader
+# seeing mqc_schemas.py cannot tell harness preconditions from model gradings,
+# and those are the two different things this suite does.
+#
+# The layer token is [a-z]{3,5} rather than an enumerated list, for the reason
+# given above for callables: the registry is extensible and hardcoding it here
+# would make adding a layer a lint failure on a correctly named test.
+#
+# (?!mqc_) on the harness branch closes the hole that made the layer optional.
+# Without it, mqc_schemas.py matches the harness branch as ordinary snake_case
+# and lints clean while carrying no layer at all.
+module-rgx=^(?!test_)((?!mqc_)[a-z][a-z0-9_]{2,40}|mqc_[a-z]{3,5}_[a-z][a-z0-9_]{2,40})$
+
+# Only the throwaway binding. Every other short name must be spelled out.
+good-names=_
+
+[DESIGN]
+# R0902 counts attributes to catch a class accreting state. A frozen schema
+# record is the other thing: its width is set by an approved design document
+# rather than by drift.
+#
+# THE RULE FOR THIS NUMBER: it tracks the widest record any design specifies,
+# and raising it requires naming the design section that made it necessary.
+# That keeps each raise a documented decision rather than a slide, and keeps
+# the limit doing its real job of catching a behavioural class that grows.
+#
+# Current widest: Observation, 21 result-scoped fields, test_taxonomy.md
+# section 9.1. Previously NormalizedResponse at 11, tier2_execution.md section
+# 4.1, and TaskDataSet at 9, tier1_ingestion.md section 3.1.
+#
+# If a design ever specifies a record much wider than this, the right response
+# is to question the record rather than the number. The test applied to this
+# one: section 9.1 names 28 fields, and the 7 run-scoped ones live on
+# RunContext because they describe the run rather than the result. That split
+# is the abstraction the number would otherwise have hidden, and what is left
+# is 21 fields that genuinely describe one measured execution.
+max-attributes=21
+
+[MESSAGES CONTROL]
+# Schema records are data, not behaviour. A @dataclass that exists to be
+# validated and serialized has no methods by design, and R0903 has nothing
+# useful to say about it.
+disable=too-few-public-methods

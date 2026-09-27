@@ -1,0 +1,284 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# The attribution ladder, one rung at a time.
+#
+# Specified by docs/design/consumer_ci.md section 7.
+#
+# A GRADED RUN HAS TWO MOVING PARTS, the candidate and the judge, and a single
+# job that moves both can only report that something changed. Each job here
+# holds everything fixed except one thing, which is the same principle the
+# repository split was built on.
+#
+#   1  fixture candidate, fixture judge  ->  OUR CODE changed a frozen outcome
+#   2  fixture candidate, live judge     ->  THE JUDGE moved
+#   3  live candidate,    live judge     ->  THE MODEL moved
+#
+# THEY RUN IN SEQUENCE AND A RED RUNG STOPS THE LADDER. Running the judge live
+# after our own code changed a frozen outcome spends quota to rediscover
+# something already established, which is the reasoning framework-rules.md
+# section 1 uses for preconditions gating the graded layers, one level up.
+name: evaluate-live-weekly
+
+on:
+  # NO SCHEDULE UNTIL MAIN IS STABLE, decided 2026-09-26. A cron firing against
+  # an unstabilized main produces a weekly red nobody acts on, and it spends
+  # provider quota on a branch still moving. Weekly regression is set up once
+  # main is stable, and this stanza returns then.
+  workflow_dispatch:
+
+# NOT cancel-in-progress. A cancelled live run yields partial artifacts, which
+# A6 forbids presenting as complete.
+concurrency:
+  group: evaluate-live
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  # RUNG 0, AND IT IS NOT A RUNG. It measures nothing; it decides whether the
+  # ladder has an instrument worth spending on.
+  #
+  # ONE RESOLVE FOR ALL THREE RUNGS. Resolving per rung would let the harness
+  # move between rung 1 and rung 3, putting a verified rung and an unverified
+  # one in the same ladder and silently breaking the attribution the ladder is
+  # built on. consumer_ci.md section 7.6.
+  #
+  # A RED PAIRING STOPS THE LADDER HERE. An ungated gate run still yields an
+  # artifact marked ungated, because a free run producing a marked result costs
+  # nothing. An ungated live run has nothing to offer for the quota.
+  resolve:
+    name: resolve the paired harness
+    runs-on: ubuntu-latest
+    outputs:
+      harness_repository: ${{ steps.pin.outputs.harness_repository }}
+      harness_sha: ${{ steps.pin.outputs.harness_sha }}
+      green: ${{ steps.pin.outputs.green }}
+      reason: ${{ steps.pin.outputs.reason }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # PyYAML alone, and the harness deliberately NOT installed: a check
+      # fetched from the harness would be asking an unverified ref to vouch
+      # for itself.
+      - name: Install the resolver's only dependency
+        run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
+
+      - name: Resolve the pairing and assess it
+        id: pin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m tools.harness_pin --case-branch "${{ github.ref_name }}"
+
+      - name: Say what the ladder is about to measure with
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Harness pairing"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Harness commit | ${{ steps.pin.outputs.harness_sha }} |"
+            echo "| Gate green | ${{ steps.pin.outputs.green }} |"
+            echo ""
+            echo "${{ steps.pin.outputs.reason }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+  # RUNG 1. Identical to the gate's job 1, and deliberately repeated here: it
+  # is free, so running it twice costs nothing and removes any need to reason
+  # about a result carried between workflows. Here it is the precondition that
+  # decides whether spending quota is worth it at all.
+  #
+  # NO ENVIRONMENT AND NO PROVIDER SECRET, because both sides are replayed.
+  deterministic:
+    name: 1 - our code (replay, replay)
+    needs: resolve
+    # A RED PAIRING MEANS NO LADDER. Rung 1 is free, but running it
+    # against an unverified instrument produces a green nobody can
+    # rely on, and rungs 2 and 3 would then spend on that basis.
+    if: needs.resolve.outputs.green == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      # BY COMMIT, NEVER BY BRANCH. The branch may have moved since resolve
+      # ran, and installing the branch would spend quota measuring a model
+      # with an instrument no gate has seen.
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable ".[dev]"
+
+      - name: Graded layers, both sides replayed
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine gemini \
+            --mode replay \
+            --junitxml=reports/junit_replay_replay.xml \
+            --alluredir=reports/allure-results
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mqc-reports-cases-gemini-replay-replay
+          path: reports/
+          retention-days: 90
+
+  # RUNG 2. THE JUDGE IS THE ONLY THING THAT MOVED. Same stored responses,
+  # scored by whatever the judge is today.
+  #
+  # CALIBRATION RUNS HERE TOO, and it is the half that matters. Re-judging says
+  # a verdict moved; it cannot say WHICH judge is right, because neither of two
+  # verdicts is known-correct. An exemplar is known-correct by construction, so
+  # calibration says whether the judge still means what the anchors say.
+  judge:
+    name: 2 - the judge (replay, live)
+    needs: [resolve, deterministic]
+    runs-on: ubuntu-latest
+    environment: live
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      # BY COMMIT, NEVER BY BRANCH. The branch may have moved since resolve
+      # ran, and installing the branch would spend quota measuring a model
+      # with an instrument no gate has seen.
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable ".[dev]"
+
+      - name: Calibration, against the anchors the exemplars were written for
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine gemini \
+            --mode replay \
+            --judge-mode live \
+            -k calibration \
+            --junitxml=reports/junit_calibration.xml \
+            --alluredir=reports/allure-results
+
+      - name: Graded layers, stored responses judged live
+        if: always()
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine gemini \
+            --mode replay \
+            --judge-mode live \
+            --junitxml=reports/junit_replay_live.xml \
+            --alluredir=reports/allure-results
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mqc-reports-cases-gemini-replay-live
+          path: reports/
+          retention-days: 90
+
+      # A RED RUNG 2 REFRESHES NOTHING. Drift that changes no outcome may have
+      # its judgements refreshed; drift that changes one may not. The stored
+      # judgements stay authoritative, rung 1 keeps working, and the new judge
+      # is quarantined until the rubrics are recalibrated. Auto-refreshing here
+      # would silently rewrite what a pass means.
+      - name: Say what a failure here does and does not mean
+        if: failure()
+        shell: bash
+        run: |
+          {
+            echo "## Rung 2 red: the judge moved"
+            echo ""
+            echo "The candidate responses are the stored ones, so this is NOT a"
+            echo "finding about the model. It is a QC_HARNESS_* event."
+            echo ""
+            echo "**Nothing is refreshed automatically.** Stored judgements stay"
+            echo "authoritative and rung 1 keeps working. Recalibrate the rubrics"
+            echo "before accepting the new judge."
+            echo ""
+            echo "**Direction matters.** A harsher judge manufactures model"
+            echo "regressions and a softer one hides real ones."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # RUNG 3. Both sides live. THE ONLY RUNG THAT REPORTS A FINDING ABOUT THE
+  # MODEL, and per A2 a model regression never blocks a merge: it is reported
+  # as an alert and gates nothing.
+  model:
+    name: 3 - the model (live, live)
+    needs: [resolve, judge]
+    runs-on: ubuntu-latest
+    environment: live
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      # BY COMMIT, NEVER BY BRANCH. The branch may have moved since resolve
+      # ran, and installing the branch would spend quota measuring a model
+      # with an instrument no gate has seen.
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable ".[dev]"
+
+      - name: Graded layers, live throughout
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine gemini \
+            --mode live \
+            --junitxml=reports/junit_live_live.xml \
+            --alluredir=reports/allure-results
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mqc-reports-cases-gemini-live-live
+          path: reports/
+          retention-days: 90
+
+  report:
+    name: report
+    needs: [resolve, deterministic, judge, model]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summarise which rung stopped
+        shell: bash
+        run: |
+          {
+            echo "## The attribution ladder"
+            echo ""
+            echo "| Rung | Holds fixed | Result |"
+            echo "|---|---|---|"
+            echo "| 1 our code | both replayed | ${{ needs.deterministic.result }} |"
+            echo "| 2 the judge | candidate replayed | ${{ needs.judge.result }} |"
+            echo "| 3 the model | nothing | ${{ needs.model.result }} |"
+            echo ""
+            echo "**The first red rung is the attribution.** A rung that did not"
+            echo "run was skipped because an earlier one failed, which is the"
+            echo "point: spending quota after a known break rediscovers it."
+            echo ""
+            echo "Only rung 3 reports a finding about the model, and per A2 a"
+            echo "model regression never blocks a merge."
+          } >> "$GITHUB_STEP_SUMMARY"

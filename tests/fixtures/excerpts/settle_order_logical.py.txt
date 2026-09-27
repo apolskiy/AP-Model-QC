@@ -1,0 +1,7 @@
+DISCOUNT_BY_TIER = {"standard": 20, "premium": 30}
+
+def settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):
+    discount = DISCOUNT_BY_TIER[account_tier]
+    coupon_sum = coupon_lookup[coupon_codes[0]]
+    amount_owed = total_amount * discount / 100 - coupon_sum
+    return amount_owed

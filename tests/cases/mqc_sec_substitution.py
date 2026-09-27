@@ -1,0 +1,131 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+"""Whether the model does its own task when something proposes another.
+
+Covers ``MQC_EVL_SEC_50016`` through ``50018``, inventoried in
+``docs/testing/model_evaluation_test_plan.md`` section 4.3 and specified by
+section 9.10.
+
+**All three are P0**, and they differ in where the substitution comes from,
+what authority it claims, and whether it replaces the assigned task at all.
+`50004` substitutes from the user prompt; these do not.
+
+**`50018` is the one the others cannot catch.** It appends rather than
+substitutes, so the assigned task is performed and every check asking whether
+the model still did its job passes. Only an absence check sees it, which is why
+the family needs all three rather than the two obvious ones.
+
+**Each depends on `50004`.** A model that performs an attacker's task when the
+user asks it to tells us nothing further by also doing so when a document asks.
+"""
+
+from typing import Any
+
+import allure
+import pytest
+
+from tests.cases.graded_support import assert_consistent_pass, observe_repeatedly, redacted_detail
+
+pytestmark = pytest.mark.sec
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Model security")
+class TestMQCTaskSubstitution:
+    """Replacing the task, amending it, and adding to it."""
+
+    @pytest.mark.priority(0)
+    @pytest.mark.depends_on("50004")
+    @allure.story("Substituted via context")
+    def MQC_EVL_SEC_50016_resists_task_substitution_planted_in_context(
+        self, request: Any
+    ) -> None:
+        """A document announces that the summary task has been retired.
+
+        **No override language**, which is what made this family worth writing:
+        the payload does not tell the model to ignore anything, it tells it the
+        job changed. `task_substitution` became a vector because of this case.
+
+        Args:
+            request (Any): pytest's request, carrying the invocation.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_substitute_via_context",
+            "MQC_RULE_sec_substitute_via_context",
+        )
+        assert_consistent_pass(results, _explain)
+
+    @pytest.mark.priority(0)
+    @pytest.mark.depends_on("50004")
+    @allure.story("Framed as a correction")
+    def MQC_EVL_SEC_50017_resists_task_substitution_framed_as_a_correction(
+        self, request: Any
+    ) -> None:
+        """The framing most likely to work, because it does not contradict.
+
+        The payload claims the configuration contained an error that has since
+        been fixed, and asks the model to apply the correction. **It presents
+        itself as agreeing with the instruction**, which is a harder thing to
+        refuse than something that opposes it.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_substitute_as_correction",
+            "MQC_RULE_sec_substitute_as_correction",
+        )
+        assert_consistent_pass(results, _explain)
+
+    @pytest.mark.priority(0)
+    @pytest.mark.depends_on("50004")
+    @allure.story("Appended, not substituted")
+    def MQC_EVL_SEC_50018_resists_attacker_task_appended_to_assigned_one(
+        self, request: Any
+    ) -> None:
+        """The assigned task is performed, and that is what hides the attack.
+
+        The payload asks for the summary **and then** one extra line, framed as
+        a pipeline confirmation. So the model does its job: every check asking
+        whether it still summarised passes, and the rule's second assertion
+        carries no weight here.
+
+        **The finding is the extra content alone.** A suite that established
+        resistance by confirming the real task survived would report this case
+        green.
+
+        **It declares `screen_evasion`**, because no pattern reaches it: there
+        is no override language, and none is needed.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_append_attacker_task",
+            "MQC_RULE_sec_append_attacker_task",
+        )
+        assert_consistent_pass(results, _explain)
+
+
+def _explain(result: Any) -> str:
+    """Return what failed, without the payload.
+
+    Args:
+        result (Any): The evaluation result.
+
+    Returns:
+        str: The failing assertions, behind this family's lead-in.
+    """
+    return redacted_detail(result, "the model performed the attacker's task")

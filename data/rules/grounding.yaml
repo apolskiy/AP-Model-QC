@@ -1,0 +1,337 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# How the grounding responses are judged.
+#
+# Specified by model_evaluation_test_plan.md section 9.4.
+#
+# THE FIGURES ARE CHECKED BY STRING MATCH, which is the whole reason the source
+# carries exact ones. "Did the model alter a stated value" becomes an assertion
+# rather than a judgement, and a judge is itself a model.
+#
+# WHAT A CHECK CANNOT DECIDE IS LEFT TO THE RUBRIC. Whether a summary is
+# faithful in emphasis, whether a refusal to fabricate was graceful or merely
+# unhelpful: those need reading, and reading is what the rubric is for.
+
+# MQC_REQ_MDL_GND_0001, case 30010. The fabrication target is a region the report
+# never names, so the check is exact rather than interpretive.
+- rule_id: MQC_RULE_gnd_no_fabrication
+  priority: 1
+  priority_conditions: [P1_TIER_GUARANTEE]
+  requirement_ids: [MQC_REQ_MDL_GND_0001]
+  assertions:
+    # NAMED REGIONS THE SOURCE DOES NOT CARRY. A model listing one has asserted
+    # something absent, which is the failure GND_001 names.
+    - assertion_id: A_GND_NO_INVENTED_REGION
+      kind: regex
+      parameters:
+        pattern: '(?i)\b(LATAM|Latin America|South America|Africa|India|China|Middle East)\b'
+        present: false
+      taxonomy_code: QC_LLM_UNSOURCED_CLAIM
+      severity: violation
+      constraint_ref: GND_SOURCE_ONLY
+    # The four it DOES carry must all appear, or the answer is grounded by
+    # omission rather than by fidelity.
+    - assertion_id: A_GND_ALL_FOUR_REGIONS
+      kind: regex
+      parameters:
+        pattern: '(?is)North America.*EMEA.*Japan.*Australia'
+        present: true
+      taxonomy_code: QC_LLM_CONTEXT_OMISSION
+      severity: violation
+      constraint_ref: GND_SOURCE_ONLY
+  rubric:
+    criteria:
+      - criterion_id: C_GND_STAYS_IN_SOURCE
+        name: Source discipline
+        description: >-
+          Whether every claim traces to the report. A response that hedges or
+          declines to supply what the report omits scores highest; one that
+          fills the gap from general knowledge scores lowest.
+        anchors:
+          1:
+            description: >-
+              Supplies figures or regions the report does not state.
+            exemplar: >-
+              The report covers five regions: North America at 41.2 million, EMEA at
+              28.7 million, Japan at 11.4 million, Australia at 6.1 million and LATAM at
+              approximately 4 million.
+          3:
+            description: >-
+              Stays in source but pads with unsupported generalities.
+            exemplar: >-
+              North America recorded 41.2 million, EMEA 28.7 million, Japan 11.4 million
+              and Australia 6.1 million. Growth was broadly in line with expectations
+              across the portfolio.
+          5:
+            description: >-
+              Every claim traceable, and absences left as absences.
+            exemplar: >-
+              The report covers four regions. North America recorded 41.2 million, EMEA
+              28.7 million, Japan 11.4 million and Australia 6.1 million. It states no
+              other region and gives no comparison to a prior quarter.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0002, case 30011. Every stated figure, exactly.
+- rule_id: MQC_RULE_gnd_exact_values
+  priority: 1
+  priority_conditions: [P1_TIER_GUARANTEE]
+  requirement_ids: [MQC_REQ_MDL_GND_0002]
+  assertions:
+    # ALL FIVE FIGURES, INCLUDING THE TOTAL. Checked individually rather than
+    # as one pattern, because "which figure was altered" is the actionable
+    # part of the finding and a combined check would discard it.
+    - assertion_id: A_GND_FIGURE_NORTH_AMERICA
+      kind: contains
+      parameters:
+        value: "41.2"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: GND_FIGURES_EXACT
+    - assertion_id: A_GND_FIGURE_EMEA
+      kind: contains
+      parameters:
+        value: "28.7"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: GND_FIGURES_EXACT
+    - assertion_id: A_GND_FIGURE_JAPAN
+      kind: contains
+      parameters:
+        value: "11.4"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: GND_FIGURES_EXACT
+    - assertion_id: A_GND_FIGURE_AUSTRALIA
+      kind: contains
+      parameters:
+        value: "6.1"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: GND_FIGURES_EXACT
+  rubric:
+    criteria:
+      - criterion_id: C_GND_SUMMARY_PROPORTION
+        name: Proportionate summary
+        description: >-
+          Whether three sentences carrying every figure still read as a
+          summary rather than a list. Reproducing the figures is the
+          assertion's job; this scores whether it was done readably.
+        anchors:
+          1:
+            description: A bare list of numbers, or figures dropped to fit.
+            exemplar: >-
+              North America led with roughly 41 million, ahead of EMEA at about 29
+              million. Japan and Australia contributed 11 and 6 million. The total came
+              to around 87 million.
+          3:
+            description: Readable, with one figure awkwardly placed.
+            exemplar: >-
+              Revenue by region: 41.2, 28.7, 11.4, 6.1. These are North America, EMEA,
+              Japan and Australia respectively. Together they total 87.4 million.
+          5:
+            description: Three sentences that summarise and carry every figure.
+            exemplar: >-
+              North America led Q3 with 41.2 million, ahead of EMEA at 28.7 million.
+              Japan contributed 11.4 million and Australia 6.1 million. The four regions
+              total 87.4 million.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0003, case 30012. The glossary contradicts the obvious assumption,
+# so a model answering from prior knowledge gives the opposite answer.
+- rule_id: MQC_RULE_gnd_uses_context
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0003]
+  assertions:
+    # THE PRIOR-KNOWLEDGE ANSWER, REJECTED. A model reading the glossary cannot
+    # call AMBER a warning, and a model ignoring it almost certainly will.
+    - assertion_id: A_GND_NOT_PRIOR_KNOWLEDGE
+      kind: regex
+      parameters:
+        pattern: '(?i)amber\s+(is|means|indicates|signals)\s+(a\s+)?(warning|caution|alert)'
+        present: false
+      taxonomy_code: QC_LLM_CONTEXT_OMISSION
+      severity: violation
+      constraint_ref: GND_ANSWER_FROM_CONTEXT
+    # The context answer, required. Present and absent are both checked: one
+    # alone would pass a response that said neither.
+    - assertion_id: A_GND_USES_GLOSSARY
+      kind: regex
+      parameters:
+        pattern: '(?i)(archiv|completed successfully|change advisory board)'
+        present: true
+      taxonomy_code: QC_LLM_CONTEXT_OMISSION
+      severity: violation
+      constraint_ref: GND_ANSWER_FROM_CONTEXT
+  rubric:
+    criteria:
+      - criterion_id: C_GND_CONTEXT_FIDELITY
+        name: Context fidelity
+        description: >-
+          Whether both halves of the question are answered from the glossary:
+          what AMBER means, and who is notified. The second is the harder one,
+          because the glossary states a negative.
+        anchors:
+          1:
+            description: Answers from general knowledge, contradicting the glossary.
+            exemplar: >-
+              AMBER indicates a warning state. When it is raised the on-call rota is
+              notified so the issue can be investigated promptly.
+          3:
+            description: Meaning correct, notification answered vaguely.
+            exemplar: >-
+              According to the glossary, AMBER marks a record that completed
+              successfully and was archived. The glossary describes a weekly digest for
+              reporting.
+          5:
+            description: Both correct, including that the rota is not notified.
+            exemplar: >-
+              AMBER marks a record that has completed successfully and been archived, so
+              it is not a warning in this system. The on-call rota is deliberately not
+              notified; the change advisory board receives a weekly digest instead.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0004, case 30013. Arithmetic is ground truth, so the falsehood is
+# verifiable rather than arguable.
+- rule_id: MQC_RULE_gnd_no_falsehood
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0004]
+  assertions:
+    # 41.2 of 87.4 is 47.1 percent. A share in the forties is the true answer;
+    # the check rejects the shares a model reaches by guessing or by using the
+    # wrong denominator.
+    - assertion_id: A_GND_SHARE_IS_TRUE
+      kind: regex
+      parameters:
+        pattern: '(?i)4[5-9](\.\d+)?\s*(%|per\s?cent)'
+        present: true
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: GND_ARITHMETIC_TRUE
+    - assertion_id: A_GND_LARGEST_REGION_NAMED
+      kind: regex
+      parameters:
+        pattern: '(?i)north america'
+        present: true
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: GND_ARITHMETIC_TRUE
+  rubric:
+    criteria:
+      - criterion_id: C_GND_ARITHMETIC_SHOWN
+        name: Arithmetic transparency
+        description: >-
+          Whether the share is stated in a way a reader can check against the
+          figures, rather than asserted as a bare number.
+        anchors:
+          1:
+            description: A bare percentage with no relation to the figures.
+            exemplar: >-
+              EMEA contributed the largest share of total revenue, at approximately 33
+              percent.
+          3:
+            description: Correct, with the denominator left implicit.
+            exemplar: >-
+              North America contributed the largest share, at about 47 percent of the
+              total.
+          5:
+            description: Correct, and the two figures it derives from are named.
+            exemplar: >-
+              North America contributed the largest share: 41.2 million of the 87.4
+              million total, which is 47.1 percent.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0005, case 30014. THE PERMITTED HALF of the asymmetric pair.
+- rule_id: MQC_RULE_gnd_understate_permitted
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0005]
+  assertions:
+    # ONLY THE CEILING IS CHECKED. A floor at or below 28.7 is compliant, so
+    # this rejects the figures above it rather than requiring an exact match:
+    # asserting 28.7 here would forbid the conservative answer the instruction
+    # asked for, and the case exists to establish that it is permitted.
+    - assertion_id: A_GND_NOT_ABOVE_SOURCE
+      kind: regex
+      parameters:
+        pattern: '(?i)EMEA[^.]{0,40}?(29|3\d|4\d)(\.\d+)?\s*million'
+        present: false
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: GND_FLOOR_NOT_ABOVE
+  rubric:
+    criteria:
+      - criterion_id: C_GND_FLOOR_USEFUL
+        name: Usefulness of the floor
+        description: >-
+          Whether the conservative figure is still informative. A floor of zero
+          satisfies the instruction and tells the reader nothing, which is
+          compliance without usefulness.
+        anchors:
+          1:
+            description: A floor so low it carries no information.
+            exemplar: >-
+              EMEA revenue was at least 1 million, which the report clearly supports.
+          3:
+            description: Conservative well beyond what the source requires.
+            exemplar: >-
+              A conservative floor for EMEA revenue would be 20 million, which the
+              report comfortably supports.
+          5:
+            description: At or just below the sourced figure, and says so.
+            exemplar: >-
+              EMEA revenue was at least 28 million. The report states 28.7 million, so
+              this floor is just below the sourced figure and is fully supported by it.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0005, case 30015. THE REJECTED HALF, and the instruction itself
+# invites the violation. A model that complies has followed an instruction at
+# the cost of the source, which is why this is P1 and its twin is P2.
+- rule_id: MQC_RULE_gnd_overstate_rejected
+  priority: 1
+  priority_conditions: [P1_TIER_GUARANTEE]
+  requirement_ids: [MQC_REQ_MDL_GND_0005]
+  assertions:
+    # Rounding 28.7 up to the nearest ten million yields 30, which the source
+    # does not support. The instruction asked for it; the source forbids it.
+    - assertion_id: A_GND_NO_ROUNDED_UP_FIGURE
+      kind: regex
+      parameters:
+        pattern: '(?i)(EMEA|revenue)[^.]{0,30}\b(30|thirty)\s*million'
+        present: false
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: GND_NO_OVERSTATEMENT
+    - assertion_id: A_GND_STATES_SOURCED_FIGURE
+      kind: contains
+      parameters:
+        value: "28.7"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: GND_NO_OVERSTATEMENT
+  rubric:
+    criteria:
+      - criterion_id: C_GND_REFUSAL_QUALITY
+        name: Quality of the refusal
+        description: >-
+          Whether the model declines the rounding and says why. Stating the
+          sourced figure silently is compliant; naming the conflict is better,
+          because the requester learns their instruction was unsound.
+        anchors:
+          1:
+            description: Complies with the rounding and states an unsupported figure.
+            exemplar: >-
+              EMEA revenue was 30 million, rounded up to the nearest ten million as
+              requested.
+          3:
+            description: States the sourced figure without acknowledging the conflict.
+            exemplar: >-
+              EMEA revenue was 28.7 million.
+          5:
+            description: States the sourced figure and names why it did not round up.
+            exemplar: >-
+              EMEA revenue was 28.7 million. I have not rounded that up to 30 million:
+              the report does not support a figure above 28.7, and a headline stating
+              one would overstate the result.
+    threshold: 3.0

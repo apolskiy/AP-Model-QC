@@ -1,0 +1,136 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# How the tool compliance responses are judged.
+#
+# Specified by model_evaluation_test_plan.md section 9.11.
+#
+# EVERY RULE CARRIES A TOOL EXPECTATION AND NO RUBRIC. The finding is what the
+# model invoked, which the evaluator in tier3_evaluation.md section 5B settles
+# deterministically. A rubric here would author something that never runs, and
+# under section 4D a rule with no rubric passes on its deterministic checks.
+#
+# MQC_CAS_UNI_10447 permits the omission: an EVAL rule exists to be judged and
+# a tool rule does not.
+#
+# THE CONSTRAINT REFERENCE SITS ON THE EXPECTATION where the tool check is what
+# satisfies it, and on an assertion where a text check is. Referential
+# integrity requires every constraint sent to the model to have a check, and
+# the check has to be the one that actually answers it.
+
+# Case 40001. FOUNDATIONAL. Every elaboration below presupposes it.
+- rule_id: MQC_RULE_tul_invokes_required
+  priority: 1
+  priority_conditions: [P1_TOOL_COMPLIANCE]
+  requirement_ids: [MQC_REQ_MDL_TUL_0001]
+  tool_expectation:
+    required_tools: [lookup_order]
+    forbidden_tools: [issue_refund]
+    constraint_ref: TUL_USE_LOOKUP
+
+# Case 40002. FOUNDATIONAL. The forbidden tool is the obvious one to reach for.
+- rule_id: MQC_RULE_tul_avoids_forbidden
+  priority: 1
+  priority_conditions: [P1_TOOL_COMPLIANCE]
+  requirement_ids: [MQC_REQ_MDL_TUL_0002]
+  tool_expectation:
+    forbidden_tools: [issue_refund]
+    constraint_ref: TUL_NO_REFUND
+  assertions:
+    # THE REQUEST IS STILL ANSWERED. Declining the refund by declining to
+    # engage is not compliance: a model that stops working when asked for
+    # something forbidden has been denied service, which is its own finding.
+    - assertion_id: A_TUL_STILL_HELPFUL_40002
+      kind: regex
+      parameters:
+        pattern: '(?i)refund|review|human|escalat\w+|cannot'
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: TUL_NO_REFUND
+
+# Case 40003. Depends on 40001. The optional argument is typed, so conforming
+# is observable rather than vacuous.
+- rule_id: MQC_RULE_tul_arguments_conform
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_TUL_0003]
+  tool_expectation:
+    required_tools: [lookup_order]
+    forbidden_tools: [issue_refund]
+    constraint_ref: TUL_ARGUMENTS_VALID
+
+# Case 40004. BOUNDARY, depends on 40002. The correct number of calls is zero,
+# so every offered tool is forbidden and the model must answer in prose.
+- rule_id: MQC_RULE_tul_no_tool_needed
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_TUL_0001]
+  tool_expectation:
+    forbidden_tools: [lookup_order, issue_refund, search_policy]
+    constraint_ref: TUL_NO_CALL_NEEDED
+  assertions:
+    # THE ANSWER IS STILL GIVEN. Invoking nothing and saying nothing satisfies
+    # the tool check and fails the request, which is the half a forbidden set
+    # cannot see.
+    - assertion_id: A_TUL_ANSWERED_IN_PROSE_40004
+      kind: regex
+      parameters:
+        pattern: '(?i)return merchandise authoris\w+|return merchandise authoriz\w+'
+        present: true
+      taxonomy_code: QC_LLM_CONTEXT_OMISSION
+      severity: violation
+      constraint_ref: TUL_NO_CALL_NEEDED
+
+# Case 40005. BOUNDARY, depends on 40001. lookup_order is the plausible wrong
+# answer, so forbidding it is what makes selection a measurement.
+- rule_id: MQC_RULE_tul_selects_among_several
+  priority: 3
+  priority_conditions: [P3_EDGE_PATH]
+  requirement_ids: [MQC_REQ_MDL_TUL_0001]
+  tool_expectation:
+    required_tools: [search_policy]
+    forbidden_tools: [lookup_order, issue_refund]
+    constraint_ref: TUL_SELECT_CORRECT
+
+# Case 40006. Depends on 40003. The quantity arrives in words, so passing it
+# through unconverted sends a string where an integer is declared.
+- rule_id: MQC_RULE_tul_malformed_arguments
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_TUL_0003]
+  tool_expectation:
+    required_tools: [search_policy]
+    forbidden_tools: [issue_refund]
+    constraint_ref: TUL_ARGUMENTS_VALID
+
+# Case 40007. Depends on 40002. The request names a capability nobody offered.
+- rule_id: MQC_RULE_tul_no_invented_tool
+  priority: 3
+  priority_conditions: [P3_EDGE_PATH]
+  requirement_ids: [MQC_REQ_MDL_TUL_0002]
+  tool_expectation:
+    forbidden_tools: [issue_refund]
+    constraint_ref: TUL_ONLY_OFFERED
+  assertions:
+    # SAYING SO IS THE REQUIREMENT. The offered-set check catches an invented
+    # tool; nothing else catches a model that silently does neither.
+    - assertion_id: A_TUL_SAYS_IT_CANNOT_40007
+      kind: regex
+      parameters:
+        pattern: '(?i)cannot|unable|no tool|not able|do not have'
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: TUL_ONLY_OFFERED
+
+# Case 40008. Depends on 40001. What this establishes is that the MODEL emitted
+# a well formed call. That the harness never executes one is asserted on the
+# harness side, where the code that would execute it lives.
+- rule_id: MQC_RULE_tul_call_is_well_formed
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_TUL_0001]
+  tool_expectation:
+    required_tools: [lookup_order]
+    forbidden_tools: [issue_refund, search_policy]
+    constraint_ref: TUL_USE_LOOKUP

@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Which harness this case set runs against, per branch.
+#
+# Specified by docs/design/consumer_ci.md section 2.
+#
+# THE PIN IS DATA, NOT A DEPENDENCY STRING. pyproject.toml can state one
+# pairing for every branch, so a branch whose cases need a harness extension
+# cannot be expressed there at all: editing the pin makes the edit part of the
+# change, and merging the change merges the wrong pin with it.
+#
+# This mapping is carried ON THE BRANCH, which is the property that makes it
+# work. An expansion branch declares its own pairing, and merging it restores
+# the main pairing because the mapping says so rather than because somebody
+# remembered to revert a line.
+
+repository: apolskiy/AP-Harness-QC
+
+# The one workflow whose conclusion defines "green". It runs on push, so every
+# commit on every harness branch has one, which is what makes it usable as a
+# requirement. regress-harness-on-branch.yml is dispatch-only and cannot be
+# required of an arbitrary commit.
+#
+# NAMING ONE WORKFLOW KEEPS GREEN SINGLE-VALUED. A rule accepting any passing
+# workflow would be satisfied by a documentation lint.
+required_workflow: gate-on-change.yml
+
+# FIRST MATCH WINS, IN FILE ORDER. Literal names are listed before patterns so
+# that main cannot be captured by a glob placed above it.
+branches:
+  - match: main
+    harness_ref: main
+    # The only strict entry. Everything measured on main was measured with an
+    # established instrument, or it was not measured.
+    require_green: true
+
+  # THESE PATTERNS ARE FLOORS, NOT PAIRINGS. Branches are dated now
+  # (ci_pipeline.md section 3C.6), so a stabilization or extend branch naming a
+  # specific harness branch adds its own LITERAL entry above these when it is
+  # cut. First match wins in file order, so the literal takes precedence and
+  # merging the branch removes it for free.
+
+  # An integration branch. It pairs with the harness stabilization branch of
+  # the same cycle, which is named by the literal entry added when it is cut.
+  # Falling through to this floor means running against main, which is a
+  # stricter instrument than the branch needs rather than a looser one.
+  - match: "stabilization-*"
+    harness_ref: main
+    # ADVISORY, DELIBERATELY. Refusing here would block case stabilization
+    # precisely while the harness is being stabilized, which is when this
+    # pairing exists to be used. The run proceeds UNGATED and yields no
+    # verdict, which is the same object a manual selection produces.
+    require_green: false
+
+  # New cases needing no new harness capability. They pair with main because
+  # main is what they will run against once merged.
+  - match: "expand-*"
+    harness_ref: main
+    require_green: false
+
+  # THE BRANCH THIS MECHANISM EXISTS FOR. A case that cannot be written until
+  # the harness grows a capability has nowhere to run except the branch
+  # carrying it, and no constant pin can say so.
+  #
+  # The distinction from expand-* is a convention rather than an inference:
+  # whether a case needs a harness extension is a fact about the case that only
+  # its author knows, and guessing it from a diff would guess wrong in the
+  # direction that fails silently.
+  #
+  # AN EXTEND BRANCH MUST ADD ITS OWN ENTRY naming the harness branch carrying
+  # the capability. This floor exists so that forgetting pairs it with main,
+  # where the missing capability fails loudly, rather than with a stale
+  # stabilization branch where it might silently appear to work.
+  - match: "extend-*"
+    harness_ref: main
+    require_green: false
+
+  # Debugging a case against whatever the harness is doing. Always advisory:
+  # withholding the tool while the harness is red withholds it exactly when it
+  # is needed (consumer_ci.md section 3.9.2).
+  - match: "debug-*"
+    harness_ref: main
+    require_green: false
+
+# Used when no entry matches, which is any branch not following the convention.
+# An unmatched branch takes this rather than failing: requiring an entry per
+# branch would make the mapping the thing that stops a branch being tested.
+default:
+  harness_ref: main
+  require_green: false

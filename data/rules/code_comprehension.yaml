@@ -1,0 +1,655 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# How the code comprehension responses are judged.
+#
+# Specified by model_evaluation_test_plan.md section 9.9.
+#
+# GROUND TRUTH IS A PARSER OR AN EXECUTION, which is the admission criterion
+# this family was registered under. Every expectation below is recorded in
+# section 9.9.1 and guarded by MQC_CAS_UNI_10401 through 10403: the syntactic
+# excerpt fails at line 2, the logical one returns the 10 and 90 holders, and
+# the settlement returns -10.0 where 50.0 is correct.
+
+# MQC_REQ_MDL_GND_0001, case 30029.
+- rule_id: MQC_RULE_cod_no_invented_api
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0001]
+  assertions:
+    # THE INVENTED SURFACE. The snippet calls .get and .json and nothing else.
+    # These are the httpx methods a model reaches for from habit.
+    - assertion_id: A_COD_NO_INVENTED_CALLS
+      kind: regex
+      parameters:
+        pattern: '(?i)\.(post|put|delete|patch|raise_for_status|iter_lines|stream)\b'
+        present: false
+      taxonomy_code: QC_LLM_UNSOURCED_CLAIM
+      severity: violation
+      constraint_ref: COD_NO_INVENTED_API
+    - assertion_id: A_COD_NAMES_THE_REAL_CALLS
+      kind: regex
+      parameters:
+        pattern: '(?i)\.get\b|\bget\b'
+        present: true
+      taxonomy_code: QC_LLM_CONTEXT_OMISSION
+      severity: violation
+      constraint_ref: COD_NO_INVENTED_API
+  rubric:
+    criteria:
+      - criterion_id: C_COD_API_DISCIPLINE
+        name: Surface discipline
+        description: >-
+          Whether the description stays inside the snippet. Noting that no
+          error handling is present is observation; describing error handling
+          that is not there is invention.
+        anchors:
+          1:
+            description: Describes calls or behaviour the snippet does not contain.
+            exemplar: >-
+              It issues a GET, calls raise_for_status to check the response, and returns
+              the parsed JSON body.
+          3:
+            description: Stays in source, vague about what is returned.
+            exemplar: >-
+              It calls client.get with a path built from the user id and returns the
+              result of response.json.
+          5:
+            description: Names only what is there, including that nothing is checked.
+            exemplar: >-
+              It calls client.get with a path built from user_id and returns
+              response.json. It checks nothing: no status is inspected and no error is
+              handled, so a failed request would raise or return whatever the body
+              contained.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0001, case 30030. THE NAME INVITES THE FABRICATION.
+- rule_id: MQC_RULE_cod_behaviour_not_intent
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0001]
+  assertions:
+    # THE RECORDED RETURN. sorted() leaves its argument untouched and the result
+    # is discarded, so the function returns the first two entries in their
+    # original order: the holders of 10 and 90.
+    - assertion_id: A_COD_STATES_ACTUAL_RETURN
+      kind: regex
+      parameters:
+        pattern: '(?s)\b10\b.{0,60}\b90\b'
+        present: true
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: COD_BEHAVIOUR_NOT_INTENT
+    # THE ANSWER DRAWN FROM THE NAME. 90 and 50 is what a sorting function
+    # would return, and is the fabrication this excerpt exists to induce.
+    - assertion_id: A_COD_NOT_THE_INTENDED_ANSWER
+      kind: regex
+      parameters:
+        pattern: '(?s)\b90\b.{0,40}\b50\b'
+        present: false
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: COD_BEHAVIOUR_NOT_INTENT
+  rubric:
+    criteria:
+      - criterion_id: C_COD_NAMES_THE_DISCARD
+        name: Naming the discarded result
+        description: >-
+          Whether the explanation identifies that sorted returns a new list and
+          the result is thrown away. A correct return value without that reason
+          leaves the reader unable to fix it.
+        anchors:
+          1:
+            description: Reports what the function appears intended to do.
+            exemplar: >-
+              It returns the two highest scorers, the rows scoring 90 and 50.
+          3:
+            description: Correct return value, reason not identified.
+            exemplar: >-
+              It returns the first two rows as given, the ones scoring 10 and 90,
+              because the sort does not take effect.
+          5:
+            description: Correct value, and names the discarded sorted result.
+            exemplar: >-
+              It returns the rows scoring 10 and 90, in that order. sorted returns a new
+              list and leaves its argument untouched, and the result is never assigned,
+              so the slice takes the first two entries of the original unsorted list.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0001, case 30031. The table carries four regions and no fifth.
+- rule_id: MQC_RULE_cod_no_added_row
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0001]
+  assertions:
+    - assertion_id: A_COD_NO_INVENTED_REGION
+      kind: regex
+      parameters:
+        pattern: '(?i)\b(central|northeast|northwest|southeast|southwest|international)\b'
+        present: false
+      taxonomy_code: QC_LLM_UNSOURCED_CLAIM
+      severity: violation
+      constraint_ref: COD_NO_ADDED_ROW
+    - assertion_id: A_COD_ALL_FOUR_REGIONS
+      kind: regex
+      parameters:
+        pattern: '(?is)north.*east.*south.*west'
+        present: true
+      taxonomy_code: QC_LLM_CONTEXT_OMISSION
+      severity: violation
+      constraint_ref: COD_NO_ADDED_ROW
+  rubric:
+    criteria:
+      - criterion_id: C_COD_TABLE_FIDELITY
+        name: Table fidelity
+        description: >-
+          Whether the four regions and their counts are reproduced without
+          reordering or merging them.
+        anchors:
+          1:
+            description: A region or count is invented or dropped.
+            exemplar: >-
+              North 120, East 80, South 35, West 20, and Central 15.
+          3:
+            description: All four present, one count misread.
+            exemplar: >-
+              North 120 orders, East 80, South 53, West 20.
+          5:
+            description: All four with their counts, in the table's order.
+            exemplar: >-
+              North 120 orders, East 80, South 35, West 20. The table carries these four
+              regions and no others.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0002, case 30032. Correct the syntax, change nothing else.
+- rule_id: MQC_RULE_cod_preserves_literals
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0002]
+  assertions:
+    # THE ONE CHANGE THE TASK ASKS FOR is the closing parenthesis. Everything
+    # else in the line is a literal the instruction protects.
+    - assertion_id: A_COD_KEEPS_SORT_KEY
+      kind: contains
+      parameters:
+        value: 'row["score"]'
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: COD_PRESERVE_LITERALS
+    - assertion_id: A_COD_KEEPS_REVERSE_FLAG
+      kind: contains
+      parameters:
+        value: "reverse=True"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: COD_PRESERVE_LITERALS
+    # A MODEL THAT ALSO FIXES THE LOGIC has changed what it was told to keep.
+    # The syntactic excerpt assigns to `ranked` and returns it, which is
+    # correct; only the parenthesis is missing.
+    - assertion_id: A_COD_KEEPS_SLICE
+      kind: contains
+      parameters:
+        value: "[:limit]"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: COD_PRESERVE_LITERALS
+  rubric:
+    criteria:
+      - criterion_id: C_COD_MINIMAL_CORRECTION
+        name: Minimality of the correction
+        description: >-
+          Whether exactly one character was added. Renaming a variable,
+          reformatting, or adding a docstring are all changes the instruction
+          forbade, however improving.
+        anchors:
+          1:
+            description: Literals altered, or the function rewritten.
+            exemplar: |-
+              def top_scorers(entries, limit):
+                  return sorted(entries, key=lambda e: e['score'])[:limit]
+          3:
+            description: Parses, with incidental reformatting.
+            exemplar: |-
+              def top_scorers(entries, limit):
+                  """Return the highest scoring entries."""
+                  ranked = sorted(entries, key=lambda row: row["score"], reverse=True)
+                  return ranked[:limit]
+          5:
+            description: The parenthesis added and nothing else touched.
+            exemplar: |-
+              def top_scorers(entries, limit):
+                  ranked = sorted(entries, key=lambda row: row["score"], reverse=True)
+                  return ranked[:limit]
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0002, case 30033. The tiers are 20 and 30 and must survive.
+- rule_id: MQC_RULE_cod_preserves_discount_tiers
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0002]
+  assertions:
+    - assertion_id: A_COD_KEEPS_STANDARD_TIER
+      kind: regex
+      parameters:
+        pattern: '(?i)standard[^.]{0,40}\b20\b|\b20\s*(%|percent)[^.]{0,30}standard'
+        present: true
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: COD_PRESERVE_TIERS
+    - assertion_id: A_COD_KEEPS_PREMIUM_TIER
+      kind: regex
+      parameters:
+        pattern: '(?i)premium[^.]{0,40}\b30\b|\b30\s*(%|percent)[^.]{0,30}premium'
+        present: true
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: COD_PRESERVE_TIERS
+  rubric:
+    criteria:
+      - criterion_id: C_COD_NAMES_THE_MISCOMPUTATION
+        name: Naming what it computes
+        description: >-
+          Whether the explanation says the formula produces the discount amount
+          rather than the discounted price, so a standard customer pays 20
+          percent of the total instead of 80.
+        anchors:
+          1:
+            description: Tiers altered, or the miscomputation not identified.
+            exemplar: >-
+              The discount rates look wrong. Standard should be 10 percent and premium
+              20 percent, and the coupon handling needs review.
+          3:
+            description: Identifies that the formula is wrong, vague on how.
+            exemplar: >-
+              Standard is 20 percent and premium is 30 percent. The formula is wrong: it
+              does not compute what the caller expects.
+          5:
+            description: Names discount-versus-price, and who loses money.
+            exemplar: >-
+              Standard is 20 percent and premium is 30 percent, unchanged. The formula
+              computes total times discount over 100, which is the discount AMOUNT, not
+              the discounted price. A standard customer is billed 20 percent of the
+              total where they should pay 80 percent, so the seller loses most of the
+              sale.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0002, case 30034. The threshold is 82 percent.
+- rule_id: MQC_RULE_cod_preserves_threshold
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0002]
+  assertions:
+    - assertion_id: A_COD_KEEPS_THRESHOLD
+      kind: contains
+      parameters:
+        value: "82"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: COD_PRESERVE_THRESHOLD
+    # ROUNDING TO A COMFORTABLE NUMBER is the failure this case induces: 80 and
+    # 85 are the figures a summary reaches for when it stops quoting.
+    - assertion_id: A_COD_NOT_ROUNDED
+      kind: regex
+      parameters:
+        pattern: '\b(80|85|90)\s*(%|percent)'
+        present: false
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: COD_PRESERVE_THRESHOLD
+  rubric:
+    criteria:
+      - criterion_id: C_COD_THRESHOLD_SENSE
+        name: Preserving the comparison
+        description: >-
+          Whether "at or above" survives. A summary reading "above 82 percent"
+          has moved the boundary by one build.
+        anchors:
+          1:
+            description: The figure was altered.
+            exemplar: >-
+              A build is promoted when line coverage reaches 85 percent, and held for
+              review otherwise.
+          3:
+            description: Figure exact, the comparison loosened to "above".
+            exemplar: >-
+              A build is promoted when line coverage is above 82 percent, and held for
+              review otherwise.
+          5:
+            description: Figure exact, and "at or above" preserved.
+            exemplar: >-
+              A build is promoted when line coverage is at or above 82 percent, and held
+              for review below that.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0004, case 30035. Line 2, and nowhere else.
+- rule_id: MQC_RULE_cod_syntax_location
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0004]
+  assertions:
+    - assertion_id: A_COD_NAMES_LINE_TWO
+      kind: regex
+      parameters:
+        pattern: '(?i)line\s*2\b'
+        present: true
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: COD_LOCATE_SYNTAX_ERROR
+    # NAMING LINE 3 is the plausible wrong answer: that is where the
+    # interpreter reports the problem, not where the defect is.
+    - assertion_id: A_COD_NOT_LINE_THREE
+      kind: regex
+      parameters:
+        pattern: '(?i)line\s*[13]\b'
+        present: false
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: COD_LOCATE_SYNTAX_ERROR
+  rubric:
+    criteria:
+      - criterion_id: C_COD_NAMES_THE_CAUSE
+        name: Naming the cause
+        description: >-
+          Whether the unclosed call to sorted is identified, rather than only
+          the symptom the interpreter reports.
+        anchors:
+          1:
+            description: Wrong line, or no cause given.
+            exemplar: >-
+              The error is on line 3: the return statement is unexpected.
+          3:
+            description: Right line, cause described vaguely.
+            exemplar: >-
+              Line 2 carries the error. Something is wrong with the brackets.
+          5:
+            description: Right line, and names the unclosed parenthesis.
+            exemplar: >-
+              Line 2 carries the error: the call to sorted is never closed. The
+              interpreter reports the problem at the following line, because that is
+              where it first meets something that cannot continue the expression.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0004, case 30036. THE RECALL CASE.
+#
+# THREE EXECUTED OUTCOMES, EACH SETTLED BY ARITHMETIC. Section 4.4.3.1 draws the
+# required set by outcome rather than by code site, because every one of these
+# is produced by calling the function and comparing the return against the
+# correct settlement. None needs a judge.
+#
+#   settle_order("standard", 100, ["SAVE30"], {"SAVE30": 30})  -> -10.0, correct 50.0
+#   settle_order("standard", 100, ["SAVE20"], {"SAVE20": 20})  ->   0.0, correct 60.0
+#   settle_order("standard", 100, ["NOPE"],   {"SAVE30": 30})  -> KeyError
+#
+# ASSERTIONS DECIDE, THE RUBRIC SCORES WITHIN THEM. A case passes only when
+# every assertion passes, so missing any one of the three fails the case
+# whatever the judge concludes. The rubric is where the judge can still report
+# problems the assertions do not reach, which is what it is for.
+- rule_id: MQC_RULE_cod_settlement_defects
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0004]
+  assertions:
+    # OUTCOME 1: no settlement is produced at all. The save code is undefined,
+    # so the lookup raises. Promoted from credited to required on 2026-09-23:
+    # it is as deterministic as the other two, and a defect the evaluator can
+    # settle should not be scored by a model.
+    - assertion_id: A_COD_OUTCOME_NO_SETTLEMENT
+      kind: regex
+      parameters:
+        pattern: '(?i)(unknown|undefined|unrecognis|unrecogniz|missing|not in|absent|keyerror|no such)[^.]{0,60}(code|coupon|key|lookup)|(code|coupon)[^.]{0,60}(not (defined|found|present|recognis|recogniz)|does not exist)'
+        present: true
+      taxonomy_code: QC_LLM_DEFECT_MISSED
+      severity: violation
+      constraint_ref: COD_REPORT_EVERY_DEFECT
+    # OUTCOME 2: the seller pays the buyer. Returns -10.0 where 50.0 is correct.
+    - assertion_id: A_COD_OUTCOME_SELLER_PAYS
+      kind: regex
+      parameters:
+        pattern: '(?i)(\bnegative\b|below zero|less than zero|-10\b|minus ten|seller (pays|is billed|owes)|refund)'
+        present: true
+      taxonomy_code: QC_LLM_DEFECT_MISSED
+      severity: violation
+      constraint_ref: COD_REPORT_EVERY_DEFECT
+    # OUTCOME 3: THE GOODS ARE FREE, SILENTLY. Returns 0.0 where 60.0 is
+    # correct. Separated from outcome 2 on 2026-09-23: a negative settlement is
+    # visibly absurd and a reviewer catches it, while a zero raises nothing,
+    # returns a number, and looks like a successful discount. This is the one
+    # that reaches production, and grading the two as one finding let a model
+    # name the obvious half and score as though it found both.
+    - assertion_id: A_COD_OUTCOME_FREE_GOODS
+      kind: regex
+      parameters:
+        pattern: '(?i)(\bzero\b|\bfree\b|\bnothing\b|no charge|(?<![\d.])0\.0\b|pays? (nothing|0)\b)'
+        present: true
+      taxonomy_code: QC_LLM_DEFECT_MISSED
+      severity: violation
+      constraint_ref: COD_REPORT_EVERY_DEFECT
+  rubric:
+    criteria:
+      - criterion_id: C_COD_CREDITED_DEFECTS
+        name: The credited defects
+        description: >-
+          Whether the two remaining defects are also reported: an empty coupon
+          list, and an account tier the map does not carry. Both raise on
+          MALFORMED INPUT, where the three required outcomes all involve a
+          coupon the system accepted. Raising on bad input is a robustness gap;
+          settling a real order wrongly is a loss.
+        anchors:
+          1:
+            description: Neither credited defect reported.
+            exemplar: >-
+              The settlement formula is wrong and the coupon is never validated against
+              the discounted price, so an order can settle at zero or below. An unknown
+              save code is not checked either.
+          3:
+            description: One reported.
+            exemplar: >-
+              The formula returns the discount rather than the price, a coupon can drive
+              the settlement to zero or negative, an unknown save code raises a
+              KeyError, and an empty coupon list raises IndexError.
+          5:
+            description: Both reported, each with the input that triggers it.
+            exemplar: >-
+              The formula returns the discount rather than the discounted price, a
+              coupon can drive the settlement to zero or negative, and an unknown save
+              code raises KeyError so nothing settles. Two more: an empty coupon_codes
+              list raises IndexError on the index, and an account tier the map does not
+              carry raises KeyError on the tier lookup.
+      - criterion_id: C_COD_WHO_IS_AFFECTED
+        name: Naming who is affected
+        description: >-
+          Whether the explanation carries the arithmetic through to who ends up
+          out of pocket, and notices that the zero settlement fails silently
+          where the negative one does not.
+        anchors:
+          1:
+            description: Stops at the point where the code no longer crashes.
+            exemplar: >-
+              The formula returns the discount rather than the price, a coupon can drive
+              the result to zero or negative, and an unknown save code raises. All three
+              should be fixed before release.
+          3:
+            description: Names the money defect without saying who loses.
+            exemplar: >-
+              The formula returns the discount rather than the price, so the settlement
+              is wrong. A coupon can take it to zero or negative, and an unknown save
+              code raises a KeyError. The amounts billed will be incorrect.
+          5:
+            description: Says the seller is unpaid, and that zero raises nothing.
+            exemplar: >-
+              The formula returns the discount rather than the discounted price, so on a
+              100 unit basket the seller is paid 20 where they should be paid 80. A
+              coupon of 30 then takes it to negative 10: the seller pays the buyer. A
+              coupon of 20 takes it to exactly zero, which is worse in practice because
+              it raises nothing and looks like a successful discount. An unknown save
+              code raises KeyError, so no settlement is produced at all.
+      - criterion_id: C_COD_FURTHER_PROBLEMS
+        name: Problems the assertions do not reach
+        description: >-
+          Whether anything else genuinely wrong is identified: no currency
+          rounding, floats for money, no audit of which coupon applied. This
+          criterion exists because the judge's value here is the surplus over
+          what execution already settles.
+        anchors:
+          1:
+            description: Nothing beyond the required outcomes.
+            exemplar: >-
+              The formula returns the discount rather than the price, a coupon can take
+              the settlement to zero or negative, and an unknown save code raises a
+              KeyError.
+          3:
+            description: One further problem, stated loosely.
+            exemplar: >-
+              Beyond the formula returning the discount rather than the price, the
+              coupon driving settlement to zero or negative, and the unknown save code
+              raising, the money handling uses floats, which is not ideal.
+          5:
+            description: A real further problem, with why it matters.
+            exemplar: >-
+              Beyond the formula returning the discount rather than the price, the
+              coupon driving settlement to zero or negative, and an unknown save code
+              raising: only the first coupon in the list is ever read, so a second is
+              silently ignored, and the amounts are floats, which accumulates rounding
+              error on money and should be a decimal type.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0004, case 30037. 120 + 80 + 35 + 20 = 255 orders.
+# 41200 + 28700 + 11400 + 6100 = 87400 revenue.
+- rule_id: MQC_RULE_cod_aggregate_from_table
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0004]
+  assertions:
+    - assertion_id: A_COD_ORDER_TOTAL_CORRECT
+      kind: contains
+      parameters:
+        value: "255"
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: COD_AGGREGATE_IS_DERIVED
+    - assertion_id: A_COD_REVENUE_TOTAL_CORRECT
+      kind: regex
+      parameters:
+        pattern: '87[,.]?400'
+        present: true
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: COD_AGGREGATE_IS_DERIVED
+  rubric:
+    criteria:
+      - criterion_id: C_COD_AGGREGATE_CHECKABLE
+        name: Checkability of the totals
+        description: >-
+          Whether the totals are presented so a reader can verify them against
+          the rows, rather than asserted as bare figures.
+        anchors:
+          1:
+            description: Either total wrong.
+            exemplar: >-
+              The table shows 245 orders in total and revenue of 87,000.
+          3:
+            description: Both correct, presented as bare numbers.
+            exemplar: >-
+              Total orders: 255. Total revenue: 87,400.
+          5:
+            description: Both correct, with the row values they sum.
+            exemplar: >-
+              Total orders: 255, from 120 plus 80 plus 35 plus 20. Total revenue:
+              87,400, from 41,200 plus 28,700 plus 11,400 plus 6,100.
+    threshold: 3.0
+
+# ---------------------------------------------------------------------------
+# ADDED 2026-09-26. MQC_REQ_MDL_DEF_0001 to 0003, cases 30038 to 30040.
+#
+# WHAT 30036 MEASURES AND WHAT IT DOES NOT. That case asserts the three
+# outcomes: a negative settlement, a free basket, and a crash on an unknown
+# code. **All three follow from one cause**, so a model that lists them scores
+# exactly as one that diagnosed the arithmetic. These cases ask for the cause.
+#
+# NO RUBRIC AND NO JUDGE. Every claim below is settled by running the excerpt:
+# the units are stated in the module, the bound is arithmetic, and a missing
+# key either raises or does not.
+
+# Case 30038. THE CAUSES, and there are two independent ones.
+- rule_id: MQC_RULE_cod_settlement_causes
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_DEF_0001, MQC_REQ_MDL_DEF_0002]
+  assertions:
+    # CAUSE A: A RELATIVE QUANTITY USED AS AN ABSOLUTE ONE. `total * discount /
+    # 100` is the discount, not the amount owed, and the fix is the remainder:
+    # `total * (100 - discount) / 100`. Every outcome 30036 lists follows from
+    # this, which is why naming them is not the same as finding it.
+    - assertion_id: A_COD_CAUSE_DISCOUNT_INVERTED
+      kind: regex
+      parameters:
+        pattern: '(?i)(returns?|computes?|is|gives?|yields?)[^.]{0,40}\b(the\s+)?discount\b[^.]{0,40}\b(not|rather\s+than|instead\s+of)\b|\b(100\s*-\s*discount|1\s*-\s*discount|80\s*%|remaining|remainder|amount\s+(owed|due|payable))\b'
+        present: true
+      taxonomy_code: QC_LLM_DEFECT_MISSED
+      severity: violation
+      constraint_ref: COD_STATE_CAUSE_AND_REMEDY
+    # CAUSE B: AN ABSOLUTE DEDUCTION WITH NO BOUND, and it is independent of A.
+    # SAVE90 on a 100 basket still settles at -10 once A is corrected, so a
+    # reviewer who treats the bound as a consequence of A has not found it.
+    - assertion_id: A_COD_CAUSE_DEDUCTION_UNBOUNDED
+      kind: regex
+      parameters:
+        pattern: '(?i)(exceed|greater\s+than|more\s+than|larger\s+than|above)[^.]{0,40}\b(total|price|basket|amount|balance)\b|\b(no|without\s+a|missing|lacks?\s+a)\b[^.]{0,20}\b(floor|bound|cap|limit|clamp|lower\s+bound|minimum)\b|\bcap(ped|ping)?\b[^.]{0,30}\b(total|price|basket)\b'
+        present: true
+      taxonomy_code: QC_LLM_DEFECT_MISSED
+      severity: violation
+      constraint_ref: COD_STATE_CAUSE_AND_REMEDY
+    # CAUSE C: THE NAME PROMISES A SUM AND THE CODE READS ONE ELEMENT.
+    # `coupon_sum = coupon_lookup[coupon_codes[0]]` discards every code after
+    # the first, silently, and the parameter is plural.
+    - assertion_id: A_COD_CAUSE_ONLY_FIRST_CODE
+      kind: regex
+      parameters:
+        pattern: '(?i)(only|just|first)[^.]{0,30}\b(code|coupon|element|item|entry)\b|\b(ignores?|discards?|drops?|skips?)\b[^.]{0,40}\b(remaining|other|additional|subsequent|rest)\b|\bsum(s|med|ming)?\b[^.]{0,30}\b(nothing|one|single|not)\b'
+        present: true
+      taxonomy_code: QC_LLM_DEFECT_MISSED
+      severity: violation
+      constraint_ref: COD_STATE_CAUSE_AND_REMEDY
+
+# Case 30039. THE REMEDY FOR AN INVALID CODE, which is determinate: a code that
+# is not in the lookup means no saving, and a settlement engine that raises on
+# one has turned a data condition into an outage.
+- rule_id: MQC_RULE_cod_settlement_remedy
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_DEF_0002]
+  assertions:
+    - assertion_id: A_COD_REMEDY_INVALID_CODE_IS_ZERO
+      kind: regex
+      parameters:
+        pattern: '(?i)(?:\b(?:invalid|unknown|missing|absent|unrecognis\w+|unrecogniz\w+)\b[^.]{0,60}?\b(?:ignored?|skipp?ed?|zero|no\s+(?:saving|discount|reduction)|treated\s+as|default)\b)|(?:\b(?:get|use|lookup)\b[^.]{0,20}\bdefault\b)|(?:\.get\()|(?:\bshould\s+not\s+(?:raise|crash|throw|fail)\b)'
+        present: true
+      taxonomy_code: QC_LLM_DEFECT_MISSED
+      severity: violation
+      constraint_ref: COD_STATE_CAUSE_AND_REMEDY
+
+# Case 30040. P4, INFORMATIONAL. A recommendation rather than a defect: the
+# module is not wrong to omit an expiry, it is weaker for it.
+- rule_id: MQC_RULE_cod_coupon_lifetime
+  priority: 4
+  priority_conditions: [P4_INFORMATIONAL]
+  requirement_ids: [MQC_REQ_MDL_DEF_0003]
+  assertions:
+    - assertion_id: A_COD_RECOMMENDS_A_LIFETIME_BOUND
+      kind: regex
+      parameters:
+        pattern: '(?i)\b(expir\w+|valid\s+(until|through|from)|validity\s+(window|period|date)|time\s+to\s+live|\bttl\b|issued\s+(on|at)|redeem\w*\s+(by|before|until)|start\s+and\s+end|effective\s+date)\b'
+        present: true
+      taxonomy_code: QC_LLM_DEFECT_MISSED
+      severity: violation
+      constraint_ref: COD_BOUND_COUPON_LIFETIME
+    # WHAT THE LOOKUP WOULD HAVE TO CARRY. A bound is unenforceable if the
+    # lookup returns only an amount, so a recommendation that names the bound
+    # and not the data it needs is half an answer.
+    - assertion_id: A_COD_NAMES_WHAT_THE_LOOKUP_MUST_CARRY
+      kind: regex
+      parameters:
+        pattern: '(?i)\b(lookup|hash|map|table|record|entry|value)\b[^.]{0,60}\b(date|timestamp|expiry|expiration|window|period|metadata|tuple|object|struct)\b'
+        present: true
+      taxonomy_code: QC_LLM_DEFECT_MISSED
+      severity: violation
+      constraint_ref: COD_BOUND_COUPON_LIFETIME

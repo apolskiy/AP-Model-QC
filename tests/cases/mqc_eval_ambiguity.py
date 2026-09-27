@@ -1,0 +1,123 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+"""Whether the model asks when something is unclear, and only then.
+
+Covers ``MQC_EVL_EVAL_30016`` through ``30018``, inventoried in
+``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
+section 9.6.
+
+**A second ablation pair, running the opposite way from the first.** The
+instruction-following pair varies whether an instruction is *given*; this one
+varies whether the input is *answerable*. Both tasks carry the same standing
+instruction to ask when something is unclear, and differ only in whether
+anything is.
+
+**Neither case alone measures the requirement.** A model that always asks
+passes `30016` and fails `30017`; one that never asks does the reverse. The
+requirement is **discrimination**, which is why the registry carries
+`QC_LLM_AMBIGUITY_UNHANDLED` and `QC_LLM_OVER_CLARIFICATION` as separate codes
+rather than one code for getting it wrong.
+"""
+
+from typing import Any
+
+import allure
+import pytest
+
+from tests.cases.graded_support import assert_consistent_pass, observe_repeatedly
+
+pytestmark = pytest.mark.evaluator
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Ambiguity handling")
+class TestMQCClarificationDiscrimination:
+    """Asking, and not asking, measured against each other."""
+
+    @pytest.mark.base
+    @pytest.mark.priority(2)
+    @allure.story("Ambiguous input")
+    def MQC_EVL_EVAL_30016_requests_clarification_on_ambiguous_input(
+        self, request: Any
+    ) -> None:
+        """The request names neither which threshold nor what value.
+
+        The document carries **two** thresholds, so the question genuinely
+        cannot be answered as asked. A model that picks one and proceeds has
+        guessed, and a model that asks has read carefully.
+
+        **Foundational.** The control below is only interpretable for a model
+        that asks when asking is right.
+
+        Args:
+            request (Any): pytest's request, carrying the invocation.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_amb_ambiguous_request",
+            "MQC_RULE_amb_ambiguous_request",
+        )
+        assert_consistent_pass(results)
+
+    @pytest.mark.priority(2)
+    @pytest.mark.depends_on("30016")
+    @allure.story("Unambiguous control")
+    def MQC_EVL_EVAL_30017_does_not_request_clarification_when_unambiguous(
+        self, request: Any
+    ) -> None:
+        """Same shape of request, same standing instruction, nothing missing.
+
+        The threshold is named and the value is given, so a model that asks
+        here has **over-clarified**, which is its own failure rather than
+        excess caution.
+
+        **The rule states no constraint, deliberately.** Checking that the
+        model did not ask would assert obedience to an instruction never
+        given: the standing instruction says to ask *when unclear*, and
+        nothing here is. What this measures is judgement, which the rubric
+        scores, and `MQC_CAS_UNI_10425` protects that absence from being
+        filled in by someone tidying up.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_amb_unambiguous_request",
+            "MQC_RULE_amb_unambiguous_request",
+        )
+        assert_consistent_pass(results)
+
+    @pytest.mark.priority(2)
+    @pytest.mark.depends_on("30016")
+    @allure.story("Threshold warning")
+    def MQC_EVL_EVAL_30018_warning_names_the_failing_gate(self, request: Any) -> None:
+        """A stated threshold, data below it, and two ways to get it wrong.
+
+        The model must warn before proceeding **and** name which threshold
+        failed. Proceeding silently is a gate outcome that ignores the stated
+        semantics; warning without naming the threshold is an ignored
+        instruction.
+
+        **Two failure modes, two codes.** "Warned but uselessly" and "did not
+        warn" call for different responses from whoever reads the artifact, so
+        collapsing them would cost the reader the distinction.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_amb_threshold_warning",
+            "MQC_RULE_amb_threshold_warning",
+        )
+        assert_consistent_pass(results)

@@ -1,0 +1,174 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# What the model is sent for the instruction-following family.
+#
+# TASK DATA IS WHAT YOU SEND; GOLDEN RULES ARE HOW YOU JUDGE WHAT COMES BACK.
+# Every field here is input. A constraint stated to the model lives here; the
+# check that it was honoured lives in data/rules/instruction_following.yaml.
+# The harness refuses a corpus where the two disagree (R2 and R3).
+#
+# HAND-AUTHORED PER B1. Variants are derived by ablation from one original, so
+# the expected result is computed rather than estimated: the pair 30001/30002
+# differ only in whether the format instruction is stated at all, which is what
+# makes the second a controlled negative rather than a guess.
+#
+# ONE SOURCE DOCUMENT IS SHARED by the whole family so that a difference in
+# result is attributable to the instruction rather than to the material. It is
+# short, factual and deliberately dull: the family measures obedience to shape,
+# and interesting content would give the model reasons to depart from it.
+# MQC_REQ_MDL_INS_0001, cases 30001 and 30002.
+- task_id: MQC_TASK_ins_format_stated
+  rubric_ids: [MQC_RULE_ins_format_stated]
+  user_prompt: |
+    Summarise the release note below.
+
+    Return your answer as a JSON object with exactly two keys: "summary", a
+    string, and "areas", an array of strings. Return nothing outside the JSON
+    object.
+  constraints:
+    - constraint_id: INS_FORMAT_JSON
+      text: 'Return a JSON object with exactly the keys "summary" and "areas"'
+      kind: format
+  context_documents:
+    - document_id: DOC_release_note
+      title: Release note 4.2
+      content: |
+        Release 4.2 closes three reported defects. The importer no longer
+        drops a trailing column when a file ends without a newline. The
+        scheduler retries a failed job twice before reporting it. The audit
+        log records the account that performed a deletion.
+  tags: [instruction_following, format]
+
+# THE ABLATION. Identical material and task, with the format instruction
+# removed. A model returning JSON anyway is following a habit rather than an
+# instruction, and 30002 exists to make that visible instead of letting
+# 30001 take credit for it.
+- task_id: MQC_TASK_ins_format_absent
+  rubric_ids: [MQC_RULE_ins_format_absent]
+  user_prompt: |
+    Summarise the release note below.
+  context_documents:
+    - document_id: DOC_release_note
+      title: Release note 4.2
+      content: |
+        Release 4.2 closes three reported defects. The importer no longer
+        drops a trailing column when a file ends without a newline. The
+        scheduler retries a failed job twice before reporting it. The audit
+        log records the account that performed a deletion.
+  tags: [instruction_following, format, control]
+
+# MQC_REQ_MDL_INS_0002, cases 30003 through 30006. Three quantitative ceilings in
+# one task, because the requirement is about quantitative shape as a class
+# and separating them would triple the request count against a free tier
+# without separating the behaviour.
+- task_id: MQC_TASK_ins_quantities
+  rubric_ids: [MQC_RULE_ins_quantities]
+  user_prompt: |
+    Summarise the release note below as a bulleted list.
+
+    Use at most three bullets. Keep every sentence to at most twelve words.
+    Begin each bullet with a capital letter and write it as a complete
+    sentence with a subject and a verb.
+  constraints:
+    - constraint_id: INS_BULLET_CEILING
+      text: Use at most three bullets
+      kind: count
+    - constraint_id: INS_WORD_CEILING
+      text: Keep every sentence to at most twelve words
+      kind: count
+    - constraint_id: INS_CAPITALISED
+      text: Begin each bullet with a capital letter
+      kind: format
+    - constraint_id: INS_COMPLETE_SENTENCE
+      text: Write each bullet as a complete sentence with a subject and a verb
+      kind: format
+  context_documents:
+    - document_id: DOC_release_note
+      title: Release note 4.2
+      content: |
+        Release 4.2 closes three reported defects. The importer no longer
+        drops a trailing column when a file ends without a newline. The
+        scheduler retries a failed job twice before reporting it. The audit
+        log records the account that performed a deletion.
+  tags: [instruction_following, quantities]
+
+# MQC_REQ_MDL_INS_0003, case 30007. Ordering is separable from counting, so it is
+# its own task: a model that orders correctly while overshooting a bullet
+# ceiling should score on ordering, and a combined task could not say so.
+- task_id: MQC_TASK_ins_ordering
+  rubric_ids: [MQC_RULE_ins_ordering]
+  user_prompt: |
+    List the changes in the release note below.
+
+    Put every change that states a measurable quantity first, in the order
+    they appear, then the remaining changes.
+  constraints:
+    - constraint_id: INS_MEASURABLES_FIRST
+      text: Place changes stating a measurable quantity ahead of the rest
+      kind: ordering
+  context_documents:
+    - document_id: DOC_release_note_measured
+      title: Release note 4.3
+      content: |
+        Release 4.3 makes four changes. The export job now completes in
+        under 30 seconds. The login page was restyled. The importer accepts
+        files up to 2 GB. The help link points to the new documentation.
+  tags: [instruction_following, ordering]
+
+# MQC_REQ_MDL_INS_0004, case 30008. The prohibited glyph is named in the rule
+# rather than reproduced here, per the documentation prose rules: describing
+# the character keeps this file readable and the check exact.
+- task_id: MQC_TASK_ins_prohibition
+  rubric_ids: [MQC_RULE_ins_prohibition]
+  user_prompt: |
+    Summarise the release note below in two sentences.
+
+    Do not use em dashes or en dashes anywhere in your answer. Use a colon,
+    a semicolon or a comma instead, or split the sentence.
+  constraints:
+    - constraint_id: INS_NO_LONG_DASH
+      text: Do not use em dashes or en dashes
+      kind: prohibition
+  context_documents:
+    - document_id: DOC_release_note
+      title: Release note 4.2
+      content: |
+        Release 4.2 closes three reported defects. The importer no longer
+        drops a trailing column when a file ends without a newline. The
+        scheduler retries a failed job twice before reporting it. The audit
+        log records the account that performed a deletion.
+  tags: [instruction_following, prohibition]
+
+# MQC_REQ_MDL_INS_0005, case 30009. EVERY CONSTRAINT ABOVE, AT ONCE. The
+# requirement is that compliance with one does not degrade compliance with
+# another, which is unobservable on any task carrying a single constraint:
+# it can only be measured where the constraints compete for the same output.
+- task_id: MQC_TASK_ins_combined
+  rubric_ids: [MQC_RULE_ins_combined]
+  user_prompt: |
+    Summarise the release note below as a bulleted list.
+
+    Use at most three bullets. Keep every sentence to at most twelve words.
+    Put every change that states a measurable quantity first. Do not use em
+    dashes or en dashes anywhere in your answer.
+  constraints:
+    - constraint_id: INS_COMBINED_BULLETS
+      text: Use at most three bullets
+      kind: count
+    - constraint_id: INS_COMBINED_WORDS
+      text: Keep every sentence to at most twelve words
+      kind: count
+    - constraint_id: INS_COMBINED_ORDER
+      text: Place changes stating a measurable quantity ahead of the rest
+      kind: ordering
+    - constraint_id: INS_COMBINED_NO_LONG_DASH
+      text: Do not use em dashes or en dashes
+      kind: prohibition
+  context_documents:
+    - document_id: DOC_release_note_measured
+      title: Release note 4.3
+      content: |
+        Release 4.3 makes four changes. The export job now completes in
+        under 30 seconds. The login page was restyled. The importer accepts
+        files up to 2 GB. The help link points to the new documentation.
+  tags: [instruction_following, combined]

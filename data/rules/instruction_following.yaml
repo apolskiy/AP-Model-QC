@@ -1,0 +1,357 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# How the instruction-following responses are judged.
+#
+# GOLDEN RULES ARE HOW YOU JUDGE WHAT COMES BACK; task data is what you send.
+# Every check here names the constraint it verifies, and the harness refuses a
+# corpus where a constraint was sent and never checked (R3) or where a check
+# names a constraint that was never sent (R2).
+#
+# ASSERTIONS ARE CONJUNCTIVE GATES AND THE RUBRIC SCORES WITHIN THEM. A case
+# passes only when every assertion passes AND the rubric clears its threshold,
+# so the shape checks below decide the outcome and the rubric grades quality
+# inside it. An instruction either was or was not followed; that is not a
+# judgement call and is deliberately not left to a model.
+#
+# SEVERITY: 'fatal' means nothing coherent remains to score, so the judge is
+# never invoked. 'violation' means the answer is gradable and failed a stated
+# constraint. Unparseable JSON is fatal; a fourth bullet is a violation.
+# MQC_REQ_MDL_INS_0001, case 30001. The format was stated, so it is checked.
+- rule_id: MQC_RULE_ins_format_stated
+  priority: 1
+  priority_conditions: [P1_TIER_GUARANTEE]
+  requirement_ids: [MQC_REQ_MDL_INS_0001]
+  assertions:
+    # FATAL: a response that is not JSON cannot have its keys inspected, and
+    # scoring the prose inside it would grade a different task.
+    - assertion_id: A_INS_FORMAT_PARSES
+      kind: json_schema
+      parameters:
+        required_keys: [summary, areas]
+        types:
+          summary: str
+          areas: list
+      taxonomy_code: QC_LLM_SCHEMA_VIOLATION
+      severity: fatal
+      constraint_ref: INS_FORMAT_JSON
+    # Nothing outside the object. Checked separately from parsing, because a
+    # response that parses after a preamble is stripped has still disobeyed.
+    - assertion_id: A_INS_FORMAT_NO_PREAMBLE
+      kind: regex
+      parameters:
+        pattern: '\A\s*\{'
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: INS_FORMAT_JSON
+  rubric:
+    criteria:
+      - criterion_id: C_INS_SUMMARY_FAITHFUL
+        name: Summary faithfulness
+        description: >-
+          Whether the summary states what the release note states, without
+          adding, dropping or reweighting a change.
+        anchors:
+          1:
+            description: >-
+              Asserts something the note does not say, or omits most of it.
+            exemplar: >-
+              {"summary": "Release 4.2 rewrites the importer and adds a new scheduler.",
+              "areas": ["importer", "scheduler", "performance"]}
+          3:
+            description: >-
+              Covers the note broadly with one omission or one soft claim.
+            exemplar: >-
+              {"summary": "Release 4.2 fixes several reported defects across the
+              importer and the scheduler.", "areas": ["importer", "scheduler"]}
+          5:
+            description: >-
+              Every change represented, nothing added, emphasis matches.
+            exemplar: >-
+              {"summary": "Release 4.2 closes three reported defects: the importer no
+              longer drops a trailing column when a file ends without a newline, the
+              scheduler retries a failed job twice before reporting it, and the audit
+              log records the account that performed a deletion.", "areas": ["importer",
+              "scheduler", "audit log"]}
+    threshold: 3.0
+
+# MQC_REQ_MDL_INS_0001, case 30002. THE CONTROL. The instruction was not stated,
+# so there is no format constraint to check and no assertion referencing
+# one: a check here would assert obedience to an instruction never given.
+#
+# It carries a rubric alone. What it measures is whether the model volunteers
+# the structure unprompted, which is what makes 30001 a measurement of
+# instruction following rather than of habit.
+- rule_id: MQC_RULE_ins_format_absent
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_INS_0001]
+  rubric:
+    criteria:
+      - criterion_id: C_INS_UNPROMPTED_SHAPE
+        name: Unprompted structure
+        description: >-
+          Whether the response volunteers a machine-readable structure that
+          was never asked for. A plain prose summary scores highest: the
+          instruction was absent, so prose is the compliant answer.
+        anchors:
+          1:
+            description: Returns a JSON object, as though the instruction were given.
+            exemplar: >-
+              {"summary": "Release 4.2 closes three defects.", "areas": ["importer",
+              "scheduler", "audit"]}
+          3:
+            description: Returns prose with heavy incidental structure.
+            exemplar: >-
+              Release 4.2 closes three defects. Importer: no longer drops a trailing
+              column. Scheduler: retries twice. Audit log: records the deleting account.
+          5:
+            description: Returns prose, with no structure that was not requested.
+            exemplar: >-
+              Release 4.2 closes three reported defects. The importer keeps a trailing
+              column when a file ends without a newline, the scheduler retries a failed
+              job twice before reporting it, and the audit log now records which account
+              performed a deletion.
+    threshold: 3.0
+
+# MQC_REQ_MDL_INS_0002, cases 30003 through 30006. Four constraints, four checks.
+- rule_id: MQC_RULE_ins_quantities
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_INS_0002]
+  assertions:
+    - assertion_id: A_INS_BULLET_CEILING
+      kind: length
+      parameters:
+        unit: bullets
+        maximum: 3
+      taxonomy_code: QC_LLM_LENGTH_VIOLATION
+      severity: violation
+      constraint_ref: INS_BULLET_CEILING
+    # AT THE THRESHOLD, NEVER NEAR IT. Twelve words is permitted and
+    # thirteen is not, so the check is written against 12 rather than
+    # against a comfortable margin: off-by-one at a boundary is the likeliest
+    # defect in any gate.
+    - assertion_id: A_INS_WORD_CEILING
+      kind: regex
+      parameters:
+        pattern: '^[ \t]*[-*][ \t]+(\S+[ \t]+){12,}\S+'
+        present: false
+      taxonomy_code: QC_LLM_LENGTH_VIOLATION
+      severity: violation
+      constraint_ref: INS_WORD_CEILING
+    - assertion_id: A_INS_CAPITALISED
+      kind: regex
+      parameters:
+        pattern: '^[ \t]*[-*][ \t]+[a-z]'
+        present: false
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: INS_CAPITALISED
+    # A bullet ending without terminal punctuation is the observable proxy
+    # for a fragment. B11 applies: this parser assumes English.
+    - assertion_id: A_INS_COMPLETE_SENTENCE
+      kind: regex
+      parameters:
+        pattern: '^[ \t]*[-*][ \t]+.*[^.!?][ \t]*$'
+        present: false
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: INS_COMPLETE_SENTENCE
+  rubric:
+    criteria:
+      - criterion_id: C_INS_QUANTITIES_READABLE
+        name: Readability under constraint
+        description: >-
+          Whether the bullets remain informative once the ceilings are met.
+          A response that satisfies every count by saying nothing has obeyed
+          the letter of the instruction and failed the task.
+        anchors:
+          1:
+            description: >-
+              Bullets are contentless padding that meet the counts.
+            exemplar: |-
+              - Fixes were made.
+              - Things improved.
+              - Issues were addressed.
+          3:
+            description: >-
+              Bullets are terse but each carries one real change.
+            exemplar: |-
+              - The importer no longer drops a trailing column.
+              - The scheduler retries failed jobs.
+              - The audit log was changed.
+          5:
+            description: >-
+              Bullets are terse and together cover the note.
+            exemplar: |-
+              - The importer keeps a trailing column without a newline.
+              - The scheduler retries a failed job twice before reporting.
+              - The audit log records the account performing a deletion.
+    threshold: 3.0
+
+# MQC_REQ_MDL_INS_0003, case 30007.
+- rule_id: MQC_RULE_ins_ordering
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_INS_0003]
+  assertions:
+    # THE ORDERING IS CHECKED POSITIONALLY. Both measurable changes carry a
+    # figure, so the check is that neither unmeasured change appears before
+    # a measured one.
+    - assertion_id: A_INS_MEASURABLES_FIRST
+      kind: regex
+      parameters:
+        pattern: '(?s)(restyled|help link).*(30 seconds|2 GB)'
+        present: false
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: INS_MEASURABLES_FIRST
+  rubric:
+    criteria:
+      - criterion_id: C_INS_ORDER_COMPLETE
+        name: Ordering completeness
+        description: >-
+          Whether all four changes appear, with the two carrying a figure
+          ahead of the two that do not.
+        anchors:
+          1:
+            description: >-
+              Changes dropped, or the ordering ignored entirely.
+            exemplar: >-
+              The login page was restyled and the help link points to the new
+              documentation. The export job is faster.
+          3:
+            description: >-
+              All four present, ordering mostly right.
+            exemplar: >-
+              The export job now completes in under 30 seconds. The importer accepts
+              files up to 2 GB. The help link points to the new documentation. The login
+              page was restyled.
+          5:
+            description: >-
+              All four present, measurables first, source order kept.
+            exemplar: >-
+              The export job now completes in under 30 seconds. The importer accepts
+              files up to 2 GB. The login page was restyled. The help link points to the
+              new documentation.
+    threshold: 3.0
+
+# MQC_REQ_MDL_INS_0004, case 30008. The prohibited characters are matched by code
+# point rather than reproduced, so this file obeys the prose rules it tests.
+- rule_id: MQC_RULE_ins_prohibition
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_INS_0004]
+  assertions:
+    - assertion_id: A_INS_NO_LONG_DASH
+      kind: regex
+      parameters:
+        pattern: '[–—]'
+        present: false
+      taxonomy_code: QC_LLM_FORMAT_VIOLATION
+      severity: violation
+      constraint_ref: INS_NO_LONG_DASH
+  rubric:
+    criteria:
+      - criterion_id: C_INS_PROHIBITION_NATURAL
+        name: Naturalness under prohibition
+        description: >-
+          Whether the prose reads normally without the prohibited glyph. A
+          response that avoids it by writing awkwardly has complied at a cost
+          the instruction did not ask for.
+        anchors:
+          1:
+            description: >-
+              Avoided by mangling the sentence, or not avoided.
+            exemplar: >-
+              Release 4.2 closes three defects, all of them reported by users and all of
+              them now fixed.
+          3:
+            description: >-
+              Avoided, with one strained construction.
+            exemplar: >-
+              Release 4.2 closes three reported defects. Those defects are: the
+              importer, the scheduler, and the audit log, each now corrected.
+          5:
+            description: >-
+              Avoided, and the prose reads as though unconstrained.
+            exemplar: >-
+              Release 4.2 closes three reported defects. The importer, the scheduler and
+              the audit log each behave correctly now.
+    threshold: 3.0
+
+# MQC_REQ_MDL_INS_0005, case 30009. Every constraint at once.
+#
+# THE REQUIREMENT IS INTERFERENCE, so each constraint keeps its own check.
+# A single combined assertion would report that something failed and not
+# which, and "compliance with one degrades another" is precisely a claim
+# about which one.
+- rule_id: MQC_RULE_ins_combined
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_INS_0005]
+  assertions:
+    - assertion_id: A_INS_COMBINED_BULLETS
+      kind: length
+      parameters:
+        unit: bullets
+        maximum: 3
+      taxonomy_code: QC_LLM_LENGTH_VIOLATION
+      severity: violation
+      constraint_ref: INS_COMBINED_BULLETS
+    - assertion_id: A_INS_COMBINED_WORDS
+      kind: regex
+      parameters:
+        pattern: '^[ \t]*[-*][ \t]+(\S+[ \t]+){12,}\S+'
+        present: false
+      taxonomy_code: QC_LLM_LENGTH_VIOLATION
+      severity: violation
+      constraint_ref: INS_COMBINED_WORDS
+    - assertion_id: A_INS_COMBINED_ORDER
+      kind: regex
+      parameters:
+        pattern: '(?s)(restyled|help link).*(30 seconds|2 GB)'
+        present: false
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: INS_COMBINED_ORDER
+    - assertion_id: A_INS_COMBINED_NO_LONG_DASH
+      kind: regex
+      parameters:
+        pattern: '[–—]'
+        present: false
+      taxonomy_code: QC_LLM_FORMAT_VIOLATION
+      severity: violation
+      constraint_ref: INS_COMBINED_NO_LONG_DASH
+  rubric:
+    criteria:
+      - criterion_id: C_INS_NO_DEGRADATION
+        name: Absence of degradation
+        description: >-
+          Whether the answer is as good as the single-constraint answers
+          were. The comparison is against the same material under one
+          constraint at a time, which is why those tasks exist.
+        anchors:
+          1:
+            description: >-
+              Meeting the constraints destroyed the content.
+            exemplar: |-
+              - Changes were made.
+              - More changes.
+              - Documentation updated.
+          3:
+            description: >-
+              Noticeably worse than the single-constraint answers.
+            exemplar: |-
+              - The export job completes in under 30 seconds.
+              - The importer accepts files up to 2 GB.
+              - Other changes were made.
+          5:
+            description: >-
+              As informative as the single-constraint answers.
+            exemplar: |-
+              - The export job now completes in under 30 seconds.
+              - The importer accepts files up to 2 GB.
+              - The login page and help link were both updated.
+    threshold: 3.0

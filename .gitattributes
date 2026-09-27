@@ -1,0 +1,35 @@
+# Line endings are normalized because a request hash is computed over content
+# that is read from these files. Without this, the same commit checks out with
+# CRLF on Windows and LF on Linux, the composed request differs, and every
+# replay fixture reports stale on whichever platform did not record it.
+#
+# MQC_EXE_UNI_10240 asserts the hash is identical across both conventions, so
+# the harness does not depend on this file being correct. Two independent
+# mechanisms, for the same reason the debug exclusion has two.
+
+* text=auto eol=lf
+
+# Data read into requests. A stray CR here reaches the model and the hash.
+*.json   text eol=lf
+*.csv    text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.py     text eol=lf
+*.ini    text eol=lf
+*.cfg    text eol=lf
+.pylintrc text eol=lf
+
+# Code excerpts asserted against by a parser. Committed defects must stay
+# byte-identical on every platform; see model_evaluation_test_plan.md 4.4.
+tests/fixtures/excerpts/** text eol=lf
+
+# Recorded provider responses. These carry the request hash they were recorded
+# under, so a rewrite here invalidates replay silently rather than loudly.
+tests/fixtures/replay/** text eol=lf
+
+# Binary, never touched.
+*.png    binary
+*.jpg    binary
+*.gz     binary
+*.zip    binary
