@@ -117,6 +117,29 @@ good-names=_
 # is 21 fields that genuinely describe one measured execution.
 max-attributes=21
 
+# SIX BECAUSE PYLINT COUNTS `self`, so the default of 5 means a method may take
+# four arguments and a plain function five. That is not the standard this project
+# intends, and it bites hardest on test methods, whose arguments are pytest
+# fixtures: injected by name, never assembled at a call site, so the call-site
+# complexity R0913 measures does not exist for them.
+#
+# EVERY VIOLATION IN THE REPOSITORY WAS EXACTLY 6/5 when this was set, so six is
+# the tightest limit that admits them rather than a round number chosen upward:
+# two spacing and retry cases needing five fixtures each, and JudgeChannel's
+# constructor, which takes an engine, a model, a spacing and two keyword-only
+# choices.
+#
+# A SEVENTH ARGUMENT SHOULD STILL BE QUESTIONED. If one arrives, the answer is
+# usually a record the design has not named yet, which is the same answer
+# max-attributes above gives.
+max-args=6
+
+# THE SAME NUMBER, FOR THE SAME REASON. R0917 counts positional arguments, and a
+# pytest fixture is positional, so a method with five fixtures breaches this too.
+# Keyword-only arguments are already excluded, which is why JudgeChannel trips
+# R0913 and not this one.
+max-positional-arguments=6
+
 [MESSAGES CONTROL]
 # Schema records are data, not behaviour. A @dataclass that exists to be
 # validated and serialized has no methods by design, and R0903 has nothing
