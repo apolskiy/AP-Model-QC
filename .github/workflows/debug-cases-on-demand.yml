@@ -61,21 +61,29 @@ env:
 jobs:
   debug:
     name: debug
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Named because the judge is a live call whatever the mode, so a judged
     # replay run needs a credential. Gating derives from selection mode and run
     # context, neither of which a credential touches, so this stays ungated.
     environment: live
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.case_ref || github.ref }}
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install the resolver's only dependency
+      # PYYAML, AND NOTHING ELSE, BECAUSE THE HARNESS MUST NOT BE HERE. The
+      # resolver decides whether the paired harness is verified, and installing
+      # that harness to make the decision would ask an unverified ref to vouch
+      # for itself. `tools/harness_pin.py` therefore imports no harness module
+      # and reads only the pin file, which needs a YAML parser.
+      #
+      # The version matches the `pyyaml` pin in `pyproject.toml`; it is repeated
+      # here because a workflow cannot read that file before Python is installed.
+      - name: Install PyYAML for the resolver
         run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
 
       # BOTH REFS ARE INPUTS, because the pairing is what is under suspicion.
@@ -103,12 +111,26 @@ jobs:
             echo "source=mapping" >> "$GITHUB_OUTPUT"
           fi
 
+      # THE TEST TOOLING ARRIVES WITH THE HARNESS `[dev]` EXTRA: pytest,
+      # allure-pytest, pylint and pytest-randomly, all pinned there once. Its
+      # absence was why every gate here reported a missing test runner, exit 127.
+      #
+      # `--no-deps` on this repository is deliberate and is why the extra is
+      # needed. It stops this repository's own harness pin replacing the
+      # candidate resolved above, and it discards extras too, so asking for
+      # `.[dev]` asked pip for tooling it was told not to fetch.
+      #
+      # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
+      # comment inside a run body is part of the shell script, and
+      # `MQC_CAS_UNI_10435` reads run bodies looking for a graded invocation: an
+      # earlier version of this note said "toolchain" beside the word for the
+      # test runner, and `tool` matched inside it.
       - name: Install the harness and this repository
         shell: bash
         run: |
           python -m pip install --quiet \
-            "ap-harness-qc @ git+https://github.com/${{ steps.pin.outputs.harness_repository }}@${{ steps.pin.outputs.harness_sha }}"
-          python -m pip install --quiet --no-deps --editable ".[dev]"
+            "ap-harness-qc[dev] @ git+https://github.com/${{ steps.pin.outputs.harness_repository }}@${{ steps.pin.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
 
       # A MISTYPED IDENTIFIER SELECTS NOTHING and pytest exits cleanly having
       # run zero tests, which reads exactly like a run where everything passed.
@@ -161,7 +183,7 @@ jobs:
             --out-dir debug-artifacts/ \
             --junitxml=debug-artifacts/junit-debug.xml
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           # Does not begin with the collector prefix, so exclusion from the

@@ -156,6 +156,41 @@ def _run_lines(job: dict[str, Any]) -> list[str]:
     return bodies
 
 
+
+def _selects_a_graded_marker(line: str) -> bool:
+    """Report whether a command selects a graded marker with `-m`.
+
+    **The marker has to be selected, not merely mentioned.** An earlier version
+    asked whether the body contained "pytest" and any of the marker names as a
+    bare substring, and a run body is one string per step including its shell
+    comments. A note explaining an install said "toolchain" next to the word for
+    the test runner, `tool` matched inside it, and `10435` reported the install
+    step as an ungated graded invocation.
+
+    **"sec" is the dangerous one**, being a substring of section, second,
+    security and secret, all of which belong in a comment about a gate.
+
+    Args:
+        line (str): One step's run body, continuations already folded.
+
+    Returns:
+        bool: True where the body invokes pytest and a ``-m`` expression selects
+        a graded marker as a whole word. **A computed expression selects
+        nothing here**, which is unchanged: a dispatch passing a marker through
+        an input never carried a literal one to match.
+    """
+    if "pytest" not in line:
+        return False
+    for quoted, bare in re.findall(r'-m\s+(?:"([^"]*)"|(\S+))', line):
+        selected = quoted or bare
+        if any(
+            re.search(rf"\b{re.escape(marker)}\b", selected)
+            for marker in _GRADED_MARKERS
+        ):
+            return True
+    return False
+
+
 def _graded_invocations(job: dict[str, Any]) -> list[str]:
     """Return the job's commands that execute a graded layer.
 
@@ -165,10 +200,7 @@ def _graded_invocations(job: dict[str, Any]) -> list[str]:
     Returns:
         list[str]: The pytest invocations selecting a graded marker.
     """
-    return [
-        line for line in _run_lines(job)
-        if "pytest" in line and any(marker in line for marker in _GRADED_MARKERS)
-    ]
+    return [line for line in _run_lines(job) if _selects_a_graded_marker(line)]
 
 
 def _step_ids(job: dict[str, Any]) -> set[str]:

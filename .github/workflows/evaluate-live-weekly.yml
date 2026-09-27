@@ -53,22 +53,27 @@ jobs:
   # nothing. An ungated live run has nothing to offer for the quota.
   resolve:
     name: resolve the paired harness
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       harness_repository: ${{ steps.pin.outputs.harness_repository }}
       harness_sha: ${{ steps.pin.outputs.harness_sha }}
       green: ${{ steps.pin.outputs.green }}
       reason: ${{ steps.pin.outputs.reason }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      # PyYAML alone, and the harness deliberately NOT installed: a check
-      # fetched from the harness would be asking an unverified ref to vouch
-      # for itself.
-      - name: Install the resolver's only dependency
+      # PYYAML, AND NOTHING ELSE, BECAUSE THE HARNESS MUST NOT BE HERE. The
+      # resolver decides whether the paired harness is verified, and installing
+      # that harness to make the decision would ask an unverified ref to vouch
+      # for itself. `tools/harness_pin.py` therefore imports no harness module
+      # and reads only the pin file, which needs a YAML parser.
+      #
+      # The version matches the `pyyaml` pin in `pyproject.toml`; it is repeated
+      # here because a workflow cannot read that file before Python is installed.
+      - name: Install PyYAML for the resolver
         run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
 
       - name: Resolve the pairing and assess it
@@ -105,21 +110,36 @@ jobs:
     # against an unverified instrument produces a green nobody can
     # rely on, and rungs 2 and 3 would then spend on that basis.
     if: needs.resolve.outputs.green == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       # BY COMMIT, NEVER BY BRANCH. The branch may have moved since resolve
       # ran, and installing the branch would spend quota measuring a model
       # with an instrument no gate has seen.
+
+      # THE TEST TOOLING ARRIVES WITH THE HARNESS `[dev]` EXTRA: pytest,
+      # allure-pytest, pylint and pytest-randomly, all pinned there once. Its
+      # absence was why every gate here reported a missing test runner, exit 127.
+      #
+      # `--no-deps` on this repository is deliberate and is why the extra is
+      # needed. It stops this repository's own harness pin replacing the
+      # candidate resolved above, and it discards extras too, so asking for
+      # `.[dev]` asked pip for tooling it was told not to fetch.
+      #
+      # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
+      # comment inside a run body is part of the shell script, and
+      # `MQC_CAS_UNI_10435` reads run bodies looking for a graded invocation: an
+      # earlier version of this note said "toolchain" beside the word for the
+      # test runner, and `tool` matched inside it.
       - name: Install the resolved harness and this repository
         shell: bash
         run: |
           python -m pip install --quiet \
-            "ap-harness-qc @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
-          python -m pip install --quiet --no-deps --editable ".[dev]"
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
 
       - name: Graded layers, both sides replayed
         run: |
@@ -129,7 +149,7 @@ jobs:
             --junitxml=reports/junit_replay_replay.xml \
             --alluredir=reports/allure-results
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: mqc-reports-cases-gemini-replay-replay
@@ -146,22 +166,37 @@ jobs:
   judge:
     name: 2 - the judge (replay, live)
     needs: [resolve, deterministic]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: live
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       # BY COMMIT, NEVER BY BRANCH. The branch may have moved since resolve
       # ran, and installing the branch would spend quota measuring a model
       # with an instrument no gate has seen.
+
+      # THE TEST TOOLING ARRIVES WITH THE HARNESS `[dev]` EXTRA: pytest,
+      # allure-pytest, pylint and pytest-randomly, all pinned there once. Its
+      # absence was why every gate here reported a missing test runner, exit 127.
+      #
+      # `--no-deps` on this repository is deliberate and is why the extra is
+      # needed. It stops this repository's own harness pin replacing the
+      # candidate resolved above, and it discards extras too, so asking for
+      # `.[dev]` asked pip for tooling it was told not to fetch.
+      #
+      # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
+      # comment inside a run body is part of the shell script, and
+      # `MQC_CAS_UNI_10435` reads run bodies looking for a graded invocation: an
+      # earlier version of this note said "toolchain" beside the word for the
+      # test runner, and `tool` matched inside it.
       - name: Install the resolved harness and this repository
         shell: bash
         run: |
           python -m pip install --quiet \
-            "ap-harness-qc @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
-          python -m pip install --quiet --no-deps --editable ".[dev]"
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
 
       - name: Calibration, against the anchors the exemplars were written for
         env:
@@ -187,7 +222,7 @@ jobs:
             --junitxml=reports/junit_replay_live.xml \
             --alluredir=reports/allure-results
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: mqc-reports-cases-gemini-replay-live
@@ -223,22 +258,36 @@ jobs:
   model:
     name: 3 - the model (live, live)
     needs: [resolve, judge]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: live
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       # BY COMMIT, NEVER BY BRANCH. The branch may have moved since resolve
       # ran, and installing the branch would spend quota measuring a model
       # with an instrument no gate has seen.
+      # THE TEST TOOLING ARRIVES WITH THE HARNESS `[dev]` EXTRA: pytest,
+      # allure-pytest, pylint and pytest-randomly, all pinned there once. Its
+      # absence was why every gate here reported a missing test runner, exit 127.
+      #
+      # `--no-deps` on this repository is deliberate and is why the extra is
+      # needed. It stops this repository's own harness pin replacing the
+      # candidate resolved above, and it discards extras too, so asking for
+      # `.[dev]` asked pip for tooling it was told not to fetch.
+      #
+      # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
+      # comment inside a run body is part of the shell script, and
+      # `MQC_CAS_UNI_10435` reads run bodies looking for a graded invocation: an
+      # earlier version of this note said "toolchain" beside the word for the
+      # test runner, and `tool` matched inside it.
       - name: Install the resolved harness and this repository
         shell: bash
         run: |
           python -m pip install --quiet \
-            "ap-harness-qc @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
-          python -m pip install --quiet --no-deps --editable ".[dev]"
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
 
       - name: Graded layers, live throughout
         env:
@@ -250,7 +299,7 @@ jobs:
             --junitxml=reports/junit_live_live.xml \
             --alluredir=reports/allure-results
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: mqc-reports-cases-gemini-live-live
@@ -261,7 +310,7 @@ jobs:
     name: report
     needs: [resolve, deterministic, judge, model]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Summarise which rung stopped
         shell: bash
