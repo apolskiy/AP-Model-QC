@@ -27,13 +27,14 @@ import fnmatch
 import json
 import logging
 import os
+import time
 import subprocess
 import sys
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Final, Optional
 
 import yaml
 
@@ -113,6 +114,36 @@ def load_mapping(path: Path) -> dict[str, Any]:
         )
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
+
+# The phrase `assess_greenness` uses for a run that has not concluded. Matched
+# rather than re-derived, so the two cannot disagree about what pending means.
+_STILL_RUNNING: Final[str] = "so nothing has been established yet"
+
+
+@dataclass(frozen=True)
+class WaitPolicy:
+    """How long to wait for a pending gate, and by whose clock.
+
+    **One argument rather than four.** The budget, the interval and the two
+    injected time functions are a single idea: the terms on which waiting
+    happens. Passing them separately put `await_verdict` at eight arguments,
+    which is the signature asking to be questioned rather than the limit asking
+    to be raised.
+
+    Attributes:
+        timeout_sec (float): How long to wait before refusing. The harness gate
+            finishes in two to three minutes, so ten absorbs a queued runner
+            without letting a wedged run hold a consumer job all day.
+        interval_sec (float): How long to pause between checks.
+        monotonic (Callable): The clock, injected so a case can exercise a ten
+            minute timeout without spending it.
+        delay (Callable): The sleep, injected for the same reason.
+    """
+
+    timeout_sec: float = 600.0
+    interval_sec: float = 15.0
+    monotonic: Callable[[], float] = time.monotonic
+    delay: Callable[[float], None] = time.sleep
 
 def resolve_pairing(mapping: dict[str, Any], case_branch: str) -> Pairing:
     """Return the harness ref paired with a branch of this repository.
@@ -253,6 +284,64 @@ def head_commit(repository: str, ref: str) -> str:
         f"name a harness branch that has not been created yet"
     )
 
+
+
+def await_verdict(
+    repository: str,
+    commit: str,
+    token: Optional[str],
+    required_workflow: str,
+    policy: Optional[WaitPolicy] = None,
+) -> Greenness:
+    """Return the harness verdict, waiting while it is still being decided.
+
+    **An in-progress run is a pending decision, not a missing one**, and the two
+    deserve different treatment. Refusing on a pending decision made every paired
+    push produce a red consumer run that a manual re-run then cleared, which is
+    toil carrying no information: the answer was always going to arrive.
+
+    **Section 3.2 is not weakened by this.** "Absence of a result is not a pass"
+    refuses to read an unknown as a success. Waiting is the opposite of assuming:
+    nothing is concluded until the upstream gate concludes it, a red stays red,
+    and a run that never finishes is still refused when the wait runs out.
+
+    Args:
+        repository (str): The harness repository.
+        commit (str): The harness commit under question.
+        token (Optional[str]): The API token, if any.
+        required_workflow (str): The workflow filename that defines green.
+        policy (Optional[WaitPolicy]): The terms of the wait. **Defaulted rather
+            than required**, so a caller that has no opinion states none.
+
+    Returns:
+        Greenness: The verdict once the run concludes, or the last unconcluded
+        verdict when the wait runs out. **The timeout refuses**, because a gate
+        that has not finished has still established nothing.
+    """
+    terms = policy or WaitPolicy()
+    started = terms.monotonic()
+    verdict = assess_greenness(fetch_runs(repository, commit, token), required_workflow, commit)
+
+    while verdict.conclusion is None and not verdict.green:
+        # ONLY AN UNCONCLUDED RUN IS WAITED ON. A run that concluded red carries
+        # its conclusion, and a commit with no run at all carries none but is not
+        # going to grow one: neither is a decision that arrives by waiting.
+        if _STILL_RUNNING not in verdict.reason:
+            return verdict
+        if terms.monotonic() - started >= terms.timeout_sec:
+            return Greenness(
+                green=False,
+                reason=(
+                    f"{verdict.reason}. Waited {terms.timeout_sec:.0f}s and it has not "
+                    f"concluded, so nothing is established"
+                ),
+            )
+        terms.delay(terms.interval_sec)
+        verdict = assess_greenness(
+            fetch_runs(repository, commit, token), required_workflow, commit
+        )
+
+    return verdict
 
 def fetch_runs(
     repository: str, head_sha: str, token: Optional[str] = None
@@ -396,10 +485,8 @@ def main(argv: Optional[list[str]] = None) -> int:
         print(f"::error::{error}", file=sys.stderr)
         return _EXIT_REFUSED
 
-    verdict = assess_greenness(
-        fetch_runs(repository, commit, os.environ.get("GITHUB_TOKEN")),
-        required_workflow,
-        commit,
+    verdict = await_verdict(
+        repository, commit, os.environ.get("GITHUB_TOKEN"), required_workflow
     )
 
     _emit(

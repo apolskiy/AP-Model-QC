@@ -328,6 +328,36 @@ boundary rather than an omission.
 | **3** | **Nothing. Withdrawn** | **No `SYS` case exists here to run** |
 | 4 | `pytest -m "evaluator or tool or sec"` | The graded corpus, replayed |
 
+### 3.11 A pending gate is waited for, not refused
+
+Added 2026-09-28, after four consecutive paired pushes each produced a red
+consumer run that carried no information.
+
+The consumer gate fires on push. The harness gate runs lint, unit and system on
+two platforms and takes minutes. So the resolver met an `in_progress` run every
+time, refused, and a human re-ran the identical job to get the identical answer
+once the upstream had finished.
+
+**Section 3.2 is not weakened by this, and the distinction is the whole point.**
+"Absence of a result is not a pass" refuses to read an unknown as a success.
+Waiting is the opposite of assuming: nothing is concluded until the upstream gate
+concludes it.
+
+| What the resolver meets | What it does |
+|---|---|
+| A run still going | **Waits**, up to ten minutes |
+| A run that concluded red | Refuses at once |
+| A run that concluded green | Proceeds |
+| **No run at all** | Refuses at once. Waiting does not grow one |
+| A wait that runs out | Refuses. An unfinished gate established nothing |
+
+**Ten minutes, and the bound matters.** The harness gate finishes in two to three,
+so the budget absorbs a queued runner without letting a wedged upstream run hold a
+consumer job all day.
+
+**The clock is injected**, so `MQC_CAS_UNI_10451` exercises the timeout without
+spending it.
+
 ## 4. Test Inventory: `MQC_CAS_UNI_`
 
 Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
@@ -364,8 +394,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `10448` | N | `a_requirement_traced_but_stated_in_no_plan_is_reported` |
 | `10449` | N | `a_matrix_row_naming_a_test_the_suite_lacks_is_reported` |
 | `10450` | N | `a_readme_figure_disagreeing_with_the_repository_is_reported` |
+| `10451` | B | `a_pending_harness_gate_is_waited_for_not_refused` |
 
-**Inventory: 29 cases, 19 negative, 5 positive, 3 boundary.**
+**Inventory: 30 cases, 19 negative, 5 positive, 3 boundary.**
 
 ### 4.1 Why the negatives outnumber the positives
 

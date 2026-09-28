@@ -19,12 +19,14 @@ import ast
 import csv
 import re
 from pathlib import Path
+from typing import Any
 
 import allure
 import pytest
 
 from ingestion.loaders import load_tasks_from_yaml
 from cmn.branch_policy import BRANCH_KINDS, referent_problems
+from tools import harness_pin
 from tools.harness_pin import (
     Pairing,
     apply_target_strictness,
@@ -35,6 +37,11 @@ from tools.harness_pin import (
 from tools.harness_pin import main as harness_pin_main
 
 pytestmark = pytest.mark.unit
+
+# A HARNESS COMMIT, as the API spells one. The value is arbitrary and the
+# width is not: the resolver truncates it for its messages.
+_PINNED_SHA = "d793908f3325e109da63fc05e1ddd1f2329c3f0f"
+_REQUIRED_WORKFLOW = "gate-on-change.yml"
 
 _WORKFLOW = "gate-on-change.yml"
 _SHA = "a" * 40
@@ -78,6 +85,86 @@ def fixture_mapping() -> dict[str, object]:
     """
     root = Path(__file__).resolve().parents[2]
     return load_mapping(root / "config" / "harness_pin.yaml")
+
+
+
+def _running() -> list[dict[str, Any]]:
+    """Return the API shape of a run that has not concluded.
+
+    Returns:
+        list[dict]: One in-progress run for the pinned commit.
+    """
+    return [
+        {
+            "head_sha": _PINNED_SHA,
+            "path": f".github/workflows/{_REQUIRED_WORKFLOW}",
+            "run_number": 1,
+            "status": "in_progress",
+            "conclusion": None,
+        }
+    ]
+
+
+def _concluded(conclusion: str) -> list[dict[str, Any]]:
+    """Return the API shape of a run that has finished.
+
+    Args:
+        conclusion (str): What it concluded.
+
+    Returns:
+        list[dict]: One completed run for the pinned commit.
+    """
+    return [
+        {
+            "head_sha": _PINNED_SHA,
+            "path": f".github/workflows/{_REQUIRED_WORKFLOW}",
+            "run_number": 1,
+            "status": "completed",
+            "conclusion": conclusion,
+        }
+    ]
+
+
+def _drive(
+    sequence: list[list[dict[str, Any]]], timeout: float = 600.0
+) -> tuple[Any, int, float]:
+    """Run the wait against scripted answers, spending no wall clock.
+
+    **The clock and the sleep are injected**, so a case that exercises a ten
+    minute timeout finishes instantly and asserts the interval rather than
+    enduring it.
+
+    Args:
+        sequence (list): One list of runs per poll, the last repeated.
+        timeout (float): The wait budget.
+
+    Returns:
+        tuple: The verdict, how many times the API was polled, and how long the
+        wait believed it had spent.
+    """
+    remaining = list(sequence)
+    polls = 0
+    now = [0.0]
+
+    def fetch(_repository: str, _commit: str, _token: Any) -> list[dict[str, Any]]:
+        nonlocal polls
+        polls += 1
+        return remaining.pop(0) if len(remaining) > 1 else remaining[0]
+
+    original = harness_pin.fetch_runs
+    harness_pin.fetch_runs = fetch
+    try:
+        verdict = harness_pin.await_verdict(
+            "apolskiy/AP-Harness-QC", _PINNED_SHA, None, _REQUIRED_WORKFLOW,
+            harness_pin.WaitPolicy(
+                timeout_sec=timeout, interval_sec=15.0,
+                monotonic=lambda: now[0],
+                delay=lambda seconds: now.__setitem__(0, now[0] + seconds),
+            ),
+        )
+    finally:
+        harness_pin.fetch_runs = original
+    return verdict, polls, now[0]
 
 
 @allure.epic("AP-Model-QC")
@@ -661,6 +748,49 @@ class TestMQCTargetStrictness:
 
 
     @allure.story("Plan and matrix agree")
+
+    def MQC_CAS_UNI_10451_a_pending_harness_gate_is_waited_for_not_refused(
+        self,
+    ) -> None:
+        """Four paired pushes in a row produced a red run that meant nothing.
+
+        The consumer gate fires on push and the harness gate takes minutes, so
+        the resolver met an `in_progress` run every time and refused. Each was
+        cleared by re-running the identical job by hand, which is toil carrying
+        no information: the answer was always going to arrive.
+
+        **Section 3.2 is not weakened.** "Absence of a result is not a pass"
+        refuses to read an unknown as a success, and waiting is the opposite of
+        assuming: nothing concludes until the upstream gate concludes it.
+
+        **Four outcomes, and only one of them waits.** A red conclusion is a
+        decision and is refused at once. A commit with no run at all is refused
+        at once too, because no amount of waiting grows one. A wait that runs out
+        refuses, because a gate that has not finished has established nothing.
+
+        Returns:
+            None
+        """
+        for name, sequence, expect_green, expect_waited in (
+            ("pending then green", [_running()] * 3 + [_concluded("success")], True, True),
+            ("pending then red", [_running(), _concluded("failure")], False, True),
+            ("red at once", [_concluded("failure")], False, False),
+            ("no run at all", [[]], False, False),
+        ):
+            verdict, polls, waited = _drive(sequence)
+            assert verdict.green is expect_green, f"{name}: green was {verdict.green}"
+            assert (waited > 0) is expect_waited, (
+                f"{name}: waited {waited}s, which is the wrong side of zero"
+            )
+            assert polls >= 1
+
+        # A GATE THAT NEVER FINISHES IS STILL REFUSED, and the wait is bounded so
+        # a wedged upstream run cannot hold a consumer job indefinitely.
+        stuck, _, waited = _drive([_running()], timeout=60.0)
+        assert stuck.green is False
+        assert waited == 60.0
+        assert "has not concluded" in stuck.reason
+
     def MQC_CAS_UNI_10448_a_requirement_traced_but_stated_in_no_plan_is_reported(
         self,
     ) -> None:

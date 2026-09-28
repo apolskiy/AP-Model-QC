@@ -16,10 +16,10 @@ designed, and the corpus they run against is written.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 69 graded cases specified |
-| `docs/testing/rtm_model.csv` | 72 requirements, traced |
+| `docs/testing/rtm_model.csv` | 73 requirements, traced |
 | `data/tasks/`, `data/rules/` | **7 corpora, 65 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **50 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **51 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | Three workflows: the gate, the live ladder, and debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **69 written**: 40 evaluator, 21 security, 8 tool |
