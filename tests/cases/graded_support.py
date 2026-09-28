@@ -18,6 +18,7 @@ decides, and a case cannot quietly spend quota.
 """
 
 from functools import lru_cache
+from datetime import date
 from pathlib import Path
 from typing import Any, Optional
 
@@ -25,6 +26,7 @@ import pytest
 
 from cmn.config import load_engines
 from cmn.options import resolve_judge_mode
+from cmn.pricing import load_price_table
 from evaluation.isolation import UnauthoredMaterial
 from evaluation.judge import JudgeBinding
 from evaluation.pipeline import ObservationContext, evaluate_observation
@@ -141,22 +143,46 @@ def dispatch_plan(config: Any) -> DispatchPlan:
 
 
 def dispatch_session(config: Any) -> DispatchSession:
-    """Return run-level pacing state, configured from the engine roster.
+    """Return run-level pacing state and spending state, from the roster and flags.
 
-    **Spacing is per engine because free-tier ceilings differ.** A session
-    built without it would issue every request at once and be rate limited
-    into a run that measures the limiter rather than the model.
+    **Spacing is per engine because free-tier ceilings differ.** A session built
+    without it would issue every request at once and be rate limited into a run
+    that measures the limiter rather than the model.
+
+    **The ceiling arrives here or nowhere.** `--max-spend` was declared as an
+    option, the session carried the field, and the refusal was written and
+    tested, while this function read only the spacing: the ceiling was
+    unreachable from a command line. A cap nobody can set is not a cap.
+
+    **The price table comes with it**, because a ceiling without rates cannot be
+    computed, and an uncomputable ceiling stops a budgeted run rather than
+    pretending to hold (harness `MQC_EXE_UNI_10303`).
 
     Args:
         config (Any): pytest's configuration.
 
     Returns:
-        DispatchSession: Pacing and circuit-breaker state.
+        DispatchSession: Pacing, circuit-breaker and spending state. **The table
+        is loaded only where a ceiling is set**, so a replay gate neither reads
+        the file nor prices anything it did not pay for.
     """
     engine = config.getoption("--engine")
     roster = engine_roster()
     spacing = roster[engine].spacing_sec if engine in roster else 0.0
-    return DispatchSession(spacing_sec=spacing)
+
+    ceiling = float(config.getoption("--max-spend") or 0.0)
+    if ceiling <= 0:
+        return DispatchSession(spacing_sec=spacing)
+
+    return DispatchSession(
+        spacing_sec=spacing,
+        max_spend=ceiling,
+        prices=load_price_table(harness_root() / "config" / "pricing.yaml"),
+        # THE RUN'S OWN DATE, read once here rather than per response. A run
+        # spanning midnight prices every request the same way, which is what
+        # makes two readings of one corpus agree.
+        priced_on=date.today(),
+    )
 
 
 

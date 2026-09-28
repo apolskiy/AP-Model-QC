@@ -115,7 +115,15 @@ good-names=_
 # RunContext because they describe the run rather than the result. That split
 # is the abstraction the number would otherwise have hidden, and what is left
 # is 21 fields that genuinely describe one measured execution.
-max-attributes=21
+# TWENTY-TWO SINCE 2026-09-27, and the extra one is a record rather than a
+# field. Cost accounting arrived as six counts, which this limit correctly
+# refused; the answer it recommends is to question the record, and questioning it
+# gave `CaseUsage`: what a case consumed is one fact about an execution, and the
+# judge's half is a part of that fact rather than a peer of `outcome`.
+#
+# So the number moved by one because the design gained one fact, which is the
+# only reason it should ever move.
+max-attributes=22
 
 # SIX BECAUSE PYLINT COUNTS `self`, so the default of 5 means a method may take
 # four arguments and a plain function five. That is not the standard this project
