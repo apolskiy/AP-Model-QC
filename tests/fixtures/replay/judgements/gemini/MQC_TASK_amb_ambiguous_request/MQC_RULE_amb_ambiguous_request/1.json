@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_QUESTION_IS_USEFUL": {
+        "rationale": "The response clearly exceeds level 3 by explicitly identifying and naming both missing details (which threshold to update and the target value). However, it falls short of level 5 because it does not explicitly state what it will do once that information is provided.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "212bace2ef63355e93af93e7b9cd61027129ee3e26b9a792ba9a52019872faf1"
+}

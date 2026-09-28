@@ -1,0 +1,22 @@
+{
+  "request_hash": "ee2964c16d92970a3a12706306d5b518820ab5b76b5f4b6362f5919d1ca8d6c6",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
+    "duration_ms": 2633,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 116,
+    "mode": "live",
+    "output_tokens": 87,
+    "raw_reference": "Q9i6av6zKcK21MkPgt3hiAc",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "The change request cannot be applied unambiguously as it is missing two key details:\n\n1. **Which threshold to update:** The configuration contains both `retry_threshold` and `alert_threshold`.\n2. **The new value:** The request states to \"raise the threshold\" but does not specify a target value or amount to increase it by.\n\nPlease specify which threshold should be changed and what value it should be set to.",
+    "thinking_tokens": 274,
+    "tool_calls": []
+  }
+}

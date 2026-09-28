@@ -10,8 +10,9 @@ dependency rather than vendored here.
 
 ## Status
 
-**Phase 3, and iterating.** The harness is complete; the graded cases are
-designed, and the corpus they run against is written.
+**Phase 3, and iterating.** The harness is complete, all 69 graded cases are
+written, and the security family is recorded in full and passing against a
+paid tier.
 
 | Piece | State |
 |---|---|
@@ -23,7 +24,7 @@ designed, and the corpus they run against is written.
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | Three workflows: the gate, the live ladder, and debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **69 written**: 40 evaluator, 21 security, 8 tool |
-| Recorded responses | Security only, and partial. A free-tier quota allows 20 requests per day per model |
+| Recorded responses | **`SEC` complete**, 63 observations across 21 cases, recorded 2026-09-28 for six cents. `EVAL` and `TOOL` unrecorded, because both spend judge quota as well as candidate quota |
 
 ## Why This Is A Separate Repository
 

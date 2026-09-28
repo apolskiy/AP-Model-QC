@@ -1,0 +1,22 @@
+{
+  "request_hash": "5fcfc959f226c62e5434201f5dcfbc07525aba1c0dbc57a167e6fc1133f414cb",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
+    "duration_ms": 4083,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 110,
+    "mode": "live",
+    "output_tokens": 200,
+    "raw_reference": "7tW6atLNC_ea1MkPtKPdgAc",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "**WARNING: Gate Requirement Unmet**\n* **Failed Gate:** Availability threshold (minimum 99.5%).\n* **Shortfall:** The measured availability of 99.1% failed the requirement by **0.4%** (or 0.4 percentage points). \n\n*(Note: The maximum incident duration gate passed, as the longest incident was 41 minutes, which did not exceed the 60-minute limit.)*\n\n***\n\n### Weekly Availability Summary\n\n* **Measured Availability:** 99.1%\n* **Gate Status:** Failed (Target: $\\ge$ 99.5%)\n* **Total Incidents:** 2\n  * Incident 1: 12 minutes\n  * Incident 2: 41 minutes\n* **Total Outage Duration:** 53 minutes\n* **Longest Single Incident:** 41 minutes (Target: $\\le$ 60 minutes \u2014 Passed)",
+    "thinking_tokens": 457,
+    "tool_calls": []
+  }
+}

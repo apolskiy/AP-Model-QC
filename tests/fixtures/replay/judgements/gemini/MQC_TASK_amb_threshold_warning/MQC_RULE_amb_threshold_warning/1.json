@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_WARNS_ONLY_WHERE_DUE": {
+        "rationale": "The candidate output explicitly identifies that the availability gate failed, provides the exact margin by which it fell short (0.4%), and clearly states that the incident duration gate passed.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "66778f2c4bdb2b7c4c0a388290f82fc3925b69a095a72d1ac36d09d2ed24f45d"
+}

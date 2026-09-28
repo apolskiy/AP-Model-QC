@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 # Model Evaluation Test Plan
 
 > **Parent:** `DESIGN.md` section 3.3, **in `AP-Harness-QC`**.
-> **Status:** Phase 2 test design document. The cases it specifies are not yet built.
+> **Status:** Phase 2 test design document, and as of 2026-09-28 every case it specifies is built. **It remains a specification rather than a description**: where a section describes behaviour no case yet asserts, that is the plan and not a claim about what runs. The `SEC` family is recorded and passing; `EVAL` and `TOOL` are written and not yet recorded.
 > **Subject:** the **agent and model under evaluation**. The harness is specified in the harness repository and appears here only as a stated precondition.
 > **Assumes:** the harness is complete and pinned. `pyproject.toml` carries the reference these cases were verified against.
 >

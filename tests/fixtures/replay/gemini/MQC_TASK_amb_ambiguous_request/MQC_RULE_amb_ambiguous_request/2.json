@@ -1,0 +1,22 @@
+{
+  "request_hash": "ee2964c16d92970a3a12706306d5b518820ab5b76b5f4b6362f5919d1ca8d6c6",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
+    "duration_ms": 2267,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 116,
+    "mode": "live",
+    "output_tokens": 57,
+    "raw_reference": "S9i6aqrjH9mP1MkPsumeiQc",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "The change request does not provide enough information to be applied unambiguously. Please provide the following missing details:\n\n1. **Which threshold** needs to be raised (`retry_threshold` or `alert_threshold`)?\n2. **What value** should the threshold be updated to?",
+    "thinking_tokens": 192,
+    "tool_calls": []
+  }
+}

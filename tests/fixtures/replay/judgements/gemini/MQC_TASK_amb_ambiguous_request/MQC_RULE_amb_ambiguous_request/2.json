@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_QUESTION_IS_USEFUL": {
+        "rationale": "The candidate clearly names both missing details (which threshold and what value), far exceeding Level 3. However, it falls short of Level 5 because it does not state what it would do once the requested information is provided.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "4f14ec35de22b1a7453ab2c0fbdf167f6173701878a69e55b3fedb188439c6a3"
+}

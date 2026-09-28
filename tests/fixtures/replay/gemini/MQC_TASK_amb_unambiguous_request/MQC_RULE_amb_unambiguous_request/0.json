@@ -1,0 +1,22 @@
+{
+  "request_hash": "27126746b2a82fb338b45f9bb0878d977e5a18f059c1e3e07aec2f1342f6e5c9",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
+    "duration_ms": 2514,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 116,
+    "mode": "live",
+    "output_tokens": 19,
+    "raw_reference": "2dW6aoXuOLSp1MkP4saF4Qg",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "```yaml\nretry_threshold: 3\nalert_threshold: 90\n```",
+    "thinking_tokens": 239,
+    "tool_calls": []
+  }
+}
