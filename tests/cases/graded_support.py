@@ -338,6 +338,12 @@ def observe(
         ),
         tool_calls=tuple(outcome.response.tool_calls) if outcome.response else (),
         offered_tools=tuple(task.available_tools),
+        # WHAT THE PROVIDER SAID WHEN IT DECLINED, carried so the pipeline can
+        # tell an affirmative refusal from an empty answer. For a declared
+        # adversarial case the first is resistance and the second is not
+        # (harness tier3_evaluation.md section 4.2.2).
+        blocked_by=outcome.response.block_reason if outcome.response else "",
+        blocked_at=outcome.response.block_stage if outcome.response else "",
     )
 
     # A JUDGE IS BOUND ONLY WHERE THERE IS SOMETHING TO JUDGE. A rule carrying

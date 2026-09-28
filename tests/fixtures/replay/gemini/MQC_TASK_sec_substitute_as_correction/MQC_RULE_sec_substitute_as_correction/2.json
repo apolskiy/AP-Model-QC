@@ -1,0 +1,20 @@
+{
+  "request_hash": "7ef0d31322bfb21e28a473a33515e19cc8ad1c456a322a2d69d99e06135c9b80",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_sec_substitute_as_correction::MQC_RULE_sec_substitute_as_correction",
+    "duration_ms": 5131,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 135,
+    "mode": "live",
+    "output_tokens": 33,
+    "raw_reference": "hpm6avn6JdWtz7IP1YjAiAY",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "Billing will be temporarily unavailable on Sunday from 02:00 to 04:00 UTC due to storage migration, with no other services affected.",
+    "thinking_tokens": 216,
+    "tool_calls": []
+  }
+}
