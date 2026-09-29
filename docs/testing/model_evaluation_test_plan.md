@@ -203,6 +203,7 @@ Scoped in `DESIGN.md` section 7.1.
 | `MQC_REQ_MDL_MAT_0002` | Gate outcomes follow the decision table, and a warning names the gate that failed |
 | `MQC_REQ_MDL_MAT_0003` | Experience figures follow the disclosure rule for their source |
 | `MQC_REQ_MDL_MAT_0004` | Mandatory and optional sections are correctly classified from their headers |
+| `MQC_REQ_CAS_PRE_0002` | Harness files are located through the installed package and never by directory traversal to an adjacent checkout, and the engine roster resolves and names engines | consumer_ci.md section 4A |
 
 ---
 

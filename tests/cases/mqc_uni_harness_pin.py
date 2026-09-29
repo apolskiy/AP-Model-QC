@@ -36,6 +36,7 @@ from tools.harness_pin import (
 )
 from tools.harness_pin import main as harness_pin_main
 
+
 pytestmark = pytest.mark.unit
 
 # A HARNESS COMMIT, as the API spells one. The value is arbitrary and the

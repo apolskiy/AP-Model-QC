@@ -395,8 +395,40 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `10449` | N | `a_matrix_row_naming_a_test_the_suite_lacks_is_reported` |
 | `10450` | N | `a_readme_figure_disagreeing_with_the_repository_is_reported` |
 | `10451` | B | `a_pending_harness_gate_is_waited_for_not_refused` |
+| `10452` | N | `harness_files_are_not_located_by_directory_adjacency` |
+| `10453` | N | `the_roster_resolves_and_names_engines` |
 
-**Inventory: 30 cases, 19 negative, 5 positive, 3 boundary.**
+**Inventory: 32 cases, 21 negative, 5 positive, 3 boundary.**
+
+### 4A. The harness is a dependency, not the directory next door
+
+Added 2026-09-28, from the first CI run in which a judged case was replayable.
+
+**Gate 4 failed in CI and could not fail on any developer's disk.**
+`graded_support` located the engine roster and the price table at
+`../AP-Harness-QC/config/`, which is true only where both repositories are
+checked out side by side. CI installs the pinned harness from git, so the path
+did not exist, an absent file loaded as an empty mapping the way an optional
+one does, and the run failed with `judge engine 'gemini' is not on the roster`
+— a misconfigured instrument, reported three layers from its cause.
+
+**The local suite could not catch it**, because the sibling is always there.
+Gate 4 had also never reached this code before: until the `amb` family was
+recorded, every graded case skipped on a missing fixture before a judge was
+ever built. The first replayable judged case is what exposed it.
+
+**So the harness ships its own configuration** and is asked where it landed,
+through `cmn.config.packaged_roster_path` (harness `cmn_verdict_and_cli.md`
+section 10.37). Nothing here reaches out of this repository to find harness
+files.
+
+`MQC_CAS_UNI_10452` asserts the shape rather than the outcome, over the syntax
+tree rather than the text: no path expression in `tests/` or `tools/` may name
+the harness directory. Scanning the text flagged the prose that explains the
+rule and the pin's own `apolskiy/AP-Harness-QC`, neither of which reaches
+anywhere. `MQC_CAS_UNI_10453` pins the consequence — the roster resolves and
+names engines — because an empty roster is what the failure actually looked
+like.
 
 ### 4.1 Why the negatives outnumber the positives
 

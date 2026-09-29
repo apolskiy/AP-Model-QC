@@ -24,7 +24,11 @@ from typing import Any, Optional
 
 import pytest
 
-from cmn.config import load_engines
+from cmn.config import (
+    load_engines,
+    packaged_config_root,
+    packaged_roster_path,
+)
 from cmn.options import resolve_judge_mode
 from cmn.pricing import load_price_table
 from evaluation.isolation import UnauthoredMaterial
@@ -75,16 +79,23 @@ def shipped_cases() -> dict[str, Any]:
 def engine_roster() -> dict[str, Any]:
     """Return the engine roster, which carries each engine's pacing.
 
-    **Read from the harness rather than restated here.** Spacing is a property
-    of a provider's free tier, not of this corpus, and a second copy would
-    drift toward whichever repository was edited last.
+    **Read from the harness rather than restated here.** The roster carries
+    evidence, not preferences: which spacing was measured, which model was
+    retired and why, which engine grades. A second copy would drift toward
+    whichever repository was edited last.
+
+    **Asked of the installed harness, not of the directory beside this one.**
+    This read `../AP-Harness-QC/config/engines.yaml`, which is true only on a
+    disk where both repositories are checked out side by side. CI installs the
+    pinned harness from git, so the path did not exist, an absent file loaded
+    as an empty mapping, and Gate 4 failed with `judge engine 'gemini' is not
+    on the roster` — a misconfigured instrument, reported three layers from its
+    cause.
 
     Returns:
         dict[str, Any]: Engine name to its configuration.
     """
-    return load_engines(
-        repository_root().parent / "AP-Harness-QC" / "config" / "engines.yaml"
-    )
+    return load_engines(packaged_roster_path())
 
 
 def case_for(task_id: str, rule_id: str) -> Any:
@@ -177,22 +188,13 @@ def dispatch_session(config: Any) -> DispatchSession:
     return DispatchSession(
         spacing_sec=spacing,
         max_spend=ceiling,
-        prices=load_price_table(harness_root() / "config" / "pricing.yaml"),
+        prices=load_price_table(packaged_config_root() / "pricing.yaml"),
         # THE RUN'S OWN DATE, read once here rather than per response. A run
         # spanning midnight prices every request the same way, which is what
         # makes two readings of one corpus agree.
         priced_on=date.today(),
     )
 
-
-
-def harness_root() -> Path:
-    """Return the harness checkout, which owns the engine roster.
-
-    Returns:
-        Path: The sibling directory holding ``config/engines.yaml``.
-    """
-    return repository_root().parent / "AP-Harness-QC"
 
 
 def judgement_plan(config: Any) -> JudgementPlan:
@@ -241,7 +243,7 @@ def _channel(engine: str, mode: str, record: bool, keep: bool) -> Any:
         Any: The :class:`JudgeChannel`.
     """
     return judge_channel_from_roster(
-        harness_root() / "config" / "engines.yaml",
+        packaged_roster_path(),
         engine or None,
         keep_connection=keep,
         plan=JudgementPlan(
