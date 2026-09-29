@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_REMEDY_IS_DETERMINATE": {
+        "rationale": "The candidate clearly identifies the crash on an unknown code and specifies that it should be handled safely by defaulting invalid codes to 0 using `coupon_lookup.get(code, 0)`, allowing settlement to proceed without raising an error.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5b97b08db6ce02a02365f62b25303a2ae6fae0bcc18e4be896e264507c285121"
+}

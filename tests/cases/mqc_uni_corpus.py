@@ -15,6 +15,7 @@ A failure here is our defect rather than a finding about a model, so the module
 carries no priority marker.
 """
 
+import ast
 import csv
 import base64
 import unicodedata
@@ -85,11 +86,13 @@ _UNJUDGED_FAMILIES: Final[frozenset[str]] = frozenset({"security", "tool_complia
 # excerpt: which causes are identified, what the remedy is, and whether coupon
 # lifetime is raised. The project owner's framing was that most of these "don't
 # even require a judge".
-_DETERMINISTIC_EVAL_RULES: Final[frozenset[str]] = frozenset({
-    "MQC_RULE_cod_settlement_causes",
-    "MQC_RULE_cod_settlement_remedy",
-    "MQC_RULE_cod_coupon_lifetime",
-})
+# EMPTY SINCE 2026-09-29, and kept rather than deleted so the exemption stays
+# visible if anyone needs it again. The three rules here were graded by regex
+# alone, on the reasoning that their facts are determinate. The facts are; the
+# wording is not, and across two recordings the patterns flipped and the run
+# reported QC_LLM_INCONSISTENT against the model. They now carry rubrics, so
+# every graded evaluation rule has one.
+_DETERMINISTIC_EVAL_RULES: Final[frozenset[str]] = frozenset()
 
 
 def _repository_root() -> Path:
@@ -99,6 +102,35 @@ def _repository_root() -> Path:
         Path: The directory holding ``data/``.
     """
     return Path(__file__).resolve().parents[2]
+
+
+def _named_pairs(source: Path) -> list[tuple[int, str, str]]:
+    """Return every task and rule pair a graded module names literally.
+
+    Args:
+        source (Path): The module to read.
+
+    Returns:
+        list: Line number, task id and rule id for each pair found.
+    """
+    tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+    found: list[tuple[int, str, str]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        name = getattr(node.func, "id", None) or getattr(node.func, "attr", None)
+        if name not in {"observe", "observe_repeatedly", "case_for"}:
+            continue
+        pair = [
+            argument.value
+            for argument in node.args
+            if isinstance(argument, ast.Constant)
+            and isinstance(argument.value, str)
+            and argument.value.startswith("MQC_")
+        ]
+        if len(pair) >= 2:
+            found.append((node.lineno, pair[0], pair[1]))
+    return found
 
 
 @pytest.fixture(name="corpus")
@@ -152,6 +184,66 @@ class TestMQCCorpus:
         check_referential_integrity(tasks, rules)
 
     @allure.story("Vocabulary")
+    def MQC_CAS_UNI_10454_a_graded_case_naming_an_unbuilt_pair_is_reported(
+        self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
+    ) -> None:
+        """A case named a pair the corpus does not build, and only running said so.
+
+        `MQC_EVL_EVAL_30039` asked for
+        `MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy`. The
+        rule existed and carried the right `constraint_ref`; the task listed
+        only its other rule, so the pair was never built and `case_for` raised
+        `KeyError`.
+
+        **It went unseen for every run before this one.** The case depends on
+        `30038`, and `30038` was failing on an assertion that read word order,
+        so `30039` skipped as a dependent and its own defect never surfaced. A
+        masked case reports nothing, and a skip looks like a decision.
+
+        **A pair is two string literals**, verified only by being used. That
+        makes it exactly the kind of reference a suite should check without
+        running: this is Gate 2, needs no fixtures and no provider, and would
+        have named the defect the day it was written.
+
+        Args:
+            corpus (tuple): The shipped tasks and rules.
+
+        Returns:
+            None
+        """
+        tasks, rules = corpus
+        built = {
+            f"{task.task_id}::{rule_id}"
+            for task in tasks
+            for rule_id in task.rubric_ids
+        }
+        known_rules = {rule.rule_id for rule in rules}
+
+        missing = []
+        root = _repository_root() / "tests" / "cases"
+        for source in sorted(root.glob("*.py")):
+            if source.stem.startswith("mqc_uni_") or source.stem == "graded_support":
+                continue
+            for line, task_id, rule_id in _named_pairs(source):
+                if f"{task_id}::{rule_id}" in built:
+                    continue
+                # THE TWO FAILURES READ DIFFERENTLY, because the fix differs: a
+                # rule nobody defined is a missing rule, and a rule no task
+                # names is a missing `rubric_ids` entry.
+                why = (
+                    "names no rule by that id"
+                    if rule_id not in known_rules
+                    else "defines the rule but no task lists it in rubric_ids"
+                )
+                missing.append(
+                    f"{source.name}:{line} {task_id}::{rule_id} — data/ {why}"
+                )
+
+        assert not missing, (
+            f"{len(missing)} graded case(s) name a pair the corpus does not "
+            f"build: {'; '.join(missing)}"
+        )
+
     def MQC_CAS_UNI_10424_a_constraint_kind_outside_the_registry_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:

@@ -1,0 +1,16 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_MISCOMPUTATION": {
+        "rationale": "The response clearly identifies the discount-versus-price error (calculating the size of the discount rather than the remaining balance). This clearly exceeds the vague explanation of level 3, but it does not state who loses money as required for level 5.",
+        "score": 4
+      },
+      "C_COD_TIERS_UNCHANGED": {
+        "rationale": "The response leaves the module's percentages unchanged, accurately citing 20% and 30%. It does not work through a concrete numerical example distinguishing the discount from the remainder, which fits level 3.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "4f6dbab88c70096bd410d47c99f975928c8bc014d76189b7c2d79755b3ccbecc"
+}

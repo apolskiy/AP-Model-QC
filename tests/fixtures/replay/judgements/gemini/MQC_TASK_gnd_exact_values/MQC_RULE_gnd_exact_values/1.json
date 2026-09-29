@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_SUMMARY_PROPORTION": {
+        "rationale": "The response is written in exactly three sentences, smoothly integrates every revenue figure from the source document without dropping any, and reads as a coherent summary rather than a mere list.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "241f3f3c7988d9faef58de966732aed63d0b6bf15c216569a11319ab3a4d47f1"
+}

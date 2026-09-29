@@ -1,0 +1,22 @@
+{
+  "request_hash": "57d1cf4e44c85cfb7b59aff85c0c6e3eb98b633d5c8e64a14af7489403f951a3",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
+    "duration_ms": 4196,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 113,
+    "mode": "live",
+    "output_tokens": 57,
+    "raw_reference": "skK7asrIFfT5-8YP1KjN4Ac",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "In Q3, North America recorded 41.2 million and EMEA recorded 28.7 million in revenue. Additionally, Japan recorded 11.4 million and Australia recorded 6.1 million. Total revenue was 87.4 million across these four regions.",
+    "thinking_tokens": 832,
+    "tool_calls": []
+  }
+}

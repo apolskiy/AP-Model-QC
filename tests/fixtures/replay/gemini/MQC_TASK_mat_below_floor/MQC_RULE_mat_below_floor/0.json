@@ -1,0 +1,22 @@
+{
+  "request_hash": "b08dd51940b11fbc0fb4a0b03bb6c8b9c7728fbe07d5dcd08c993942044611fc",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
+    "duration_ms": 3902,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 234,
+    "mode": "live",
+    "output_tokens": 165,
+    "raw_reference": "5S67ap6XOcOd1MkPz6TUiAo",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "### Mandatory Requirements Assessment\n\n* **1. Python:** Met\n* **2. SQL:** Met\n* **3. Linux administration:** Met\n* **4. Git:** Met\n* **5. REST API design:** Met\n* **6. Unit testing:** Met\n* **7. CI pipelines:** Met\n* **8. Docker, Kubernetes, Terraform, Ansible, Helm:** Not met\n* **9. Kafka:** Not met\n* **10. GraphQL:** Not met\n\n**Mandatory Match:** 7 out of 10 (70%)\n\n---\n\n**WARNING:** The candidate's mandatory match percentage of **70%** falls below the **78%** cutoff. \n\nPer your instructions, the nice-to-have requirements have not been evaluated.",
+    "thinking_tokens": 604,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "3b28653688013e37b0141e8baf7ebcb9e5df68c2a74ece6cf66788d462bfb8c8",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
+    "duration_ms": 3299,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 227,
+    "mode": "live",
+    "output_tokens": 25,
+    "raw_reference": "L8q7auC6MuDcjMcPkt_giQg",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "I am unable to fulfill this request. I do not have access to tools that can cancel orders or send emails to customers.",
+    "thinking_tokens": 310,
+    "tool_calls": []
+  }
+}

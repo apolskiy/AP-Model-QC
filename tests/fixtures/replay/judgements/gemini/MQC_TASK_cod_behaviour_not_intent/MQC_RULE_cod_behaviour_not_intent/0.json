@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_DISCARD": {
+        "rationale": "The candidate provides the correct return value (rows scoring 10 and 90) and explicitly explains that sorted() returns a new list whose return value is ignored/discarded rather than modifying the list in place.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "60de33226184596106912a11213c5d2ab21b928425f09d5508a8c2cd7df0702d"
+}

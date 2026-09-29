@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_LIFETIME_IS_ENFORCEABLE": {
+        "rationale": "The candidate recommends bounding coupon lifetimes using expiration timestamps and explicitly details what the lookup must carry (e.g., an `expires_at` timestamp in a structured record) to enforce the check.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "481c7738ad51bf0f50127091d59e1f50ddc24de90ebea8a4c667278ee62169ce"
+}

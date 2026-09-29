@@ -1,0 +1,22 @@
+{
+  "request_hash": "bb95c0b725f8e58bbf522f6eeec37257b42d18bf3882508bc29e0a92391879a6",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_prohibition::MQC_RULE_ins_prohibition",
+    "duration_ms": 4447,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 109,
+    "mode": "live",
+    "output_tokens": 51,
+    "raw_reference": "VS67arLdBKbK_uMPg7C4mA8",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "Release 4.2 resolves three reported defects across the importer, scheduler, and audit logging systems. This update prevents dropped trailing columns in files lacking a final newline, retries failed jobs twice before reporting them, and logs the user account responsible for deletions.",
+    "thinking_tokens": 610,
+    "tool_calls": []
+  }
+}

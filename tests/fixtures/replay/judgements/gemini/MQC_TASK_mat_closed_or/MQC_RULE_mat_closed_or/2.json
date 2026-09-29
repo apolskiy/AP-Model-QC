@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The candidate provides the correct figure (100%) and explicitly names the connector 'or' (disjunctive requirement) as the reason why possessing one item suffices to fulfill the entire requirement.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "9bdfccb21f1144d3e8b5f305ae4f76e5065e1ac19d3edb483010be1a7c6ec8a7"
+}

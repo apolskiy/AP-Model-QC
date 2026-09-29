@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_CEILING_PROCEEDS": {
+        "rationale": "The response accurately determines that the candidate meets 90% of the mandatory criteria, proceeds to the next stage, and explicitly notes that the nice-to-have qualifications do not affect this outcome.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "da9423b2f1479be98e780159fe3997bc581ceed8154d66f776be91ccb2e6e666"
+}

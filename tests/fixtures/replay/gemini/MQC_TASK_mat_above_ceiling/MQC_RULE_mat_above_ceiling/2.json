@@ -1,0 +1,22 @@
+{
+  "request_hash": "3ab496a29aadfd778dd2696d2646731847dae2210464d426b4544ebfc7ac40fc",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 2956,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 225,
+    "mode": "live",
+    "output_tokens": 175,
+    "raw_reference": "qy67avCgHP3ljMcPvKuXuQQ",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "### Candidate Assessment\n\n#### Mandatory Requirements Match\n1. **Python**: Matched\n2. **SQL**: Matched\n3. **Linux administration**: Matched\n4. **Git**: Matched\n5. **REST API design**: Matched\n6. **Unit testing**: Matched\n7. **CI pipelines**: Matched\n8. **Docker, Kubernetes, Terraform, Ansible, Helm**: Matched\n9. **Kafka**: Matched\n10. **GraphQL**: Not found\n\n* **Mandatory Match Percentage**: **90%** (9 / 10 requirements met)\n\n---\n\n### Decision\nThe candidate achieves a **90%** mandatory match, which meets and exceeds the **85%** threshold. \n\n**Outcome**: **Proceed** (Nice-to-have criteria do not affect this outcome).",
+    "thinking_tokens": 302,
+    "tool_calls": []
+  }
+}

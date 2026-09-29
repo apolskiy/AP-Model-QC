@@ -1,0 +1,31 @@
+{
+  "request_hash": "8d146d2fddd8e157e6bb0d9a829bdea14de95a25d293cfd021791ffd7cf09b6a",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_invokes_required::MQC_RULE_tul_invokes_required",
+    "duration_ms": 1879,
+    "engine": "gemini",
+    "finish_reason": "tool_calls",
+    "input_tokens": 222,
+    "mode": "live",
+    "output_tokens": 23,
+    "raw_reference": "ei-7ao6zGf6fz7IPndz5kAM",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "",
+    "thinking_tokens": 110,
+    "tool_calls": [
+      {
+        "arguments": {
+          "order_id": "A-4471"
+        },
+        "call_id": "call_825367",
+        "sequence": 0,
+        "tool_name": "lookup_order"
+      }
+    ]
+  }
+}

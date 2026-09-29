@@ -1,0 +1,22 @@
+{
+  "request_hash": "3ab496a29aadfd778dd2696d2646731847dae2210464d426b4544ebfc7ac40fc",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 2957,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 225,
+    "mode": "live",
+    "output_tokens": 224,
+    "raw_reference": "ny67ar24Fo3Qz7IP472m6QU",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "### Assessment\n\n#### Mandatory Requirements Analysis\n1. **Python:** Met (Listed under Languages)\n2. **SQL:** Met (Listed under Languages)\n3. **Linux administration:** Met (Listed under Platform)\n4. **Git:** Met (Listed under Platform)\n5. **REST API design:** Met (Listed under Services)\n6. **Unit testing:** Met (Listed under Services)\n7. **CI pipelines:** Met (Listed under Services)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met (All listed under Infrastructure)\n9. **Kafka:** Met (Listed under Streaming)\n10. **GraphQL:** Not met (Not listed on resume)\n\n---\n\n### Mandatory Match Percentage\n* **Matched:** 9 / 10\n* **Mandatory Match Percentage:** **90%**\n\n---\n\n### Outcome\nThe mandatory match percentage of **90%** exceeds the 85% threshold. Therefore, the candidate **proceeds** to the next stage (nice-to-have qualifications do not affect this outcome).",
+    "thinking_tokens": 323,
+    "tool_calls": []
+  }
+}

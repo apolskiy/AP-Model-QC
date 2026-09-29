@@ -11,12 +11,12 @@
     "finish_reason": "stop",
     "input_tokens": 116,
     "mode": "live",
-    "output_tokens": 87,
-    "raw_reference": "Q9i6av6zKcK21MkPgt3hiAc",
+    "output_tokens": 54,
+    "raw_reference": "ACy7avb5IfT5-8YP1KjN4Ac",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The change request cannot be applied unambiguously as it is missing two key details:\n\n1. **Which threshold to update:** The configuration contains both `retry_threshold` and `alert_threshold`.\n2. **The new value:** The request states to \"raise the threshold\" but does not specify a target value or amount to increase it by.\n\nPlease specify which threshold should be changed and what value it should be set to.",
-    "thinking_tokens": 274,
+    "text": "To apply this change request unambiguously, please provide the following missing details:\n\n1. **Which threshold** needs to be updated (`retry_threshold` or `alert_threshold`)?\n2. **What the new value** (or increment amount) should be?",
+    "thinking_tokens": 287,
     "tool_calls": []
   }
 }

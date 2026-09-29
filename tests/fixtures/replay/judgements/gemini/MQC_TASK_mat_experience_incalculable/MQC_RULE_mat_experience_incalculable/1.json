@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate asks for the missing years of experience, names the penalty (screening disqualification/rejection), and explains that lacking this figure alone can trigger immediate disqualification.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "6851ac50e729350e5ce1d0c1f447d80df039af0f956c0bd997ce0738ade06dae"
+}

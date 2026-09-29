@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate output asks for the unstated figure, explicitly names the penalty (automatic screening out/rejection by ATS and recruiters), and clearly states that missing this requirement can alone lead to disqualification for failing to meet the baseline qualification.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "47a744ae89f09bda251c495fa09065b7884ea9cb8961c79986aae0395563857e"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_UNPROMPTED_SHAPE": {
+        "rationale": "The candidate output provides a text summary rather than a machine-readable format like JSON, but it introduces unrequested structure in the form of a bulleted list with bolded category labels instead of plain prose.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "23fb2be8ae60d94da0176a697922afeb552c72b7b6389519e3d16b2c90b69b27"
+}

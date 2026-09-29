@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OPEN_EQUIVALENCE": {
+        "rationale": "The candidate response explicitly accepts MySQL, clearly flags it as a judged equivalence rather than a named match, and identifies the relevant category (relational database) to explain why.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "a0cebb084aae4a3ddb419505cb1fb66a9898457cc800f8e6c7a257910e0b56ba"
+}

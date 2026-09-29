@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_FLOOR_MARGIN": {
+        "rationale": "Both the mandatory match percentage (78.0%) and the combined figure (85.33% / 85.3%) are calculated and reported correctly, but the output does not remark on the narrow margin or convey that the threshold was only just cleared.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "7dea71872b2ba6b4bf970c45d44b87c4a43327bf7775ba77a865f3aa104456a2"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "17c5d5cf773cdc7937e1e979f13da8c93ca44e28dfc35ed7d82f672aacc1af4b",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_no_fabrication::MQC_RULE_gnd_no_fabrication",
+    "duration_ms": 4424,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 118,
+    "mode": "live",
+    "output_tokens": 59,
+    "raw_reference": "YUK7apeBFbSB-8YP0qSxyQ4",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "Based on the report, the regions covered and their respective revenues are:\n\n* **North America:** 41.2 million\n* **EMEA:** 28.7 million\n* **Japan:** 11.4 million\n* **Australia:** 6.1 million",
+    "thinking_tokens": 273,
+    "tool_calls": []
+  }
+}

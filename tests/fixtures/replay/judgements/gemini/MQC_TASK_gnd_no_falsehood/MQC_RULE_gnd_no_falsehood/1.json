@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_ARITHMETIC_SHOWN": {
+        "rationale": "The percentage is calculated correctly and explicitly shows the two figures it derives from (41.2 million out of 87.4 million).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ea6d8182fe52d9ea26f54a3a2fbac542b73ac2ab22901a7bd5762185524dece6"
+}

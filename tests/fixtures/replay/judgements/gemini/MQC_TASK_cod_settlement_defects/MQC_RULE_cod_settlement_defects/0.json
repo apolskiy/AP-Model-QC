@@ -1,0 +1,20 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CREDITED_DEFECTS": {
+        "rationale": "The candidate reports both credited robustness defects: an empty coupon list (raising IndexError on `coupon_codes = []`) and an unhandled missing account tier (raising KeyError on unknown tiers such as 'guest' or 'vip'). Both include the specific inputs triggering the defect.",
+        "score": 5
+      },
+      "C_COD_FURTHER_PROBLEMS": {
+        "rationale": "The candidate identifies genuine additional problems beyond execution errors, specifically floating-point currency inaccuracies and the failure to process multiple coupons when a list is passed, explaining why both matter (accounting discrepancies and shortchanging customers).",
+        "score": 5
+      },
+      "C_COD_WHO_IS_AFFECTED": {
+        "rationale": "The candidate clearly identifies that the merchant/business loses revenue and is unpaid due to the inverted calculation, exceeding level 3. However, it does not explicitly contrast how the zero settlement fails silently while negative amounts trigger gateway/processing failures, falling short of level 5.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "516239543d29944f213147d2381ab7ace3fe4a42117f58e5020b54fb121a3df7"
+}

@@ -1,0 +1,16 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_MISCOMPUTATION": {
+        "rationale": "The response clearly and precisely identifies the discount-versus-price miscomputation (calculating the discount amount rather than the remaining balance) with an exact mathematical breakdown, far exceeding level 3, but falls short of level 5 because it does not explicitly state who loses money.",
+        "score": 4
+      },
+      "C_COD_TIERS_UNCHANGED": {
+        "rationale": "The response retains the module's 20% tier discount without altering any percentages, and correctly distinguishes the discount amount from the remainder when walking through a numeric example.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "220ba00414d1d5b63d14f341fc0fceecfdce73187cbc195adb8d97cb224d8870"
+}

@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_AMB_PROCEEDS_WITHOUT_ASKING": {
-        "rationale": "The candidate applies the requested change (setting alert_threshold to 90) directly without asking for clarification or hedging with caveats, while leaving retry_threshold unchanged at 3.",
+        "rationale": "The model directly applies the requested update to alert_threshold without asking for clarification or hedging, while leaving retry_threshold unchanged at 3.",
         "score": 5
       }
     }

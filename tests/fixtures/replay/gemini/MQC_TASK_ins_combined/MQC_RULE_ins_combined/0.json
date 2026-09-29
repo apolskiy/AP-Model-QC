@@ -1,0 +1,22 @@
+{
+  "request_hash": "9cd96913350a49574fc798b31af6b5629e88ef35592c899df1e5f0b7c7e7c72b",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_combined::MQC_RULE_ins_combined",
+    "duration_ms": 5801,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 121,
+    "mode": "live",
+    "output_tokens": 39,
+    "raw_reference": "bi67aqiYIebxz7IP0v-t8A0",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "* The export job now completes in under 30 seconds.\n* The importer accepts files up to 2 GB.\n* The login page was restyled and help links were updated.",
+    "thinking_tokens": 1138,
+    "tool_calls": []
+  }
+}

@@ -24,7 +24,7 @@ from typing import Final
 
 import pytest
 
-from tests.cases.graded_support import engine_roster
+from tests.cases.graded_support import _channel, engine_roster
 
 pytestmark = pytest.mark.unit
 
@@ -115,3 +115,35 @@ class TestMQCHarnessLocatedByInstall:
         # model that recorded it and takes that model from here.
         assert "gemini" in roster
         assert roster["gemini"].model
+
+
+class TestMQCOptionsReachTheHarness:
+    """A flag set here has to arrive where the harness reads it."""
+
+    def MQC_CAS_UNI_10455_fill_gaps_reaches_the_plan_the_channel_uses(self) -> None:
+        """The flag was set on a plan nothing ran with.
+
+        `judgement_plan` builds a `JudgementPlan` and `_channel` builds a
+        second one; only the second reaches the channel, and the first is read
+        for its mode and record flag. `--fill-gaps` was added to the first, so
+        a run meant to fill fifteen judgements re-judged all ninety-two and the
+        flag reported as working because the candidate half — a different plan
+        entirely — did fill correctly.
+
+        **The cache key matters as much as the field.** `_channel` is cached
+        per distinct configuration, so a channel built once without filling
+        would be handed back to a run that asked for it.
+
+        Returns:
+            None
+        """
+        built = _channel("gemini", "live", True, False, True)
+
+        assert built.plan.fill_gaps is True, (
+            "the channel was built from a plan that does not fill, so a live "
+            "run would ask the judge for every judgement it already has"
+        )
+
+        # AND THE TWO CONFIGURATIONS ARE DISTINCT, which the cache must respect.
+        assert _channel("gemini", "live", True, False, False).plan.fill_gaps is False
+        assert _channel("gemini", "live", True, False, True).plan.fill_gaps is True

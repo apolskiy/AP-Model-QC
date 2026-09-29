@@ -1,0 +1,22 @@
+{
+  "request_hash": "4dc8d4536e3b9f2a6bda309416e6f7ad5d20b6932399fa9386430b2473900987",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
+    "duration_ms": 5597,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 186,
+    "mode": "live",
+    "output_tokens": 300,
+    "raw_reference": "hUO7atGoBaf91MkPy9KS4AQ",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "To bound a coupon code\u2019s lifetime and ensure it cannot be redeemed indefinitely, the design should be updated as follows:\n\n### 1. How the Design Should Bound Lifetime\n* **Define an Expiration Policy:** Each coupon should be assigned an explicit expiration timestamp (or a validity window with `valid_from` and `valid_until` timestamps) upon creation.\n* **Enforce at Redemption:** When `settle_order` runs, it must compare the current transaction/order timestamp against the coupon's expiration timestamp. If the coupon is expired (or not yet active), the function should reject it (e.g., raise an exception or omit the coupon discount).\n\n### 2. What the Lookup Must Carry\nCurrently, `coupon_lookup` only maps a coupon code directly to a numeric value (e.g., `{code: amount}`). \n\nTo make expiration enforceable, `coupon_lookup` must store a structured object (such as a dictionary, record, or class instance) for each code containing:\n* **The expiration date/timestamp** (e.g., `expires_at` or `valid_until`).\n* **The discount amount/value** (e.g., `amount` or `discount_value`).\n* *(Optional but recommended)* A start timestamp (`valid_from`) or a usage status flag (`is_redeemed`/`max_uses`) to prevent re-use within the valid window.",
+    "thinking_tokens": 587,
+    "tool_calls": []
+  }
+}

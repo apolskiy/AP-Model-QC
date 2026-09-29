@@ -1,0 +1,22 @@
+{
+  "request_hash": "972bfae8201a439328d352fb6ecca10554551756a020e10b1167747a7c712f81",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
+    "duration_ms": 5708,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 65,
+    "mode": "live",
+    "output_tokens": 111,
+    "raw_reference": "R8m7avqbGa-_39IPpqa80QY",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "The candidate meets **50%** of the requirement.\n\n### How this was calculated:\n\n1. **Total Requirements (2 items):**\n   * Docker\n   * Kubernetes\n\n2. **Requirements Met by the Candidate (1 item):**\n   * Docker (Present: *\"Containers and orchestration: Docker\"*)\n   * Kubernetes (Missing)\n\n3. **Calculation:**\n   $$\\frac{1 \\text{ met requirement}}{2 \\text{ total requirements}} \\times 100 = 50\\%$$",
+    "thinking_tokens": 232,
+    "tool_calls": []
+  }
+}

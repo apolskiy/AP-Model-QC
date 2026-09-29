@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_QUANTITIES_READABLE": {
+        "rationale": "The bullets are concise, informative, and together accurately cover all three defects described in the release note while staying within word and sentence limits.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e12652dae5ec71421998bec02df65cc3244539aad31cd0c51b954bf295d3c4b4"
+}

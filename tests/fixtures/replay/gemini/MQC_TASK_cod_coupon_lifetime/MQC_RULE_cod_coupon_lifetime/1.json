@@ -1,0 +1,22 @@
+{
+  "request_hash": "4dc8d4536e3b9f2a6bda309416e6f7ad5d20b6932399fa9386430b2473900987",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
+    "duration_ms": 5422,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 186,
+    "mode": "live",
+    "output_tokens": 331,
+    "raw_reference": "f0O7asOUMMCy1MkPhKqHiAY",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "To address the issue of coupons remaining valid indefinitely, the design should be updated as follows:\n\n### 1. How the Design Should Bound a Code's Lifetime\n* **Expiration Timestamp Checking:** Assign an expiration date/time (and optionally an activation date/time) to each coupon code.\n* **Validation at Settlement:** When `settle_order` processes a coupon, compare the current system timestamp (or order placement timestamp) against the code\u2019s valid window. \n* **Enforcement Action:** If the current time is past the expiration date (or before the activation date), reject the code by raising an exception, returning an error, or omitting it from the discount calculation rather than applying it.\n\n---\n\n### 2. What the Lookup Must Carry to Enforce the Bound\nCurrently, `coupon_lookup` maps a code directly to a scalar value (the discount amount). To make lifetime bounds enforceable, `coupon_lookup` must map each coupon code to a structured record (e.g., a dictionary, object, or database record) containing:\n\n1. **Expiration Date/Time:** An `expires_at` (or `valid_until`) timestamp specifying when the coupon ceases to be valid.\n2. **Coupon Value:** The discount amount or percentage previously stored directly.\n3. *(Optional but recommended)* **Activation Date/Time:** A `valid_from` timestamp to prevent premature redemption.\n4. *(Optional but recommended)* **Redemption Status / Usage Limit:** A flag or count to ensure single-use or limited-use codes cannot be reused within their valid window.",
+    "thinking_tokens": 481,
+    "tool_calls": []
+  }
+}

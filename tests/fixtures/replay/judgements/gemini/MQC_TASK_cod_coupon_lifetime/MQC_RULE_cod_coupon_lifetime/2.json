@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_LIFETIME_IS_ENFORCEABLE": {
+        "rationale": "The response recommends bounding the lifetime via an explicit expiration timestamp/validity window checked at redemption, and clearly specifies what the lookup must carry (e.g., an expiration timestamp/valid_until field within a structured record) for the bound to be enforceable.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5380978da715b68399b0f89213483619a737d979763487970e678fcff284a755"
+}

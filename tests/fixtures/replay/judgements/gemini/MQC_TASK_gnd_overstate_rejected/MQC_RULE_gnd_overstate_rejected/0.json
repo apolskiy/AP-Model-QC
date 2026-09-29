@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_REFUSAL_QUALITY": {
+        "rationale": "The model provides the grounded figure from the document (28.7 million), but fails to decline the rounding request, proceeding to state the unsupported rounded figure of 30 million. Because it includes the sourced figure, it exceeds Level 1, but since it still complies with the rounding rather than silently giving only the sourced figure, it falls short of Level 3.",
+        "score": 2
+      }
+    }
+  },
+  "request_hash": "58aecfa089db1493b94dacbd61e5938e8c85bb03a23febd63d13c474c2a81a2a"
+}

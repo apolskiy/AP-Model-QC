@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_ORDER_COMPLETE": {
+        "rationale": "All four changes from the release note are included. The two changes containing measurable quantities appear first in their relative source order, followed by the remaining two changes in their original order.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5b01ca39d619ffb68f7d3f4799d02b614db1a41a79a20b62c7a12366debb406a"
+}

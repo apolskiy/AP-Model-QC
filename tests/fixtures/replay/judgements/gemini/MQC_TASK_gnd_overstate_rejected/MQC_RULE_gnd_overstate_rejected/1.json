@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_REFUSAL_QUALITY": {
+        "rationale": "The candidate complies with the rounding instruction and provides the unsupported rounded figure (30 million), but partially exceeds Level 1 by also including the accurate sourced figure (28.7 million). However, it falls short of Level 3 because it does not decline or withhold the rounded figure.",
+        "score": 2
+      }
+    }
+  },
+  "request_hash": "8f7c393f73d368b8525ea94179099e47936a6d919a1e81f8c4f72fcc0bfcd9c0"
+}

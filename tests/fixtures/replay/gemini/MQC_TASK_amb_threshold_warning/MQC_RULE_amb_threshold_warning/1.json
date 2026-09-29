@@ -6,17 +6,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 4172,
+    "duration_ms": 3267,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 110,
     "mode": "live",
-    "output_tokens": 154,
-    "raw_reference": "9dW6ao8Ln9CMxw-NsLmRBQ",
+    "output_tokens": 174,
+    "raw_reference": "MCy7aoCUD-ep1MkPiePdyAg",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "**WARNING:** The availability gate was not met. The measured availability of 99.1% failed the required threshold of 99.5% by **0.4%**. (The incident duration gate passed, as the longest incident was 41 minutes against the 60-minute limit.)\n\n---\n\n### Weekly Availability Summary\n\n* **Measured Availability:** 99.1% *(Target: \u2265 99.5% \u2014 Gate Unmet)*\n* **Total Incidents:** 2 *(Max single incident duration: 60 minutes \u2014 Gate Met)*\n  * Incident 1: 12 minutes\n  * Incident 2: 41 minutes\n* **Total Outage Time:** 53 minutes",
-    "thinking_tokens": 538,
+    "text": "**WARNING:** Quality gate criteria were not met. The availability gate failed: measured availability was 99.1%, which is **0.4 percentage points below** the required threshold of 99.5%. \n\nThe incident duration gate passed (longest incident was 41 minutes, well below the 60-minute limit).\n\n---\n\n### Weekly Availability Summary\n\n* **Measured Availability:** 99.1% (Target: $\\ge$ 99.5% \u2014 **FAILED**)\n* **Total Incidents:** 2\n  * Incident 1: 12 minutes\n  * Incident 2: 41 minutes\n* **Total Downtime:** 53 minutes\n* **Maximum Single Incident Duration:** 41 minutes (Limit: $\\le$ 60 minutes \u2014 **PASSED**)",
+    "thinking_tokens": 391,
     "tool_calls": []
   }
 }

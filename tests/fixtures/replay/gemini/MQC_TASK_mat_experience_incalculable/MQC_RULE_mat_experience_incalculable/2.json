@@ -1,0 +1,22 @@
+{
+  "request_hash": "c98a8a9ec141c433b9c20ffe8d420306eaaef07cfe538772c1e5061fda33cde5",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
+    "duration_ms": 4069,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 120,
+    "mode": "live",
+    "output_tokens": 127,
+    "raw_reference": "YS-7as-eDKXJjMcPga3i6QM",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "To tailor this summary accurately, **how many total years of backend engineering experience does the candidate have?**\n\n### What it costs not to supply this figure:\n* **Automatic Disqualification:** The job posting explicitly lists 8 years of backend engineering experience as a requirement. Applicant Tracking Systems (ATS) and initial recruiter screens typically filter candidates based on these strict baseline thresholds. \n* **Weakened Positioning:** Without a verifiable timeline or specific number of years, simply asserting seniority or omitting the figure leaves the application vulnerable to being screened out immediately in favor of candidates who explicitly demonstrate they meet or exceed the 8-year mark.",
+    "thinking_tokens": 460,
+    "tool_calls": []
+  }
+}

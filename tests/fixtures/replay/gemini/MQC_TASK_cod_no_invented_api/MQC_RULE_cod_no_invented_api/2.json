@@ -1,0 +1,22 @@
+{
+  "request_hash": "65e47c0b4a8b70b2a06ed5a34549df02de7be8ddd77c8bbc1e358811073a0158",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
+    "duration_ms": 3286,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 73,
+    "mode": "live",
+    "output_tokens": 38,
+    "raw_reference": "eEK7ar3SCp_QjMcPjbC5kQU",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "The `fetch_profile` function calls `client.get(f\"/users/{user_id}\")` to obtain `response`, and then calls and returns `response.json()`.",
+    "thinking_tokens": 400,
+    "tool_calls": []
+  }
+}

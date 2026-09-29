@@ -1,0 +1,22 @@
+{
+  "request_hash": "4dc8d4536e3b9f2a6bda309416e6f7ad5d20b6932399fa9386430b2473900987",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
+    "duration_ms": 5435,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 186,
+    "mode": "live",
+    "output_tokens": 265,
+    "raw_reference": "ekO7arvpDJKk1MkPwpnliQc",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "### Recommended Design to Bound Lifetime\n\n1. **Validity Window / Expiration Check**: \n   Assign each coupon an explicit expiration timestamp (and optionally an activation/start timestamp). \n2. **Enforcement at Settlement**: \n   When redeeming the coupon in `settle_order` (or during a pre-validation step), compare the coupon\u2019s expiration timestamp against the current transaction/order timestamp. If the coupon is expired (or not yet active), raise an error or exclude it from the discount calculation.\n\n---\n\n### What the Lookup Must Carry\n\nCurrently, `coupon_lookup` maps a coupon code directly to a single numeric value (`coupon_sum`). To enforce lifetime limits, `coupon_lookup` must map to a structured record (such as a dictionary, namedtuple, or object) that carries:\n\n* **Expiration Date/Timestamp** (e.g., `expires_at` or `valid_until`): The cutoff time after which the code cannot be redeemed (and optionally a `valid_from` timestamp).\n* **Discount Value/Amount**: The monetary or percentage value of the coupon previously stored on its own.\n\n*(Note: The function or evaluation context will also require access to the current timestamp or order timestamp to evaluate against this stored expiration date).*",
+    "thinking_tokens": 631,
+    "tool_calls": []
+  }
+}

@@ -29,7 +29,13 @@
     - assertion_id: A_MAT_OR_NOT_READ_AS_AND
       kind: regex
       parameters:
-        pattern: '(?i)33(\.3+)?\s*(%|per\s?cent)'
+        # THE CONCLUSION, not any occurrence of the number. The model
+        # answered "meets **100%**" correctly and then added "(Note: if
+        # interpreted strictly as coverage of the listed skills, the
+        # candidate covers 1 of 3 = 33%)". Reading OR as AND is what this
+        # forbids; naming the alternative reading while not taking it is
+        # arguably better than silence, and the old pattern failed it.
+        pattern: '(?i)\b(meets?|satisfies|fulfil\w*|achieves?)\b[^.]{0,30}\b33(\.3+)?\s*(%|per\s?cent)'
         present: false
       taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
       severity: violation
@@ -438,7 +444,12 @@
     - assertion_id: A_MAT_INCALCULABLE_NAMES_PENALTY
       kind: regex
       parameters:
-        pattern: '\b30\b'
+        # WHAT IT COSTS NOT TO SUPPLY THE FIGURE, which is what the prompt
+        # asks the model to state. The pattern was '\b30\b', which appears
+        # nowhere in this task or either of its documents: it was carried
+        # over from the discount rule, where 30 is the premium tier. It
+        # could never pass, so this case reported the model on every run.
+        pattern: '(?i)(cost|risk\w*|disqualif\w+|screen\w*\s*out|reject\w*|filter\w*|overlook\w*|weaken\w+)'
         present: true
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
       severity: violation
@@ -448,7 +459,11 @@
     - assertion_id: A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE
       kind: regex
       parameters:
-        pattern: '\b\d+\s*\+?\s*(years|yrs)\s+of\s+(backend|experience)'
+        # A FIGURE ATTRIBUTED TO THE CANDIDATE, not the requirement quoted
+        # back. The model wrote "the job posting explicitly lists 8 years
+        # of backend engineering experience", which is repeating what it
+        # was given, and the old pattern read that as inventing a figure.
+        pattern: '(?i)\b(candidate|they|he|she|summary|profile)\b[^.]{0,40}\b\d+\s*\+?\s*(years|yrs)\b'
         present: false
       taxonomy_code: QC_LLM_UNSOURCED_CLAIM
       severity: violation

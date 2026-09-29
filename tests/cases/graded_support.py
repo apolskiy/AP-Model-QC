@@ -222,11 +222,16 @@ def judgement_plan(config: Any) -> JudgementPlan:
         mode=resolved,
         fixture_root=repository_root() / FIXTURE_ROOT,
         record=bool(resolved == "live"),
+        # THE SAME FLAG THE CANDIDATE PLAN TAKES. Without it a run that
+        # needed two judgements re-judged every one of them.
+        fill_gaps=bool(config.getoption("--fill-gaps")),
     )
 
 
 @lru_cache(maxsize=8)
-def _channel(engine: str, mode: str, record: bool, keep: bool) -> Any:
+def _channel(
+    engine: str, mode: str, record: bool, keep: bool, fill: bool = False
+) -> Any:
     """Return one judge channel, built once per distinct configuration.
 
     **Cached because pacing is per channel.** A fresh channel per case would
@@ -238,6 +243,9 @@ def _channel(engine: str, mode: str, record: bool, keep: bool) -> Any:
         mode (str): The resolved judge mode.
         record (bool): Whether to store what is obtained.
         keep (bool): Whether to hold the connection between judgements.
+        fill (bool): Whether to replay a judgement already recorded rather
+            than asking again. **Part of the cache key**, because two
+            channels differing only in this are different configurations.
 
     Returns:
         Any: The :class:`JudgeChannel`.
@@ -250,6 +258,10 @@ def _channel(engine: str, mode: str, record: bool, keep: bool) -> Any:
             mode=mode,
             fixture_root=repository_root() / FIXTURE_ROOT,
             record=record,
+            # THE PLAN THAT REACHES THE CHANNEL. `judgement_plan` builds
+            # another one, read for its mode and record flag; setting the
+            # flag only there left the channel filling nothing.
+            fill_gaps=fill,
         ),
     )
 
@@ -272,7 +284,11 @@ def judge_binding(config: Any, candidate_engine: str) -> Any:
     """
     plan = judgement_plan(config)
     channel = _channel(
-        "", plan.mode, plan.record, bool(config.getoption("--keep-connection"))
+        "",
+        plan.mode,
+        plan.record,
+        bool(config.getoption("--keep-connection")),
+        plan.fill_gaps,
     )
     return JudgeBinding(
         invoke=channel.invoke,

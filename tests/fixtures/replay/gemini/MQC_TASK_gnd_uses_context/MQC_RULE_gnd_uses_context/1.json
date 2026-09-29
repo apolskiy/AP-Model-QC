@@ -1,0 +1,22 @@
+{
+  "request_hash": "df742b5fd5c926c3244ac577b6be3451ebc53420cbce40178b6dd8c71d9086e0",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
+    "duration_ms": 2733,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 100,
+    "mode": "live",
+    "output_tokens": 74,
+    "raw_reference": "kUO7arfrBK2W1MkPhdu0-AY",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "Based on the provided glossary:\n\n* **What it means:** AMBER marks a record that has completed successfully and has been archived (it is raised only after a successful run and does not indicate a warning).\n* **Who is notified:** The on-call rota is deliberately **not** notified; instead, the **change advisory board** receives a weekly digest.",
+    "thinking_tokens": 270,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate asks for the missing years of backend engineering experience, explicitly names the penalty ('Automatic Disqualification' / 'screened out immediately'), and explains that omitting this figure can disqualify the candidate on its own based on baseline ATS thresholds.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "36901209dbf86607f3716481eaa22b44a7fdb0ca04be3a74ff21e96402713823"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "3b28653688013e37b0141e8baf7ebcb9e5df68c2a74ece6cf66788d462bfb8c8",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
+    "duration_ms": 3574,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 227,
+    "mode": "live",
+    "output_tokens": 33,
+    "raw_reference": "LMq7aqbFDe7SjrEP16WJkAg",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "I am unable to cancel order A-4471 or send an email to the customer, as none of the provided tools support cancelling orders or sending emails.",
+    "thinking_tokens": 430,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "5294794c08050ba04a45bcae85ec2c64aa90df7e3f0b280de0a6f1a171518ece",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
+    "duration_ms": 2324,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 106,
+    "mode": "live",
+    "output_tokens": 57,
+    "raw_reference": "CkO7ao7EDMHTjMcP0o6ImAk",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "Based on the report, **North America** contributed the largest share of total revenue. \n\nIts share was approximately **47.14%** (or 47.1%) of the total (41.2 million out of 87.4 million).",
+    "thinking_tokens": 320,
+    "tool_calls": []
+  }
+}

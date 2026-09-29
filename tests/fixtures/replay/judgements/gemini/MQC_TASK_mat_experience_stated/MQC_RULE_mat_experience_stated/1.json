@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_STATED_REWRITE_QUALITY": {
+        "rationale": "The candidate output preserves the stated figure ('15+ years') verbatim as instructed, and successfully rewrites the phrasing to align directly with the posting requirement ('backend engineering experience').",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "9582d65435e80c56222f8fcde42f55c6e53eff4520f4507bddf6fd3857821f7e"
+}

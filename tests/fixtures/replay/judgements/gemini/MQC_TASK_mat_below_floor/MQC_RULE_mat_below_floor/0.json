@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The candidate output includes a clear warning that names the 78% cutoff and refrains from evaluating the nice-to-have requirements. However, the warning itself does not name the specific unmet requirements (the gaps: Kafka, GraphQL, and the infrastructure line), exactly matching the Level 3 descriptor.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "5c94b63a7b94ad66a40bc30817234609254f331e0e6ec5664434d55d1ad2e10a"
+}

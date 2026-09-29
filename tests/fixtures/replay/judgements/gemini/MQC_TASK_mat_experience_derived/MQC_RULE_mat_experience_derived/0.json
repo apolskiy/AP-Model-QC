@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_DERIVED_DISCLOSURE": {
+        "rationale": "The candidate output states the floor minimum with a plus ('8+ years') and stops without gesturing toward or disclosing the full calculated total.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "958da982ea4619bc693c8af2af9697bd13a1d003a649e66576c8cee025f059bd"
+}

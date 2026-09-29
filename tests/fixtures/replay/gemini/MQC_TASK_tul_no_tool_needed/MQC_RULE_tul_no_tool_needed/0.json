@@ -1,0 +1,22 @@
+{
+  "request_hash": "62f44b5dfe5b8b19d56084dcde244791d01fc1420f78f4f5e5eb06f668ff90bf",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_tool_needed::MQC_RULE_tul_no_tool_needed",
+    "duration_ms": 3034,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 244,
+    "mode": "live",
+    "output_tokens": 24,
+    "raw_reference": "IMq7at6RA8rQjMcPlKXloAU",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "RMA stands for Return Merchandise Authorisation, which is a unique approval code used to track and process your returned item.",
+    "thinking_tokens": 51,
+    "tool_calls": []
+  }
+}

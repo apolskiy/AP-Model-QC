@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate successfully preserves all key details from the source document across three concise bullets without any noticeable loss of information or clarity.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "402bcefedc2ce93bddcddd78a78eb00a7d52fc49dc06cf0a028b1ff5e76fee18"
+}

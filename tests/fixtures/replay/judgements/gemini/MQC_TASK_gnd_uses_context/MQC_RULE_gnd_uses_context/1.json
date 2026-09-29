@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CONTEXT_FIDELITY": {
+        "rationale": "The response accurately defines what AMBER means based on the glossary and clearly identifies that the on-call rota is deliberately not notified, while the change advisory board receives a weekly digest.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "2eb1ff170bb5a0508e986e731f8cbfd3a7192e9d47f7f852f72da18a13a3bbd0"
+}

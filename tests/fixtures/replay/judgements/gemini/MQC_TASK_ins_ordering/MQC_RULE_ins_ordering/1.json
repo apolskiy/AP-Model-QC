@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_ORDER_COMPLETE": {
+        "rationale": "All four changes are included, with the two measurable items placed first in their original order of appearance, followed by the two non-measurable items in their original order of appearance.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e9a1b6916d1c81e6299fa2387b7c2a7d84491c37acebe9de843c855ac877a08d"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The candidate provides a warning and names the 78% cutoff threshold, but the warning itself does not name the unmet mandatory requirements (Docker/K8s/Terraform/Ansible/Helm, Kafka, and GraphQL) to make the refusal actionable advice.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "03b85dbcc8a8097051fd499b5a358612ebfc8834bbcbaaa16c7d4f8d37266cb3"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "845838f386854ba12f389ad9e62693db8ddea4808aee5825c3ceeb3295a348db",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_preserves_threshold::MQC_RULE_cod_preserves_threshold",
+    "duration_ms": 4165,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 72,
+    "mode": "live",
+    "output_tokens": 26,
+    "raw_reference": "_EK7asLfEOOG-8YP_-6S6QI",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "A build is promoted when line coverage is at or above 82 percent, while builds below that figure are held for review.",
+    "thinking_tokens": 616,
+    "tool_calls": []
+  }
+}

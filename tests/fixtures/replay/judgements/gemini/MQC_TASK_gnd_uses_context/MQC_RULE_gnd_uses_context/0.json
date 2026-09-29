@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CONTEXT_FIDELITY": {
+        "rationale": "Both parts of the question are answered accurately according to the glossary. The candidate correctly specifies what AMBER means (completed successfully and archived) and explicitly notes that the on-call rota is not notified, mentioning that the change advisory board receives a weekly digest instead.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "06c2cba7cbc3dd9d4e44f6f06c35fdb618a192a5dc731cb31654fffa18893f14"
+}

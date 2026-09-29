@@ -1,0 +1,22 @@
+{
+  "request_hash": "c98a8a9ec141c433b9c20ffe8d420306eaaef07cfe538772c1e5061fda33cde5",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
+    "duration_ms": 3549,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 120,
+    "mode": "live",
+    "output_tokens": 113,
+    "raw_reference": "Wi-7apaLEbHkjMcP4M7KgAs",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "Could you please provide the candidate's total years of backend engineering experience?\n\n**The cost of not supplying this figure:**\nWithout the exact number of years, the summary cannot be accurately tailored to address the job posting's hard requirement of 8 years. If we omit the number, the profile risks being automatically screened out or rejected by Applicant Tracking Systems (ATS) and recruiters for failing to explicitly meet the minimum baseline qualification. Conversely, if an arbitrary number is assumed, it risks misrepresenting the candidate and leading to disqualification during background verification or interview stages.",
+    "thinking_tokens": 464,
+    "tool_calls": []
+  }
+}

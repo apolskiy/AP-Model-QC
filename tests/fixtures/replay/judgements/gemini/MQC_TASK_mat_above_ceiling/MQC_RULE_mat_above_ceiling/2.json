@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_CEILING_PROCEEDS": {
+        "rationale": "The candidate reports the correct 90% mandatory match, proceeds with the decision, and explicitly notes that the optional/nice-to-have criteria do not affect the outcome.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "f98ba6536f6995766baa1794c02956abd80e1684bb8fef54e63cc1adce28ce97"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_SUMMARY_PROPORTION": {
+        "rationale": "The response consists of exactly three well-crafted sentences that smoothly incorporate every figure from the source document, reading as a cohesive summary rather than a bare list.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "126dff427df6eafcbf6ec31d59f3cc99085c8f0e1752ee98cc6c18dd8502265e"
+}

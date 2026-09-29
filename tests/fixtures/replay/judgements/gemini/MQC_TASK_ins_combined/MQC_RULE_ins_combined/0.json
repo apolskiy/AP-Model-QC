@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate successfully captures all four updates mentioned in the source release note across the three bullets without losing key details or distorting the content. It remains just as informative as answers produced under single constraints.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "6c5f3c0054a7b03a4beb97440cc2a760f43e91981509e7ec8a1571ed56937339"
+}

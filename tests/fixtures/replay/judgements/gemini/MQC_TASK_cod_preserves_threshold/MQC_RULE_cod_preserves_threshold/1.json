@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_THRESHOLD_SENSE": {
+        "rationale": "The candidate output states the figure exact as 82 percent and explicitly preserves the phrase 'at or above'.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "0d65166cd67de202f4286e88d05389b7b0be73d6492b5155d140f61fe2a952db"
+}

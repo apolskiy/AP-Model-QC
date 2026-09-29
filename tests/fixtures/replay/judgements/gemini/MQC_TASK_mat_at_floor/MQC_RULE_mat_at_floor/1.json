@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_FLOOR_MARGIN": {
+        "rationale": "Both the mandatory figure and combined figure are reported correctly, but the candidate output does not remark on the narrow margin or note that it only just clears the threshold.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "bf92d6423e49eedb16ad8f4fd20976e33a2f867376811024ff40c24b63cef9d4"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_FLOOR_MARGIN": {
+        "rationale": "Both the mandatory figure (78.0%) and the combined figure (85.33%) are correctly reported, and the candidate recommends proceeding. However, the response does not remark on the thin margin or convey that the combined figure only just clears the threshold.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "96bf6405ace00d7588e7ea3ab4b7024576e66a4eb6e57f2dd2c450719935bd6a"
+}

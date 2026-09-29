@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_TABLE_FIDELITY": {
+        "rationale": "All four regions and their order counts are accurately reproduced in the exact order presented in the table.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "6b88c3d18d49ae31dceacf5f72d2a29334ab159cac89b6664d4946e3b94af40f"
+}

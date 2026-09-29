@@ -84,7 +84,18 @@
     - assertion_id: A_COD_NOT_THE_INTENDED_ANSWER
       kind: regex
       parameters:
-        pattern: '(?s)\b90\b.{0,40}\b50\b'
+        # THE ANSWER GIVEN, not the question restated. The intended-but-
+        # wrong answer is "the rows scoring 90 and 50", so the figures
+        # must be read as a result rather than wherever they appear.
+        #
+        # THE OLD PATTERN FAILED A CORRECT ANSWER. One observation opened
+        # "When called with rows scoring 10, 90, and 50 (in that order)
+        # and a limit of 2, the function returns ... the rows scoring 10
+        # and 90" — the right answer, preceded by the prompt's own input
+        # list, which put 90 within 40 characters of 50. Two observations
+        # did not restate the inputs and passed, so this reported as
+        # inconsistency and blamed the model for a phrasing choice.
+        pattern: '(?i)\b(returns?|result\w*|output\w*|answer\w*)\b[^.]{0,40}\b90\b[^.]{0,25}\b50\b'
         present: false
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation
@@ -226,25 +237,52 @@
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0002]
-  assertions:
-    - assertion_id: A_COD_KEEPS_STANDARD_TIER
-      kind: regex
-      parameters:
-        pattern: '(?i)standard[^.]{0,40}\b20\b|\b20\s*(%|percent)[^.]{0,30}standard'
-        present: true
-      taxonomy_code: QC_LLM_SOURCE_ALTERATION
-      severity: violation
-      constraint_ref: COD_PRESERVE_TIERS
-    - assertion_id: A_COD_KEEPS_PREMIUM_TIER
-      kind: regex
-      parameters:
-        pattern: '(?i)premium[^.]{0,40}\b30\b|\b30\s*(%|percent)[^.]{0,30}premium'
-        present: true
-      taxonomy_code: QC_LLM_SOURCE_ALTERATION
-      severity: violation
-      constraint_ref: COD_PRESERVE_TIERS
+  # A_COD_KEEPS_STANDARD_TIER AND A_COD_KEEPS_PREMIUM_TIER WERE RETIRED
+  # 2026-09-29, after three patterns each failed a correct answer.
+  #
+  # The prompt says "do not change the discount percentages the module states",
+  # and a regex cannot tell a changed percentage from a discussed one: a
+  # correct answer writes "80% of total for standard, 70% for premium" —
+  # the remainders after the stated discounts — and any pattern pairing a tier
+  # name with a number matches it. The rule's own level 5 exemplar failed the
+  # last attempt, which is how MQC_CAS_UNI_10432 reported the problem.
+  #
+  # C_COD_TIERS_UNCHANGED below carries the claim instead.
   rubric:
     criteria:
+      - criterion_id: C_COD_TIERS_UNCHANGED
+        # THE CONSTRAINT MOVES WITH THE CHECK. R3 requires every constraint the
+        # task sends to be referenced by something that verifies it, and the two
+        # retired assertions were what referenced COD_PRESERVE_TIERS.
+        constraint_ref: COD_PRESERVE_TIERS
+        name: The stated discount percentages survive
+        description: >-
+          Whether the response leaves the module's own percentages intact. The
+          prompt forbids changing them; it does not ask for them to be repeated,
+          so an answer that never names a tier has not changed anything. What
+          fails here is attributing a percentage to a tier that the module does
+          not state, including a remainder presented as the discount.
+        anchors:
+          1:
+            description: States a discount percentage the module does not.
+            exemplar: >-
+              The standard tier receives a 25% discount, so the function should
+              subtract that from the total.
+          3:
+            description: >-
+              Leaves the percentages alone, whether or not it names them.
+            exemplar: >-
+              The expression computes the discount rather than the amount owed;
+              it should subtract the discount from the total instead.
+          5:
+            description: >-
+              Uses the stated percentages correctly, distinguishing the discount
+              from the remainder when it works through an example.
+            exemplar: >-
+              For the standard tier the module states a 20% discount, so on a 100
+              unit basket the function returns 20 — the discount — where the
+              amount owed is the remaining 80. The premium tier's 30% behaves the
+              same way, leaving 70.
       - criterion_id: C_COD_NAMES_THE_MISCOMPUTATION
         name: Naming what it computes
         description: >-
@@ -418,7 +456,21 @@
     - assertion_id: A_COD_OUTCOME_FREE_GOODS
       kind: regex
       parameters:
-        pattern: '(?i)(\bzero\b|\bfree\b|\bnothing\b|no charge|(?<![\d.])0\.0\b|pays? (nothing|0)\b)'
+        # THE CORRECT VALUE, because it is the one thing an answer cannot
+        # produce without having found this outcome. 60 is what the call
+        # should settle to; the function returns 0.0.
+        #
+        # THE OLD PATTERN COULD PASS WITHOUT THE DEFECT. `zero` matched "No
+        # Floor at Zero" and `0\.0` matched "-10.0", both of which belong to
+        # outcome 2. One observation passed on those words while never
+        # mentioning this outcome, which is exactly the merge the comment
+        # above says these two were separated to prevent.
+        #
+        # THE ALTERNATIVES are the ways of saying it that avoid the figure.
+        # A SETTLING VERB BEFORE THE FIGURE. "No Floor at Zero" is outcome
+        # 2's remedy and must not match; "takes it to exactly zero" is this
+        # outcome and must. The preposition is what separates them.
+        pattern: '(?i)(\b60(\.0)?\b|\b(settles?|settlement|takes?\s+it|comes?\s+out|results?\s+in|evaluates?\s+to|returns?)\s+(to\s+)?(exactly\s+)?(0|zero)\b|\bpays?\s+nothing\b|\bcharged\s+nothing\b|\bfree\s+of\s+charge\b)'
         present: true
       taxonomy_code: QC_LLM_DEFECT_MISSED
       severity: violation
@@ -449,11 +501,12 @@
           5:
             description: Both reported, each with the input that triggers it.
             exemplar: >-
-              The formula returns the discount rather than the discounted price, a
-              coupon can drive the settlement to zero or negative, and an unknown save
-              code raises KeyError so nothing settles. Two more: an empty coupon_codes
-              list raises IndexError on the index, and an account tier the map does not
-              carry raises KeyError on the tier lookup.
+              The formula returns the discount rather than the discounted price:
+              on a 100 unit basket with SAVE20 and SAVE30 it settles to 0 where 60
+              is owed, and a single larger code drives it negative. An unknown save
+              code raises KeyError so nothing settles. Two more: an empty
+              coupon_codes list raises IndexError on the index, and an account tier
+              the map does not carry raises KeyError on the tier lookup.
       - criterion_id: C_COD_WHO_IS_AFFECTED
         name: Naming who is affected
         description: >-
@@ -565,9 +618,19 @@
 # code. **All three follow from one cause**, so a model that lists them scores
 # exactly as one that diagnosed the arithmetic. These cases ask for the cause.
 #
-# NO RUBRIC AND NO JUDGE. Every claim below is settled by running the excerpt:
-# the units are stated in the module, the bound is arithmetic, and a missing
-# key either raises or does not.
+# THE FACTS ARE DETERMINATE AND THE WORDING IS NOT, which is the distinction
+# these rules originally missed. The units are stated in the module, the bound
+# is arithmetic and a missing key either raises or does not — but whether a
+# model writes "ignores subsequent coupons" or "subsequent coupons are
+# ignored" is a phrasing choice, and the patterns here were deciding on it.
+#
+# ACROSS TWO RECORDINGS OF THE SAME PROMPTS THEY FLIPPED, and the run reported
+# QC_LLM_INCONSISTENT: the model blamed for wording its own diagnosis one way
+# rather than another. Added rubrics 2026-09-29.
+#
+# SO THE SPLIT CHANGED, NOT THE INTENT. Each regex below is now a cheap first
+# pass over vocabulary the answer cannot avoid, with no adjacency left in it,
+# and the rubric carries the claim.
 
 # Case 30038. THE CAUSES, and there are two independent ones.
 - rule_id: MQC_RULE_cod_settlement_causes
@@ -582,7 +645,10 @@
     - assertion_id: A_COD_CAUSE_DISCOUNT_INVERTED
       kind: regex
       parameters:
-        pattern: '(?i)(returns?|computes?|is|gives?|yields?)[^.]{0,40}\b(the\s+)?discount\b[^.]{0,40}\b(not|rather\s+than|instead\s+of)\b|\b(100\s*-\s*discount|1\s*-\s*discount|80\s*%|remaining|remainder|amount\s+(owed|due|payable))\b'
+        # VOCABULARY ONLY. The adjacency branch required a verb within 40
+        # characters of `discount` and a contrast word 40 beyond it, which is
+        # one sentence shape out of many that state the same fact.
+        pattern: '(?i)\b(100\s*-\s*discount|1\s*-\s*discount|80\s*%|remaining|remainder|amount\s+(owed|due|payable)|discounted\s+(subtotal|price|total))\b'
         present: true
       taxonomy_code: QC_LLM_DEFECT_MISSED
       severity: violation
@@ -593,7 +659,9 @@
     - assertion_id: A_COD_CAUSE_DEDUCTION_UNBOUNDED
       kind: regex
       parameters:
-        pattern: '(?i)(exceed|greater\s+than|more\s+than|larger\s+than|above)[^.]{0,40}\b(total|price|basket|amount|balance)\b|\b(no|without\s+a|missing|lacks?\s+a)\b[^.]{0,20}\b(floor|bound|cap|limit|clamp|lower\s+bound|minimum)\b|\bcap(ped|ping)?\b[^.]{0,30}\b(total|price|basket)\b'
+        # VOCABULARY ONLY, as above. A reviewer naming this defect reaches for
+        # one of these words; which noun it lands beside is not the claim.
+        pattern: '(?i)\b(floor|clamp\w*|cap(ped|ping)?|lower\s+bound|negative|below\s+zero|minimum|max\(0)\b'
         present: true
       taxonomy_code: QC_LLM_DEFECT_MISSED
       severity: violation
@@ -604,11 +672,48 @@
     - assertion_id: A_COD_CAUSE_ONLY_FIRST_CODE
       kind: regex
       parameters:
-        pattern: '(?i)(only|just|first)[^.]{0,30}\b(code|coupon|element|item|entry)\b|\b(ignores?|discards?|drops?|skips?)\b[^.]{0,40}\b(remaining|other|additional|subsequent|rest)\b|\bsum(s|med|ming)?\b[^.]{0,30}\b(nothing|one|single|not)\b'
+        # VOCABULARY ONLY. Widening this for the passive voice was the second
+        # attempt and a third recording found a third wording; the lesson is
+        # that the sentence shape is not the claim.
+        pattern: '(?i)(coupon_codes\[0\]|\bfirst\s+coupon\b|\bonly\s+the\s+first\b|\bsubsequent\b|\badditional\s+coupons?\b|\bremaining\s+coupons?\b)'
         present: true
       taxonomy_code: QC_LLM_DEFECT_MISSED
       severity: violation
       constraint_ref: COD_STATE_CAUSE_AND_REMEDY
+
+  rubric:
+    criteria:
+      - criterion_id: C_COD_CAUSES_DIAGNOSED
+        name: Causes named rather than outcomes listed
+        description: >-
+          Whether the response identifies what is wrong with the arithmetic rather
+          than what the function returns. Case 30036 already asks for the
+          outcomes, and all of them follow from these causes, so listing them
+          again is not a diagnosis.
+        anchors:
+          1:
+            description: Lists what the function returns, naming no cause.
+            exemplar: >-
+              It settles to a negative amount on large coupons, gives goods away
+              on some baskets, and crashes on an unrecognised code.
+          3:
+            description: Names one cause correctly and says what it should do.
+            exemplar: >-
+              total_amount * discount / 100 produces the discount itself rather
+              than the amount owed; it should compute the remainder instead.
+          5:
+            description: >-
+              Names the independent causes and the remedy for each, keeping them
+              separate rather than deriving one from another.
+            exemplar: >-
+              Three separate defects. total_amount * discount / 100 yields the
+              discount itself rather than the amount owed, and should compute the
+              remainder. The coupon is then deducted with no floor, so a large
+              code settles negative and the result should be clamped at zero;
+              this survives the first fix and is not a symptom of it. Finally
+              coupon_lookup[coupon_codes[0]] reads only the first coupon and
+              ignores every subsequent code, though the parameter is plural.
+    threshold: 3.0
 
 # Case 30039. THE REMEDY FOR AN INVALID CODE, which is determinate: a code that
 # is not in the lookup means no saving, and a settlement engine that raises on
@@ -621,11 +726,45 @@
     - assertion_id: A_COD_REMEDY_INVALID_CODE_IS_ZERO
       kind: regex
       parameters:
-        pattern: '(?i)(?:\b(?:invalid|unknown|missing|absent|unrecognis\w+|unrecogniz\w+)\b[^.]{0,60}?\b(?:ignored?|skipp?ed?|zero|no\s+(?:saving|discount|reduction)|treated\s+as|default)\b)|(?:\b(?:get|use|lookup)\b[^.]{0,20}\bdefault\b)|(?:\.get\()|(?:\bshould\s+not\s+(?:raise|crash|throw|fail)\b)'
+        # VOCABULARY ONLY, and the rubric below decides whether the remedy is
+        # the determinate one rather than merely a remedy.
+        pattern: '(?i)(\.get\(|\bKeyError\b|\bzero\b|\bno\s+(saving|discount|reduction)\b|\bdefault\b|\bskip\w*\b|\bignor\w+\b)'
         present: true
       taxonomy_code: QC_LLM_DEFECT_MISSED
       severity: violation
       constraint_ref: COD_STATE_CAUSE_AND_REMEDY
+
+  rubric:
+    criteria:
+      - criterion_id: C_COD_REMEDY_IS_DETERMINATE
+        name: The remedy for an unrecognised code
+        description: >-
+          Whether the response treats an unknown code as a data condition that
+          contributes nothing, rather than as an error that stops settlement. A
+          settlement engine that raises on one has turned a bad coupon into an
+          outage.
+        anchors:
+          1:
+            description: >-
+              Treats the crash as correct, or proposes raising the failure to the
+              caller.
+            exemplar: >-
+              Raising a KeyError is appropriate here, since the code is not valid
+              and the caller should be told.
+          3:
+            description: Says an unknown code must not crash, without saying what it contributes.
+            exemplar: >-
+              The lookup should not raise on a code that is missing; this needs
+              handling.
+          5:
+            description: >-
+              States that an unrecognised code contributes zero and settlement
+              proceeds, naming how.
+            exemplar: >-
+              An unknown code is a data condition rather than an outage. Use
+              coupon_lookup.get(code, 0) so an unrecognised code contributes zero
+              and the order still settles, instead of raising a KeyError.
+    threshold: 3.0
 
 # Case 30040. P4, INFORMATIONAL. A recommendation rather than a defect: the
 # module is not wrong to omit an expiry, it is weaker for it.
@@ -642,14 +781,41 @@
       taxonomy_code: QC_LLM_DEFECT_MISSED
       severity: violation
       constraint_ref: COD_BOUND_COUPON_LIFETIME
-    # WHAT THE LOOKUP WOULD HAVE TO CARRY. A bound is unenforceable if the
-    # lookup returns only an amount, so a recommendation that names the bound
-    # and not the data it needs is half an answer.
-    - assertion_id: A_COD_NAMES_WHAT_THE_LOOKUP_MUST_CARRY
-      kind: regex
-      parameters:
-        pattern: '(?i)\b(lookup|hash|map|table|record|entry|value)\b[^.]{0,60}\b(date|timestamp|expiry|expiration|window|period|metadata|tuple|object|struct)\b'
-        present: true
-      taxonomy_code: QC_LLM_DEFECT_MISSED
-      severity: violation
-      constraint_ref: COD_BOUND_COUPON_LIFETIME
+  # A_COD_NAMES_WHAT_THE_LOOKUP_MUST_CARRY WAS RETIRED 2026-09-29. A bound is
+  # unenforceable if the lookup returns only an amount, so naming the bound
+  # and not the data it needs is half an answer — and that is a judgement
+  # about completeness, which the level 5 anchor below now makes.
+  #
+  # IT REQUIRED two word families within 60 characters and failed an answer
+  # that made the point across a sentence boundary.
+  rubric:
+    criteria:
+      - criterion_id: C_COD_LIFETIME_IS_ENFORCEABLE
+        name: A bound that could actually be enforced
+        description: >-
+          Whether the recommendation names both the bound and the data the lookup
+          must carry for it to be checked. The module is not wrong to omit an
+          expiry, so this is informational; a bound nothing can enforce is still
+          half an answer.
+        anchors:
+          1:
+            description: Recommends no bound on how long a code stays redeemable.
+            exemplar: >-
+              The lookup is straightforward and reads clearly; no changes are
+              needed here.
+          3:
+            description: Recommends an expiry without saying what the lookup must return.
+            exemplar: >-
+              Each coupon code should carry an expiration date and be rejected
+              once it has passed.
+          5:
+            description: >-
+              Recommends the bound and names what the lookup must carry for it to
+              be enforceable.
+            exemplar: >-
+              Give each code an expiration timestamp and compare it at settlement.
+              That requires the lookup to return more than an amount: it must map
+              a code to its value and its expiry together, because the current
+              signature gives settle_order no way to know when a code stopped
+              being valid.
+    threshold: 3.0

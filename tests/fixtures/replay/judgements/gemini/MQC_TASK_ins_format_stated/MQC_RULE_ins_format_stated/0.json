@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_SUMMARY_FAITHFUL": {
+        "rationale": "The candidate summary captures all three reported defect resolutions accurately without omitting any details, adding extraneous claims, or altering the emphasis of the source text.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "981f6a906fee9af7970fdf5dbba0acfe39260b06cdf240b8991b39dab4a5852f"
+}

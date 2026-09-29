@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The candidate clearly names both missing details (which threshold and what value), far exceeding Level 3. However, it falls short of Level 5 because it does not state what it would do once the requested information is provided.",
+        "rationale": "The candidate clearly exceeds Level 3 by identifying and explicitly naming both missing details (which threshold and what the new target value is). However, it stops short of fully meeting the Level 5 anchor because it does not explicitly state what it will do once those details are provided.",
         "score": 4
       }
     }
   },
-  "request_hash": "4f14ec35de22b1a7453ab2c0fbdf167f6173701878a69e55b3fedb188439c6a3"
+  "request_hash": "db4f5c763dcdc59924da2e1bce3520fcd1d4b09dff0fc871b50e7c50246d0ef7"
 }

@@ -165,7 +165,7 @@
 # bound a SECOND defect rather than a symptom of the first. 30036's three
 # calls cannot separate them.
 - task_id: MQC_TASK_cod_settlement_causes
-  rubric_ids: [MQC_RULE_cod_settlement_causes]
+  rubric_ids: [MQC_RULE_cod_settlement_causes, MQC_RULE_cod_settlement_remedy]
   user_prompt: |
     The function below settles an order incorrectly. State the cause of
     each defect rather than only what it returns, and say what the

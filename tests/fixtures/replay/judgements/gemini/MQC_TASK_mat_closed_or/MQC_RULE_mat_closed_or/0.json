@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The candidate output gives the correct figure (100%) and explicitly names the disjunctive connector 'or' as the reason why having any one of the listed languages suffices.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ad75f414863ecf66a89247aef76af6ca501fc12cba804d5c7d46772bec1f9df8"
+}

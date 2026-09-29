@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_UNPROMPTED_SHAPE": {
+        "rationale": "The candidate does not output a machine-readable format like JSON, but formats the summary using an unprompted bulleted list with bold category headers instead of plain prose. This represents light incidental structure, exceeding level 3 while falling slightly short of a purely unstructured prose summary at level 5.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "0216bed5fc45d0853313347b62f785b703f03c8526423af96a4a25c144c9f113"
+}

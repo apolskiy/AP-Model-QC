@@ -1,0 +1,22 @@
+{
+  "request_hash": "5741fa8fe01b540a41427450e4b66c4be809f527860a7ca0ba39e1b618bd49c3",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
+    "duration_ms": 2250,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 86,
+    "mode": "live",
+    "output_tokens": 47,
+    "raw_reference": "nUK7asC1FNjU-8YPnM3y2QY",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "Based on the table, here are the regions and their order counts:\n\n* **North:** 120\n* **East:** 80\n* **South:** 35\n* **West:** 20",
+    "thinking_tokens": 221,
+    "tool_calls": []
+  }
+}

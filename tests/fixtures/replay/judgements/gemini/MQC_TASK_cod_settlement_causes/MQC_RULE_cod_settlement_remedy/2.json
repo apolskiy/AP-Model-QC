@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_REMEDY_IS_DETERMINATE": {
+        "rationale": "The candidate specifically notes that missing/invalid codes should not crash production, explains that they should contribute zero to the discount, and names how to achieve this using `.get(code, 0)`.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e95b8f9a728221ed2bb8ebff6d9cb593d64ebc15d3761a55d4bccc7837fb519a"
+}

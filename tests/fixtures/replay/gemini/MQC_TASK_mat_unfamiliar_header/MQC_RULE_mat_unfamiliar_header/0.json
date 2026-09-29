@@ -1,0 +1,22 @@
+{
+  "request_hash": "7a0c06a79fcee871e4f6c2aceff21c83e752c26829410dd3cfcf10fc26cce1b9",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
+    "duration_ms": 3288,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 90,
+    "mode": "live",
+    "output_tokens": 149,
+    "raw_reference": "ZS-7atm7EN2p1MkP08Lo8AY",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "Based on the document, here is the breakdown for each header:\n\n* **\"What you will need on day one.\"**\n  * **Status:** **Mandatory**\n  * **Why:** The phrase **\"will need\"** expresses a strict necessity, and **\"on day one\"** indicates that these skills are baseline requirements you must already possess upon starting the job.\n\n* **\"What would make you stand out.\"**\n  * **Status:** **Optional** (preferred / \"nice-to-have\")\n  * **Why:** The conditional phrase **\"would make you stand out\"** indicates that these skills are not strictly required, but rather bonus qualifications that give an applicant a competitive edge.",
+    "thinking_tokens": 334,
+    "tool_calls": []
+  }
+}

@@ -97,6 +97,20 @@ def excerpt(name: str) -> str:
     )
 
 
+# A TASK CARRIES ONE RULE NAMED AFTER IT, except where the prompt asks two
+# separable things and the two are graded apart.
+#
+# `cod_settlement_causes` asks for the cause of each defect AND what the
+# function should do instead. `MQC_EVL_EVAL_30038` grades the causes and
+# `30039` the remedy. `MQC_RULE_cod_settlement_remedy` existed, carrying
+# `constraint_ref: COD_STATE_CAUSE_AND_REMEDY`, and no task listed it, so
+# `30039` asked for a pair `data/` never built and raised `KeyError` the first
+# time it ran unmasked. `MQC_CAS_UNI_10454` now reports that without running.
+_ADDITIONAL_RULES: Final[dict[str, tuple[str, ...]]] = {
+    "cod_settlement_causes": ("MQC_RULE_cod_settlement_remedy",),
+}
+
+
 def _tasks() -> list[tuple[str, ...]]:
     """Return every task as its comment, identifiers, prompt and source.
 
@@ -260,7 +274,11 @@ def build() -> str:
         parts.append(
             f"\n{comment}\n"
             f"- task_id: MQC_TASK_{stem}\n"
-            f"  rubric_ids: [MQC_RULE_{stem}]\n"
+            f"  rubric_ids: ["
+            + ", ".join(
+                (f"MQC_RULE_{stem}",) + _ADDITIONAL_RULES.get(stem, ())
+            )
+            + "]\n"
             f"  user_prompt: |\n{prompt}\n"
             f"  constraints:\n"
             f"    - constraint_id: {constraint_id}\n"

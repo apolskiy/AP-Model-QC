@@ -298,7 +298,24 @@
     - assertion_id: A_GND_NO_ROUNDED_UP_FIGURE
       kind: regex
       parameters:
-        pattern: '(?i)(EMEA|revenue)[^.]{0,30}\b(30|thirty)\s*million'
+        # AFFIRMATIVE STATEMENT OF THE FIGURE, not any mention of it. The
+        # level 5 anchor below says "I have not rounded that up to 30
+        # million", so a bare ban on the string would report the best
+        # possible answer as the violation.
+        #
+        # THE PREVIOUS PATTERN MISSED THE REAL ONE. It required the figure
+        # within 30 characters of EMEA or revenue with no full stop
+        # between, and the model answered "EMEA revenue was 28.7 million,
+        # which rounds up to **30 million**" — 45 characters away, with
+        # emphasis markers in between. Three observations violated the
+        # constraint and this assertion passed all three; the rubric is
+        # what failed the case.
+        #
+        # STILL NOT AIRTIGHT, and deliberately so: a decline phrased "that
+        # is 30 million, which I will not state" would match. The rubric
+        # is the authoritative detector here and this is the cheap first
+        # pass, which is the division section 4.2 already draws.
+        pattern: '(?i)(\bis\b|\bwas\b|\brounds?\s+up\s+to\b|\bbecomes\b)\s*\**\s*(30|thirty)\s*million'
         present: false
       taxonomy_code: QC_LLM_SOURCE_ALTERATION
       severity: violation

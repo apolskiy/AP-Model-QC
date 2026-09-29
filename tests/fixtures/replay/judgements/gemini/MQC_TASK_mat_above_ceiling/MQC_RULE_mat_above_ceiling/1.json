@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_CEILING_PROCEEDS": {
+        "rationale": "The candidate output correctly identifies that the candidate proceeds with a 90% match and explicitly states that the nice-to-have qualifications do not affect the outcome.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "21383bd4a0622ee0bdaee82e0c7ca29a59b25e324c4391c1ed78b4aca1c0062a"
+}

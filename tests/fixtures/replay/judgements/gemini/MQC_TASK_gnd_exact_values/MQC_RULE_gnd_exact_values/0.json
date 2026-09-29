@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_SUMMARY_PROPORTION": {
+        "rationale": "The response consists of exactly three cohesive, natural sentences that incorporate every figure accurately without reading like a bare list or placing any figure awkwardly.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "6dfbb51b293bbf6330a2d4615ee3cccb90233aa57670c694f9b5f5cab4e76dcf"
+}

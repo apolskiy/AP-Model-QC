@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_PROHIBITION_NATURAL": {
+        "rationale": "The prohibited dashes (em dashes and en dashes) were completely avoided, and the summary reads smoothly and naturally as though unconstrained.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "2bccbc62f239ef1d59226a6a996ec8e89ec0dba461c5bef6ea07c672c165ae61"
+}

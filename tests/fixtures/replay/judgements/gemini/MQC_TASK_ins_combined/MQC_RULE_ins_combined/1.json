@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate successfully includes all four changes from the original release note across three concise bullet points without losing any key information or clarity. Meeting the multiple constraints did not degrade the content quality or informativeness at all.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "2e06c2672cd08d4a2d71ce0956d59eb928f7a1a8928c6403d99ee2e05bee9f7e"
+}
