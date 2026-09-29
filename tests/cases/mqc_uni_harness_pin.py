@@ -764,10 +764,18 @@ class TestMQCTargetStrictness:
         refuses to read an unknown as a success, and waiting is the opposite of
         assuming: nothing concludes until the upstream gate concludes it.
 
-        **Four outcomes, and only one of them waits.** A red conclusion is a
-        decision and is refused at once. A commit with no run at all is refused
-        at once too, because no amount of waiting grows one. A wait that runs out
-        refuses, because a gate that has not finished has established nothing.
+        **Only a decision returns at once.** A red conclusion is one, and
+        waiting cannot change it. A wait that runs out refuses, because a gate
+        that has not finished has established nothing.
+
+        **A run not yet registered waits too**, which this first got wrong. It
+        asserted that absence never waits, on the reasoning that no amount of
+        waiting grows a run. A paired push disproved it: the consumer resolved
+        seven seconds after the harness was pushed, GitHub had not recorded the
+        run yet, and the gate refused a commit whose own run started moments
+        later and passed. Absence one second after a push and absence an hour
+        later are the same API response, so the only way to tell them apart is
+        to look again.
 
         Returns:
             None
@@ -776,7 +784,7 @@ class TestMQCTargetStrictness:
             ("pending then green", [_running()] * 3 + [_concluded("success")], True, True),
             ("pending then red", [_running(), _concluded("failure")], False, True),
             ("red at once", [_concluded("failure")], False, False),
-            ("no run at all", [[]], False, False),
+            ("unregistered then green", [[], []] + [_concluded("success")], True, True),
         ):
             verdict, polls, waited = _drive(sequence)
             assert verdict.green is expect_green, f"{name}: green was {verdict.green}"
@@ -791,6 +799,14 @@ class TestMQCTargetStrictness:
         assert stuck.green is False
         assert waited == 60.0
         assert "has not concluded" in stuck.reason
+
+        # AND A COMMIT THAT REALLY HAS NO RUN IS STILL REFUSED. Waiting only
+        # postpones the conclusion; it never turns absence into a pass, which
+        # is what section 3.2 forbids.
+        never, _, waited = _drive([[]], timeout=60.0)
+        assert never.green is False
+        assert waited == 60.0
+        assert "is not a commit that passed" in never.reason
 
     def MQC_CAS_UNI_10448_a_requirement_traced_but_stated_in_no_plan_is_reported(
         self,

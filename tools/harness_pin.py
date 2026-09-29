@@ -119,6 +119,11 @@ def load_mapping(path: Path) -> dict[str, Any]:
 # rather than re-derived, so the two cannot disagree about what pending means.
 _STILL_RUNNING: Final[str] = "so nothing has been established yet"
 
+# The phrase it uses for a commit no run has been recorded against yet. A push
+# to both repositories lands seconds apart and the consumer resolves first, so
+# for a few seconds the run is not missing but unregistered.
+_NOT_YET_REGISTERED: Final[str] = "no run is recorded against it yet"
+
 
 @dataclass(frozen=True)
 class WaitPolicy:
@@ -212,8 +217,8 @@ def assess_greenness(
             green=False,
             reason=(
                 f"{_TAXONOMY_CODE}: no {required_workflow} run exists for commit "
-                f"{head_sha[:12]}. A commit with no run is not a commit that "
-                f"passed"
+                f"{head_sha[:12]}, {_NOT_YET_REGISTERED}. A commit with no run "
+                f"is not a commit that passed"
             ),
         )
 
@@ -300,6 +305,13 @@ def await_verdict(
     push produce a red consumer run that a manual re-run then cleared, which is
     toil carrying no information: the answer was always going to arrive.
 
+    **A run not yet registered is pending too**, which this first missed. The
+    consumer resolved seven seconds after the harness was pushed, before GitHub
+    had recorded a run at all, and refused a commit whose gate started moments
+    later and passed. Nothing distinguishes that from a commit that will never
+    have a run except how long you look, so it is waited on and the timeout
+    still refuses.
+
     **Section 3.2 is not weakened by this.** "Absence of a result is not a pass"
     refuses to read an unknown as a success. Waiting is the opposite of assuming:
     nothing is concluded until the upstream gate concludes it, a red stays red,
@@ -323,10 +335,23 @@ def await_verdict(
     verdict = assess_greenness(fetch_runs(repository, commit, token), required_workflow, commit)
 
     while verdict.conclusion is None and not verdict.green:
-        # ONLY AN UNCONCLUDED RUN IS WAITED ON. A run that concluded red carries
-        # its conclusion, and a commit with no run at all carries none but is not
-        # going to grow one: neither is a decision that arrives by waiting.
-        if _STILL_RUNNING not in verdict.reason:
+        # AN UNCONCLUDED RUN AND AN UNREGISTERED ONE ARE BOTH PENDING. A run
+        # that concluded red carries its conclusion and waiting cannot change
+        # it, so only that returns immediately.
+        #
+        # THIS ONCE EXCLUDED ABSENCE, on the reasoning that a commit with no run
+        # "is not going to grow one". A paired push disproved it: the consumer
+        # resolved seven seconds after the harness was pushed, GitHub had not
+        # registered the run yet, and the gate refused a commit whose run
+        # started moments later and passed. Absence a second after a push and
+        # absence a minute later are the same API response.
+        #
+        # THE SAFETY PROPERTY IS UNCHANGED. Nothing is accepted without a
+        # concluded green run; the wait only postpones concluding that there is
+        # none, and a timeout still refuses.
+        if _STILL_RUNNING not in verdict.reason and (
+            _NOT_YET_REGISTERED not in verdict.reason
+        ):
             return verdict
         if terms.monotonic() - started >= terms.timeout_sec:
             return Greenness(

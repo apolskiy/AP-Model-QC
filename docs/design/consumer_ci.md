@@ -348,8 +348,33 @@ concludes it.
 | A run still going | **Waits**, up to ten minutes |
 | A run that concluded red | Refuses at once |
 | A run that concluded green | Proceeds |
-| **No run at all** | Refuses at once. Waiting does not grow one |
+| **No run recorded yet** | **Waits**, on the same budget |
 | A wait that runs out | Refuses. An unfinished gate established nothing |
+
+#### 3.11.1 A run not yet registered is pending, not absent
+
+Corrected 2026-09-29, on the first paired push after section 3.11 was written.
+
+**The row above used to say absence was refused at once**, on the reasoning that
+no amount of waiting grows a run. That was wrong, and in the narrowest possible
+way. The harness was pushed at 02:25:15 and this repository at 02:25:22; the
+resolver asked GitHub about the harness commit before GitHub had registered a
+run against it, and refused a commit whose gate started moments later and passed
+every job.
+
+**Nothing in the API distinguishes the two.** A commit pushed one second ago with
+no run yet and a commit that will never have a run return the same empty list.
+The only thing that separates them is how long you look, so the resolver looks
+again on the same budget it already waits on.
+
+**Section 3.2 still holds, and this is the reason the wait is bounded.** Waiting
+postpones concluding that there is no run; it never reads absence as a pass. A
+commit that genuinely has none is refused when the budget runs out, with the same
+`QC_HARNESS_UPSTREAM_UNVERIFIED` it always carried.
+
+The cost of the old behaviour was a red consumer run on every paired push — the
+same toil section 3.11 was written to remove, arriving seven seconds earlier in
+the window than the case that found it.
 
 **Ten minutes, and the bound matters.** The harness gate finishes in two to three,
 so the budget absorbs a queued runner without letting a wedged upstream run hold a
