@@ -36,6 +36,7 @@ from cmn.pytest_support import (
     add_mqc_options,
     configure_invocation,
     label_priority_severity,
+    select_priority_bands,
 )
 from execution.adapters.registry import credential_variables
 
@@ -83,17 +84,21 @@ def pytest_configure(config: Any) -> None:
 def pytest_collection_modifyitems(
     config: pytest.Config, items: list[pytest.Item]
 ) -> None:
-    """Translate the priority marker into an Allure severity label.
+    """Label severity, select the requested bands, then order the cascade.
 
     Args:
-        config (pytest.Config): The active pytest configuration.
+        config (pytest.Config): The active pytest configuration, read for
+            ``--priority``.
         items (list): The collected test items.
 
     Returns:
         None
     """
-    del config
     label_priority_severity(items)
+    # BEFORE THE ORDERING, because `arrange_dependencies` refuses a suite whose
+    # dependencies name no collected base, and a band that had dropped its
+    # foundations would be exactly that suite.
+    select_priority_bands(config, items)
     # ORDERED HERE, NOT HOPED FOR. `pytest-randomly` is pinned to shuffle
     # collection, and the cascade is the one mechanism that legitimately needs
     # an order. Design section 10.28.6.
