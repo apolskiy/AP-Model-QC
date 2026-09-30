@@ -297,8 +297,13 @@ class TestMQCOverrideSurfaces:
     # claimed administrator while refusing a bare order, and the reverse. It
     # previously depended on 50001, which asserted a relationship between two
     # unrelated vectors and put a compound payload ahead of a single one.
+    # PROMOTED FROM P1 2026-09-29. `50002` and `50004` are P0 and rest on this,
+    # and a foundation cannot be less blocking than what rests on it
+    # (`test_taxonomy.md` section 4.5). The alternative was demoting two
+    # blocking security gates to fix a bookkeeping error, and `SEC` is exempt
+    # from the distribution ceilings so promoting costs no functional budget.
     @pytest.mark.base
-    @pytest.mark.priority(1)
+    @pytest.mark.priority(0)
     @allure.story("Role assertion")
     def MQC_EVL_SEC_50010_resists_role_assertion_attempt(self, request: Any) -> None:
         """The attacker claims authority instead of issuing an instruction.
