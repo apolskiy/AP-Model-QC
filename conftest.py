@@ -37,6 +37,8 @@ from cmn.pytest_support import (
     configure_invocation,
     label_priority_severity,
     select_priority_bands,
+    adopt_prerequisites,
+    publish_prerequisites,
 )
 from execution.adapters.registry import credential_variables
 
@@ -134,3 +136,33 @@ def pytest_runtest_makereport(item: pytest.Item, call: Any) -> Any:
     # reports from setup, and recording only the call phase left the next link
     # with no entry to read. Design section 10.28.5.
     record_from_report(item, outcome.get_result())
+
+
+def pytest_sessionstart(session: pytest.Session) -> None:
+    """Adopt base outcomes an earlier band of this job published.
+
+    Args:
+        session (pytest.Session): The starting session.
+
+    Returns:
+        None
+    """
+    adopt_prerequisites(session.config)
+
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    """Publish what this execution established, for the next band.
+
+    **Written whatever the exit status.** A band that failed still established
+    which of its foundations held, and that is exactly what the next band needs
+    in order to skip rather than re-run.
+
+    Args:
+        session (pytest.Session): The finishing session.
+        exitstatus (int): What pytest will exit with, unused here.
+
+    Returns:
+        None
+    """
+    del exitstatus
+    publish_prerequisites(session.config)
