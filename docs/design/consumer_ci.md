@@ -383,6 +383,71 @@ consumer job all day.
 **The clock is injected**, so `MQC_CAS_UNI_10451` exercises the timeout without
 spending it.
 
+### 3.12 One job per band, because the job name is the diagnosis
+
+Added 2026-10-01.
+
+**`preconditions` ran Gate 2 and Gate 4 in one job**, so a red there meant
+either "our harness or corpus is broken and nothing was measured" or "the model
+underperformed". Those are the two categories `framework-rules.md` section 3.1
+exists to separate, and the ones `cmn_verdict_and_cli.md` section 7.3 keeps apart
+as exit 3 against exit 1. One job name collapsed them, and reading a red meant
+finding the failing case, opening the test plan and looking up its priority
+before knowing which kind of problem it was.
+
+**A failing band has a different remedy at each level**, which is why the band
+belongs in the job name rather than in an artifact:
+
+| Job | A red means | What follows |
+|---|---|---|
+| `lint` | Our code | Fix it |
+| `preconditions, our defect` | **Our harness or corpus.** Nothing was measured | Fix it, blocking |
+| `graded P0, release blocking` | A model defect at P0 | Open it, fix before release |
+| `graded P1, release blocking` | A model defect at P1 | Open it, fix before release |
+| `graded P2-P4, pass floor` | The band fell below the floor | Open it, quarantine the case, review sets the date |
+
+**Gate 2 leaves the graded job entirely.** The band jobs take it on `needs:`, so
+"a precondition failure means the graded layers never execute" is expressed by
+the job graph rather than by step order inside one job.
+
+#### 3.12.1 The bands are chained, and a failure does not hide the next
+
+Each band `needs:` the one before it, which orders them and lets the carried
+outcome record travel. **They run on `success()` of the preconditions job and
+otherwise on `!cancelled()`**, so a P0 failure still lets P1 and P2-P4 report:
+the point of the split is to see every band's state at once, and a chain that
+stopped at the first red would be the single job again with extra steps.
+
+**The carry record travels as an artifact**, uploaded under a name carrying the
+band and the platform. The harness refuses a record whose provenance moved
+(`cmn_verdict_and_cli.md` section 7.6.1), so the two mechanisms that keep one
+platform's outcomes out of another's run are the artifact name and the
+`platform` field, which is the same two-independent-mechanisms pattern the
+debug-artifact exclusion uses.
+
+**`MQC_CODE_REF` and `MQC_CASE_REF` are set per job** from the resolved harness
+commit and this repository's commit, because a commit is a property of the
+checkout and the provenance guard compares both.
+
+#### 3.12.2 Only the lower band answers to a floor
+
+P0 and P1 gate on pytest's exit status, and that is exactly V1: "any P0 or P1
+observation not passing fails the run" and "this band had a failure" are the
+same statement, so no verdict computation is needed to enforce it.
+
+**P2-P4 is the only band where a failure is not automatically fatal**, so it is
+the only one needing a pass rate. `tools/band_floor.py` reads the band's JUnit
+and compares against `VerdictConfig.pass_floor`, which it imports rather than
+restates: a floor written twice is a floor that will eventually disagree with
+itself.
+
+**A harness error is still fatal there.** The tool refuses when the report is
+missing or unparseable, and when any case reports an `error` rather than a
+failure, because an error is our defect and the floor is about the model. That
+distinction is the whole reason the band has a floor at all.
+
+---
+
 ## 4. Test Inventory: `MQC_CAS_UNI_`
 
 Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
@@ -422,8 +487,13 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `10451` | B | `a_pending_harness_gate_is_waited_for_not_refused` |
 | `10452` | N | `harness_files_are_not_located_by_directory_adjacency` |
 | `10453` | N | `the_roster_resolves_and_names_engines` |
+| `10454` | N | `a_graded_case_naming_an_unbuilt_pair_is_reported` |
+| `10455` | N | `fill_gaps_reaches_the_plan_the_channel_uses` |
+| `10456` | B | `a_lower_band_is_judged_against_the_floor` |
+| `10457` | P | `a_skip_leaves_the_denominator` |
+| `10458` | N | `an_error_refuses_rather_than_averaging` |
 
-**Inventory: 32 cases, 21 negative, 5 positive, 3 boundary.**
+**Inventory: 37 cases, 24 negative, 6 positive, 4 boundary.**
 
 ### 4A. The harness is a dependency, not the directory next door
 

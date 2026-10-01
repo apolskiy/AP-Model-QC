@@ -25,6 +25,7 @@ from typing import Final
 import pytest
 
 from tests.cases.graded_support import _channel, engine_roster
+from tools.band_floor import assess
 
 pytestmark = pytest.mark.unit
 
@@ -147,3 +148,129 @@ class TestMQCOptionsReachTheHarness:
         # AND THE TWO CONFIGURATIONS ARE DISTINCT, which the cache must respect.
         assert _channel("gemini", "live", True, False, False).plan.fill_gaps is False
         assert _channel("gemini", "live", True, False, True).plan.fill_gaps is True
+
+
+class TestMQCBandFloor:
+    """What turns a lower band red, and what refuses instead."""
+
+    @staticmethod
+    def _report(path: Path, *, passed: int, failed: int = 0,
+                errored: int = 0, skipped: int = 0) -> Path:
+        """Write a JUnit report with the given shape.
+
+        Args:
+            path (Path): Where to write.
+            passed (int): Cases with no child element.
+            failed (int): Cases carrying a failure.
+            errored (int): Cases carrying an error.
+            skipped (int): Cases carrying a skip.
+
+        Returns:
+            Path: The written report.
+        """
+        rows = [f'<testcase name="pass{index}"/>' for index in range(passed)]
+        rows += [
+            f'<testcase name="fail{index}"><failure/></testcase>'
+            for index in range(failed)
+        ]
+        rows += [
+            f'<testcase name="err{index}"><error/></testcase>'
+            for index in range(errored)
+        ]
+        rows += [
+            f'<testcase name="skip{index}"><skipped/></testcase>'
+            for index in range(skipped)
+        ]
+        path.write_text(
+            "<testsuites><testsuite>" + "".join(rows) + "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+        return path
+
+    def MQC_CAS_UNI_10456_a_lower_band_is_judged_against_the_floor(
+        self, tmp_path: Path
+    ) -> None:
+        """P0 and P1 need no rate; this band is the only one that does.
+
+        "Any P0 or P1 observation not passing fails the run" and "this band had
+        a failure" are the same statement, so pytest's status enforces V1 by
+        itself. P2-P4 is the only band where a failure is not automatically
+        fatal, which is what the floor is for.
+
+        **The boundary is tested at the threshold, not near it**, per
+        `framework-rules.md` section 3.2: off by one at a gate is the likeliest
+        defect in any gate.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+
+        Returns:
+            None
+        """
+        exactly = self._report(tmp_path / "at.xml", passed=9, failed=1)
+        code, message = assess(exactly, floor=0.90)
+        assert code == 0, message
+        assert "cleared" in message
+
+        below = self._report(tmp_path / "below.xml", passed=8, failed=2)
+        code, message = assess(below, floor=0.90)
+        assert code == 1, message
+        assert "below its floor" in message
+        # THE FIGURES ARE IN THE MESSAGE, because a bare "below the floor" sends
+        # a reader to the artifact to learn by how much.
+        assert "80.0%" in message and "90%" in message
+
+    def MQC_CAS_UNI_10457_a_skip_leaves_the_denominator(
+        self, tmp_path: Path
+    ) -> None:
+        """A foundation that did not hold must not charge the later band.
+
+        A dependent skipped under `QC_HARNESS_DEPENDENCY_UNMET` produced no
+        measurement. Counting it as a failure would charge this band for a
+        defect belonging to an earlier one, which is the misattribution the
+        band split exists to remove; counting it as a pass would invent a
+        result.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+
+        Returns:
+            None
+        """
+        report = self._report(tmp_path / "skips.xml", passed=9, failed=1, skipped=40)
+        code, message = assess(report, floor=0.90)
+
+        assert code == 0, message
+        assert "40 skipped" in message
+        assert "9 of 10 measured" in message
+
+    def MQC_CAS_UNI_10458_an_error_refuses_rather_than_averaging(
+        self, tmp_path: Path
+    ) -> None:
+        """An error is our defect, and a floor is about the model.
+
+        Averaging a harness error into a pass rate would let a broken run read
+        as a model that nearly cleared the bar, which inverts the distinction
+        the whole taxonomy rests on.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+
+        Returns:
+            None
+        """
+        broken = self._report(tmp_path / "error.xml", passed=99, errored=1)
+        code, message = assess(broken, floor=0.90)
+        assert code == 4, message
+        assert "our defect" in message
+
+        # AND A REPORT THAT IS NOT THERE REFUSES TOO. A band producing none
+        # measured nothing, and a rate over an empty denominator reads as a
+        # pass, which is the fail-open this must not have.
+        code, message = assess(tmp_path / "absent.xml", floor=0.90)
+        assert code == 4, message
+
+        empty = self._report(tmp_path / "all_skipped.xml", passed=0, skipped=5)
+        code, message = assess(empty, floor=0.90)
+        assert code == 4, message
+        assert "measured none" in message

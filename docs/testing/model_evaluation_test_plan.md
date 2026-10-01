@@ -205,6 +205,8 @@ Scoped in `DESIGN.md` section 7.1.
 | `MQC_REQ_MDL_MAT_0004` | Mandatory and optional sections are correctly classified from their headers |
 | `MQC_REQ_CAS_PRE_0002` | Harness files are located through the installed package and never by directory traversal to an adjacent checkout, and the engine roster resolves and names engines | consumer_ci.md section 4A |
 | `MQC_REQ_CAS_PRE_0003` | A deterministic assertion tests the claim a case is about and not the wording an answer happened to use, so a correct response phrased differently is not reported as a finding about the model | model_evaluation_test_plan.md section 8.13 |
+| `MQC_REQ_CAS_PRE_0004` | The graded layers run as one job per priority band per platform, named so that a red states which remedy applies, with the preconditions in a job of their own and the band outcomes carried between them | consumer_ci.md section 3.12 |
+| `MQC_REQ_CAS_PRE_0005` | A band below P1 is judged against the pass floor rather than by any failure, counts skipped cases outside the denominator, and refuses rather than scoring a band whose report carries an error | consumer_ci.md section 3.12.2 |
 
 ---
 

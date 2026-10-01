@@ -173,8 +173,13 @@ jobs:
         uses: raven-actions/actionlint@v2
 
   # Gates 2 and 3. Deterministic, no credentials, both platforms.
+  # GATE 2 ONLY, AND THAT IS THE POINT. This job ran the graded layers too, so
+  # a red here meant either "our harness or corpus is broken and nothing was
+  # measured" or "the model underperformed". Those are the two categories
+  # `framework-rules.md` section 3.1 exists to separate and that the verdict
+  # keeps apart as exit 3 against exit 1, and one job name collapsed them.
   preconditions:
-    name: preconditions (${{ matrix.os }})
+    name: preconditions, our defect (${{ matrix.os }})
     needs: [resolve, lint]
     strategy:
       fail-fast: false
@@ -186,74 +191,234 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      # THE TEST TOOLING ARRIVES WITH THE HARNESS `[dev]` EXTRA: pytest,
-      # allure-pytest, pylint and pytest-randomly, all pinned there once. Its
-      # absence was why every gate here reported a missing test runner, exit 127.
-      #
-      # `--no-deps` on this repository is deliberate and is why the extra is
-      # needed. It stops this repository's own harness pin replacing the
-      # candidate resolved above, and it discards extras too, so asking for
-      # `.[dev]` asked pip for tooling it was told not to fetch.
-      #
-      # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
-      # comment inside a run body is part of the shell script, and
-      # `MQC_CAS_UNI_10435` reads run bodies looking for a graded invocation: an
-      # earlier version of this note said "toolchain" beside the word for the
-      # test runner, and `tool` matched inside it.
       - name: Install the resolved harness and this repository
         shell: bash
         run: |
           python -m pip install --quiet \
             "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
           python -m pip install --quiet --no-deps --editable "."
-
       - name: Gate 2, unit preconditions
         run: pytest -m unit --junitxml=reports/junit_mqc_unit.xml --alluredir=reports/allure-results
 
-      # GATE 3 IS NOT HERE, AND THAT IS THE BOUNDARY RATHER THAN AN OMISSION.
-      # It ran `pytest -m system`, which collects nothing in this repository:
-      # every case here is either a `UNI` precondition over the shipped corpus or
-      # a graded case in Gate 4. A marker matching zero tests exits 5, so the
-      # step failed the job it was meant to complete, every run.
-      #
-      # WIRING IS THE HARNESS'S SUBJECT, NOT THIS ONE'S. `SYS` covers dispatch,
-      # normalization and pipeline wiring, which this repository does not own,
-      # and `MQC_CMN_SYS_20301` to `20303` over there now run the whole chain to
-      # both a green and a red verdict.
-      #
-      # WHAT THIS REPOSITORY PROVES INSTEAD IS THAT ITS OWN CORPUS COMPOSES, and
-      # that is Gate 4 below: every graded case, both sides replayed, against the
-      # pinned harness resolved above.
-
-      # RUNG 1 OF THE LADDER, and the only rung that fits in a gate.
-      #
-      # BOTH SIDES REPLAYED, so this needs no provider credential and costs
-      # nothing. Before judge fixtures existed a graded gate meant a live judge
-      # call for every case whose assertions passed, which is quota on every
-      # push and a verdict that could differ between two runs of one commit.
-      #
-      # --judge-mode follows --mode when absent, so replay here means replay
-      # both. consumer_ci.md sections 7.1 and 7.3.
-      - name: Gate 4, graded layers, both sides replayed
-        if: always()
-        shell: bash
-        run: |
-          pytest -m "evaluator or tool or sec" \
-            --engine gemini \
-            --mode replay \
-            --junitxml=reports/junit_mqc_graded.xml \
-            --alluredir=reports/allure-results
-
-      # THE ARTIFACT NAME CARRIES WHETHER THE RUN WAS GATED. A run against an
-      # unverified harness must not be collected as though it were part of the
-      # durable record, and a name the collector does not match is the
-      # structural half of that exclusion.
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: >-
             ${{ needs.resolve.outputs.gated == 'true'
-                && format('mqc-reports-cases-none-replay-{0}', matrix.os)
-                || format('scratch-ungated-cases-{0}-{1}', matrix.os, github.run_id) }}
+                && format('mqc-reports-cases-preconditions-{0}', matrix.os)
+                || format('scratch-ungated-cases-pre-{0}-{1}', matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90
+
+  # GATE 3 IS NOT HERE, AND THAT IS THE BOUNDARY RATHER THAN AN OMISSION. It ran
+  # `pytest -m system`, which collects nothing in this repository: every case
+  # here is either a `UNI` precondition over the shipped corpus or a graded case
+  # in a band below. A marker matching zero tests exits 5, so the step failed the
+  # job it was meant to complete, every run. Wiring is the harness's subject and
+  # `MQC_CMN_SYS_20301` to `20303` cover it there.
+
+  # THE BANDS. One job each, because the job name is the diagnosis: a red at P0
+  # or P1 is a release blocker, and a red at P2-P4 is a bug to open and quarantine
+  # while review sets the date. Design section 3.12.
+  #
+  # CHAINED, AND A FAILURE DOES NOT HIDE THE NEXT. Each needs the band before it,
+  # which orders them and carries the outcome record; each runs unless the
+  # preconditions failed, so one band going red still leaves the others
+  # reporting. A chain stopping at the first red would be the single job again.
+  graded-p0:
+    name: graded P0, release blocking (${{ matrix.os }})
+    needs: [resolve, lint, preconditions]
+    # NO STATUS FUNCTION, DELIBERATELY. A job-level `always()` or
+    # `!cancelled()` outruns the resolver's refusal, which is what
+    # `MQC_CAS_UNI_10439` reports and what this first carried. Naming the
+    # preconditions result alone replaces the default needs-success gating,
+    # so a failed band before this one does not hide it while a refusal
+    # upstream still skips it: a refused resolve skips preconditions, and a
+    # skipped job is not a successful one.
+    if: ${{ needs.preconditions.result == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      # THE PROVENANCE GUARD COMPARES BOTH REFS, because a commit is a property
+      # of the checkout rather than of the invocation. Harness
+      # `cmn_verdict_and_cli.md` section 7.6.1.
+      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      - name: Band P0, both sides replayed
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine gemini \
+            --mode replay \
+            --priority 0 \
+            --carry-outcomes reports/carry.json \
+            --junitxml=reports/junit_mqc_p0.xml \
+            --alluredir=reports/allure-results
+
+      - name: Carry the outcomes to P1
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: carry-after-p0-${{ matrix.os }}
+          path: reports/carry.json
+          retention-days: 1
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ needs.resolve.outputs.gated == 'true'
+                && format('mqc-reports-cases-p0-replay-{0}', matrix.os)
+                || format('scratch-ungated-cases-p0-{0}-{1}', matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90
+
+  graded-p1:
+    name: graded P1, release blocking (${{ matrix.os }})
+    needs: [resolve, lint, preconditions, graded-p0]
+    # NO STATUS FUNCTION, DELIBERATELY. A job-level `always()` or
+    # `!cancelled()` outruns the resolver's refusal, which is what
+    # `MQC_CAS_UNI_10439` reports and what this first carried. Naming the
+    # preconditions result alone replaces the default needs-success gating,
+    # so a failed band before this one does not hide it while a refusal
+    # upstream still skips it: a refused resolve skips preconditions, and a
+    # skipped job is not a successful one.
+    if: ${{ needs.preconditions.result == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      # WHAT P0 ESTABLISHED, NOT WHAT P0 RAN. A P1 case resting on a P0
+      # foundation is resolvable from the record, so the foundation is not
+      # dispatched again and a P0 failure skips its dependents here rather than
+      # failing them.
+      - name: Take the outcomes P0 established
+        uses: actions/download-artifact@v6
+        with:
+          name: carry-after-p0-${{ matrix.os }}
+          path: reports/
+
+      - name: Band P1, both sides replayed
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine gemini \
+            --mode replay \
+            --priority 1 \
+            --carry-outcomes reports/carry.json \
+            --junitxml=reports/junit_mqc_p1.xml \
+            --alluredir=reports/allure-results
+
+      - name: Carry the outcomes to P2-P4
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: carry-after-p1-${{ matrix.os }}
+          path: reports/carry.json
+          retention-days: 1
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ needs.resolve.outputs.gated == 'true'
+                && format('mqc-reports-cases-p1-replay-{0}', matrix.os)
+                || format('scratch-ungated-cases-p1-{0}-{1}', matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90
+
+  graded-lower:
+    name: graded P2-P4, pass floor (${{ matrix.os }})
+    needs: [resolve, lint, preconditions, graded-p1]
+    # NO STATUS FUNCTION, DELIBERATELY. A job-level `always()` or
+    # `!cancelled()` outruns the resolver's refusal, which is what
+    # `MQC_CAS_UNI_10439` reports and what this first carried. Naming the
+    # preconditions result alone replaces the default needs-success gating,
+    # so a failed band before this one does not hide it while a refusal
+    # upstream still skips it: a refused resolve skips preconditions, and a
+    # skipped job is not a successful one.
+    if: ${{ needs.preconditions.result == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      - name: Take the outcomes P0 and P1 established
+        uses: actions/download-artifact@v6
+        with:
+          name: carry-after-p1-${{ matrix.os }}
+          path: reports/
+
+      # THE STEP DOES NOT GATE, THE FLOOR DOES. This is the only band where a
+      # failure is not automatically fatal, so pytest reports and the next step
+      # decides. Design section 3.12.2.
+      - name: Band P2-P4, both sides replayed
+        continue-on-error: true
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine gemini \
+            --mode replay \
+            --priority 2,3,4 \
+            --carry-outcomes reports/carry.json \
+            --junitxml=reports/junit_mqc_p2_p4.xml \
+            --alluredir=reports/allure-results
+
+      # REFUSES ON AN ERROR RATHER THAN AVERAGING IT. An error is our defect and
+      # a floor is a statement about the model, so a band carrying one exits 4
+      # instead of being scored.
+      - name: Compare the band against its pass floor
+        run: python tools/band_floor.py reports/junit_mqc_p2_p4.xml
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ needs.resolve.outputs.gated == 'true'
+                && format('mqc-reports-cases-p2p4-replay-{0}', matrix.os)
+                || format('scratch-ungated-cases-p2p4-{0}-{1}', matrix.os, github.run_id) }}
           path: reports/
           retention-days: 90
