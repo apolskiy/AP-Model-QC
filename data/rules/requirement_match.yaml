@@ -199,7 +199,20 @@
     - assertion_id: A_MAT_BELOW_SKIPS_OPTIONAL
       kind: regex
       parameters:
-        pattern: '(?i)(grafana|prometheus|mentoring|public speaking)'
+        # EVALUATING IS NOT MENTIONING. The instruction is to not evaluate
+        # the nice-to-have requirements, and this forbade their words
+        # anywhere. `gpt-4.1` restated the resume's own skill list
+        # verbatim, which names them, and then wrote "I will NOT evaluate
+        # the nice-to-have requirements." It complied and was reported.
+        #
+        # A VERDICT WORD IS WHAT EVALUATION LEAVES BEHIND, so the term
+        # has to carry one on its own line. A restated input list does
+        # not; a nice-to-have section scored against the posting does.
+        #
+        # THE OTHER TWO ASSERTIONS CARRY THE CASE: the percentage is
+        # reported and the cutoff named, and the rubric judges whether
+        # the warning says which mandatory requirements are unmet.
+        pattern: '(?i)(grafana|prometheus|mentoring|public\s+speaking)[^\n]{0,70}\b(match\w*|met\b|satisfi\w*|credit\w*|scor\w*|present\b|absent\b|missing\b|qualif\w*)'
         present: false
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
       severity: violation

@@ -62,7 +62,11 @@
 # and separating them would triple the request count against a free tier
 # without separating the behaviour.
 - task_id: MQC_TASK_ins_quantities
-  rubric_ids: [MQC_RULE_ins_quantities]
+  # FOUR RULES, ONE PER CONSTRAINT. Four cases bound the single rule and
+  # assertions are conjunctive, so one failing assertion failed all four.
+  # Test plan section 9.3.1.
+  rubric_ids: [MQC_RULE_ins_quantities, MQC_RULE_ins_word_ceiling,
+               MQC_RULE_ins_capitalised, MQC_RULE_ins_complete_sentence]
   user_prompt: |
     Summarise the release note below as a bulleted list.
 

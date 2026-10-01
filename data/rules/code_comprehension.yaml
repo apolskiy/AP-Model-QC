@@ -367,7 +367,22 @@
     - assertion_id: A_COD_NAMES_LINE_TWO
       kind: regex
       parameters:
-        pattern: '(?i)line\s*2\b'
+        # NAMING A LINE IS NOT ONLY NUMBERING IT. `gpt-4.1` answered "The
+        # error is in the following line:" and quoted the line verbatim,
+        # which identifies the location at least as precisely as the
+        # number does, and this reported it as having missed the location.
+        #
+        # THE QUOTATION ADMITTED IS THE BROKEN ONE. Line 2 ends
+        # `reverse=True` with no closing parenthesis, so the end anchor
+        # separates it from the correction, which ends `reverse=True)`.
+        #
+        # IT OPENS NO HOLE, although the excerpt is in the prompt and an
+        # answer could echo it. `A_COD_NOT_LINE_THREE` still fails an
+        # answer blaming the line after, and the rubric criterion
+        # `C_COD_NAMES_THE_CAUSE` judges whether the unclosed call to
+        # sorted is identified at all. This assertion was never the only
+        # thing standing between an echo and a pass.
+        pattern: '(?i)(line\s*2\b|reverse\s*=\s*True\s*$)'
         present: true
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation

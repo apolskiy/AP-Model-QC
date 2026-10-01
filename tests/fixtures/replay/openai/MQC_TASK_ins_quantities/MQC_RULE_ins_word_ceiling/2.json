@@ -1,0 +1,22 @@
+{
+  "request_hash": "d859860e36f7c5a4554d46066af0e4a0f56247349aa45cd37a475362472abb27",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_quantities",
+    "duration_ms": 1114,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 123,
+    "mode": "live",
+    "output_tokens": 39,
+    "raw_reference": "chatcmpl-EUIUD6T4GBz3vxmP4380HWwG2GolV",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "- The importer keeps the trailing column if a file lacks a newline.\n- The scheduler retries a failed job two times before reporting it.\n- The audit log records the account that performs a deletion.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

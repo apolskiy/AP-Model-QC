@@ -134,7 +134,7 @@ class TestMQCQuantitativeCeilings:
             None
         """
         results = observe_repeatedly(
-            request.config, "MQC_TASK_ins_quantities", "MQC_RULE_ins_quantities"
+            request.config, "MQC_TASK_ins_quantities", "MQC_RULE_ins_word_ceiling"
         )
         assert_consistent_pass(results)
 
@@ -155,7 +155,7 @@ class TestMQCQuantitativeCeilings:
             None
         """
         results = observe_repeatedly(
-            request.config, "MQC_TASK_ins_quantities", "MQC_RULE_ins_quantities"
+            request.config, "MQC_TASK_ins_quantities", "MQC_RULE_ins_capitalised"
         )
         assert_consistent_pass(results)
 
@@ -178,7 +178,7 @@ class TestMQCQuantitativeCeilings:
             None
         """
         results = observe_repeatedly(
-            request.config, "MQC_TASK_ins_quantities", "MQC_RULE_ins_quantities"
+            request.config, "MQC_TASK_ins_quantities", "MQC_RULE_ins_complete_sentence"
         )
         assert_consistent_pass(results)
 

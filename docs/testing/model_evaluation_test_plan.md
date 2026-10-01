@@ -208,6 +208,7 @@ Scoped in `DESIGN.md` section 7.1.
 | `MQC_REQ_CAS_PRE_0003` | A deterministic assertion tests the claim a case is about and not the wording an answer happened to use, so a correct response phrased differently is not reported as a finding about the model | model_evaluation_test_plan.md section 8.13 |
 | `MQC_REQ_CAS_PRE_0004` | The graded layers run as one job per priority band per platform, named so that a red states which remedy applies, with the preconditions in a job of their own and the band outcomes carried between them | consumer_ci.md section 3.12 |
 | `MQC_REQ_CAS_PRE_0005` | A band below P1 is judged against the pass floor rather than by any failure, counts skipped cases outside the denominator, and refuses rather than scoring a band whose report carries an error | consumer_ci.md section 3.12.2 |
+| `MQC_REQ_CAS_PRE_0006` | Every graded case binds a task and rule pair no other graded case binds, so a red names the claim that failed rather than the conjunction of four | model_evaluation_test_plan.md section 9.3.1 |
 
 ---
 
@@ -559,8 +560,10 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `10436` | N | `a_live_job_that_does_not_follow_the_ladder_is_reported` |
 | `10437` | N | `a_workflow_installing_an_unresolved_harness_is_reported` |
 | `10438` | N | `a_spending_workflow_that_skips_the_green_gate_is_reported` |
+| `10461` | N | `a_task_and_rule_pair_bound_by_two_graded_cases_is_reported` |
+| `10462` | N | `an_assertion_sensitive_to_trailing_whitespace_is_reported` |
 
-**Inventory: 21 cases, 15 negative, 6 positive, 0 boundary.**
+**Inventory: 23 cases, 17 negative, 6 positive, 0 boundary.**
 
 The `CAS` block also carries `10406` through `10422`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set
@@ -654,6 +657,86 @@ claim about interference and interference is unobservable on a task carrying one
 constraint. Each constraint keeps its own check there: a single combined
 assertion would report that something failed and not which, and which one is
 precisely the claim.
+
+#### 9.3.1 `ins_quantities` carries four constraints and now four rules
+
+Revised 2026-10-01, triaging the second engine.
+
+Section 9.3 says of `ins_combined` that each constraint keeps its own check,
+because "a single combined assertion would report that something failed and not
+which, and which one is precisely the claim." **`ins_quantities` broke that rule
+one level up.** It carried four assertions in one rule, and `30003` through
+`30006` all dispatched that one task with that one rule and asserted the
+conjunction.
+
+So the four cases were indistinguishable at runtime. Identical inputs, identical
+assertion, and assertions are conjunctive gates, so **any one failing assertion
+failed all four cases**.
+
+| Case | Claims to measure | Measured, before |
+|---|---|---|
+| `30003` | The bullet ceiling | All four, conjoined |
+| `30004` | The word ceiling | All four, conjoined |
+| `30005` | Capitalisation | All four, conjoined |
+| `30006` | Subject and verb | All four, conjoined |
+
+`gpt-4.1` tripped `A_INS_COMPLETE_SENTENCE` on two of three observations and
+satisfied the other three assertions on all three. **Four cases went red and one
+behaviour was wrong**, and a reader opening `30005_sentence_begins_with_capital`
+would have investigated capitalisation.
+
+**The rule splits; the task does not.** `MQC_RULE_ins_quantities` keeps the
+bullet ceiling and the readability rubric, and three assertion-only rules join
+the task's `rubric_ids`. Each case now binds a pair no other case binds, which
+is what the other 65 pairs in the suite already did.
+
+**It costs no provider call.** A candidate request is composed from the task
+alone, so its hash does not depend on the rule and the recorded responses are
+the same responses judged by a different rule; they are copied into the new
+pairs' directories. Only the rule carrying the rubric needs a judgement, and its
+identifier is unchanged, so the recorded judgements stay valid.
+
+`MQC_CAS_UNI_10461` reports a pair two graded cases share.
+
+#### 9.3.2 Two trailing spaces made a complete sentence incomplete
+
+`A_INS_COMPLETE_SENTENCE` asserted that no bullet matches
+`[-*] .*[^.!?][ \t]*$`, meaning no bullet ends in something other than terminal
+punctuation. `gpt-4.1` answered:
+
+```
+- The importer keeps the last column if a file ends abruptly.··
+```
+
+That bullet has a subject, a verb and a full stop. **The pattern matched it
+anyway**: with two trailing spaces, `[ \t]*` takes one and `[^.!?]` matches the
+other, because a space is not terminal punctuation. The constraint was satisfied
+and the assertion reported `QC_LLM_DEFECT_MISSED`.
+
+Two trailing spaces are a markdown hard line break. `gemini-3.8-flash` never
+emitted one, so the corpus met this pattern for its whole life without the
+defect being reachable.
+
+**This was one step from being filed against OpenAI.** The failure named a model
+behaviour, carried a `QC_LLM_*` code, and reproduced on two of three
+observations, which is what a finding looks like. What distinguishes a finding
+from an instrument defect is re-deriving it against the text, and the text says
+the model complied.
+
+The pattern now excludes whitespace from the final-character class, so the check
+is on the last **non-whitespace** character:
+
+```
+[-*] .*[^.!?\s][ \t]*$
+```
+
+**And the class generalises, so it is checked rather than fixed.**
+`MQC_CAS_UNI_10462` re-derives every regex assertion against every recorded
+response twice, once as recorded and once with trailing whitespace stripped from
+each line, and reports any assertion whose verdict moves. An assertion whose
+verdict depends on trailing whitespace is measuring formatting, and `INS_0002`
+is not a claim about formatting.
+
 
 ### 9.4 `grounding`, specified 2026-09-23
 

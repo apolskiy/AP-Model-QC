@@ -128,36 +128,6 @@
       taxonomy_code: QC_LLM_LENGTH_VIOLATION
       severity: violation
       constraint_ref: INS_BULLET_CEILING
-    # AT THE THRESHOLD, NEVER NEAR IT. Twelve words is permitted and
-    # thirteen is not, so the check is written against 12 rather than
-    # against a comfortable margin: off-by-one at a boundary is the likeliest
-    # defect in any gate.
-    - assertion_id: A_INS_WORD_CEILING
-      kind: regex
-      parameters:
-        pattern: '^[ \t]*[-*][ \t]+(\S+[ \t]+){12,}\S+'
-        present: false
-      taxonomy_code: QC_LLM_LENGTH_VIOLATION
-      severity: violation
-      constraint_ref: INS_WORD_CEILING
-    - assertion_id: A_INS_CAPITALISED
-      kind: regex
-      parameters:
-        pattern: '^[ \t]*[-*][ \t]+[a-z]'
-        present: false
-      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
-      severity: violation
-      constraint_ref: INS_CAPITALISED
-    # A bullet ending without terminal punctuation is the observable proxy
-    # for a fragment. B11 applies: this parser assumes English.
-    - assertion_id: A_INS_COMPLETE_SENTENCE
-      kind: regex
-      parameters:
-        pattern: '^[ \t]*[-*][ \t]+.*[^.!?][ \t]*$'
-        present: false
-      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
-      severity: violation
-      constraint_ref: INS_COMPLETE_SENTENCE
   rubric:
     criteria:
       - criterion_id: C_INS_QUANTITIES_READABLE
@@ -355,3 +325,61 @@
               - The importer accepts files up to 2 GB.
               - The login page and help link were both updated.
     threshold: 3.0
+
+# THREE RULES SPLIT OUT OF `ins_quantities` ON 2026-10-01. Four cases bound that
+# one rule and assertions are conjunctive, so one failing assertion failed all
+# four and three of them reported a finding about something they never measured.
+# Each carries one assertion and no rubric, so each is deterministic and needs
+# no judge. Test plan section 9.3.1.
+- rule_id: MQC_RULE_ins_word_ceiling
+  priority: 3
+  priority_conditions: [P3_EDGE_PATH]
+  requirement_ids: [MQC_REQ_MDL_INS_0002]
+  assertions:
+    # AT THE THRESHOLD, NEVER NEAR IT. Twelve words is permitted and thirteen is
+    # not, so the check is written against 12 rather than against a comfortable
+    # margin: off-by-one at a boundary is the likeliest defect in any gate.
+    - assertion_id: A_INS_WORD_CEILING
+      kind: regex
+      parameters:
+        pattern: '^[ \t]*[-*][ \t]+(\S+[ \t]+){12,}\S+'
+        present: false
+      taxonomy_code: QC_LLM_LENGTH_VIOLATION
+      severity: violation
+      constraint_ref: INS_WORD_CEILING
+- rule_id: MQC_RULE_ins_capitalised
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_INS_0002]
+  assertions:
+    - assertion_id: A_INS_CAPITALISED
+      kind: regex
+      parameters:
+        pattern: '^[ \t]*[-*][ \t]+[a-z]'
+        present: false
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: INS_CAPITALISED
+- rule_id: MQC_RULE_ins_complete_sentence
+  priority: 4
+  priority_conditions: [P4_INFORMATIONAL]
+  requirement_ids: [MQC_REQ_MDL_INS_0002]
+  assertions:
+    # A bullet ending without terminal punctuation is the observable proxy for a
+    # fragment. B11 applies: this parser assumes English.
+    #
+    # THE FINAL CHARACTER CLASS EXCLUDES WHITESPACE, and did not until
+    # 2026-10-01. `gpt-4.1` ended a bullet with a full stop and two trailing
+    # spaces, a markdown hard line break, and the old pattern matched it:
+    # `[ \t]*` took one space and `[^.!?]` matched the other, because a space is
+    # not terminal punctuation. A complete sentence was reported as a fragment
+    # and was one step from being filed against OpenAI. The check is on the last
+    # NON-WHITESPACE character. Test plan section 9.3.2.
+    - assertion_id: A_INS_COMPLETE_SENTENCE
+      kind: regex
+      parameters:
+        pattern: '^[ \t]*[-*][ \t]+.*[^.!?\s][ \t]*$'
+        present: false
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: INS_COMPLETE_SENTENCE

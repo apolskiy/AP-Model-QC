@@ -18,6 +18,7 @@ carries no priority marker.
 import ast
 import csv
 import base64
+import json
 import unicodedata
 from pathlib import Path
 from typing import Any, Final
@@ -86,13 +87,29 @@ _UNJUDGED_FAMILIES: Final[frozenset[str]] = frozenset({"security", "tool_complia
 # excerpt: which causes are identified, what the remedy is, and whether coupon
 # lifetime is raised. The project owner's framing was that most of these "don't
 # even require a judge".
-# EMPTY SINCE 2026-09-29, and kept rather than deleted so the exemption stays
-# visible if anyone needs it again. The three rules here were graded by regex
-# alone, on the reasoning that their facts are determinate. The facts are; the
-# wording is not, and across two recordings the patterns flipped and the run
-# reported QC_LLM_INCONSISTENT against the model. They now carry rubrics, so
-# every graded evaluation rule has one.
-_DETERMINISTIC_EVAL_RULES: Final[frozenset[str]] = frozenset()
+# EMPTIED 2026-09-29 and reopened 2026-10-01, narrowly. The rules removed then
+# were graded by regex alone on the reasoning that their facts are determinate.
+# The facts are; the wording is not, and across two recordings the patterns
+# flipped and the run reported QC_LLM_INCONSISTENT against the model.
+#
+# THE DISTINCTION IS PROXY AGAINST SHAPE, and it is what makes this a narrowing
+# rather than a reversal. Every retired assertion tested a proxy for content:
+# the string `33%`, the literal `30`, a number within 40 characters of a tier
+# name. A correct answer phrased differently fails such a pattern. The three
+# rules below test what their constraints literally say, and `INS_0002` is a
+# claim about shape: at most three bullets, at most twelve words in one, a
+# leading capital. There is no second phrasing of a bullet count.
+#
+# `ins_complete_sentence` IS A PROXY and is named here anyway. Terminal
+# punctuation stands in for "a subject and a verb", which is why it sits at P4
+# informational and why trailing whitespace defeated it on first contact with a
+# second model. MQC_CAS_UNI_10462 now guards that class over the recorded
+# corpus; the band is the other half of the answer.
+_DETERMINISTIC_EVAL_RULES: Final[frozenset[str]] = frozenset({
+    "MQC_RULE_ins_word_ceiling",
+    "MQC_RULE_ins_capitalised",
+    "MQC_RULE_ins_complete_sentence",
+})
 
 
 def _repository_root() -> Path:
@@ -131,6 +148,77 @@ def _named_pairs(source: Path) -> list[tuple[int, str, str]]:
         if len(pair) >= 2:
             found.append((node.lineno, pair[0], pair[1]))
     return found
+
+
+def _named_pairs_in(node: ast.FunctionDef) -> list[tuple[int, str, str]]:
+    """Return every task and rule pair one test callable names literally.
+
+    **Scoped to one callable**, where :func:`_named_pairs` reads a whole module.
+    `10461` asks which case bound which pair, so the owning callable has to be
+    known rather than the file.
+
+    Args:
+        node (ast.FunctionDef): The test callable.
+
+    Returns:
+        list: Line number, task id and rule id for each pair found.
+    """
+    found: list[tuple[int, str, str]] = []
+    for inner in ast.walk(node):
+        if not isinstance(inner, ast.Call):
+            continue
+        name = getattr(inner.func, "id", None) or getattr(inner.func, "attr", None)
+        if name not in {"observe", "observe_repeatedly", "case_for"}:
+            continue
+        pair = [
+            argument.value
+            for argument in inner.args
+            if isinstance(argument, ast.Constant)
+            and isinstance(argument.value, str)
+            and argument.value.startswith("MQC_")
+        ]
+        if len(pair) >= 2:
+            found.append((inner.lineno, pair[0], pair[1]))
+    return found
+
+
+def _stripped(text: str) -> str:
+    """Return the text with trailing whitespace removed from every line.
+
+    Args:
+        text (str): The recorded response.
+
+    Returns:
+        str: The same text, each line right-stripped.
+    """
+    return "\n".join(line.rstrip() for line in text.split("\n"))
+
+
+def _recorded_text(fixture: Path) -> str:
+    """Return the longest candidate text a recorded fixture carries.
+
+    **The longest rather than the first**, because a provider reply nests text
+    under several keys and only one of them is the answer.
+
+    Args:
+        fixture (Path): The recorded candidate fixture.
+
+    Returns:
+        str: The candidate output, or empty when the fixture carries none.
+    """
+    found: list[str] = []
+    stack: list[Any] = [json.loads(fixture.read_text(encoding="utf-8"))]
+    while stack:
+        payload = stack.pop()
+        if isinstance(payload, dict):
+            for key, value in payload.items():
+                if key == "text" and isinstance(value, str):
+                    found.append(value)
+                else:
+                    stack.append(value)
+        elif isinstance(payload, list):
+            stack.extend(payload)
+    return max(found, key=len) if found else ""
 
 
 @pytest.fixture(name="corpus")
@@ -768,3 +856,135 @@ def _assert_every_payload_is_screened(tasks: Any) -> None:
         f"only {recognised} of {payloads} payloads match a vector, so the "
         f"two-screen comparison has too little to compare"
     )
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Corpus")
+class TestMQCCasesMeasureTheirOwnClaim:
+    """A red has to name the claim that failed.
+
+    Both cases here were written on 2026-10-01 from one triage. `30003` through
+    `30006` bound one task and one rule and asserted the conjunction of its four
+    assertions, and one of those assertions was defeated by trailing whitespace.
+    **Four cases went red and one behaviour was wrong, and that behaviour was
+    the model complying.** Test plan sections 9.3.1 and 9.3.2.
+    """
+
+    @allure.story("Distinct pairs")
+    def MQC_CAS_UNI_10461_a_task_and_rule_pair_bound_by_two_graded_cases_is_reported(
+        self,
+    ) -> None:
+        """Four cases, one check, and nothing said so.
+
+        `30003` through `30006` each dispatched `MQC_TASK_ins_quantities` with
+        `MQC_RULE_ins_quantities` and called `assert_consistent_pass`. Identical
+        inputs, identical assertion: **the four were indistinguishable at
+        runtime**, and assertions are conjunctive, so one failing assertion
+        failed all four.
+
+        A reader opening a red `30005_sentence_begins_with_capital` would have
+        investigated capitalisation. The failing assertion was
+        `A_INS_COMPLETE_SENTENCE`, and capitalisation held on every observation.
+
+        **It also corrupts the band arithmetic.** The pass floor counts cases,
+        so one wrong behaviour spent four of them, and the four sat at P2, P3,
+        P2 and P4, which is three bands reporting one event.
+
+        Returns:
+            None
+        """
+        root = _repository_root()
+        bound: dict[tuple[str, str], list[str]] = {}
+        for pattern in ("mqc_eval_*.py", "mqc_tool_*.py", "mqc_sec_*.py"):
+            for source in sorted((root / "tests" / "cases").glob(pattern)):
+                tree = ast.parse(
+                    source.read_text(encoding="utf-8"), filename=str(source)
+                )
+                for node in ast.walk(tree):
+                    if not isinstance(node, ast.FunctionDef):
+                        continue
+                    if not node.name.startswith("MQC_"):
+                        continue
+                    for _, task_id, rule_id in _named_pairs_in(node):
+                        bound.setdefault((task_id, rule_id), []).append(node.name)
+
+        assert bound, "no graded case named a pair, so nothing was read"
+
+        shared = {
+            pair: sorted(set(names))
+            for pair, names in bound.items()
+            if len(set(names)) > 1
+        }
+
+        assert not shared, (
+            f"{len(shared)} task and rule pair(s) are bound by more than one "
+            f"graded case, so a red names the conjunction rather than the "
+            f"claim: {sorted(shared.items())[:3]}"
+        )
+
+    @allure.story("Whitespace insensitivity")
+    def MQC_CAS_UNI_10462_an_assertion_sensitive_to_trailing_whitespace_is_reported(
+        self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
+    ) -> None:
+        """Two trailing spaces turned a complete sentence into a fragment.
+
+        `A_INS_COMPLETE_SENTENCE` matched no bullet ending in anything but
+        terminal punctuation. `gpt-4.1` wrote a bullet ending in a full stop and
+        two spaces, a markdown hard line break, and the pattern matched it:
+        `[ \t]*` took one space and the final class matched the other, because a
+        space is not terminal punctuation.
+
+        **It reported `QC_LLM_INSTRUCTION_DRIFT` against a compliant response**,
+        on two of three observations, and was one step from being filed against
+        OpenAI. `gemini-3.8-flash` never emitted a hard line break, so the
+        pattern met this corpus for its whole life without the defect being
+        reachable.
+
+        **Over the recorded responses rather than synthetic text**, because the
+        defect is in what a real model writes and a synthetic example would be
+        written by whoever already knows the answer. Each recorded response is
+        run through the shipped assertion runner twice, as recorded and with
+        trailing whitespace stripped from every line. A verdict that moves means
+        the assertion is measuring formatting.
+
+        Args:
+            corpus (tuple): The shipped tasks and rules.
+
+        Returns:
+            None
+        """
+        _, rules = corpus
+        by_id = {rule.rule_id: rule for rule in rules}
+        root = _repository_root() / "tests" / "fixtures" / "replay"
+
+        moved: list[str] = []
+        examined = 0
+        for fixture in sorted(root.rglob("*.json")):
+            parts = fixture.parts
+            if "judgements" in parts or len(parts) < 4:
+                continue
+            rule = by_id.get(parts[-2])
+            if rule is None or not rule.assertions:
+                continue
+            body = _recorded_text(fixture)
+            if not body or body == _stripped(body):
+                continue
+            examined += 1
+            before = run_assertions(rule.assertions, body)
+            after = run_assertions(rule.assertions, _stripped(body))
+            for first, second in zip(before, after):
+                if first.passed != second.passed:
+                    moved.append(
+                        f"{rule.rule_id}::{first.assertion_id} on "
+                        f"{parts[-3]}/{fixture.stem} "
+                        f"({'passes' if second.passed else 'fails'} once "
+                        f"trailing whitespace is stripped)"
+                    )
+
+        assert examined, "no recorded response carried trailing whitespace to test"
+
+        assert not moved, (
+            f"{len(moved)} assertion verdict(s) depend on trailing whitespace, "
+            f"which is formatting and not a claim any requirement makes: "
+            f"{moved[:4]}"
+        )
