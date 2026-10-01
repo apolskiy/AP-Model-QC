@@ -673,9 +673,21 @@ class TestMQCRefusalReachesTheRun:
                 outran = [
                     token for token in _STATUS_FUNCTIONS if token in condition
                 ]
-                assert not outran, (
+                # A STATUS FUNCTION ALONE OUTRUNS THE REFUSAL, and one paired
+                # with a requirement that an upstream job SUCCEEDED does not: a
+                # refused resolver leaves that job skipped, and skipped is not
+                # success. Equality is the point, since `!= 'failure'` admits
+                # exactly the skipped state a refusal produces. Design section
+                # 3.9.3.
+                guarded = any(
+                    f"needs.{upstream}.result == 'success'" in condition
+                    or f'needs.{upstream}.result == "success"' in condition
+                    for upstream in _needs(job)
+                )
+                assert not outran or guarded, (
                     f"{workflow.name} job {name!r} carries {outran} at job "
-                    f"level, so it starts although the resolver refused: "
+                    f"level with nothing requiring an upstream job to have "
+                    f"succeeded, so it starts although the resolver refused: "
                     f"{condition}"
                 )
 

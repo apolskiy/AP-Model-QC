@@ -235,7 +235,7 @@ jobs:
     # so a failed band before this one does not hide it while a refusal
     # upstream still skips it: a refused resolve skips preconditions, and a
     # skipped job is not a successful one.
-    if: ${{ needs.preconditions.result == 'success' }}
+    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     strategy:
       fail-fast: false
       matrix:
@@ -297,7 +297,7 @@ jobs:
     # so a failed band before this one does not hide it while a refusal
     # upstream still skips it: a refused resolve skips preconditions, and a
     # skipped job is not a successful one.
-    if: ${{ needs.preconditions.result == 'success' }}
+    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     strategy:
       fail-fast: false
       matrix:
@@ -366,7 +366,7 @@ jobs:
     # so a failed band before this one does not hide it while a refusal
     # upstream still skips it: a refused resolve skips preconditions, and a
     # skipped job is not a successful one.
-    if: ${{ needs.preconditions.result == 'success' }}
+    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     strategy:
       fail-fast: false
       matrix:

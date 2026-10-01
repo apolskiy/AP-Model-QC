@@ -303,6 +303,43 @@ the debug run records what it used, and it yields no verdict.
 ---
 
 
+#### 3.9.3 A status function is permitted where it cannot outrun the refusal
+
+Corrected 2026-10-01, from run 36920538819.
+
+**The rule was "no job-level status function" and that is too blunt.** GitHub
+implicitly conjoins `success()` onto any job condition carrying no status
+function, and `success()` is false once **any** needed job has failed. So a band
+gating on `needs.preconditions.result == 'success'` alone is skipped the moment
+the band before it goes red, which is exactly the blocking section 3.12.1 exists
+to prevent. The P2-P4 job was `skipped` with its matrix expression unexpanded,
+because it never started at all.
+
+**The property the rule protects is narrower than the rule.** What must hold is
+that a refusal upstream stops this job. A status function alone does not
+guarantee that; a status function **conjoined with a requirement that an
+upstream job succeeded** does, because a refused resolver leaves that job
+`skipped`, and `skipped` is not `success`.
+
+| Condition | Runs when the resolver refused? | Runs when an earlier band failed? |
+|---|---|---|
+| none | No, by the implicit `success()` | **No.** The blocking |
+| `needs.preconditions.result == 'success'` | No | **No.** Still the implicit `success()` |
+| `always()` | **Yes.** The defect the rule was written for | Yes |
+| `!cancelled() && needs.preconditions.result == 'success'` | No | Yes |
+
+So the check now permits a status function **only** alongside an explicit
+`needs.<job>.result == 'success'` for a job this one needs.
+
+**The comparison has to be equality against success.** `result != 'failure'`
+admits `skipped`, which is precisely the state a refused resolver produces, so a
+condition written that way would outrun the refusal while looking careful.
+
+**Two mechanisms again**, which is the pattern this project reaches for whenever
+one would be a single point of failure: the status function decides that an
+earlier failure does not block, and the success requirement decides that a
+refusal does.
+
 ### 3.10 Gate 3 is not here, corrected 2026-09-26
 
 `gate-on-change.yml` ran `pytest -m system` as Gate 3. **It collected nothing**,
