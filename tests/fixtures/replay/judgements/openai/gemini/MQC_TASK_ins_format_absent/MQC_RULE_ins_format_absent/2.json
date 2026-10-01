@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_UNPROMPTED_SHAPE": {
+        "rationale": "The candidate output provides a concise, plain prose summary without introducing any unprompted machine-readable structure or heavy incidental formatting.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "fb4cd0ab30f3930a24c1c888d8c11f1a945655f5dfb4bb61d54c74dc7423bc08"
+}

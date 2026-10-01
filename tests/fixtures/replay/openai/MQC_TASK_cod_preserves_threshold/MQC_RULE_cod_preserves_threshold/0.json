@@ -1,0 +1,22 @@
+{
+  "request_hash": "045ab0c2c959aa5b0d758c4adb488a18cb183a1e01fa91da9388f6d7bb11b9c1",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_preserves_threshold::MQC_RULE_cod_preserves_threshold",
+    "duration_ms": 964,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 75,
+    "mode": "live",
+    "output_tokens": 22,
+    "raw_reference": "chatcmpl-EUIPT9vWy0bX3qDlkprxj9MhVrKqM",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "A build is promoted when line coverage is at or above 82 percent, otherwise it is held for review.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

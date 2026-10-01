@@ -1,0 +1,22 @@
+{
+  "request_hash": "c07650420f0e3b8fa522a31e01fc37f6f6aebb0e92a29ff06c51e6ecbbce72bf",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
+    "duration_ms": 1881,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 92,
+    "mode": "live",
+    "output_tokens": 134,
+    "raw_reference": "chatcmpl-EUIYZbPwjb3JziWvfsj66v8zFUIWR",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Here\u2019s how the headers indicate whether the requirements are mandatory or optional:\n\n**Header:** What you will need on day one.  \n- **Are the requirements mandatory or optional?** Mandatory.  \n- **What in the header told you?** The phrase \"will need\" and \"on day one\" indicates these are essential requirements a candidate must have from the start.\n\n**Header:** What would make you stand out.  \n- **Are the requirements mandatory or optional?** Optional.  \n- **What in the header told you?** The phrase \"would make you stand out\" implies these are not required, but are desirable and would make a candidate more attractive.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

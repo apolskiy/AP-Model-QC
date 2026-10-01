@@ -1,0 +1,22 @@
+{
+  "request_hash": "2e0f0b24b82ab54e17323b4109628ace5f47da2e2a8aee1af1f4dc79f3d1bd21",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
+    "duration_ms": 2752,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 110,
+    "mode": "live",
+    "output_tokens": 142,
+    "raw_reference": "chatcmpl-EUIMR4h0mJEQwcfTNespCh8D8wyJI",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "**Warning:** Availability gates were not met.\n\n- **Availability gate failed:** Required \u226599.5%, observed 99.1% (**0.4% below required**).\n- **No max-incident gate failure:** Longest incident was 41 minutes (limit is 60 minutes).\n\n---\n\n**Weekly Availability Summary**\n\n- **Measured availability:** 99.1%\n- **Incidents:** \n  - 1 incident lasting 12 minutes\n  - 1 incident lasting 41 minutes\n- **Notes:** Availability fell below the required threshold of 99.5% by 0.4%. No single incident exceeded the 60-minute maximum. Immediate attention is recommended to improve availability rates.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

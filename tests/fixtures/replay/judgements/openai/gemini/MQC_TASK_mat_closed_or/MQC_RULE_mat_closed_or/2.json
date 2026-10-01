@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The candidate provides the correct figure (100%) and explicitly names the 'or' connector in 'Python, Go, or Rust' as the reason why knowing any single one of the listed languages is sufficient to satisfy the requirement.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "2ca1fbb7fcafe9c8e5ff682b64707bffe2c32e2d86caf91ff54ffe642eb725f6"
+}

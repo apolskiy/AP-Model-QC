@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_CEILING_PROCEEDS": {
+        "rationale": "The candidate correctly calculates the 90% match rate, concludes to proceed, and explicitly states that the nice-to-have set does not affect the outcome, perfectly matching the Level 5 anchor.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "9bfc488502fbeb453c075d93dc5cc902ecf40166be76310763e22c1db67d07b5"
+}

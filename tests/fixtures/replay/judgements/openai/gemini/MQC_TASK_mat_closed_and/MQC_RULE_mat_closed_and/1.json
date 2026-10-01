@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_AND_REASONING": {
+        "rationale": "The candidate output provides the correct figure (50%) along with clear working, and explicitly identifies Kubernetes as the missing item/skill.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "58c5610191d2b724d711267cc7726fac96a05b2d31190d36cccae1aeafe3ad0c"
+}

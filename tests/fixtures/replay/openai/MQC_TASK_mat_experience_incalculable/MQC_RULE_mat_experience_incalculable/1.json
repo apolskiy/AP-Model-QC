@@ -1,0 +1,22 @@
+{
+  "request_hash": "ca34bdb681b310e265e4f4d27571a2d2122e7dbbf6d1647d1bb4a9c53c68e6e2",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
+    "duration_ms": 2001,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 122,
+    "mode": "live",
+    "output_tokens": 97,
+    "raw_reference": "chatcmpl-EUIYRV0poZRwZ4vK9VObT7f5l0UX4",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "To tailor your summary to the job posting, I need to know your total years of backend engineering experience.\n\nNot providing this information can cost you the opportunity: many recruiters filter candidates based on explicit experience requirements. Explicitly stating you meet (or exceed) the \"8 years of backend engineering experience\" threshold will ensure your application isn't overlooked.\n\nCould you please let me know the total number of years you've worked as a backend engineer? Once I have that, I\u2019ll rewrite your summary accordingly.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

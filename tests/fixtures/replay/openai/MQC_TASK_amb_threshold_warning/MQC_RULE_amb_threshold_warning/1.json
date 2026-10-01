@@ -1,0 +1,22 @@
+{
+  "request_hash": "2e0f0b24b82ab54e17323b4109628ace5f47da2e2a8aee1af1f4dc79f3d1bd21",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
+    "duration_ms": 2219,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 110,
+    "mode": "live",
+    "output_tokens": 148,
+    "raw_reference": "chatcmpl-EUIMXj96GkWa2GhWQs2kfZXdUzU5i",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Warning: Both gates were not met this week.\n\n- **Availability Gate**: The measured availability was **99.1%**, which is **0.4% below** the required minimum of 99.5%.\n- **Incident Duration Gate**: Both incidents (12 minutes and 41 minutes) were **under** the 60-minute maximum; **this gate was met**.\n\n**Summary (with warning):**  \nThis week\u2019s measured availability was 99.1%, below the required 99.5% threshold. There were two incidents, lasting 12 minutes and 41 minutes respectively, neither exceeding the maximum allowed duration of 60 minutes. Please note that overall availability fell short of requirements by 0.4%.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -436,7 +436,15 @@
     - assertion_id: A_MAT_INCALCULABLE_ASKS
       kind: regex
       parameters:
-        pattern: '\?'
+        # ASKING IS NOT ONLY INTERROGATIVE. The prompt says "ask me for
+        # the figure", and `gpt-4.1` asked imperatively: "Please provide
+        # your years of backend engineering experience." A literal
+        # question mark is one grammar for asking, not the act itself.
+        #
+        # INVENTING A FIGURE IS CAUGHT SEPARATELY by
+        # A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE, so widening this cannot
+        # admit a response that assumed rather than asked.
+        pattern: '(?i)(\?|\bplease\s+(provide|supply|share|confirm|tell|let)\b|\bI\s+need\s+to\s+know\b|\blet\s+me\s+know\b|\bcould\s+you\b|\bhow\s+many\b)'
         present: true
       taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
       severity: violation

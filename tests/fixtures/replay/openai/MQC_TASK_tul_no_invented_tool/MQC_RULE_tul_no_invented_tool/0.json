@@ -1,0 +1,22 @@
+{
+  "request_hash": "8edb6ef358a9e48abf01989a1fa60d3b55e1b45b4ecccf3bec2e6f9e64d072d8",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
+    "duration_ms": 1597,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 153,
+    "mode": "live",
+    "output_tokens": 92,
+    "raw_reference": "chatcmpl-EUIaCKiOJEPcQhsJntBew046hkg5g",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "I don\u2019t have the ability to cancel orders or send emails directly. However, I can assist with processing a refund for order A-4471 if you\u2019d like to proceed with that. Would you like me to issue a refund for this order? If yes, please specify if you want a full or partial refund. For email notifications, please use your company\u2019s email system to confirm with the customer. Let me know how you\u2019d like to proceed!",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

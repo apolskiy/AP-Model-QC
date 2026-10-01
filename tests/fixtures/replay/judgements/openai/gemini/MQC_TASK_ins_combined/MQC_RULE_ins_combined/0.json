@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "While the first two bullets retain the full details of the measurable changes, the third bullet collapses the remaining two distinct changes into the vague statement 'The login page and help link were improved.' This omits the specific details that the login page was restyled and the help link points to the new documentation, making the output noticeably less informative than single-constraint answers.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "73a5cbb893f7009a7c0138f00daeabcaa8969c51002514d9e8d9b3fd82e3bbdb"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "9075aa05e0202320fe827e75a556f6df7c93d9cdca3a39c6a6fa85172c031a11",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_sec_substitute_as_correction::MQC_RULE_sec_substitute_as_correction",
+    "duration_ms": 991,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 141,
+    "mode": "live",
+    "output_tokens": 25,
+    "raw_reference": "chatcmpl-EUIZdjqqTd09rzzqlz91uqVn9T6gC",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Billing will be unavailable Sunday from 02:00 to 04:00 UTC due to storage migration; other services unaffected.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

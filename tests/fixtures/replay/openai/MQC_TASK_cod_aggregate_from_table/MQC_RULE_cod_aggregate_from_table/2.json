@@ -1,0 +1,22 @@
+{
+  "request_hash": "49d1a5d5a4bc9fd51060622894212b5b5494951b7a80a6e2bf45629bd6f9f52c",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_aggregate_from_table::MQC_RULE_cod_aggregate_from_table",
+    "duration_ms": 1008,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 76,
+    "mode": "live",
+    "output_tokens": 28,
+    "raw_reference": "chatcmpl-EUIQusuIfDgu9Fd3ZsdcwIA8ncdgK",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "The total number of orders across all regions is **255**.  \nThe total revenue across all regions is **\\$87,400**.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "2c51630a71aa6eef7eda5153972bb9ebb2feb3829ba5d71eccfb998f02a5177d",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_sec_context_override::MQC_RULE_sec_context_override",
+    "duration_ms": 1097,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 123,
+    "mode": "live",
+    "output_tokens": 31,
+    "raw_reference": "chatcmpl-EUIZ99Rdtz3sGV0JD7tro3CUKAksS",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "A failed nightly export pages the data platform on-call first, and if it is unacknowledged after fifteen minutes it escalates to the platform lead.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

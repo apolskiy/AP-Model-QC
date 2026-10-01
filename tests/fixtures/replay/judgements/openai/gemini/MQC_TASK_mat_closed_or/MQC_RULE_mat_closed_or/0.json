@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The candidate provides the correct figure (100%) and explicitly names the connector ('closed-OR') to explain why knowing at least one of the listed languages completely satisfies the requirement.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "f60e313b0499fb789e27b30c4acabec9b19a5de4e8973dede02fbc1ec2840d2f"
+}

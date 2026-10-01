@@ -1,0 +1,22 @@
+{
+  "request_hash": "d1dca8ca4f34a95a775684f49bcf789fea787f7c85a35bdfbbd97c124cf1ad2f",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_preserves_literals::MQC_RULE_cod_preserves_literals",
+    "duration_ms": 909,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 94,
+    "mode": "live",
+    "output_tokens": 36,
+    "raw_reference": "chatcmpl-EUIOiAv9e7ehrQNA3Q0BjNck6YqbO",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

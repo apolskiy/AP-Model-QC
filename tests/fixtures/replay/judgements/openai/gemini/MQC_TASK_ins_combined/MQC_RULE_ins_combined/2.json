@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate successfully captures all four points from the original release note by combining the two non-measurable changes into a single bullet. No meaningful content was lost or degraded to meet the multiple constraints.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "238df0f0a7190f0989def6c7fc3d6764be151ef9b6aa354a271b32d0d121f9ba"
+}

@@ -1,0 +1,16 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_MISCOMPUTATION": {
+        "rationale": "The candidate clearly and specifically explains the discount-versus-price error (computing the discount amount instead of subtracting it from the total), far exceeding the vague description in Level 3. However, it does not explicitly state who loses money, falling short of the Level 5 anchor.",
+        "score": 4
+      },
+      "C_COD_TIERS_UNCHANGED": {
+        "rationale": "The response keeps the module's discount percentages intact (standard: 20%, premium: 30%) and uses them correctly in a worked example, clearly distinguishing the discount amount from the remainder/discounted total.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5901f1572725c995e3e5823164d0fa2125a6f294e4e3cfe5068f2d210944ea82"
+}

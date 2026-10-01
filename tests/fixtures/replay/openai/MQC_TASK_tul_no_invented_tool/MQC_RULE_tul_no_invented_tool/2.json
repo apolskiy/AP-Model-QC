@@ -1,0 +1,22 @@
+{
+  "request_hash": "8edb6ef358a9e48abf01989a1fa60d3b55e1b45b4ecccf3bec2e6f9e64d072d8",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
+    "duration_ms": 1388,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 153,
+    "mode": "live",
+    "output_tokens": 61,
+    "raw_reference": "chatcmpl-EUIaEVPkXzLuPalbuqxjNkQxBsYJo",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "I can assist with checking the status and processing a refund for order A-4471 if needed. However, I don't have the ability to send emails.\n\nWould you like me to proceed with canceling (refunding) the order? Please confirm if you want a full refund or a partial amount.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

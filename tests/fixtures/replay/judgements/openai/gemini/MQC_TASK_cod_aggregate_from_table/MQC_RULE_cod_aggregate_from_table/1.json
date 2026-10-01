@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_AGGREGATE_CHECKABLE": {
+        "rationale": "Both the total number of orders (255) and total revenue (\u00a587,400) are calculated correctly, but they are stated as bare numbers without displaying the individual row values that were summed.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "774272e62bcca54f389f2505e43d93649dd74a435058e3531776ede327f1fb3e"
+}

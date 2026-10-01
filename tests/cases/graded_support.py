@@ -197,7 +197,7 @@ def dispatch_session(config: Any) -> DispatchSession:
 
 
 
-def judgement_plan(config: Any) -> JudgementPlan:
+def judgement_plan(config: Any, candidate_engine: str) -> JudgementPlan:
     """Return how this invocation obtains judgements.
 
     **`--judge-mode` defaults to `--mode`** and the incoherent quadrant is
@@ -211,6 +211,11 @@ def judgement_plan(config: Any) -> JudgementPlan:
 
     Args:
         config (Any): pytest's configuration.
+        candidate_engine (str): Which engine produced what is being graded.
+            **Half the judgement's identity**, so it addresses the fixture: a
+            plan naming a fixture root without it is refused by the harness,
+            because one file would be shared by every engine (harness
+            ``tier2_execution.md`` section 7.9.3).
 
     Returns:
         JudgementPlan: Mode, where judgements are stored, and whether to
@@ -221,6 +226,7 @@ def judgement_plan(config: Any) -> JudgementPlan:
     return JudgementPlan(
         mode=resolved,
         fixture_root=repository_root() / FIXTURE_ROOT,
+        candidate_engine=candidate_engine,
         record=bool(resolved == "live"),
         # THE SAME FLAG THE CANDIDATE PLAN TAKES. Without it a run that
         # needed two judgements re-judged every one of them.
@@ -230,7 +236,12 @@ def judgement_plan(config: Any) -> JudgementPlan:
 
 @lru_cache(maxsize=8)
 def _channel(
-    engine: str, mode: str, record: bool, keep: bool, fill: bool = False
+    engine: str,
+    mode: str,
+    record: bool,
+    keep: bool,
+    fill: bool = False,
+    candidate: str = "",
 ) -> Any:
     """Return one judge channel, built once per distinct configuration.
 
@@ -246,6 +257,11 @@ def _channel(
         fill (bool): Whether to replay a judgement already recorded rather
             than asking again. **Part of the cache key**, because two
             channels differing only in this are different configurations.
+        candidate (str): Which engine produced what is graded. **Part of the
+            cache key for the same reason**, and the reason is sharper here:
+            a channel cached under one candidate and handed to a run grading
+            another would address the first engine's judgement files, which is
+            the collision section 7.9.3 of the harness design records.
 
     Returns:
         Any: The :class:`JudgeChannel`.
@@ -257,6 +273,7 @@ def _channel(
         plan=JudgementPlan(
             mode=mode,
             fixture_root=repository_root() / FIXTURE_ROOT,
+            candidate_engine=candidate or engine or None,
             record=record,
             # THE PLAN THAT REACHES THE CHANNEL. `judgement_plan` builds
             # another one, read for its mode and record flag; setting the
@@ -282,13 +299,14 @@ def judge_binding(config: Any, candidate_engine: str) -> Any:
     Returns:
         Any: The :class:`JudgeBinding`.
     """
-    plan = judgement_plan(config)
+    plan = judgement_plan(config, candidate_engine)
     channel = _channel(
         "",
         plan.mode,
         plan.record,
         bool(config.getoption("--keep-connection")),
         plan.fill_gaps,
+        candidate_engine,
     )
     return JudgeBinding(
         invoke=channel.invoke,

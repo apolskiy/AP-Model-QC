@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_DERIVED_DISCLOSURE": {
+        "rationale": "The candidate output states the floor requirement as '8+ years' without hinting, gesturing, or disclosing the true total calculated from the dates (which would be 13+ years).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "be2328b61db674bd1962b4150a78d3855abba80b79799a7b16f9b2750dec4ec1"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "881267e4b537588f70c6c3a0cd5bf7469080a5a4d1dd936609f668b5428abea5",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
+    "duration_ms": 1511,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 115,
+    "mode": "live",
+    "output_tokens": 24,
+    "raw_reference": "chatcmpl-EUIMK0HZLnzICsXpcz04lQes4UxtQ",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Updated configuration after applying the change request:\n\n```yaml\nretry_threshold: 3\nalert_threshold: 90\n```",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

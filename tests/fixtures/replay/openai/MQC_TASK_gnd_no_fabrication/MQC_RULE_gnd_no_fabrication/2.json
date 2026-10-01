@@ -1,0 +1,22 @@
+{
+  "request_hash": "1086d24c4ef7acb5a0dfd3f8a0eb33371cce139e0d9d456080f07f46425c3062",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_no_fabrication::MQC_RULE_gnd_no_fabrication",
+    "duration_ms": 1037,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 121,
+    "mode": "live",
+    "output_tokens": 47,
+    "raw_reference": "chatcmpl-EUIN7RgmloG331V3PfwOBDsgpDuIn",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "The report covers the following regions and their revenues:\n\n- North America: 41.2 million  \n- EMEA: 28.7 million  \n- Japan: 11.4 million  \n- Australia: 6.1 million",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

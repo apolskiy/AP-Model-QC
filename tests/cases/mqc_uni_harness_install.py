@@ -150,6 +150,46 @@ class TestMQCOptionsReachTheHarness:
         assert _channel("gemini", "live", True, False, True).plan.fill_gaps is True
 
 
+    def MQC_CAS_UNI_10459_the_candidate_engine_reaches_the_plan_the_channel_uses(
+        self,
+    ) -> None:
+        """`10455` again, with the field that cost 96 fixtures.
+
+        The judgement fixture path carried the judge engine and not the
+        candidate engine, so recording `gpt-4.1` overwrote 96 gemini
+        judgements in place. The harness key is fixed (`MQC_CMN_UNI_11201`);
+        this asserts the consumer actually supplies the dimension, which is
+        the same two-plan hazard `10455` records and the same cache.
+
+        **A cached channel is the sharper half here.** `fill_gaps` set on the
+        wrong plan cost quota. A channel cached under one candidate engine and
+        handed to a run grading another would read the first engine's stored
+        judgements, and the hash would refuse them, so the symptom is a run
+        that reports `QC_HARNESS_FIXTURE_STALE` for work it did correctly.
+
+        Returns:
+            None
+        """
+        built = _channel("gemini", "live", True, False, True, "openai")
+
+        assert built.plan.candidate_engine == "openai", (
+            "the channel was built from a plan naming no candidate engine, so "
+            "two engines would address one judgement file"
+        )
+
+        # AND THE TWO CONFIGURATIONS ARE DISTINCT, which the cache must respect.
+        assert (
+            _channel("gemini", "live", True, False, True, "gemini").plan
+            .candidate_engine
+            == "gemini"
+        )
+        assert (
+            _channel("gemini", "live", True, False, True, "openai").plan
+            .candidate_engine
+            == "openai"
+        )
+
+
 class TestMQCBandFloor:
     """What turns a lower band red, and what refuses instead."""
 

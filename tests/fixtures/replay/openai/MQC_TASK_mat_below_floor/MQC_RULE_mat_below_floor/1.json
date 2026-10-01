@@ -1,0 +1,22 @@
+{
+  "request_hash": "fe25b946958e72c853aa3b263e6611e8f94d65f8cb5f4fa8077b2ccdab0e5332",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
+    "duration_ms": 1958,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 216,
+    "mode": "live",
+    "output_tokens": 164,
+    "raw_reference": "chatcmpl-EUIXKqXyP1GL3meJgyHeSz745V6L1",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "**Mandatory Requirements from Posting:**\n\n1. Python \u2014 **Matched**\n2. SQL \u2014 **Matched**\n3. Linux administration \u2014 **Matched**\n4. Git \u2014 **Matched**\n5. REST API design \u2014 **Matched**\n6. Unit testing \u2014 **Matched**\n7. CI pipelines \u2014 **Matched**\n8. Docker, Kubernetes, Terraform, Ansible, Helm \u2014 **Not Matched**\n9. Kafka \u2014 **Not Matched**\n10. GraphQL \u2014 **Not Matched**\n\n**Total Mandatory Requirements:** 10  \n**Matched:** 7  \n**Match Percentage:** (7/10) \u00d7 100 = **70%**\n\n---\n\n**Warning:** The candidate\u2019s match percentage is **70%**, which falls below the required cutoff of 78%.  \n**Nice-to-have requirements are not evaluated.**",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

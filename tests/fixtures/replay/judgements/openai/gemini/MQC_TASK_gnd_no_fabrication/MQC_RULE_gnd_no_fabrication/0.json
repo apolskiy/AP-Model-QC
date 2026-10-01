@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_STAYS_IN_SOURCE": {
+        "rationale": "Every region and figure listed in the response is directly traceable to the source document, with no unsupported generalities or outside additions.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "189b9c07823916afca50caedebcd46797acb736e542c244881c78cd598d55694"
+}

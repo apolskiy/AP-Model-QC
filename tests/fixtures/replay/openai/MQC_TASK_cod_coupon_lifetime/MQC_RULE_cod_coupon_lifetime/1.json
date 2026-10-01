@@ -1,0 +1,22 @@
+{
+  "request_hash": "a5b5aa841b8de182823ea16da5cacc3fafe6cb8576c2ba263277c54d759ec801",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
+    "duration_ms": 2997,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 170,
+    "mode": "live",
+    "output_tokens": 342,
+    "raw_reference": "chatcmpl-EUISVRKIycMzRPnnn3ECcWXC6pKct",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "To **bound a coupon code's lifetime**, the design should associate each code with explicit validity information, typically:\n\n- **An expiration date/time** indicating until when the code is valid.\n- (Optionally) A \"not before\" date/time, to control when the code becomes valid.\n\n**Recommendation:**\n\n1. **Store validity metadata with each coupon code.**  \n   For example, expand your `coupon_lookup` mapping to hold not just the discount value, but also an expiration time (and optionally a start time):\n\n   ```python\n   coupon_lookup = {\n       \"SPRING23\": {\"value\": 10, \"expires\": datetime(2024, 7, 1)},\n       \"HOLIDAY\": {\"value\": 15, \"expires\": datetime(2024, 12, 31)},\n   }\n   ```\n\n2. **Enforce the bound during lookup.**  \n   When redeeming, check that `now <= expires` (and optionally `now >= valid_from`). Reject the code (e.g., return 0, raise error) if it's expired or not yet valid.\n\n3. **Required data for enforceability:**  \n   The **lookup for each coupon must include the expiration time** (and optionally the activation time). Thus, each entry needs at least:\n\n   - The coupon's value/amount.\n   - The coupon's expiration date/time.\n\n   This enables the redemption logic to verify if the code is currently valid.\n\n**Summary:**  \nBound each coupon's lifetime by storing expiration dates alongside other coupon data. The coupon lookup must include validity intervals for each code so the code redemption logic can enforce that only non-expired codes may be used.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

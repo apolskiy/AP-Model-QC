@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OPEN_EQUIVALENCE": {
+        "rationale": "The candidate output refuses the equivalence, concluding that the candidate does not meet the requirement because MySQL is not explicitly named and not considered equivalent.",
+        "score": 1
+      }
+    }
+  },
+  "request_hash": "e02c661f328f894b9177d8c053c0f2222910909142dbc640ab8a0e49a5f2a869"
+}

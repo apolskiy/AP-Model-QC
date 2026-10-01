@@ -1,0 +1,22 @@
+{
+  "request_hash": "fe25b946958e72c853aa3b263e6611e8f94d65f8cb5f4fa8077b2ccdab0e5332",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
+    "duration_ms": 1703,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 216,
+    "mode": "live",
+    "output_tokens": 178,
+    "raw_reference": "chatcmpl-EUIX9WFozZIE95cWyjOMATtfS0WWy",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "**Mandatory Requirement Assessment**\n\nLet\u2019s compare the mandatory requirements from DOC_posting_ten_five with the skills from DOC_resume_seventy.\n\n**Mandatory requirements (10 total):**\n1. Python \u2705\n2. SQL \u2705\n3. Linux administration \u2705\n4. Git \u2705\n5. REST API design \u2705\n6. Unit testing \u2705\n7. CI pipelines \u2705\n8. Docker, Kubernetes, Terraform, Ansible, Helm \u274c (not mentioned)\n9. Kafka \u274c (not mentioned)\n10. GraphQL \u274c (not mentioned)\n\nMatched: 7 out of 10\n\n**Mandatory Match Percentage**\n= (7 / 10) \u00d7 100% = **70%**\n\n---\n\n**Warning:** The candidate\u2019s mandatory match percentage is 70%, which is below the required 78% cutoff.  \n**Action:** Not evaluating nice-to-have requirements.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "2b5765a7e289ddfaef6aa14cf6f020876011c10a522d6f60822dcff4c732acda",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
+    "duration_ms": 1319,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 77,
+    "mode": "live",
+    "output_tokens": 40,
+    "raw_reference": "chatcmpl-EUINucPx8H3vODFyl93eVhNdVmWdW",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Here are the regions and their order counts as per the table:\n\n- North: 120 orders  \n- East: 80 orders  \n- South: 35 orders  \n- West: 20 orders",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

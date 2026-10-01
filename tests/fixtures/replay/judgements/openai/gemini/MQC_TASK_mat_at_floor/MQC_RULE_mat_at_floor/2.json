@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_FLOOR_MARGIN": {
+        "rationale": "The candidate output reports incorrect figures (80% mandatory and 86.7% combined, rather than the correct figures that clear the 85% floor by three tenths of a percentage point) and does not remark on the narrow margin, matching the Level 1 anchor.",
+        "score": 1
+      }
+    }
+  },
+  "request_hash": "783fbd9b9f6e14fe1219f2fcac3436359c6a9669cd0e9a6fb9f9b9018ceb6405"
+}

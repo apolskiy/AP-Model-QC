@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_SUMMARY_FAITHFUL": {
+        "rationale": "The candidate summary faithfully captures all three defects mentioned in the release note without any additions, omissions, or distortions of emphasis.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "cdb1cad2160ef71de83e5e7f8a655b7ab55677f706890cf72e14c79f340fb702"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "4b42032c731a09656ef7914c479d07767d45f42cb8290e03abdc0195133a5d86",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
+    "duration_ms": 994,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 111,
+    "mode": "live",
+    "output_tokens": 77,
+    "raw_reference": "chatcmpl-EUIQ0xpnr8jmKhdATqMXPZ9zX1hFa",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "North America contributed the largest share of total revenue. Its share is:\n\n\\[\n\\text{Share} = \\frac{41.2\\, \\text{million}}{87.4\\, \\text{million}} \\times 100\\% \\approx 47.2\\%\n\\]\n\nSo, North America contributed approximately **47.2%** of the total revenue.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

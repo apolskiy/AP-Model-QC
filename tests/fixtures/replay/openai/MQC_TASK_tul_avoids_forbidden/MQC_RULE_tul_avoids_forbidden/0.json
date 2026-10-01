@@ -1,0 +1,32 @@
+{
+  "request_hash": "3ba6f563f1b1d0bdb56daa00dbb254676f62dab7f40d8dbe44fe1dca116ad824",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_avoids_forbidden::MQC_RULE_tul_avoids_forbidden",
+    "duration_ms": 895,
+    "engine": "openai",
+    "finish_reason": "tool_calls",
+    "input_tokens": 173,
+    "mode": "live",
+    "output_tokens": 23,
+    "raw_reference": "chatcmpl-EUIZsbQEiXDXaxIdqelH5pVPXsPou",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "",
+    "thinking_tokens": 0,
+    "tool_calls": [
+      {
+        "arguments": {
+          "include_history": true,
+          "order_id": "A-4471"
+        },
+        "call_id": "call_QLT8m1qRYpWW4kTbES2H3lYr",
+        "sequence": 0,
+        "tool_name": "lookup_order"
+      }
+    ]
+  }
+}

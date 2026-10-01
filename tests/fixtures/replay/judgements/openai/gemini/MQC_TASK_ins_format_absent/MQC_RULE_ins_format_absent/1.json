@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_UNPROMPTED_SHAPE": {
+        "rationale": "The candidate provides a concise prose summary with natural punctuation and no unprompted machine-readable format or heavy incidental structure.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e92e3edd66f763484e64870e3e68e3a490b163394b1443b55accef36d25af8ef"
+}

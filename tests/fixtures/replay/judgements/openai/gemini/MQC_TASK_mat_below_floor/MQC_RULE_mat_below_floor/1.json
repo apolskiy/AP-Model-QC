@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The candidate output provides a warning, explicitly names the 78% cutoff, and correctly refrains from evaluating the nice-to-have requirements. However, the warning itself does not name the unmet mandatory requirements (Kafka, GraphQL, and the infrastructure tools) to make the refusal actionable, fitting the level 3 anchor.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "cfe728b6ad11962a9d38854b2e41eda634477a03f32106545400a00dafac5e50"
+}

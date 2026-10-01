@@ -1,0 +1,22 @@
+{
+  "request_hash": "62b233a5694ae368fc1a45acda338291c96d0650f6899a91b14dbb10373a8b69",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
+    "duration_ms": 1015,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 105,
+    "mode": "live",
+    "output_tokens": 53,
+    "raw_reference": "chatcmpl-EUISjl4qhsRki5wO1WOBbuUaSYzAd",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "According to the glossary, the status code **AMBER** means that a record has completed successfully and has been archived. When AMBER is raised, the **on-call rota is NOT notified**; instead, the **change advisory board receives a weekly digest**.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

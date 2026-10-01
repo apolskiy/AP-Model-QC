@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_CEILING_PROCEEDS": {
+        "rationale": "The candidate output correctly calculates the mandatory match at 90%, decides to proceed, and explicitly states that the nice-to-have/optional set does not affect the outcome.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "9631daa99875d29c0123f0be4a4fda302df632161aeb911e85b8c362f8d2cf1b"
+}

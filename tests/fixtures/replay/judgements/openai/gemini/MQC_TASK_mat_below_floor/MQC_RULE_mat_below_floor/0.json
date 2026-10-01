@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The candidate output includes the warning, specifies the 78% cutoff, and clearly identifies the unmet requirements (Docker/Kubernetes/Terraform/Ansible/Helm, Kafka, and GraphQL) in the breakdown directly preceding the warning. However, the warning statement itself does not summarize or name the unmet gaps directly, putting it above level 3 but short of a fully integrated level 5.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "d94012fe77d007898dde174af9f446a96f778b06f75aaf618f5f40c94fbef01c"
+}

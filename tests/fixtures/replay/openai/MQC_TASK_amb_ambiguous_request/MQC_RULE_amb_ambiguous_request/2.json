@@ -1,0 +1,22 @@
+{
+  "request_hash": "e2946786698974c3e23d6c1cf55480ae3671cc17e353e6f5550048968bca0516",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
+    "duration_ms": 1701,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 117,
+    "mode": "live",
+    "output_tokens": 61,
+    "raw_reference": "chatcmpl-EUIM05dWzL9ZKmY5hA4iWAOUsMilT",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "The change request asks to \"raise the threshold\" but does not specify which threshold (retry_threshold or alert_threshold) or what the new value should be.\n\nCould you please clarify:\n1. Which threshold should be increased: retry_threshold or alert_threshold?\n2. What value should the threshold be raised to?",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

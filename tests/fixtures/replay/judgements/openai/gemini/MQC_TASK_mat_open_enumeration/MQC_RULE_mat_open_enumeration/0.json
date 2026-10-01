@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OPEN_EQUIVALENCE": {
+        "rationale": "The candidate output refuses the equivalence between MySQL and the requirement's open category ('similar databases' / PostgreSQL), concluding that the candidate does not meet the requirement.",
+        "score": 1
+      }
+    }
+  },
+  "request_hash": "468088d7fad13718394c371d303d76c09d325064630cd5b1e06846c7c66d9a07"
+}

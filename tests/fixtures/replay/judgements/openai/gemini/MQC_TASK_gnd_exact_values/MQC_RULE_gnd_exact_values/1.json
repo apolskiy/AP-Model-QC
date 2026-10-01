@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_SUMMARY_PROPORTION": {
+        "rationale": "The response is composed of exactly three natural, readable sentences that integrate every revenue figure from the source report without omitting any data or reading like a bare list.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "729d36cd4d235f72080095f575313500f6d1ac9f352c813e372906bdfc4efba7"
+}

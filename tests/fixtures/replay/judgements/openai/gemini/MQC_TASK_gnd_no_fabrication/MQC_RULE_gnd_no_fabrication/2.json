@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_STAYS_IN_SOURCE": {
+        "rationale": "Every region and corresponding revenue figure listed in the output is directly and accurately drawn from the provided report, with no external information or unsupported padding added.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "f66c5eccda13a2e5f8a28d2c323590b64a616d6266d60b2105fe7ae00c27e3fa"
+}

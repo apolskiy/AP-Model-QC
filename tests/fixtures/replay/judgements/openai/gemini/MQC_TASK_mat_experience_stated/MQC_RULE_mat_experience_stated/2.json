@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_STATED_REWRITE_QUALITY": {
+        "rationale": "The years of experience statement (15+ years) was preserved verbatim, but the summary was not meaningfully rewritten to align with or highlight requirements from the posting, essentially leaving the original text unchanged.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "d1a37ce7307daca3144967829d2f455c784de9c1d61fe814645493ad7a64e3da"
+}

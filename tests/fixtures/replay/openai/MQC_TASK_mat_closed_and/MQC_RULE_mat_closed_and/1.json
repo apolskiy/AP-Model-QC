@@ -1,0 +1,22 @@
+{
+  "request_hash": "942f5b9d8f99aad8f7ab378d8c402e4191104bcb81a73048c4f7644fc7e530e4",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
+    "duration_ms": 4887,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 72,
+    "mode": "live",
+    "output_tokens": 233,
+    "raw_reference": "chatcmpl-EUIVsgkwOM9yiGmga1U3mbRUdnyZF",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Let's break down the requirement and the candidate's qualifications step by step.\n\n### Requirement from `DOC_req_closed_and`:\n- Required: **Docker**, **Kubernetes**\n\n### Candidate from `DOC_candidate_docker`:\n- Containers and orchestration: **Docker**\n\n---\n\n### Step 1: List required skills\n\nThere are **2 required skills**:\n1. Docker\n2. Kubernetes\n\n### Step 2: List candidate's matching skills\n\nCandidate has **Docker** only.  \nCandidate does **not** have Kubernetes.\n\n- Matched skills: **1** (Docker)\n- Total required skills: **2**\n\n### Step 3: Calculate percentage\n\n\\[\n\\text{Percentage met} = \\frac{\\text{Matched skills}}{\\text{Required skills}} \\times 100 =\n\\frac{1}{2} \\times 100 = 50\\%\n\\]\n\n---\n\n## Final Answer\n\n**The candidate meets 50% of the requirement.**\n\n**How I arrived at it:**\n- Requirement listed two skills: Docker and Kubernetes.\n- Candidate listed only Docker.\n- 1 out of 2 required skills = 50%.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

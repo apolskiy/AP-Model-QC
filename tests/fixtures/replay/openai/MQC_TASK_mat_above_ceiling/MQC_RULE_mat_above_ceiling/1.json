@@ -1,0 +1,22 @@
+{
+  "request_hash": "2f8971019359432c1015b3e2a29e04899f955c1451bcc649eda6839f3ea2d7e9",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 2216,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 208,
+    "mode": "live",
+    "output_tokens": 318,
+    "raw_reference": "chatcmpl-EUIWTDnBcsU64EIDolHY1647IuAMx",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "**Assessment of Candidate Against Posting**\n\n**Mandatory Requirements in Posting:**  \n1. Python  \n2. SQL  \n3. Linux administration  \n4. Git  \n5. REST API design  \n6. Unit testing  \n7. CI pipelines  \n8. Docker, Kubernetes, Terraform, Ansible, Helm  \n9. Kafka  \n10. GraphQL  \n\n**Candidate's Skills (from Resume):**  \n- Python  \n- SQL  \n- Linux administration  \n- Git  \n- REST API design  \n- Unit testing  \n- CI pipelines  \n- Docker, Kubernetes, Terraform, Ansible, Helm  \n- Kafka  \n\n**Comparison Table:**\n\n| # | Requirement                             | Candidate Has? |\n|---|-----------------------------------------|:-------------:|\n| 1 | Python                                 | Yes           |\n| 2 | SQL                                    | Yes           |\n| 3 | Linux administration                   | Yes           |\n| 4 | Git                                    | Yes           |\n| 5 | REST API design                        | Yes           |\n| 6 | Unit testing                           | Yes           |\n| 7 | CI pipelines                           | Yes           |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Yes   |\n| 9 | Kafka                                  | Yes           |\n|10 | GraphQL                                | No            |\n\n**Matched Requirements:** 9 / 10  \n**Mandatory Match Percentage:** 90%\n\n**Conclusion:**  \nThe candidate matches 90% of the mandatory requirements (9 out of 10). This meets the threshold (\u226585%). Proceed. The nice-to-have set does not affect the outcome.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

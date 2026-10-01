@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_SUMMARY_PROPORTION": {
+        "rationale": "The response is composed of exactly three well-crafted sentences that seamlessly incorporate every revenue figure from the source document while maintaining the natural, readable flow of a summary rather than reading like a raw list.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "107e969778be45df2657647c35c64af214968bceae9635ea8e587981491837b0"
+}

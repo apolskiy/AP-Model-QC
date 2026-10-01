@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_WARNS_ONLY_WHERE_DUE": {
+        "rationale": "The candidate clearly names the availability gate as the one that failed, provides the exact margin by which it fell short (0.4% below requirement), and explicitly confirms that the incident gate held (both incidents were under the 60-minute threshold).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "4587238659e5a4cbb3580bcb1a3e84dff31e17357c5a142caf407f1912f1f52e"
+}

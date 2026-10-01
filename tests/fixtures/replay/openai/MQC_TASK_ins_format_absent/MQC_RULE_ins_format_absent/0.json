@@ -1,0 +1,22 @@
+{
+  "request_hash": "c5829d16e3a5849e1ec8497c5181ee1187bfdddde0307c1ef3139dcacf3906bd",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_format_absent::MQC_RULE_ins_format_absent",
+    "duration_ms": 955,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 81,
+    "mode": "live",
+    "output_tokens": 45,
+    "raw_reference": "chatcmpl-EUITQJ1tcUcoJrz10EgXn8NPfBFL5",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Release 4.2 fixes three issues: imported files with missing newlines no longer lose the last column, the scheduler now retries failed jobs twice before reporting them, and the audit log now records which account performed deletions.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

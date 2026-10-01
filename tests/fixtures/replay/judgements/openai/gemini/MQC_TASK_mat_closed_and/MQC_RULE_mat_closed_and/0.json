@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_AND_REASONING": {
+        "rationale": "The candidate provides the correct figure (50%), shows working, and explicitly identifies Kubernetes as the missing item/gap.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "cc77dabd98055d46595e21e1f8549513661335637afc725dce5a2069d42c14a2"
+}

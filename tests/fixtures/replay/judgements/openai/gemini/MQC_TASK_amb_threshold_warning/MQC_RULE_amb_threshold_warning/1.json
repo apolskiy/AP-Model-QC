@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_WARNS_ONLY_WHERE_DUE": {
+        "rationale": "The candidate accurately identifies the failed availability gate, provides the exact margin (0.4% below the 99.5% threshold), and explicitly notes that the incident duration gate was met with incidents well under the 60-minute limit. This clearly exceeds Level 3. However, it falls short of Level 5 because its opening headline erroneously states, 'Warning: Both gates were not met this week', confusingly suggesting that both gates failed before immediately clarifying that the incident gate actually held.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "fa13a9776eb628db83a5b5d11ab05622f06cae0deded07b60d982a3e008fb691"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "a5b5aa841b8de182823ea16da5cacc3fafe6cb8576c2ba263277c54d759ec801",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
+    "duration_ms": 3185,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 170,
+    "mode": "live",
+    "output_tokens": 338,
+    "raw_reference": "chatcmpl-EUISOzAtOFSgJrkglLO37IxnYerGn",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "To **bound a coupon code's lifetime**, the design should associate each code with validity information\u2014typically an *expiration date* (or a redeem-by timestamp), possibly also an activation/start date. This allows the system to reject codes that have expired or are not yet valid.\n\n**Recommended changes:**\n\n1. **Define validity period for each coupon code.**\n   - When issuing a coupon, specify its expiration date (and, if necessary, its activation/start date).\n\n2. **Coupon lookup data must include this validity information.**\n   - Instead of having `coupon_lookup` map each code to just its value, have it map to a data structure holding both the value and the expiration/validity period.\n\n   For example:\n   ```python\n   coupon_lookup = {\n       \"ABC123\": {\"value\": 15, \"expires\": \"2024-12-31\"},\n       \"XYZ999\": {\"value\": 10, \"starts\": \"2024-07-01\", \"expires\": \"2024-08-01\"},\n   }\n   ```\n\n3. **Enforce the validity period on lookup.**\n   - When redeeming, check the current date against the code's validity period. Only allow redemption if today is between `starts` (if present) and `expires`.\n\n**In summary:**\n- **Bound:** Coupon code must have a validity window: start and/or expiration date.\n- **Lookup carries:** Each code's value **and** its validity window (in the form of timestamps or date strings).\n\nThis approach enables the business to control for how long a coupon remains valid and allows the lookup/redeem logic to enforce this bound.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

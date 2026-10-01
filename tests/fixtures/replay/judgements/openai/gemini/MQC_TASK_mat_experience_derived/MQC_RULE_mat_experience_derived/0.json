@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_DERIVED_DISCLOSURE": {
+        "rationale": "The candidate output specifies '8+ years of backend engineering experience', stating the floor requirement with a plus sign and stopping without hinting or gesturing at the full calculated total.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "21240c3efea473831b3f00baffe9fe6c3ebf7194e037d5fffb9cf6567148541d"
+}

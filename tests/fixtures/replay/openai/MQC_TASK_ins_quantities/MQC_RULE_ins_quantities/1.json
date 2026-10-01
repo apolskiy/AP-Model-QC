@@ -1,0 +1,22 @@
+{
+  "request_hash": "d859860e36f7c5a4554d46066af0e4a0f56247349aa45cd37a475362472abb27",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_quantities",
+    "duration_ms": 1039,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 123,
+    "mode": "live",
+    "output_tokens": 41,
+    "raw_reference": "chatcmpl-EUIUCGPOIfhcSrrckDfWNk3ZgTLBW",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "- The importer keeps the last column when no newline ends a file.  \n- The scheduler retries any failed job two times before reporting failure.  \n- The audit log now records which account deletes an item.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

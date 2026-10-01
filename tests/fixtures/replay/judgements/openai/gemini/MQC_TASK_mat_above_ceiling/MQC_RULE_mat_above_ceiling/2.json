@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_CEILING_PROCEEDS": {
+        "rationale": "The candidate output calculates the correct match percentage (90%), decides to proceed, and explicitly states that the nice-to-have/optional set does not affect the outcome, directly satisfying the level 5 rubric anchor.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "9fe2e99edd152a94ae2f65458f460f4dfd92d5c32c67d026b5f7809acd8876d2"
+}

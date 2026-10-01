@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CONTEXT_FIDELITY": {
+        "rationale": "The response accurately addresses both parts of the question strictly using the provided glossary. It correctly defines what AMBER means and explicitly states that the on-call rota is not notified, mentioning the weekly digest sent to the change advisory board instead.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5f4e62337f04b2ade3febb17ab8608f9c62965d4389bb030aa54f6c42433ed33"
+}

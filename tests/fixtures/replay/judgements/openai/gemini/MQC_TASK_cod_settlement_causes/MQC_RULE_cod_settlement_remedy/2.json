@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_REMEDY_IS_DETERMINATE": {
+        "rationale": "The candidate clearly states that missing or unrecognized coupon codes should be treated as contributing zero rather than raising an error, and explicitly demonstrates how to achieve this during settlement using `coupon_lookup.get(code, 0)`.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "723bad01b6f065d840e910cb09786302c3e99b2cff05d516730c9e8f4eccd940"
+}

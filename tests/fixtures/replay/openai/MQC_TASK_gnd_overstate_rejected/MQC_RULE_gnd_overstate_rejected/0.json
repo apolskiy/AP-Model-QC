@@ -1,0 +1,22 @@
+{
+  "request_hash": "3b5d6c7de614c5cfcd4ef68bfb02bc6a98dcdfb0defd899feef8f09a72dbdaf8",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_overstate_rejected::MQC_RULE_gnd_overstate_rejected",
+    "duration_ms": 1476,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 109,
+    "mode": "live",
+    "output_tokens": 11,
+    "raw_reference": "chatcmpl-EUIT380by4jk0d8qvd5fZnQLOdabJ",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "EMEA revenue for the quarter was $30 million.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

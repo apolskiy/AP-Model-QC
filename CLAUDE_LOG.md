@@ -795,3 +795,91 @@ what to check.
 ### State
 
 33 cases passing, Gate 1 at 10.00/10.
+
+## 2026-10-01: A second engine overwrote the first one's judgements
+
+The `gpt-4.1` recording finished and the gemini replay went from 2 failures to
+**10 failures and 30 skips**. The three corpus fixes applied in the same session
+were the obvious suspect and were not the cause.
+
+Nine of the ten failures were `QC_HARNESS_FIXTURE_STALE`, and none of them named
+a rule that had been edited. `git status` named the actual event: 96 gemini
+judgement fixtures modified, by a run that was recording openai.
+
+**`JudgementKey` was `(case_id, judge_engine, observation_index)`.** Its
+docstring argued the judge engine belongs in the key because a judgement is a
+measurement and which instrument made it is part of its identity. True, and half
+the identity. **A judgement is a measurement of something**, and what was
+measured is the other half.
+
+Candidate fixtures were already separated per engine, `replay/<engine>/<task>/`.
+Judgements were not, so `replay/judgements/gemini/<task>/<rule>/0.json` named one
+file that the gemini run and the openai run both wrote.
+
+| | Candidate fixture | Judgement, before | Judgement, after |
+|---|---|---|---|
+| Candidate engine in the path | Yes | **No** | Yes |
+| Judge engine in the path | Not applicable | Yes | Yes |
+| Recording a second engine | Writes beside the first | **Overwrites it** | Writes beside it |
+
+### The hash held, and that is the whole difference
+
+Section 7.9.2 binds a stored judgement to the exact text it scored, so every
+overwritten file was **refused rather than read as a score for the wrong
+response**. The cost was the data and not a published result, and the failure
+was loud instead of silent.
+
+It is not a substitute for the key. A guard that detects a collision after it
+has destroyed what it was guarding has prevented the wrong answer and not the
+loss. The key is the first mechanism and it was absent.
+
+### Why one engine's whole lifetime did not surface it
+
+Under the zero-cost configuration the candidate and the judge are routinely the
+same engine (A3), so `judgements/gemini/` held gemini-judged gemini output and
+the missing dimension was a constant. The project ran one candidate engine until
+this session. **A key that is correct for every value a field has so far taken
+is not a correct key**, and nothing inside a single-engine run distinguishes the
+two states.
+
+### The consumer had the same defect one layer up
+
+`graded_support._channel` is cached per distinct configuration and builds the
+plan that actually reaches the channel. The candidate engine had to be added to
+both the plan and the cache key, which is `MQC_CAS_UNI_10455` again with a
+different field: a channel cached under one candidate and handed to a run
+grading another would address the first engine's files.
+
+### Nothing was re-recorded
+
+Both halves were recoverable, so the migration cost nothing. The 96 openai
+judgements were copied aside first, the gemini set restored from the index, and
+the two written to `judgements/gemini/gemini/` and `judgements/openai/gemini/`.
+Re-recording either would have spent quota to rebuild data that existed.
+
+### Verification
+
+`MQC_CMN_UNI_11201` asserts two candidate engines judged by one judge occupy two
+files. **Injection: the candidate level was removed from `path()` and the case
+failed on two identical paths**, which is the defect's exact shape; `11136`
+continued to pass, correctly, since the judge dimension was never broken.
+
+Gemini replays at 2 failed, 66 passed, 1 skipped, which is where it stood before
+the recording. The 30 skips are gone; they were dependents cascading on
+`QC_HARNESS_DEPENDENCY_UNMET` behind stale foundations, which is the documented
+behaviour working on corrupted input.
+
+**Six governance checks caught the bookkeeping rather than the code**, in two
+rounds: the callable name was shortened for the line limit and the inventory and
+matrix rows kept the longer one (`10186`, `10187`, `11122`), then three counts
+needed updating (`10146`, `11123`, `11180`, and `MQC_CAS_UNI_10450` on the
+consumer side). Each one is a check that had never had occasion to fire.
+
+* **Code Quality & Compliance Audit:**
+  * Harness: 641 passing, pylint 10.00/10 exit 0.
+  * Cases: 59 preconditions, pylint 10.00/10 exit 0.
+  * Design `tier2_execution.md` 7.9.3, inventory `cmn_verdict_and_cli.md` 10.19
+    and `consumer_ci.md` 3.2, both matrices updated.
+  * `MQC_REQ_HAR_EXE_0053` said "keyed by judge engine". **The requirement was
+    where the hole was**, which is the third and least expected of the three
+    places `testing-standards.md` names.

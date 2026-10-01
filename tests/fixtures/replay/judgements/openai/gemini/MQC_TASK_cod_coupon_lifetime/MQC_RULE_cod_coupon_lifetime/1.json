@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_LIFETIME_IS_ENFORCEABLE": {
+        "rationale": "The candidate clearly recommends bounding the code's lifetime via an expiration date/time and explicitly details the data the lookup must carry (e.g., storing the expiration timestamp alongside the value in `coupon_lookup`) to make the bound enforceable.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "7ceae0ebba178f08ba361079658549aa55322ddd68624543961865a14f3650cd"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_STAYS_IN_SOURCE": {
+        "rationale": "Every region and revenue figure listed directly matches the figures provided in the source document, with no unsupported additions or external information.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "7685bfa71731812fb2959ae1ac38b6edca39383fc75d9d1ad04b426a67558be6"
+}

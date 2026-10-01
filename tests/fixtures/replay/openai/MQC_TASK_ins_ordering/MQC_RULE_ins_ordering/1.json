@@ -1,0 +1,22 @@
+{
+  "request_hash": "13160b56344b1ae28aaedf6c30d86e2eb27a5ae6a763735403e6451c87f00fa4",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_ordering::MQC_RULE_ins_ordering",
+    "duration_ms": 892,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 103,
+    "mode": "live",
+    "output_tokens": 44,
+    "raw_reference": "chatcmpl-EUIUOrthblZxR1cp6QGYUtcVyqztu",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "- The export job now completes in under 30 seconds.  \n- The importer accepts files up to 2 GB.  \n- The login page was restyled.  \n- The help link points to the new documentation.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

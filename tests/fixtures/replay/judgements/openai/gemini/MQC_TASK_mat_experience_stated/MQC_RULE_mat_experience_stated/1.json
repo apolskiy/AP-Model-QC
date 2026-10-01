@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_STATED_REWRITE_QUALITY": {
+        "rationale": "The stated years of experience figure ('15+ years') was preserved verbatim, but the summary was repeated without any meaningful rewriting toward the posting requirement.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "d1a37ce7307daca3144967829d2f455c784de9c1d61fe814645493ad7a64e3da"
+}

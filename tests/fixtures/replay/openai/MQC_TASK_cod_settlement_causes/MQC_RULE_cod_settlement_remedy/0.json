@@ -1,0 +1,22 @@
+{
+  "request_hash": "7509417c274726033c9e198a02d3208ebb552c162111e6dbb905357a737a9732",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
+    "duration_ms": 5738,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 272,
+    "mode": "live",
+    "output_tokens": 684,
+    "raw_reference": "chatcmpl-EUIRs8HSk7cWZAblNmIHzvCiNipmr",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Let's break down each defect in the function, **stating the cause and what should be done instead**.\n\n---\n\n### 1. Discount Calculation is Incorrect\n\n**Cause:**  \nThe function calculates the order like this:\n\n```python\namount_owed = total_amount * discount / 100 - coupon_sum\n```\n\nHere, `discount` is the *discount percentage*, but multiplying the `total_amount` by `discount / 100` gives the **amount being discounted, not the discounted amount left**.  \nIt then subtracts the coupon from this discount, **mixing up units** (percent of amount vs fixed amount).\n\n**What should happen instead:**  \n- Calculate the discounted price:  \n  `discounted_amount = total_amount * (1 - discount / 100)`\n- Then subtract the coupon(s):  \n  `amount_owed = discounted_amount - coupon_sum`\n\n---\n\n### 2. Only the First Coupon Code is Used\n\n**Cause:**  \nThis line:\n```python\ncoupon_sum = coupon_lookup[coupon_codes[0]]\n```\n- Only the first code is applied, even if multiple are provided.\n\n**What should happen instead:**  \n- Look up **all** coupon codes, sum their values (ignoring ones that are missing or invalid).\n\n  ```python\n  coupon_sum = sum(coupon_lookup.get(code, 0) for code in coupon_codes)\n  ```\n\n---\n\n### 3. Crashes on Missing Coupon Code\n\n**Cause:**  \nIf a coupon code isn't in `coupon_lookup`, `coupon_lookup[coupon_codes[0]]` will **throw a KeyError**.\n\n**What should happen instead:**  \n- Use `.get()` with a default of 0, or skip codes not present.\n\n---\n\n### 4. Coupon Value Can Exceed Order Amount (Should Clamp at 0)\n\n**Cause:**  \nSubtracting total coupons may yield a negative amount owed (system could end up owing the customer).\n\n**What should happen instead:**  \n- Return max of 0 and the calculated owed amount:  \n  `return max(0, amount_owed)`\n\n---\n\n## Corrected Version\n\n```python\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    discounted_amount = total_amount * (1 - discount / 100)\n    coupon_sum = sum(coupon_lookup.get(code, 0) for code in coupon_codes)\n    amount_owed = discounted_amount - coupon_sum\n    return max(0, amount_owed)\n```\n\n---\n\n## Summary Table of Defects\n\n| Defect | Cause (What it does) | What it should do instead |\n|--------|----------------------|--------------------------|\n| Discount is not subtracted from total | Multiplies total by discount percent | Subtract discount percent from 100% to get the owed remainder |\n| Only uses first coupon | Looks up only `coupon_codes[0]` | Sum all valid coupons in `coupon_codes` |\n| Throws KeyError on missing code | Indexes `coupon_lookup` directly | Use `.get(code, 0)` or skip missing codes |\n| Negative charge (owing customer money) | No check against negative total | Clamp lower bound at 0 |\n\n---\n\nIf you need step-by-step corrected calculations with the inputs, let me know!",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

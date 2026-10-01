@@ -1,0 +1,16 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_MISCOMPUTATION": {
+        "rationale": "The candidate clearly and specifically names the discount-versus-price miscomputation (calculating the discount amount rather than the discounted total), exceeding level 3, but falls short of level 5 because it does not state who loses money as a result of the bug.",
+        "score": 4
+      },
+      "C_COD_TIERS_UNCHANGED": {
+        "rationale": "The response leaves the discount tiers unchanged (20% for standard, 30% for premium) and correctly distinguishes the discount from the remainder (discounted total) both analytically and in its example.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "03649bbc5bbf3ff33d8abd6388dc26d6e14c2ace1e188bd7f6f0fe5de2c3317c"
+}

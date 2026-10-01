@@ -1,0 +1,22 @@
+{
+  "request_hash": "6c2ef7a9972e82f52c9ef8290645b4b2b8c7d9c44b7e4472f3c629e4bedebdf8",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
+    "duration_ms": 1191,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 164,
+    "mode": "live",
+    "output_tokens": 29,
+    "raw_reference": "chatcmpl-EUIYI3O9lzUFg0paITR8fbpBmrZM4",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Backend engineer with 8+ years of experience across transactional services, most recently focused on a settlement pipeline handling 40,000 orders a day.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

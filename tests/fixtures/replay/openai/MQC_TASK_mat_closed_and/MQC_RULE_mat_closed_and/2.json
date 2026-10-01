@@ -1,0 +1,22 @@
+{
+  "request_hash": "942f5b9d8f99aad8f7ab378d8c402e4191104bcb81a73048c4f7644fc7e530e4",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
+    "duration_ms": 1697,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 72,
+    "mode": "live",
+    "output_tokens": 152,
+    "raw_reference": "chatcmpl-EUIVxIGBzuRof4OC3CSAmM7yu5YoF",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Let's compare the requirement and the candidate's qualifications:\n\n**Requirement (DOC_req_closed_and):**\n- Docker\n- Kubernetes\n\n**Candidate (DOC_candidate_docker):**\n- Docker\n\n---\n\n**Step-by-step reasoning:**  \nThere are 2 required skills: Docker and Kubernetes.\n\nThe candidate matches only 1: Docker.\n\nPercentage met = (Number of skills matched / Total required skills) \u00d7 100  \n= (1 / 2) \u00d7 100  \n= 50%\n\n---\n\n**Final Answer:**  \nThe candidate meets **50%** of the requirement.\n\n**How this was calculated:**  \n- Required: Docker (matched), Kubernetes (not matched).  \n- Percentage = (1 matched / 2 required) \u00d7 100 = 50%",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

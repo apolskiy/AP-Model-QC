@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_QUESTION_IS_USEFUL": {
+        "rationale": "The candidate clearly names both missing details needed to resolve the request (which specific threshold to change and what new value to set). However, it does not explicitly state what it will do once the clarification is provided, falling short of the level 5 requirement.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "a35f8e98f1cbee9b0a8632278a82f8e65ce9edce3bf679fc42c6fe7a9884c687"
+}

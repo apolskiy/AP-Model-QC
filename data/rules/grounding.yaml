@@ -315,7 +315,13 @@
         # is 30 million, which I will not state" would match. The rubric
         # is the authoritative detector here and this is the cheap first
         # pass, which is the division section 4.2 already draws.
-        pattern: '(?i)(\bis\b|\bwas\b|\brounds?\s+up\s+to\b|\bbecomes\b)\s*\**\s*(30|thirty)\s*million'
+        # A CURRENCY SYMBOL SITS WHERE THE GAP WAS. `gpt-4.1` answered
+        # "EMEA revenue was $30 million" and this pattern could not span
+        # the symbol, so it reported a PASS on two of three observations
+        # that had overstated the figure. A missed violation is the
+        # direction that matters, and the corpus had only ever met one
+        # model, which never used the symbol.
+        pattern: '(?i)(\bis\b|\bwas\b|\brounds?\s+up\s+to\b|\bbecomes\b)\s*\**\s*[$\u00a3\u20ac]?\s*\**\s*(30|thirty)\s*million'
         present: false
       taxonomy_code: QC_LLM_SOURCE_ALTERATION
       severity: violation

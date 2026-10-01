@@ -1,0 +1,22 @@
+{
+  "request_hash": "53db4874a62191eaa3907ddc6220572e8386969bb035cae7d8c7e1c4eb797a9d",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_tool_needed::MQC_RULE_tul_no_tool_needed",
+    "duration_ms": 945,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 173,
+    "mode": "live",
+    "output_tokens": 30,
+    "raw_reference": "chatcmpl-EUIa7krowpwCCxKdGzDBMX9hqc8TT",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "RMA stands for \"Return Merchandise Authorisation,\" which is a process that allows you to return a product for replacement, repair, or refund.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

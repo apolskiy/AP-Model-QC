@@ -1,0 +1,22 @@
+{
+  "request_hash": "2f8971019359432c1015b3e2a29e04899f955c1451bcc649eda6839f3ea2d7e9",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 1628,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 208,
+    "mode": "live",
+    "output_tokens": 197,
+    "raw_reference": "chatcmpl-EUIWaKBLa52owRrickmJqM5yrjOf1",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "**Assessment**\n\n**Mandatory Requirements in Posting:**  \n1. Python  \n2. SQL  \n3. Linux administration  \n4. Git  \n5. REST API design  \n6. Unit testing  \n7. CI pipelines  \n8. Docker, Kubernetes, Terraform, Ansible, Helm  \n9. Kafka  \n10. GraphQL  \n\n**Skills found in Candidate Resume:**  \n- Python  \n- SQL  \n- Linux administration  \n- Git  \n- REST API design  \n- Unit testing  \n- CI pipelines  \n- Docker, Kubernetes, Terraform, Ansible, Helm  \n- Kafka  \n- *(GraphQL not listed)*\n\n**Match Calculation:**  \n- Matches: 9 out of 10 mandatory requirements (missing only GraphQL)  \n- Match Percentage: (9/10) \u00d7 100 = **90%**\n\n**Conclusion:**  \nThe candidate meets **90%** of the mandatory requirements (\u2265 85%). The nice-to-have set does not affect the outcome. **Proceed.**",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

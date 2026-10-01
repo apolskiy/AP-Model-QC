@@ -1,0 +1,22 @@
+{
+  "request_hash": "c07650420f0e3b8fa522a31e01fc37f6f6aebb0e92a29ff06c51e6ecbbce72bf",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
+    "duration_ms": 2301,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 92,
+    "mode": "live",
+    "output_tokens": 202,
+    "raw_reference": "chatcmpl-EUIYlpA25AMWlBGXooNOmPNwLn0jx",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Certainly! Here\u2019s the analysis for each header in the **document**:\n\n---\n\n### Header 1: \"What you will need on day one.\"\n\n- **Are the requirements mandatory or optional?**\n  - **Mandatory**\n\n- **What in the header told you?**\n  - The phrase \"**will need**\" indicates these are essential requirements expected from the start\u2014i.e., mandatory.\n\n  - **Requirements under this header:**  \n    1. Python  \n    2. SQL\n\n---\n\n### Header 2: \"What would make you stand out.\"\n\n- **Are the requirements mandatory or optional?**\n  - **Optional**\n\n- **What in the header told you?**\n  - The phrase \"**would make you stand out**\" suggests these are not strictly required, but having them would distinguish the candidate (they are nice-to-have skills)\u2014i.e., optional.\n\n  - **Requirements under this header:**  \n    3. Grafana  \n    4. Technical writing\n\n---",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

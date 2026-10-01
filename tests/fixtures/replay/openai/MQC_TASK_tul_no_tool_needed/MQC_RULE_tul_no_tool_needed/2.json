@@ -1,0 +1,22 @@
+{
+  "request_hash": "53db4874a62191eaa3907ddc6220572e8386969bb035cae7d8c7e1c4eb797a9d",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_tool_needed::MQC_RULE_tul_no_tool_needed",
+    "duration_ms": 915,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 173,
+    "mode": "live",
+    "output_tokens": 29,
+    "raw_reference": "chatcmpl-EUIa8JH9NVVR6m7a99SUZrvNQ5TGZ",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "RMA stands for \"Return Merchandise Authorisation,\" which is a reference number or approval provided by us to authorize the return of a product.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_QUANTITIES_READABLE": {
+        "rationale": "Each bullet is concise, clearly written, and accurately conveys one of the three defects resolved, together covering the entire release note.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ce991a7edeea80665555231c156b3ec0dc31ac34d358a1f60930fd4ebf9592b6"
+}

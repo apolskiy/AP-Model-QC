@@ -122,7 +122,11 @@
     - assertion_id: A_TUL_SAYS_IT_CANNOT_40007
       kind: regex
       parameters:
-        pattern: '(?i)cannot|unable|no tool|not able|do not have'
+        # THE CONTRACTION TOO. It knew "do not have" and not "don't",
+        # and `gpt-4.1` answered "I don't have the ability to send emails"
+        # on all three observations: declining correctly, reported as
+        # instruction drift.
+        pattern: '(?i)cannot|can.t|unable|no tool|not able|do(es)? ?n.t have|do not have|lack\w* the abilit|no abilit'
         present: true
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
       severity: violation

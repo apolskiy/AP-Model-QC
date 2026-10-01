@@ -1,0 +1,22 @@
+{
+  "request_hash": "c5829d16e3a5849e1ec8497c5181ee1187bfdddde0307c1ef3139dcacf3906bd",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_format_absent::MQC_RULE_ins_format_absent",
+    "duration_ms": 940,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 81,
+    "mode": "live",
+    "output_tokens": 34,
+    "raw_reference": "chatcmpl-EUITXiP1zxJqUwRPEdEbwIMl6Erze",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Release 4.2 fixes three defects: importer now preserves trailing columns without a newline, scheduler retries failed jobs twice, and audit log records which account performed deletions.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

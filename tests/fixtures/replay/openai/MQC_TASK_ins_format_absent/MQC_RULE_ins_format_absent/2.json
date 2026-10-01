@@ -1,0 +1,22 @@
+{
+  "request_hash": "c5829d16e3a5849e1ec8497c5181ee1187bfdddde0307c1ef3139dcacf3906bd",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_format_absent::MQC_RULE_ins_format_absent",
+    "duration_ms": 899,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 81,
+    "mode": "live",
+    "output_tokens": 42,
+    "raw_reference": "chatcmpl-EUITeWcgbdxEl0gzrZF2VDyHd4A34",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Release 4.2 fixes three issues: the importer now handles files ending without a newline correctly, the scheduler retries failed jobs twice before reporting failure, and the audit log now records which account performs deletions.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

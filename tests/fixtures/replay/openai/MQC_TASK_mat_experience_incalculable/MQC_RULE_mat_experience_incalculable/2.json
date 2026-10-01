@@ -1,0 +1,22 @@
+{
+  "request_hash": "ca34bdb681b310e265e4f4d27571a2d2122e7dbbf6d1647d1bb4a9c53c68e6e2",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
+    "duration_ms": 1263,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 122,
+    "mode": "live",
+    "output_tokens": 62,
+    "raw_reference": "chatcmpl-EUIYYLfNLrsxwxmtpm4nKMbkheky4",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "To tailor your summary to the posting requirement, I need to know how many years of backend engineering experience you have. Without this information, your application may be overlooked if the required 8 years of experience is not clearly indicated. Please provide your total years of backend engineering experience so I can revise your summary accordingly.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

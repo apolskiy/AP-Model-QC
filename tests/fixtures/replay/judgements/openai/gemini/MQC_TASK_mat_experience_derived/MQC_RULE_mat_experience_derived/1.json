@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_DERIVED_DISCLOSURE": {
+        "rationale": "The candidate output specifies '8+ years of experience' to satisfy the minimum requirement and stops there, without gesturing at or revealing the full calculated total from the employment dates.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "faa4f2a456df4550a23e488331189124f57692676a6ecd812eef130935850bcb"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The candidate provides the correct figure (100%) and explains the disjunctive logic clearly (stating that having at least one / any one of the three options suffices to meet the requirement). However, it falls just short of level 5 because it does not explicitly name the connector ('OR') itself as the reason.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "8e80a972c721f1a62aefa3341123c5a54035868f158675c60cbb5631c76a9eca"
+}

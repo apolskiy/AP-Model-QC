@@ -1,0 +1,22 @@
+{
+  "request_hash": "a5b5aa841b8de182823ea16da5cacc3fafe6cb8576c2ba263277c54d759ec801",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
+    "duration_ms": 3429,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 170,
+    "mode": "live",
+    "output_tokens": 306,
+    "raw_reference": "chatcmpl-EUIScxNBYAkiUp4bHIpjPtSBNKCst",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "To bound a coupon code's lifetime, **each coupon code should have validity period data as part of its definition**\u2014most typically, a start and/or expiration time (timestamp or date). This enables the system to determine whether the coupon is still valid when someone attempts to redeem it.\n\n**Design recommendation:**\n- Add an `expiry` field (or both `start` and `expiry` fields if needed) to each coupon record in the `coupon_lookup` dictionary.\n- When looking up a coupon, check the current time against these bounds and only apply the coupon if it's currently valid.\n\n**What the lookup must carry:**  \nEach coupon entry (in `coupon_lookup`) must include:\n- The coupon\u2019s value (as you have today)\n- The coupon\u2019s `expiry` timestamp, e.g.:\n  ```python\n  coupon_lookup = {\n      \"WELCOME10\": {\"value\": 10, \"expiry\": datetime(2024, 8, 1)},\n      ...\n  }\n  ```\n- The lookup logic must check that `now <= expiry` before redeeming.\n\n**Sample logic in settle_order:**\n```python\nnow = datetime.now()\ncoupon = coupon_lookup.get(coupon_codes[0])\nif not coupon or now > coupon['expiry']:\n    coupon_sum = 0\nelse:\n    coupon_sum = coupon['value']\n```\n\n**Summary:**  \n*Bound the code's lifetime by storing an expiry date/time with each code, and ensure the lookup consults that bound before redemption.*",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

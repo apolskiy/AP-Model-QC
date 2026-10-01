@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_THRESHOLD_SENSE": {
+        "rationale": "The candidate output preserves the exact figure of 82 percent as well as the precise comparison 'at or above'.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "c8abd264a3c5042299cb81164705138933b042d45e0ede5598a54c3981e06b67"
+}

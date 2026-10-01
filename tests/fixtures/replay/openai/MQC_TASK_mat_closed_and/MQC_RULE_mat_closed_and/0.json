@@ -1,0 +1,22 @@
+{
+  "request_hash": "942f5b9d8f99aad8f7ab378d8c402e4191104bcb81a73048c4f7644fc7e530e4",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
+    "duration_ms": 1795,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 72,
+    "mode": "live",
+    "output_tokens": 140,
+    "raw_reference": "chatcmpl-EUIVk13atTYUmG4kaozzjsJqOYX1P",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Let\u2019s break it down:\n\n**Requirement (from DOC_req_closed_and):**  \nRequired: Docker, Kubernetes.  \n\u2192 There are 2 required skills:  \n1. Docker  \n2. Kubernetes\n\n**Candidate (from DOC_candidate_docker):**  \nContainers and orchestration: Docker.  \n\u2192 Candidate demonstrates only Docker.\n\n**Calculation:**  \n- Number of required skills matched: 1 (Docker)\n- Total number of required skills: 2\n\n**Percentage met:**  \n\\[\n\\frac{1}{2} \\times 100\\% = 50\\%\n\\]\n\n**Summary:**  \nThe candidate meets **50%** of the requirement (matched Docker, missing Kubernetes).",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

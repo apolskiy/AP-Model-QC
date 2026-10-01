@@ -1,0 +1,22 @@
+{
+  "request_hash": "cf7205976bb48940946ade1d279d383185b20f8817d3a6e30ac684848fd1bb4a",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
+    "duration_ms": 1150,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 70,
+    "mode": "live",
+    "output_tokens": 23,
+    "raw_reference": "chatcmpl-EUINDwSr23gpcEDIH7P2qJVK7YdFl",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "The function below calls client.get and uses response.json(). It accesses the f-string attribute /users/{user_id}.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

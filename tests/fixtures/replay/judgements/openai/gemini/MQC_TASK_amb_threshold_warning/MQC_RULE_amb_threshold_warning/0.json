@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_WARNS_ONLY_WHERE_DUE": {
+        "rationale": "The candidate clearly warned about the availability gate failure, precisely stated the margin (0.4% below required), and explicitly confirmed that the incident duration gate held (longest incident 41 minutes vs 60-minute limit).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "fade45dc560fdcdceb35ae227b0b8533fdccb381d84f28be337a2d6cf0f7c5c0"
+}

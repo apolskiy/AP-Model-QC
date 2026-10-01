@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CAUSES_DIAGNOSED": {
+        "rationale": "The candidate clearly diagnoses each independent cause of the defects (calculating the discount amount rather than reducing the total, only taking the first coupon code instead of summing them, and direct key indexing causing an unhandled KeyError) rather than just stating return values, and provides a clear remedy for each.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "c6cd69ba68fb88f3aad4a2cca1e7c335361d0b91865e17f6b1d1c8cb607aefca"
+}

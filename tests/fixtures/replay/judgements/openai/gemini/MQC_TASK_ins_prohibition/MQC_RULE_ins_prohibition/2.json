@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_PROHIBITION_NATURAL": {
+        "rationale": "The candidate completely avoided em dashes and en dashes, using standard colon and comma constructions instead. The resulting text reads entirely naturally and as though unconstrained.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "24db593eb628fc306472ca65da554f14b2e0dcfe1e9ca1106bced0bf5a9d7fd9"
+}

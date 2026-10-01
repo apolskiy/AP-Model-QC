@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate asks for the missing figure and explains why providing it matters (noting recruiters filter by explicit experience requirements and that omission could cost the candidate the opportunity). However, it does not explicitly name the specific penalty (e.g., maximum penalty) or state that it can alone drop the score below the threshold, placing it above Level 1 but below Level 3.",
+        "score": 2
+      }
+    }
+  },
+  "request_hash": "282aa471feeda387750703967819b0e590961c59a77b6cf1bb9c2087da0ec85d"
+}
