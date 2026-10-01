@@ -883,3 +883,71 @@ consumer side). Each one is a check that had never had occasion to fire.
   * `MQC_REQ_HAR_EXE_0053` said "keyed by judge engine". **The requirement was
     where the hole was**, which is the third and least expected of the three
     places `testing-standards.md` names.
+
+## 2026-10-01: T7, and the direction a check built twice was missing
+
+`MQC_CAS_UNI_10449` reads the model matrix and the consumer suite, builds both
+sets, and asserts one of the two differences. **The other direction was one line
+away and absent**, so `MQC_CAS_UNI_10454` and `10455` were inventoried, written,
+collected and traced to nothing while the preconditions ran green over them.
+
+The harness has had the check since the matrices were written. `10449` did not
+call it; it rebuilt the comparison inline, and inherited none of the second half.
+**That is what the duplication cost**, and it is the one-implementation-two-
+callers rule stating its own reason.
+
+### T4 is not a substitute, which is why it never fired
+
+| | Input | A test traced to nothing |
+|---|---|---|
+| T4 | What the test declares in `requirement_ids` | **Passes**, if it declares nothing |
+| T7 | What the suite collects | Reported |
+
+T4 asks a test what it claims; T7 asks the suite what it contains. A test that
+declares no requirements satisfies T4 by declaring none, which is the
+self-consistency problem `MQC_CMN_UNI_11122` was written to escape one level up.
+
+### It is public and invoked on its own, deliberately
+
+`untraced_tests` is not inside `check_matrix_integrity`. The other six checks run
+against whatever rows and sets a caller supplies, which is what lets them be
+exercised against synthetic fixtures; T7 is only meaningful against the
+**complete** collected suite, and a partial set makes it report every test the
+caller left out. Two repository-level cases can supply one, and they are its two
+callers.
+
+### What it found on its first run
+
+`MQC_CAS_UNI_10454`, untraced. **No requirement covered what it checks**, so
+`MQC_REQ_CAS_COR_0019` was written first and stated in the test plan before the
+row was added, per `testing-standards.md`. That is the check earning its place
+without an injection, on a gap that had been sitting in the repository.
+
+Injection confirms both callers report it: one test removed from the row naming
+the most in each matrix, and `11122` and `10460` each named the test that was
+left running untraced. `10449` stayed silent, correctly, being the other
+direction.
+
+### Two things went wrong on the way
+
+**`git checkout --` on files whose newer edits were not yet committed** discarded
+three matrix changes. The commit had landed between the edits and the restore, so
+the index was not the state I wanted back. Re-applied from the record; nothing
+was lost but it was luck that the edits were reconstructible. A scratch copy is
+the restore point, not the index.
+
+**`mqc_uni_harness_pin.py` crossed the thousand-line ceiling** when `10460` was
+added to it. The three matrix-integrity cases moved to
+`tests/cases/mqc_uni_traceability.py`, which is where they belonged: the module
+they were in is about which harness this repository runs against, not about the
+matrix. The harness keeps the same checks in a file of the same name, which is
+the vocabulary rule applied to a filename.
+
+* **Code Quality & Compliance Audit:**
+  * Harness: 642 passing, pylint 10.00/10 exit 0.
+  * Cases: 60 preconditions, pylint 10.00/10 exit 0.
+  * Graded replay unchanged: gemini 2 failed 66 passed, openai 15 failed 53 passed.
+  * T7 registered in `cmn_verdict_and_cli.md` section 6 with section 6.0.1 on why
+    it is invoked separately; `MQC_CMN_UNI_11202` covers the check itself against
+    synthetic rows, since neither repository-level caller can demonstrate it
+    reporting anything while its matrix is complete.

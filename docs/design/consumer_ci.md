@@ -530,8 +530,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `10457` | P | `a_skip_leaves_the_denominator` |
 | `10458` | N | `an_error_refuses_rather_than_averaging` |
 | `10459` | N | `the_candidate_engine_reaches_the_plan_the_channel_uses` |
+| `10460` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
 
-**Inventory: 38 cases, 25 negative, 6 positive, 4 boundary.**
+**Inventory: 39 cases, 26 negative, 6 positive, 4 boundary.**
 
 ### 4A. The harness is a dependency, not the directory next door
 

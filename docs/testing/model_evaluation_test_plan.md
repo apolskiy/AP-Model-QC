@@ -116,6 +116,7 @@ requirements exist, and that is exactly what `10448` checks.
 | `MQC_REQ_CAS_COR_0016` | Every authored rubric anchor carries an exemplar, so calibration can measure judge drift against a known intended level |
 | `MQC_REQ_CAS_COR_0017` | A level 5 exemplar passes the assertions of the rule it belongs to, since a case cannot award a top score through a failed gate |
 | `MQC_REQ_CAS_COR_0018` | The code comprehension task file is reproducible from its shipped generator, so a hand edit to a generated file is reported |
+| `MQC_REQ_CAS_COR_0019` | Every pair a graded case names is one the corpus builds, so a task and rule that exist separately and were never joined is reported without dispatching anything |
 
 
 ### 2.5.3 `GOV`, Governance parity: rules enforced identically in both repositories
