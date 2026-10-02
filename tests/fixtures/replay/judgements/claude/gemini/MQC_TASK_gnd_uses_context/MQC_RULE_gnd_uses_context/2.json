@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CONTEXT_FIDELITY": {
+        "rationale": "The candidate correctly explains the meaning of AMBER from the glossary (marking a record completed successfully and archived, not a warning) and accurately details the notification aspect, explicitly noting that the on-call rota is not notified.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "71a7c1f43647bb9e7c3f01c5a1fc254bae064d8fa43cbd9a14893e5b437af28f"
+}

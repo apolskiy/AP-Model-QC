@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_STATED_REWRITE_QUALITY": {
+        "rationale": "The original figure ('15+ years') is preserved verbatim, and the summary is effectively rewritten into professional copy targeting the backend engineering posting.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e20751bd21390d1ae90e8c5d3a84e2b4590df263f8236c247c4f94ddeff2dc0f"
+}

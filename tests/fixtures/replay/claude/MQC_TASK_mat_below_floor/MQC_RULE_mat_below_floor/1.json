@@ -1,0 +1,22 @@
+{
+  "request_hash": "94e1b14cb6ed8ea9fa503b1bd403bc490a7eafabb0e4df8fdf006ba56ba1ab80",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
+    "duration_ms": 8845,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 358,
+    "mode": "live",
+    "output_tokens": 730,
+    "raw_reference": "msg_011CfcZSbhk5viBiTUNptbRa",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Mandatory Requirements Assessment\n\n| # | Requirement | Candidate | Evidence |\n|---|---|---|---|\n| 1 | Python | \u2705 Met | Languages: Python |\n| 2 | SQL | \u2705 Met | Languages: SQL |\n| 3 | Linux administration | \u2705 Met | Platform: Linux administration |\n| 4 | Git | \u2705 Met | Platform: Git |\n| 5 | REST API design | \u2705 Met | Services: REST API design |\n| 6 | Unit testing | \u2705 Met | Services: unit testing |\n| 7 | CI pipelines | \u2705 Met | Services: CI pipelines |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | \u274c Not met | None of the five tools appear |\n| 9 | Kafka | \u274c Not met | Not listed |\n| 10 | GraphQL | \u274c Not met | Not listed |\n\n**Mandatory match: 7 of 10 = 70%**\n\nItem 8 is scored as one requirement because the posting numbers it that way. If each of its five tools counted separately, the match would be 7 of 14, or 50%. The outcome is the same either way.\n\n---\n\n## \u26a0\ufe0f Warning: Below the 78% Cutoff\n\nThe candidate's mandatory match of **70%** is below your **78% cutoff**.\n\nThe gaps are all in containerization and infrastructure-as-code (item 8), event streaming (Kafka), and GraphQL. The candidate is strong in core programming, platform, and service fundamentals, but lacks the infrastructure and integration stack the role requires.\n\n**Nice-to-have requirements were not evaluated**, as you instructed.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

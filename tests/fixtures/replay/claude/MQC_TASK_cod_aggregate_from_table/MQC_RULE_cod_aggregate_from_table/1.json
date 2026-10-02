@@ -1,0 +1,22 @@
+{
+  "request_hash": "0faebff3b547f41400c91efd7a86b3fcfa893b2bc5466efdbda0c859b16df0e1",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_aggregate_from_table::MQC_RULE_cod_aggregate_from_table",
+    "duration_ms": 2192,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 88,
+    "mode": "live",
+    "output_tokens": 120,
+    "raw_reference": "msg_011CfcYpsPKFBinE9gNVKxPt",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Total orders:** 255\n- 120 + 80 + 35 + 20 = 255\n\n**Total revenue:** 87,400\n- 41,200 + 28,700 + 11,400 + 6,100 = 87,400",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

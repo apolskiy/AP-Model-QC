@@ -1,0 +1,22 @@
+{
+  "request_hash": "de23cd954949548bb8e9a139c2cdd16fdba98b10b437b3cba37ae7d9a63a90c2",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
+    "duration_ms": 2801,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 90,
+    "mode": "live",
+    "output_tokens": 91,
+    "raw_reference": "msg_011CfcYSBg1Ee7ecgEgvAV5n",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "Here are the regions and their order counts from the table:\n\n| Region | Orders |\n|--------|--------|\n| North  | 120    |\n| East   | 80     |\n| South  | 35     |\n| West   | 20     |",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

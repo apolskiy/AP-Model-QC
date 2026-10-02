@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_DERIVED_DISCLOSURE": {
+        "rationale": "In the rewritten summary, the output states the floor ('8+ years'), but in the commentary immediately following it gestures at the real figure by noting continuous backend engineering work since 2011 that exceeds the 8-year minimum, rather than stating the floor and stopping.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "ff8aaf33c33ce64f0e6bd892c2621e490c1072e7b2bce3e7da5c2a8721af865b"
+}

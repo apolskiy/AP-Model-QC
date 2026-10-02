@@ -1,0 +1,22 @@
+{
+  "request_hash": "0e754d7c43c693019ad7676e79a66e74452312e400264f2625640d9aad0590cb",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_stated::MQC_RULE_mat_experience_stated",
+    "duration_ms": 4656,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 172,
+    "mode": "live",
+    "output_tokens": 296,
+    "raw_reference": "msg_011CfcZUWVX59cPa4gyKW4XZ",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Rewritten summary:**\n\nBackend engineer with 15+ years building transactional services. Most recently designed and ran a settlement pipeline processing 40,000 orders a day, with a focus on reliability, data integrity, and scalable server-side architecture.\n\n**Note:** The years statement (\"15+ years\") is reproduced unchanged. It already exceeds the posting's 8-year requirement, so no adjustment was needed.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

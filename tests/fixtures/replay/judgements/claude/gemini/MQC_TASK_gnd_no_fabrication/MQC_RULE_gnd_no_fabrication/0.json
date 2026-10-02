@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_STAYS_IN_SOURCE": {
+        "rationale": "Every claim in the response directly traces back to the source text. No outside regions or figures are introduced, and the candidate explicitly notes that the report does not specify currency, leaving absences as absences.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "7ee139a1c0d9870235d4966c0f5ab424163914a6727d7a60419bcab48a628a0f"
+}

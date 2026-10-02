@@ -1,0 +1,22 @@
+{
+  "request_hash": "ee0c6603a578b3273b187c77076739d3af45f83e42b28ab065b0d1fbc0c0f871",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
+    "duration_ms": 5147,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 104,
+    "mode": "live",
+    "output_tokens": 346,
+    "raw_reference": "msg_011CfcZE9Rc2W6rZFLFvrLaV",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**The candidate meets 100% of the requirement.**\n\n**How I got there:**\n\n1. **The requirement is one condition, not three.** It reads \"Python, Go, **or** Rust.\" The \"or\" means knowing any one of these languages satisfies it.\n\n2. **Check the candidate's languages.** The candidate lists Python, SQL, and Bash. Python is one of the accepted options.\n\n3. **Result.** The single condition is met, so the score is 1 of 1, which is **100%**.\n\n**A common miscalculation:** You might count matches against all three languages (1 of 3, about 33%). That would only be right if the requirement said \"Python, Go, **and** Rust.\" Since it says \"or,\" the candidate doesn't need Go or Rust. SQL and Bash don't affect the score because the requirement doesn't ask for them.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

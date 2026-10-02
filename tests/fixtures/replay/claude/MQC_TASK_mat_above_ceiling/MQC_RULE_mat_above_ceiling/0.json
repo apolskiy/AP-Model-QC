@@ -1,0 +1,22 @@
+{
+  "request_hash": "1c919e3afbd9bdccdfd36240589badae488f4796cb3e1c072792a4f70ab053bf",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 9675,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 357,
+    "mode": "live",
+    "output_tokens": 777,
+    "raw_reference": "msg_011CfcZLDe2kmdBvvoanU1Sg",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Candidate Assessment\n\n**Mandatory match: 90% (9 of 10). This meets the 85% threshold, so the candidate proceeds.**\n\n## Mandatory Requirements\n\n| # | Requirement | R\u00e9sum\u00e9 | Match |\n|---|---|---|---|\n| 1 | Python | Languages: Python | \u2705 |\n| 2 | SQL | Languages: SQL | \u2705 |\n| 3 | Linux administration | Platform: Linux administration | \u2705 |\n| 4 | Git | Platform: Git | \u2705 |\n| 5 | REST API design | Services: REST API design | \u2705 |\n| 6 | Unit testing | Services: unit testing | \u2705 |\n| 7 | CI pipelines | Services: CI pipelines | \u2705 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Infrastructure: all five listed | \u2705 |\n| 9 | Kafka | Streaming: Kafka | \u2705 |\n| 10 | GraphQL | Not listed | \u274c |\n\n## Note on Counting\nItem 8 groups five tools under one number. If each tool counts separately, there are 14 mandatory skills. The candidate has 13 of them, which is **92.9%**. The candidate passes the threshold under either method. The only gap is **GraphQL**.\n\n## Nice-to-Have (does not affect the outcome)\nThe r\u00e9sum\u00e9 lists none of Grafana, Prometheus, technical writing, mentoring, or public speaking (0 of 5). As you instructed, this does not change the decision.\n\n## Outcome\n**Proceed.** You may want to ask about GraphQL exposure in the next stage, since it is the one missing mandatory skill.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

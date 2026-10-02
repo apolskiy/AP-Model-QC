@@ -1,0 +1,22 @@
+{
+  "request_hash": "81055d6368d42d71cf86e76d7e90c4d39ac2de8f6ab13b65106da85298b0d18f",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
+    "duration_ms": 5701,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 135,
+    "mode": "live",
+    "output_tokens": 483,
+    "raw_reference": "msg_011CfcYRRk4Qe9hgXsENvaYT",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "It returns the **first two rows in their original order**: the rows scoring **10 and 90** (assuming they were passed in the order 10, 90, 50).\n\n### Why\n\n```python\nsorted(entries, key=lambda row: row[\"score\"], reverse=True)\n```\n\n`sorted()` does not modify the list it is given. It builds and returns a **new** sorted list. That new list is never assigned to anything, so it is discarded immediately. `entries` is left unchanged.\n\n```python\nreturn entries[:limit]\n```\n\nThis slices the original, unsorted list. With `limit=2`, you get whatever happens to be in positions 0 and 1.\n\n### What it actually does\n\nIt returns the first `limit` entries in whatever order the caller supplied them. The scores play no part in the result. The sort runs, costing O(n log n) time, and then has no effect.\n\nThe function looks like it should return the rows scoring 90 and 50, but it doesn't. The output is correct only by coincidence, when the input is already sorted by descending score.\n\n### Fix (for reference)\n\n```python\ndef top_scorers(entries, limit):\n    return sorted(entries, key=lambda row: row[\"score\"], reverse=True)[:limit]\n```\n\nAlternatively, `entries.sort(...)` sorts in place, but that mutates the caller's list as a side effect.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

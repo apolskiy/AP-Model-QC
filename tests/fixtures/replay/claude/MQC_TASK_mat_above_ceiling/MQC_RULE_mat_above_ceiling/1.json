@@ -1,0 +1,22 @@
+{
+  "request_hash": "1c919e3afbd9bdccdfd36240589badae488f4796cb3e1c072792a4f70ab053bf",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 9203,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 357,
+    "mode": "live",
+    "output_tokens": 738,
+    "raw_reference": "msg_011CfcZM93yanm2MbRAco3qT",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Candidate Assessment: DOC_resume_ninety vs. DOC_posting_ten_five\n\n## Mandatory Requirements\n\n| # | Requirement | Resume | Match |\n|---|---|---|---|\n| 1 | Python | Languages | \u2705 |\n| 2 | SQL | Languages | \u2705 |\n| 3 | Linux administration | Platform | \u2705 |\n| 4 | Git | Platform | \u2705 |\n| 5 | REST API design | Services | \u2705 |\n| 6 | Unit testing | Services | \u2705 |\n| 7 | CI pipelines | Services | \u2705 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Infrastructure (all five) | \u2705 |\n| 9 | Kafka | Streaming | \u2705 |\n| 10 | GraphQL | Not listed | \u274c |\n\n**Mandatory match: 9 of 10 = 90%**\n\nItem 8 bundles five tools. If you count each tool separately, there are 14 requirements and the candidate meets 13, or **92.9%**. The candidate has all five tools, so either way of counting gives a result above the threshold.\n\n## Nice-to-Have (no effect on outcome)\n\nNone of the five items (Grafana, Prometheus, technical writing, mentoring, public speaking) appear on the resume. As instructed, this does not affect the decision.\n\n## Decision\n\n**Proceed.** The 90% mandatory match is above the 85% threshold.\n\n**Gap to note:** GraphQL is the only missing mandatory skill. It is worth checking in interview, since the candidate's REST API background may transfer.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

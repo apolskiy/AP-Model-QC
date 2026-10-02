@@ -1,0 +1,22 @@
+{
+  "request_hash": "629330e061af452552690bb147b564806b4709fe02e6c214302a032b04da249c",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_format_stated::MQC_RULE_ins_format_stated",
+    "duration_ms": 2596,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 162,
+    "mode": "live",
+    "output_tokens": 135,
+    "raw_reference": "msg_011CfcYACr1MiEYeWqtM6LA1",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "{\"summary\": \"Release 4.2 fixes three reported defects: the importer no longer drops a trailing column when a file ends without a newline, the scheduler retries a failed job twice before reporting it, and the audit log now records the account that performed a deletion.\", \"areas\": [\"importer\", \"scheduler\", \"audit log\"]}",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

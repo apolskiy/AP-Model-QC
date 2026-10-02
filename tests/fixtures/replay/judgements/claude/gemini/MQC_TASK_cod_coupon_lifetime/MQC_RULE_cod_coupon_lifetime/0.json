@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_LIFETIME_IS_ENFORCEABLE": {
+        "rationale": "The candidate explicitly recommends bounds on coupon lifetimes (such as policy-based expiration windows like 30 or 90 days and a valid_from/expires_at boundary) and clearly defines what data the lookup must carry (specifically an absolute, timezone-aware UTC expires_at and valid_from timestamp in a record/dataclass) for the check to be enforceable.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "6e92d6f8efe46e7ac3cc979193652e0063800537de93d935442d02fafd92181c"
+}

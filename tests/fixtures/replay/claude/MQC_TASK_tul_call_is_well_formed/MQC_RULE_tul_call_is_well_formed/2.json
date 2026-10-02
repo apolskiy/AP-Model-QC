@@ -1,0 +1,32 @@
+{
+  "request_hash": "0cb13b6b241cfccc53627580ca9f0a1db982fe3b0d8aaa440d10a4a1800f8821",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_call_is_well_formed::MQC_RULE_tul_call_is_well_formed",
+    "duration_ms": 5250,
+    "engine": "claude",
+    "finish_reason": "tool_calls",
+    "input_tokens": 614,
+    "mode": "live",
+    "output_tokens": 77,
+    "raw_reference": "msg_011CfcZkqLYAn7iS4UdZh3f5",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "",
+    "thinking_tokens": 0,
+    "tool_calls": [
+      {
+        "arguments": {
+          "include_history": true,
+          "order_id": "B-8812"
+        },
+        "call_id": "toolu_01KFwnnw8soLvsQyLWHeGWGB",
+        "sequence": 0,
+        "tool_name": "lookup_order"
+      }
+    ]
+  }
+}

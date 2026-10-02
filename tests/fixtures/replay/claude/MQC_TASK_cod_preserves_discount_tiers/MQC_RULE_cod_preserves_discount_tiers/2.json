@@ -1,0 +1,22 @@
+{
+  "request_hash": "a73b9d4526e5deee0c5d97374480962b20f415a844b2acad43db66a3bc52ab6b",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
+    "duration_ms": 13508,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 222,
+    "mode": "live",
+    "output_tokens": 1126,
+    "raw_reference": "msg_011CfcYb2aKozhvs1ZiNVKdJ",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# What `settle_order` computes vs. what it should\n\n## What it computes now\n\n```python\namount_owed = total_amount * discount / 100 - coupon_sum\n```\n\n`DISCOUNT_BY_TIER` holds discount percentages: 20% off for standard, 30% off for premium. The line above calculates the **size of the discount**, not the price after the discount, and then subtracts the coupon from that.\n\nExample: a standard account, a $100 order, and one $5 coupon.\n\n| | Calculation | Result |\n|---|---|---|\n| Current code | 100 \u00d7 20/100 \u2212 5 | **$15** (the discount minus the coupon) |\n| Correct | 100 \u00d7 (100 \u2212 20)/100 \u2212 5 | **$75** (the discounted price minus the coupon) |\n\nThe customer gets charged the discount amount, so the bug undercharges heavily.\n\nThere's a second problem: `coupon_sum` reads only `coupon_codes[0]`. Any other coupons are ignored, and an empty list raises an `IndexError`.\n\n## What it should compute\n\nThe amount owed should be the total, reduced by the tier's discount percentage, minus the combined value of all coupons:\n\n```python\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}   # unchanged\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = sum(coupon_lookup[code] for code in coupon_codes)\n    amount_owed = total_amount * (100 - discount) / 100 - coupon_sum\n    return max(amount_owed, 0)\n```\n\nWhat changed:\n1. **`(100 - discount)`** charges the remaining share of the price, not the discount share. The percentages stay at 20 and 30, as required.\n2. **`sum(...)` over all codes** applies every coupon and handles an empty list (sum of 0).\n3. **`max(..., 0)`** keeps large coupons from producing a negative balance. This is an assumption on my part, so drop it if your business rules allow credits.\n\n## Open questions about the intended rules\n\n- **Order of operations:** I applied the percentage discount first and then the coupons, which is the order the original code implies. If coupons should come off before the percentage, use `(total_amount - coupon_sum) * (100 - discount) / 100`. That version gives a slightly higher amount owed.\n- **Unknown tiers or coupon codes** still raise `KeyError`. That may be the behavior you want, or you may prefer explicit validation.\n- **Money and floats:** for real currency, use `decimal.Decimal` or integer cents to avoid floating-point rounding errors.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

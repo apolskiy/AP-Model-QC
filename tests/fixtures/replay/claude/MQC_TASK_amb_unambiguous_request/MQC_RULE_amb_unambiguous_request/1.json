@@ -1,0 +1,22 @@
+{
+  "request_hash": "69da17120326b376fef4f29db1d34c8eea0701816127639418ca811baa0fceb3",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
+    "duration_ms": 2729,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 159,
+    "mode": "live",
+    "output_tokens": 123,
+    "raw_reference": "msg_011CfcYH1pREG2P5QAWxbrtW",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "Change request CR-119 is unambiguous, so I've applied it:\n\n```\nretry_threshold: 3\nalert_threshold: 90\n```\n\n- `alert_threshold`: 85 \u2192 90\n- `retry_threshold`: unchanged at 3, as the request specifies",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

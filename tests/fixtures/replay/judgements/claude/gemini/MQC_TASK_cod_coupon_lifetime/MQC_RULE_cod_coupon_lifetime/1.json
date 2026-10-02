@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_LIFETIME_IS_ENFORCEABLE": {
+        "rationale": "The candidate explicitly recommends bounding coupon lifetimes using an absolute timestamp (`expires_at`), and clearly specifies the data the lookup must carry (specifically detailing an `expires_at` field alongside existing data like `amount`) to make the check enforceable at redemption.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "76ddf706c4bc8e62cd0efecc12708b54b51ea36405f88b7aa7808d314ec6eadb"
+}

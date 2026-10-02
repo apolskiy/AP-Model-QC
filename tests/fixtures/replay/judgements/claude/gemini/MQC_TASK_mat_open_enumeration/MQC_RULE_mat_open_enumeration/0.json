@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OPEN_EQUIVALENCE": {
+        "rationale": "The candidate output explicitly states that MySQL meets the requirement via an equivalence judgment rather than a named match, names the category (open-source relational SQL database, matching PostgreSQL's category), and explains the reasoning thoroughly.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "647c5e9dc2266a8f3496da3eaec9bcbdef6e330f2b92bf321bf4bc4e995d4337"
+}

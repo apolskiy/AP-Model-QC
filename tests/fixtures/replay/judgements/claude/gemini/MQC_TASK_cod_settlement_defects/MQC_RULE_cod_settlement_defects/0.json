@@ -1,0 +1,20 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CREDITED_DEFECTS": {
+        "rationale": "The candidate reports both remaining defects (an empty coupon list and an unlisted account tier) and provides the inputs that trigger each (e.g., `[]` causing IndexError and unknown/differently-cased strings like `None` or `'gold'` causing KeyError).",
+        "score": 5
+      },
+      "C_COD_FURTHER_PROBLEMS": {
+        "rationale": "The candidate identifies multiple genuine further problems, most notably float arithmetic for money without rounding, and thoroughly explains why it matters (fraction-of-a-cent errors, accounting ledger mismatches, and processor discrepancies).",
+        "score": 5
+      },
+      "C_COD_WHO_IS_AFFECTED": {
+        "rationale": "The candidate clearly explains who loses money (the business suffers direct financial loss and undercharging, while customers benefit from free orders). It distinguishes how negative numbers cause downstream issues/rejections versus zero making orders free, but it does not explicitly point out that zero raises nothing/fails completely silently.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "b7fe05911edf1e7194a865618f9311039e23eebb1b38048df23a33638aefd143"
+}

@@ -1,0 +1,16 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_MISCOMPUTATION": {
+        "rationale": "The response explicitly identifies the discount-versus-price miscomputation with exact formulas and numbers, but it does not explicitly name who loses money (the business/seller), falling just short of the level 5 anchor.",
+        "score": 4
+      },
+      "C_COD_TIERS_UNCHANGED": {
+        "rationale": "The response keeps the module's stated tiers and percentages intact (standard: 20%, premium: 30%) and clearly distinguishes the discount amount from the remainder when walking through an example.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "6fc5111809a8864ca01ed200b9a18c0fdeb548c33ddbe875aeccc70e31f0e651"
+}

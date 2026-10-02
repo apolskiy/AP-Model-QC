@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_SUMMARY_PROPORTION": {
+        "rationale": "The response is structured into exactly three sentences, includes every revenue figure accurately, and reads smoothly as a cohesive summary rather than a disjointed list.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "d4ea96a5221c5c158ee18785cac42b1e024e632c2ddb04104a189873f6957bc5"
+}

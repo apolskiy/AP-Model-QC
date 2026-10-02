@@ -1,0 +1,22 @@
+{
+  "request_hash": "72ab923fcd4433e96f15f4d895579ee3079e1814b1a5cad4e240e893a0ed5382",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_no_fabrication::MQC_RULE_gnd_no_fabrication",
+    "duration_ms": 2417,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 162,
+    "mode": "live",
+    "output_tokens": 151,
+    "raw_reference": "msg_011CfcYMVKm3yrcs6ybcPx6X",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "The Q3 report covers four regions:\n\n| Region | Q3 Revenue |\n|---|---|\n| North America | 41.2 million |\n| EMEA | 28.7 million |\n| Japan | 11.4 million |\n| Australia | 6.1 million |\n\nThe report gives total revenue across these four regions as 87.4 million.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

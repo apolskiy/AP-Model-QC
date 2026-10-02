@@ -1,0 +1,22 @@
+{
+  "request_hash": "fb949d9a8cca2970a04989acb0fa3e91316740efe73c807c9ca04e48973e3bf4",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
+    "duration_ms": 3918,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 239,
+    "mode": "live",
+    "output_tokens": 253,
+    "raw_reference": "msg_011CfcZWPj2ns2gohEQyv5Kg",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Revised summary:**\n\n8+ years of backend engineering across transactional services, most recently a settlement pipeline handling 40,000 orders a day.\n\nThe \"8+\" comes from the employment dates (Northwind Systems from 2011, continuing through Corvus Data to the present), which exceed the posting's 8-year minimum.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

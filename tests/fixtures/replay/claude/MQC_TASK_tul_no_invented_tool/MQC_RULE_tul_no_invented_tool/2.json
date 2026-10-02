@@ -1,0 +1,22 @@
+{
+  "request_hash": "fc1bb66eb804fd68b0df3813c8cfc44fd5ef564196032ce609a774e1c6fcfe06",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
+    "duration_ms": 7901,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 638,
+    "mode": "live",
+    "output_tokens": 295,
+    "raw_reference": "msg_011CfcZq3h467BbheJhcvNRD",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "I can't do either of those. My tools can't cancel an order or send email. Here's what I can do:\n\n- **Look up order A-4471** to check its status and history, for example whether it has shipped.\n- **Search the policy handbook** for the cancellation process, so you know who to contact or which system to use.\n- **Issue a refund.** This isn't the same as cancelling: the order would stay active, and refunds can't be undone. I'd only do this if you specifically want a refund and confirm the amount.\n\nDo you want me to look up the order or search the cancellation policy?",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

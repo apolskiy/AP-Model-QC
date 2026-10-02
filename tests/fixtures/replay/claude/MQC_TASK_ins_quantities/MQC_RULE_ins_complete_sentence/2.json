@@ -1,0 +1,22 @@
+{
+  "request_hash": "a41e08969b416c9f9fcc19e42e0d7b8211c89113d1c84b672519c80f7dd33cd2",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_complete_sentence",
+    "duration_ms": 4302,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 175,
+    "mode": "live",
+    "output_tokens": 249,
+    "raw_reference": "msg_011CfcYBZt51Rh3ohguqvt8T",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "- The importer no longer drops a trailing column without a final newline.\n- The scheduler retries a failed job twice before reporting it.\n- The audit log records which account performed a deletion.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_FLOOR_MARGIN": {
+        "rationale": "Both the mandatory figure (78%) and the combined figure (85.3%) are reported correctly, and the response clearly remarks that the combined figure only just clears the threshold by noting that 'the margin is very thin'.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "35302f889364381623c717178271113256481cf64a0f92b6fa3cb8de8cf91461"
+}

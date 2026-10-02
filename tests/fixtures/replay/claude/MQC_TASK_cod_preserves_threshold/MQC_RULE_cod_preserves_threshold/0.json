@@ -1,0 +1,22 @@
+{
+  "request_hash": "cdffc5d3d0f660de4c48e8151c805b7003751d465ce45afc1a7ff44c4689ef4a",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_preserves_threshold::MQC_RULE_cod_preserves_threshold",
+    "duration_ms": 2252,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 105,
+    "mode": "live",
+    "output_tokens": 59,
+    "raw_reference": "msg_011CfcYcN5MVthZ7D55rF2U9",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "The release gate promotes a build when its line coverage is at or above 82 percent and holds any build below that figure for review.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

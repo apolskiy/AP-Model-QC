@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_STAYS_IN_SOURCE": {
+        "rationale": "Every claim in the response is directly traceable to the provided text, and the absence of currency information is explicitly left as an absence rather than filled in from outside knowledge.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "973b37b78cefaaa91902d92f68f3902e0281634eae7e394610bbdda328fd75e4"
+}

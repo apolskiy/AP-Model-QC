@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_QUESTION_IS_USEFUL": {
+        "rationale": "The candidate explicitly identifies both missing details (which threshold should be updated and what the new target value should be) and clearly states what it will do once the information is provided ('Once I have both, I'll apply the change.').",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "7e909278cdd62872ef943333cad2b27e1e0e8ca7e15c95ec475458b075492c39"
+}

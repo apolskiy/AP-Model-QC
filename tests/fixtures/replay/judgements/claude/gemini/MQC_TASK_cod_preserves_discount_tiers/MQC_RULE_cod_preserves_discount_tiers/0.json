@@ -1,0 +1,16 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_MISCOMPUTATION": {
+        "rationale": "The candidate clearly explains the discount-versus-price miscomputation with precise formulas and numerical examples (e.g., being charged 15 instead of 75), substantially exceeding level 3. However, it falls short of level 5 because it does not explicitly name who loses money (i.e., that the store/seller loses revenue by drastically undercharging).",
+        "score": 4
+      },
+      "C_COD_TIERS_UNCHANGED": {
+        "rationale": "The candidate explicitly retains the module's 20% and 30% tiers without alteration, correctly using them in worked examples and clearly distinguishing the discount amount from the remaining price.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "2723a03b4856bc8157a30a9e6ef9dcbf19c05903d47eee1e2827300fcf71dd7f"
+}

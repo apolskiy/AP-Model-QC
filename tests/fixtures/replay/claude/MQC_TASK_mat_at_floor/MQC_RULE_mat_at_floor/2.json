@@ -1,0 +1,22 @@
+{
+  "request_hash": "df7ce2a7496b62f701dd48801b9658164ec60c25adc8e23cb5593e9716e976bf",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
+    "duration_ms": 11148,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 430,
+    "mode": "live",
+    "output_tokens": 1121,
+    "raw_reference": "msg_011CfcZQrkKJonzAgMci9nKp",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Candidate Assessment\n\n## Mandatory Requirements (10)\n\n| # | Requirement | Evidence in r\u00e9sum\u00e9 | Credit |\n|---|---|---|---|\n| 1 | Python | Languages: Python | 1.0 |\n| 2 | SQL | Languages: SQL | 1.0 |\n| 3 | Linux administration | Platform: Linux administration | 1.0 |\n| 4 | Git | Platform: Git | 1.0 |\n| 5 | REST API design | Services: REST API design | 1.0 |\n| 6 | Unit testing | Services: unit testing | 1.0 |\n| 7 | CI pipelines | Services: CI pipelines | 1.0 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Has 4 of 5. **Helm missing.** | 0.8 |\n| 9 | Kafka | Not shown | 0.0 |\n| 10 | GraphQL | Not shown | 0.0 |\n\n**Mandatory match: 7.8 / 10 = 78%**\n\n## Combined Check\n\n78% falls in the 78\u201384% band, so the combined figure is required.\n\n**Nice to Have (5)**\n\n| # | Requirement | Credit |\n|---|---|---|\n| 11 | Grafana | 1.0 |\n| 12 | Prometheus | 1.0 |\n| 13 | Technical writing | 1.0 |\n| 14 | Mentoring | 1.0 |\n| 15 | Public speaking | 1.0 |\n\n**Combined match: (7.8 + 5) / 15 = 12.8 / 15 \u2248 85.3%**\n\n## Result\n\n**Proceed.** The combined figure (85.3%) meets the 85% threshold.\n\n## Caveats\n\n- **The result depends on two boundaries.** The mandatory score sits exactly at 78%, and the combined score clears 85% by only 0.3 points. I read \"between 78 and 84\" as inclusive. If it is exclusive, 78% falls outside the band. The instructions don't say what happens outside the band, so the outcome would be undetermined.\n- **Two mandatory gaps:** Kafka and GraphQL are absent, and Helm is missing within item 8. The candidate qualifies only because of strong nice-to-have coverage. These gaps would be worth checking in an interview.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

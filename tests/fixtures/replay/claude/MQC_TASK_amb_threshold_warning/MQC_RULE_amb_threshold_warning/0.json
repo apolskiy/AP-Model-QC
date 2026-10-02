@@ -1,0 +1,22 @@
+{
+  "request_hash": "355d4427fc5bd3d262b5416742212319c4550d0154f02a79b1750cc7e693bd46",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
+    "duration_ms": 8397,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 160,
+    "mode": "live",
+    "output_tokens": 666,
+    "raw_reference": "msg_011CfcYHz7WhVA39wDbtCvi5",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**\u26a0\ufe0f Warning: Availability gate failed.**\n\n- **Gate failed:** Availability at or above 99.5%\n- **Measured:** 99.1%\n- **Shortfall:** 0.4 percentage points below target\n\nThe incident-duration gate passed. The longest incident was 41 minutes, 19 minutes under the 60-minute limit.\n\n---\n\n## Weekly Availability Summary\n\n| Metric | Value | Gate | Status |\n|---|---|---|---|\n| Measured availability | 99.1% | \u2265 99.5% | \u274c Failed (\u22120.4 pts) |\n| Longest single incident | 41 min | \u2264 60 min | \u2705 Passed (19 min headroom) |\n| Number of incidents | 2 | n/a | n/a |\n| Total incident duration | 53 min | n/a | n/a |\n\n**Incidents**\n1. 12 minutes\n2. 41 minutes\n\n**Overall:** The availability target was not met. Both incidents stayed within the duration limit, but the week fell short of the 99.5% threshold.\n\n**Data note:** The figures don't fully agree. In a 7-day week (10,080 minutes), 99.1% availability means about 91 minutes of downtime. The two listed incidents add up to only 53 minutes, which would give about 99.47%. That is still below 99.5%, so the gate fails either way. Still, roughly 38 minutes of downtime aren't accounted for. They might come from unlisted incidents, degraded periods, maintenance windows, or a different measurement window. Reconcile this before the summary is shared.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

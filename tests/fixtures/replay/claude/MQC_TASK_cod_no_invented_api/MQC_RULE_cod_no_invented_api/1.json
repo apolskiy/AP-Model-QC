@@ -1,0 +1,22 @@
+{
+  "request_hash": "6b940c4f9efa41873b13fc10ecfe4f7cf6b78469ddad7dbea68e76b64bd4875f",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
+    "duration_ms": 5749,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 99,
+    "mode": "live",
+    "output_tokens": 462,
+    "raw_reference": "msg_011CfcYPAgQB2hpvV97mLsez",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "I don't see a function after your message, so I'm assuming you mean `fetch_profile` from the document above.\n\n```python\ndef fetch_profile(client, user_id):\n    response = client.get(f\"/users/{user_id}\")\n    return response.json()\n```\n\n1. **Parameters:** It takes a `client` and a `user_id`.\n2. **Request:** It calls `client.get(...)` with a path built by an f-string, `f\"/users/{user_id}\"`. For example, a `user_id` of `42` produces the path `/users/42`.\n3. **Result:** It stores the return value of `client.get` in `response`.\n4. **Return value:** It calls `response.json()` and returns the result.\n\nThe only calls in the function are `client.get` and `response.json`. The only attributes accessed are `get` on `client` and `json` on `response`.\n\nThe module imports `httpx`, but the function never references `httpx` directly. It simply uses whatever `client` object it receives.\n\nIf you meant a different function, please paste it and I'll describe that one instead.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

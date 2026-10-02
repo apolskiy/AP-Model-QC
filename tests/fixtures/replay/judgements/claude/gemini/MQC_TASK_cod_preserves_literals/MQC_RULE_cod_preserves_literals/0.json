@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_MINIMAL_CORRECTION": {
+        "rationale": "The candidate added exactly the missing closing parenthesis to the `sorted(...)` call and touched nothing else within the function, preserving all literals, indentation, and variable names.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "62d107f8fb230b755b556a3d548bb647355fa70f69db4480fa8ab6e0ba45ceb6"
+}

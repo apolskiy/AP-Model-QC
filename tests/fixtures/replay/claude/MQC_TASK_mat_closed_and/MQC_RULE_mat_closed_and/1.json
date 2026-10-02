@@ -1,0 +1,22 @@
+{
+  "request_hash": "17b60773051abcad1cb19791d87533bd9a916f5570c94edbe4a83ab1466780b6",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
+    "duration_ms": 6977,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 103,
+    "mode": "live",
+    "output_tokens": 622,
+    "raw_reference": "msg_011CfcZGcxcvy4YLZqtboK5W",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Requirement Coverage: 50% by item count, but the requirement is not met\n\n## The requirement\nDOC_req_closed_and lists two required items, joined as a closed AND list:\n1. Docker\n2. Kubernetes\n\n## Candidate's evidence\nDOC_candidate_docker states: \"Containers and orchestration: Docker.\"\n\n| Required item | Evidence in candidate document | Met? |\n|---|---|---|\n| Docker | Explicitly listed | \u2705 Yes |\n| Kubernetes | Not mentioned | \u274c No |\n\n**Note:** The heading \"Containers and orchestration\" does not establish Kubernetes experience. The only tool listed is Docker, which is a container tool, not a Kubernetes-style orchestrator. Inferring Kubernetes from the heading would go beyond the evidence.\n\n## Calculation\n- Items met: 1 (Docker)\n- Items required: 2\n- Coverage: 1 \u00f7 2 = **50%**\n\n## Important caveat\nThe requirement lists both items as *required*, so it is an all-or-nothing condition. Partial coverage does not satisfy it. As a pass/fail requirement, the candidate **does not meet it**, because Kubernetes is missing.\n\n**Summary:** The candidate covers 50% of the listed items (Docker), but fails the requirement as stated, since Kubernetes is also required and no evidence of it is given.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

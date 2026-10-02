@@ -1,0 +1,22 @@
+{
+  "request_hash": "b1b3ce568542ef8f7e2db5a3faef212cfcde40c684eaf7d20671b3caa59994f7",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
+    "duration_ms": 4775,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 124,
+    "mode": "live",
+    "output_tokens": 323,
+    "raw_reference": "msg_011CfcZccFG5uERwDmwfin3w",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "The posting has two headers, one mandatory and one optional.\n\n**\"What you will need on day one.\"** \u2192 **Mandatory**\n- Requirements: Python, SQL\n- Why: \"You will need\" states a necessity, not a preference. \"On day one\" means you must have these skills when you start, rather than pick them up on the job.\n\n**\"What would make you stand out.\"** \u2192 **Optional**\n- Requirements: Grafana, technical writing\n- Why: \"Would\" is conditional, and \"stand out\" means these skills set you apart from other candidates rather than qualify you. A candidate without them still meets the bar.\n\nThe numbering runs 1\u20134 across both headers instead of restarting. That doesn't change the reading, because the header wording determines the category.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

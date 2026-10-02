@@ -1,0 +1,22 @@
+{
+  "request_hash": "df7ce2a7496b62f701dd48801b9658164ec60c25adc8e23cb5593e9716e976bf",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
+    "duration_ms": 11641,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 430,
+    "mode": "live",
+    "output_tokens": 1215,
+    "raw_reference": "msg_011CfcZPna1ebNgRBAU7qATQ",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Candidate Assessment\n\n## Mandatory Requirements (10)\n\n| # | Requirement | Evidence in r\u00e9sum\u00e9 | Credit |\n|---|---|---|---|\n| 1 | Python | Languages: Python | 1.0 |\n| 2 | SQL | Languages: SQL | 1.0 |\n| 3 | Linux administration | Platform: Linux administration | 1.0 |\n| 4 | Git | Platform: Git | 1.0 |\n| 5 | REST API design | Services: REST API design | 1.0 |\n| 6 | Unit testing | Services: unit testing | 1.0 |\n| 7 | CI pipelines | Services: CI pipelines | 1.0 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Docker, Kubernetes, Terraform, Ansible (Helm is missing) | 0.8 (4 of 5) |\n| 9 | Kafka | Not shown | 0.0 |\n| 10 | GraphQL | Not shown | 0.0 |\n\n**Mandatory match: 7.8 / 10 = 78%**\n\nThis is exactly the lower edge of the 78\u201384% band. I read \"between 78 and 84\" as including 78, so the combined check applies.\n\n## Combined Figure (all 15 requirements)\n\n| # | Nice-to-have | Evidence | Credit |\n|---|---|---|---|\n| 11 | Grafana | Observability: Grafana | 1.0 |\n| 12 | Prometheus | Observability: Prometheus | 1.0 |\n| 13 | Technical writing | Other: technical writing | 1.0 |\n| 14 | Mentoring | Other: mentoring | 1.0 |\n| 15 | Public speaking | Other: public speaking | 1.0 |\n\nNice-to-have: 5 / 5.\n\n**Combined: (7.8 + 5) / 15 = 12.8 / 15 \u2248 85.3%**\n\n## Result\n\nThe combined figure reaches 85%, so the candidate passes and can **proceed**.\n\n## Caveats\n\n- **Boundary reading:** The outcome depends on 78% counting as \"between 78 and 84.\" If the band excludes 78, the combined check doesn't apply. The instructions also don't say what happens below the band, so the result would be unclear. It's worth confirming whether the band is inclusive.\n- **Narrow margin:** The candidate clears 85% by about 0.3 points. Showing Helm would raise the mandatory score to 80% and the combined score to about 86.7%.\n- **Gaps to probe in interview:** Kafka, GraphQL, and Helm are the only missing mandatory items. Kafka and GraphQL account for the entire mandatory shortfall apart from Helm.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "df7ce2a7496b62f701dd48801b9658164ec60c25adc8e23cb5593e9716e976bf",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
+    "duration_ms": 9896,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 430,
+    "mode": "live",
+    "output_tokens": 1013,
+    "raw_reference": "msg_011CfcZNs5c6CKduLkjwcb2S",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Candidate Assessment\n\n## Mandatory Requirements (1\u201310)\n\n| # | Requirement | Candidate shows | Credit |\n|---|---|---|---|\n| 1 | Python | Yes | 1.0 |\n| 2 | SQL | Yes | 1.0 |\n| 3 | Linux administration | Yes | 1.0 |\n| 4 | Git | Yes | 1.0 |\n| 5 | REST API design | Yes | 1.0 |\n| 6 | Unit testing | Yes | 1.0 |\n| 7 | CI pipelines | Yes | 1.0 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | 4 of 5 (no Helm) | 0.8 |\n| 9 | Kafka | No | 0.0 |\n| 10 | GraphQL | No | 0.0 |\n| | **Total** | | **7.8 / 10** |\n\n**Mandatory match: 78%**\n\nThis is exactly the lower edge of the 78\u201384% band. I read \"between\" as inclusive, so the combined check applies.\n\n## Nice-to-Have Requirements (11\u201315)\n\n| # | Requirement | Candidate shows | Credit |\n|---|---|---|---|\n| 11 | Grafana | Yes | 1.0 |\n| 12 | Prometheus | Yes | 1.0 |\n| 13 | Technical writing | Yes | 1.0 |\n| 14 | Mentoring | Yes | 1.0 |\n| 15 | Public speaking | Yes | 1.0 |\n| | **Total** | | **5.0 / 5** |\n\n## Combined Figure (all 15 requirements)\n\n(7.8 + 5.0) / 15 = 12.8 / 15 = **85.3%**\n\n## Result\n\nThe combined figure reaches the 85% threshold, so the candidate **proceeds**.\n\n**Notes:**\n- The margin is very thin. If Helm counted for nothing, or one more item were missing, the combined score would fall below 85%.\n- The main gaps are Kafka, GraphQL, and Helm. These are worth probing in an interview.\n- If \"between 78 and 84\" was meant to exclude 78, the combined check wouldn't be triggered. The instructions don't say what happens in that case, so you'd need to decide that separately.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "b1b3ce568542ef8f7e2db5a3faef212cfcde40c684eaf7d20671b3caa59994f7",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
+    "duration_ms": 5049,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 124,
+    "mode": "live",
+    "output_tokens": 364,
+    "raw_reference": "msg_011CfcZc32kk5kAtdU7D1WXJ",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**\"What you will need on day one.\"** covers Python and SQL, and these are **mandatory**.\n- \"Need\" signals a requirement, not a preference.\n- \"On day one\" means you must have these skills when you start, not pick them up later.\n\n**\"What would make you stand out.\"** covers Grafana and technical writing, and these are **optional** (nice-to-have).\n- \"Would\" is conditional, so it describes a bonus rather than a condition of hiring.\n- \"Stand out\" means these set you apart from other candidates who already meet the baseline. Lacking them doesn't disqualify you.\n\nThe numbering runs straight through from 1 to 4, which might suggest one list of equal requirements. The headers are what separate the mandatory items from the optional ones.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

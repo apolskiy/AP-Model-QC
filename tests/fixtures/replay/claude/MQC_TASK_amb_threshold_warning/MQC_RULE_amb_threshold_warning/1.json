@@ -1,0 +1,22 @@
+{
+  "request_hash": "355d4427fc5bd3d262b5416742212319c4550d0154f02a79b1750cc7e693bd46",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
+    "duration_ms": 9287,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 160,
+    "mode": "live",
+    "output_tokens": 711,
+    "raw_reference": "msg_011CfcYJpSsUTqPc1iS4rDKG",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Weekly Availability Summary\n\n**\u26a0\ufe0f Warning: the availability gate failed.**\n\n- **Availability gate failed.** Measured availability was **99.1%** against a threshold of **\u2265 99.5%**, a shortfall of **0.4 percentage points**.\n- **Incident-duration gate passed.** The longest incident was **41 minutes** against a limit of **60 minutes**, leaving 19 minutes of margin.\n\n## Summary\n\n| Metric | Result | Gate | Status |\n|---|---|---|---|\n| Availability | 99.1% | \u2265 99.5% | \u274c Failed (\u22120.4 pts) |\n| Longest single incident | 41 min | \u2264 60 min | \u2705 Passed |\n| Incident count | 2 | \u2014 | \u2014 |\n| Total incident time | 53 min (12 + 41) | \u2014 | \u2014 |\n\n## Note on the numbers\n\nThe two incidents don't fully account for the measured availability:\n\n- A 99.1% week implies about **91 minutes** of downtime (0.9% of 10,080 minutes).\n- The listed incidents total only **53 minutes**.\n- That leaves roughly **38 minutes unaccounted for**. Possible causes include unlogged incidents, partial degradation counted against availability, or a measurement window other than a full calendar week.\n\nEven the 53 logged minutes alone would put availability at about **99.47%**, which is still below the 99.5% gate. The availability failure holds either way, but it's worth checking where the extra downtime came from.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

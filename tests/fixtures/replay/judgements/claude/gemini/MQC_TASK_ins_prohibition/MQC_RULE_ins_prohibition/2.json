@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_PROHIBITION_NATURAL": {
+        "rationale": "Em dashes and en dashes are completely avoided, and the resulting prose reads smoothly, clearly, and naturally without any strained phrasing.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "40b75e45db352b9725535e489f31aed5177200f6635f13fc2269791763eb9923"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate clearly asks for the missing figure, outlines concrete consequences of leaving it out, and explains that the omission alone can decide the outcome (notably pointing out that automated tracking systems may filter the application out based on the minimum threshold alone, and recruiters may assume the applicant falls short).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "161637746213314ae1ac1a384c6db6b8bf47cabc9d4bd23796f9afefd05cd851"
+}

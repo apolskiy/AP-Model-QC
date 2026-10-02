@@ -1,0 +1,22 @@
+{
+  "request_hash": "3d8ae1a5121b8ae8768a54c7ce1ea0aceeefed0b1db2b625ffb02712b4f2845b",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
+    "duration_ms": 27857,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 423,
+    "mode": "live",
+    "output_tokens": 2446,
+    "raw_reference": "msg_011CfcYtDrCc9FPBnaSbhPas",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Defects in `settle_order`, with causes and fixes\n\n## Defect 1: It returns the discount, not the amount owed\n\n**Cause:** `total_amount * discount / 100` turns the percentage into a currency amount, which is correct. But that number is the amount taken *off*, and the function treats it as the price. The total is never reduced by it. For a standard account on a 100 basket, this gives 20 (the discount) where it should give 80 (the price after discount).\n\nThe units in the expression are consistent: the percentage is converted to currency before the coupon amount is subtracted. The error is in what is being calculated, not in mixing units.\n\n**Fix:** Subtract the discount amount from the total: `total_amount - total_amount * discount_pct / 100`.\n\n## Defect 2: Only the first coupon is used\n\n**Cause:** `coupon_lookup[coupon_codes[0]]` reads index 0 only. Any other codes are silently dropped. An empty list raises `IndexError`.\n\n**Fix:** Add up all the codes: `sum(coupon_lookup[c] for c in coupon_codes)`. This returns 0 for an empty list. You also need a policy on duplicate codes. If the same code must not apply twice, deduplicate first.\n\n## Defect 3: Unknown coupon codes crash with a bare `KeyError`\n\n**Cause:** The function indexes the dict directly and never checks that the code exists. The same problem applies to `DISCOUNT_BY_TIER[account_tier]` for an unknown tier.\n\n**Fix:** Check the inputs and raise a clear domain error, such as `ValueError(\"unknown coupon code(s): NOPE\")`. Skipping invalid codes silently is the other option, but that is a business decision and should be made on purpose. Rejecting is the safer default.\n\n## Defect 4: The result can go negative\n\n**Cause:** Nothing limits the coupons to the remaining balance, so the customer can end up \"owed\" money.\n\n**Fix:** Floor the result at zero with `max(owed, 0)`, unless the business wants to issue a refund or credit. If so, that should be handled separately.\n\n## Minor: Float arithmetic on currency\n\nThe `/` operator produces floats, which leads to rounding errors with money. Use `Decimal` or integer minor units such as cents.\n\n## Corrected version\n\n```python\nfrom decimal import Decimal\n\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}  # percent\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    if account_tier not in DISCOUNT_BY_TIER:\n        raise ValueError(f\"unknown account tier: {account_tier!r}\")\n    unknown = [c for c in coupon_codes if c not in coupon_lookup]\n    if unknown:\n        raise ValueError(f\"unknown coupon code(s): {', '.join(unknown)}\")\n\n    total = Decimal(total_amount)\n    discount_amount = total * DISCOUNT_BY_TIER[account_tier] / 100   # % -> currency\n    coupon_total = sum((Decimal(coupon_lookup[c]) for c in coupon_codes), Decimal(0))\n\n    amount_owed = total - discount_amount - coupon_total\n    return max(amount_owed, Decimal(0))\n```\n\nThis assumes the tier discount applies to the full total and coupons are subtracted afterwards. If coupons should come off before the percentage is applied, swap the order, and the results below will change.\n\n## The production calls (standard tier, so 20 off 100)\n\n| Call | Current result | Cause | Correct result |\n|---|---|---|---|\n| `[\"SAVE30\"]` | \u221210.0 | Defect 1 (20 \u2212 30) | 100 \u2212 20 \u2212 30 = **50** |\n| `[\"SAVE90\"]` | \u221270.0 | Defects 1 and 4 | 100 \u2212 20 \u2212 90 = \u221210, floored to **0** |\n| `[\"NOPE\"]` | `KeyError: 'NOPE'` | Defect 3 | **`ValueError`** naming the bad code |\n| `[\"SAVE20\",\"SAVE30\"]` | 0.0 | Defects 1 and 2 (20 \u2212 20, SAVE30 ignored) | 100 \u2212 20 \u2212 20 \u2212 30 = **30** |\n\nThe fourth call shows why these bugs are dangerous: two defects together produce 0, which looks plausible and would not raise suspicion.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

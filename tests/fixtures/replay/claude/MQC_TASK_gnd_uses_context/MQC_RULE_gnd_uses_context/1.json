@@ -1,0 +1,22 @@
+{
+  "request_hash": "67297374074db0f73e1f9776c372b3fab3ae349185588d6b85580b6e2eca34a8",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
+    "duration_ms": 4178,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 144,
+    "mode": "live",
+    "output_tokens": 254,
+    "raw_reference": "msg_011CfcYxydpzUz8fBce7K6Pj",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "In this system, **AMBER** means a record has **completed successfully and been archived**. It is not a warning, and it is raised only after a successful run.\n\n**Who is notified:**\n- The **on-call rota is deliberately not notified**.\n- The **change advisory board** receives a **weekly digest** that includes these records, rather than an immediate alert.\n\nThis differs from the common convention where amber means a warning, so it's worth keeping in mind when reading dashboards or alerts in this system. (Also, the glossary appears above your question rather than below it, but I've assumed DOC_status_glossary is the one you meant.)",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The candidate provides the correct figure (100%) and explicitly explains that the connector 'or' means any one of the three languages satisfies the requirement fully.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "402051ae92abee14575e567c2eb845f63e97378f78f46f490a72bfdca4d0ae64"
+}

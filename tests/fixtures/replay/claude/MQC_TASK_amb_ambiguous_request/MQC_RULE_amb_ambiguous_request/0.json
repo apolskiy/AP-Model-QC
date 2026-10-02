@@ -1,0 +1,22 @@
+{
+  "request_hash": "9297cd137b912d8aa1ad9776ee17269c2987fcd54c706a718c93f5d134b9bf4f",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
+    "duration_ms": 4829,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 154,
+    "mode": "live",
+    "output_tokens": 222,
+    "raw_reference": "msg_011CfcYEjwt8Q8mLGgNPpzUx",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "I can't apply CR-118 yet because two details are missing:\n\n1. **Which threshold?** The config has two:\n   - `retry_threshold: 3`\n   - `alert_threshold: 85`\n\n   The request says \"the threshold,\" and the support complaints could plausibly relate to either. Too few retries could cause failures users notice, and a low alert threshold could cause noisy alerts.\n\n2. **What new value?** The request says to raise it but doesn't give a target number.\n\nCould you confirm which threshold CR-118 refers to and what value it should be set to? Once I have both, I'll apply the change.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

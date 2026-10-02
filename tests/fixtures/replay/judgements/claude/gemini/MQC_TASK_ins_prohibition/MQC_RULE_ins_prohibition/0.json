@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_PROHIBITION_NATURAL": {
+        "rationale": "The candidate completely avoided em dashes and en dashes, and the sentences flow smoothly and read as though completely unconstrained.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "c55124d2056faf08ec7cf4bd0c3ce4cb21249763a0f99876e562f243ba9efde4"
+}

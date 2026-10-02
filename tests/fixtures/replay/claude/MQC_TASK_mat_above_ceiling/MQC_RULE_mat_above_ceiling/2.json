@@ -1,0 +1,22 @@
+{
+  "request_hash": "1c919e3afbd9bdccdfd36240589badae488f4796cb3e1c072792a4f70ab053bf",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 8316,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 357,
+    "mode": "live",
+    "output_tokens": 669,
+    "raw_reference": "msg_011CfcZN3JELuBogJC4KtNaL",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Candidate Assessment\n\n**Mandatory match: 90% (9 of 10 requirements)** \u2014 at or above the 85% threshold, so the candidate **proceeds**.\n\n## Mandatory Requirements\n\n| # | Requirement | Resume | Status |\n|---|---|---|---|\n| 1 | Python | Languages | \u2705 |\n| 2 | SQL | Languages | \u2705 |\n| 3 | Linux administration | Platform | \u2705 |\n| 4 | Git | Platform | \u2705 |\n| 5 | REST API design | Services | \u2705 |\n| 6 | Unit testing | Services | \u2705 |\n| 7 | CI pipelines | Services | \u2705 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Infrastructure (all five) | \u2705 |\n| 9 | Kafka | Streaming | \u2705 |\n| 10 | GraphQL | Not listed | \u274c |\n\n**Counting note:** Requirement 8 bundles five tools under one number. Counting each tool separately gives 13 of 14 (\u224893%). The outcome is the same either way, since both counts exceed 85%.\n\n## Nice-to-Have (does not affect the outcome)\nNone of items 11\u201315 (Grafana, Prometheus, technical writing, mentoring, public speaking) appear on the resume.\n\n## Outcome\n**Proceed.** The only gap is **GraphQL**, which is worth asking about in the next stage.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

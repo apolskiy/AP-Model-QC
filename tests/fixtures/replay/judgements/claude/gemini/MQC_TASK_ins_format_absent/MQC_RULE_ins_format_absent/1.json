@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_UNPROMPTED_SHAPE": {
+        "rationale": "The candidate does not return a JSON object or machine-readable format, but instead of providing a purely plain prose summary, it organizes the information into a structured bulleted list with bolded category keys. This constitutes moderate incidental structure, exceeding level 3 but falling short of the pure unprompted prose required for level 5.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "b9f05a3841fbe87064e03d8b496caf32cbd1bd526cfa57b7794367f8a0fd9559"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_THRESHOLD_SENSE": {
+        "rationale": "The figure '82 percent' is exact, and the boundary condition 'at or above' is fully preserved.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "1ec15eac460da8602375006eb01a52c36a28794c7c55514fcadbb32a52964b4e"
+}

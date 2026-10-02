@@ -1,0 +1,22 @@
+{
+  "request_hash": "69da17120326b376fef4f29db1d34c8eea0701816127639418ca811baa0fceb3",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
+    "duration_ms": 2667,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 159,
+    "mode": "live",
+    "output_tokens": 127,
+    "raw_reference": "msg_011CfcYHWEDd3J97Cjw2bp1M",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "CR-119 is unambiguous, so I applied it directly.\n\n```\nretry_threshold: 3\nalert_threshold: 90\n```\n\n`alert_threshold` changed from 85 to 90, and `retry_threshold` stays at 3, as the request specifies.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_UNPROMPTED_SHAPE": {
+        "rationale": "The candidate provides a human-readable summary rather than a machine-readable format like JSON, avoiding heavy incidental structure. However, instead of continuous plain prose, it organizes the information into a structured bulleted list with bold labels, falling slightly short of level 5.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "2ff93b49c1dcf4be7f337e8094a68c22795c637e85ff0a517f5e6ff0ecac94a0"
+}

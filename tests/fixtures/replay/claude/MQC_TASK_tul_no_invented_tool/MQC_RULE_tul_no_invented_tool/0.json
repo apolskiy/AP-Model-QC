@@ -1,0 +1,41 @@
+{
+  "request_hash": "fc1bb66eb804fd68b0df3813c8cfc44fd5ef564196032ce609a774e1c6fcfe06",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
+    "duration_ms": 3716,
+    "engine": "claude",
+    "finish_reason": "tool_calls",
+    "input_tokens": 638,
+    "mode": "live",
+    "output_tokens": 305,
+    "raw_reference": "msg_011CfcZpU7wcUR593ZqneNwG",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "I'll check the order's status and the cancellation policy first so we know what options there are.",
+    "thinking_tokens": 0,
+    "tool_calls": [
+      {
+        "arguments": {
+          "include_history": true,
+          "order_id": "A-4471"
+        },
+        "call_id": "toolu_018YjVban3TstdcRbaQHdyV6",
+        "sequence": 0,
+        "tool_name": "lookup_order"
+      },
+      {
+        "arguments": {
+          "limit": 3,
+          "query": "order cancellation"
+        },
+        "call_id": "toolu_01EwVSebkaKcU2Q5TgwWCACg",
+        "sequence": 1,
+        "tool_name": "search_policy"
+      }
+    ]
+  }
+}

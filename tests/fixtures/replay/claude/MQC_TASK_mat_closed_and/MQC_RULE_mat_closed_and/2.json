@@ -1,0 +1,22 @@
+{
+  "request_hash": "17b60773051abcad1cb19791d87533bd9a916f5570c94edbe4a83ab1466780b6",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
+    "duration_ms": 6394,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 103,
+    "mode": "live",
+    "output_tokens": 489,
+    "raw_reference": "msg_011CfcZHMvGeUKBxvKU6EwzN",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "The candidate meets **50%** of the requirement by item count, but **does not satisfy it** as a whole.\n\n**How I got there**\n\n1. **Requirement (DOC_req_closed_and):** \"Required: Docker, Kubernetes.\" Both skills are mandatory, so this is a closed AND list of 2 items.\n2. **Candidate (DOC_candidate_docker):** \"Containers and orchestration: Docker.\"\n3. **Item-by-item check:**\n   - **Docker:** Met. It is listed explicitly.\n   - **Kubernetes:** Not met. It is not mentioned. The heading \"Containers and orchestration\" might suggest orchestration experience, but the only tool named is Docker. Docker isn't Kubernetes, so the heading alone doesn't count as evidence.\n4. **Calculation:** 1 of 2 items met, so 1 \u00f7 2 = **50%**, assuming both skills count equally.\n\n**Caveat:** Because both skills are *required* (AND), the candidate **fails** the requirement on a strict pass/fail basis. In that case, compliance is effectively 0%. The 50% figure only describes partial coverage. The gap is Kubernetes.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CAUSES_DIAGNOSED": {
+        "rationale": "The response identifies each independent cause of the arithmetic and logic defects (subtracting the coupon from the discount amount instead of the total price, lack of a floor at zero, hardcoding only the first coupon index, and looking up unvalidated keys) and provides a clear remedy for each, keeping the causes separate.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "647e6c6586dfba945e78b8d46e929fe8e86bb93e435c2e4d67831f0eee040679"
+}

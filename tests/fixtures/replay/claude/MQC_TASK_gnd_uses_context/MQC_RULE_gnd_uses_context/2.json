@@ -1,0 +1,22 @@
+{
+  "request_hash": "67297374074db0f73e1f9776c372b3fab3ae349185588d6b85580b6e2eca34a8",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
+    "duration_ms": 3160,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 144,
+    "mode": "live",
+    "output_tokens": 183,
+    "raw_reference": "msg_011CfcYyHUspp9opCn4bA3Gt",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "In this system, **AMBER does not mean a warning.** It marks a record that **completed successfully and has been archived**, and it is only raised after a successful run.\n\n**Who is notified:**\n- **The on-call rota is not notified.** This is deliberate.\n- **The change advisory board** gets a **weekly digest** instead of real-time alerts.\n\nThe glossary appears above your question rather than below it, but I've assumed that's the one you meant.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

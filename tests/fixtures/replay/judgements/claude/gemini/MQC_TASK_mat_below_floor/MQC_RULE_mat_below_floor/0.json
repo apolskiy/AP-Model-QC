@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The candidate output includes a clear warning, explicitly names the 78% cutoff, and specifically details the unmet mandatory requirements (Docker, Kubernetes, Terraform, Ansible, Helm, Kafka, and GraphQL) while omitting the nice-to-have section.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "06e27aa6d7f475030c6b9a237866cd8fc349f4a9cd7ba75604b564b41f7d1a17"
+}

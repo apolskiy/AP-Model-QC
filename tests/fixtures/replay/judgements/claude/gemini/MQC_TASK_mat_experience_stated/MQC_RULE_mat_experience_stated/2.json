@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_STATED_REWRITE_QUALITY": {
+        "rationale": "The candidate preserved the years-of-experience statement verbatim ('15+ years building transactional services'). However, the rewrite makes only minor grammatical tweaks to the original summary and adds very little targeting toward the posting.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "dbdecd77752877559009a7848090239fc3088084dc362ee946bbff0d52b78ff9"
+}

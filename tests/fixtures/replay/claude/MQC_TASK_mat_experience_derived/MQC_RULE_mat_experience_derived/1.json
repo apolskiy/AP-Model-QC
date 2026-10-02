@@ -1,0 +1,22 @@
+{
+  "request_hash": "fb949d9a8cca2970a04989acb0fa3e91316740efe73c807c9ca04e48973e3bf4",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
+    "duration_ms": 3161,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 239,
+    "mode": "live",
+    "output_tokens": 200,
+    "raw_reference": "msg_011CfcZWypsxN6ie27VFw2ZA",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Rewritten summary:**\n\n> 8+ years of backend engineering across transactional services, most recently a settlement pipeline handling 40,000 orders a day.\n\n**Basis for the figure:** The employment dates (Northwind Systems 2011\u20132018, then Corvus Data 2018\u2013present) show continuous backend engineering work since 2011, which exceeds the 8-year minimum. As you asked, the summary states the minimum with a plus rather than the full total.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

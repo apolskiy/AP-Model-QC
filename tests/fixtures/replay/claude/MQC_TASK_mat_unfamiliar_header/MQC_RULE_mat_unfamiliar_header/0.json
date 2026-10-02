@@ -1,0 +1,22 @@
+{
+  "request_hash": "b1b3ce568542ef8f7e2db5a3faef212cfcde40c684eaf7d20671b3caa59994f7",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
+    "duration_ms": 5005,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 124,
+    "mode": "live",
+    "output_tokens": 318,
+    "raw_reference": "msg_011CfcZbUpVsGX5e5zELUujr",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**\"What you will need on day one.\"**: **Mandatory** (Python, SQL)\n- **\"need\"** states a requirement, not a preference.\n- **\"on day one\"** means you must have these skills when you start, not learn them on the job.\n\n**\"What would make you stand out.\"**: **Optional** (Grafana, technical writing)\n- **\"stand out\"** means these set you apart from other candidates. They aren't the baseline.\n- **\"would\"** is conditional. It describes an advantage, not a requirement.\n\nThe numbering runs straight through both sections (1\u20134), so the list numbers don't tell you which group an item belongs to. Only the header wording does.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

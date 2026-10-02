@@ -1,0 +1,16 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_MISCOMPUTATION": {
+        "rationale": "The explanation explicitly contrasts calculating the size of the discount versus the price after the discount, demonstrates how the customer is charged the discount amount instead of the discounted price, and identifies that the merchant loses money via heavy undercharging.",
+        "score": 5
+      },
+      "C_COD_TIERS_UNCHANGED": {
+        "rationale": "The response leaves the original tier percentages unchanged (20% for standard, 30% for premium) and distinguishes the discount amount from the remainder (100 - discount) when working through an example.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "39dde49f77e29aba9e56a90d75f124de1e1a4c9984e6ed273f3496400aa74750"
+}

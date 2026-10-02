@@ -1,0 +1,22 @@
+{
+  "request_hash": "6b940c4f9efa41873b13fc10ecfe4f7cf6b78469ddad7dbea68e76b64bd4875f",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
+    "duration_ms": 5265,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 99,
+    "mode": "live",
+    "output_tokens": 386,
+    "raw_reference": "msg_011CfcYNTJyzHzWYKESjudGt",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "I don't see a function after your message, so I'm assuming you mean `fetch_profile` from the document.\n\n**What `fetch_profile(client, user_id)` does:**\n\n1. **Builds a path** with an f-string, inserting `user_id` into `\"/users/{user_id}\"`.\n2. **Makes a request** by calling `client.get(...)` with that path and stores the result in `response`.\n3. **Returns parsed data** by calling `response.json()` and returning its result.\n\nThe only calls and attributes used inside the function are:\n- `client.get`\n- `response.json`\n\nThe `import httpx` line sits above the function, but `httpx` isn't referenced inside `fetch_profile`. The function relies on whatever `client` object is passed in.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_UNPROMPTED_SHAPE": {
+        "rationale": "The candidate provides a human-readable summary rather than a machine-readable format like JSON. However, it introduces light incidental formatting (a bulleted list with bold key-value-style tags) rather than completely unstructured plain prose.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "578de71d346e990dc5ccf0df108f00ee4cafe0b2f3e17c407bec7b112dc6fb1c"
+}

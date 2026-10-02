@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OPEN_EQUIVALENCE": {
+        "rationale": "The candidate output explicitly accepts MySQL via equivalence rather than as a named match, names the specific database categories (relational SQL database vs. in-memory key-value store), and clearly explains the reasoning for why it satisfies the open requirement.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "4f93fdd557e0fccff1d38899abd49d1720b155f2cb5cd7960137a4a1b4da2e79"
+}

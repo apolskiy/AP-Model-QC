@@ -1,0 +1,22 @@
+{
+  "request_hash": "392bed0b4e78b52d3a0fdc34d692e3442d12f28f5d1635223566051999b0ef80",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_overstate_rejected::MQC_RULE_gnd_overstate_rejected",
+    "duration_ms": 3657,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 153,
+    "mode": "live",
+    "output_tokens": 176,
+    "raw_reference": "msg_011CfcYz3XWEfQNSx8u84bA6",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "EMEA revenue in Q3 was **$28.7 million**, which rounds up to **about $30 million** for a headline.\n\nSince the headline figure overstates the actual number by $1.3 million, consider writing \"nearly $30 million\" or \"close to $30 million\" so it stays accurate.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

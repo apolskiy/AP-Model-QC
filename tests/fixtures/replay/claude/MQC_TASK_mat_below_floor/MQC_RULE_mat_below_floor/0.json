@@ -1,0 +1,22 @@
+{
+  "request_hash": "94e1b14cb6ed8ea9fa503b1bd403bc490a7eafabb0e4df8fdf006ba56ba1ab80",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
+    "duration_ms": 7818,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 358,
+    "mode": "live",
+    "output_tokens": 699,
+    "raw_reference": "msg_011CfcZRrdePVpzhP11Mvc3p",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Mandatory Requirements Assessment\n\n| # | Requirement | R\u00e9sum\u00e9 evidence | Match |\n|---|---|---|---|\n| 1 | Python | Languages: Python | \u2705 |\n| 2 | SQL | Languages: SQL | \u2705 |\n| 3 | Linux administration | Platform: Linux administration | \u2705 |\n| 4 | Git | Platform: Git | \u2705 |\n| 5 | REST API design | Services: REST API design | \u2705 |\n| 6 | Unit testing | Services: unit testing | \u2705 |\n| 7 | CI pipelines | Services: CI pipelines | \u2705 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | None of the five tools are listed | \u274c |\n| 9 | Kafka | Not listed | \u274c |\n| 10 | GraphQL | Not listed | \u274c |\n\n**Mandatory match: 7 of 10 = 70%**\n\nItem 8 bundles five separate tools. If each is counted on its own, the match falls to 7 of 14 = 50%. The conclusion is the same either way.\n\n## \u26a0\ufe0f Warning: Below the 78% Cutoff\n\nThe candidate's 70% mandatory match is below your **78% cutoff**. The gaps are in containerization and infrastructure-as-code (Docker, Kubernetes, Terraform, Ansible, Helm), event streaming (Kafka), and GraphQL.\n\nAs you instructed, the nice-to-have requirements (items 11\u201315) were **not evaluated**.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

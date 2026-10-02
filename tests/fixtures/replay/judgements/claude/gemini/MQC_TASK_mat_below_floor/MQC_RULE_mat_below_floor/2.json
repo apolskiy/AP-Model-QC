@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The candidate output explicitly issues a warning, names the 78% cutoff, and identifies all unmet requirements (containerization and infrastructure tooling/item 8, Kafka, and GraphQL) without evaluating the optional nice-to-have criteria.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "df5dba787dcc60006a70abe5d3fa6afef00a1d41dd476299c3b5ae56b5755ed0"
+}

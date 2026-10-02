@@ -1,0 +1,20 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CREDITED_DEFECTS": {
+        "rationale": "Both credited defects are clearly identified with the specific inputs triggering them: an empty coupon list causing an IndexError at `coupon_codes[0]`, and an unknown/unmapped tier causing a KeyError in `DISCOUNT_BY_TIER`.",
+        "score": 5
+      },
+      "C_COD_FURTHER_PROBLEMS": {
+        "rationale": "The candidate identifies several valid additional defects, including float precision issues for monetary calculations, the silent ignoring of subsequent coupons in the list, and lack of input validation, detailing why each matters.",
+        "score": 5
+      },
+      "C_COD_WHO_IS_AFFECTED": {
+        "rationale": "The candidate clearly explains who is out of pocket (the business loses revenue / full sale, or customer gets order free) and shows that returning 0.0 processes without raising an error while the negative amount can break downstream systems.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "d311d36ee966b2f89cf5a5a475a155337c94d1d452d3dbc2c024cbecfbeee9ec"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_ARITHMETIC_SHOWN": {
+        "rationale": "The percentage is calculated correctly and explicitly shows the two figures it derives from (41.2 million divided by the 87.4 million total).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "14bc898f8822d2483680d68f94a4670a68584fe2b4ee3346e6ce14573ced50c8"
+}

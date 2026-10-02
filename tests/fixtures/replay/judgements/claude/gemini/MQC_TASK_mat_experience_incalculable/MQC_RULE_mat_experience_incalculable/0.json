@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The response clearly asks for the figure, explains the concrete consequence of omitting it (failing to demonstrate meeting the required 8-year bar), and explicitly states that this omission alone can decide the outcome (failing the screen outright / being rejected before anyone reads the rest).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "eb97de648fa495c0ed4a0bab6437cd63995c0d36afe23fcfbdcb569a7681cf8b"
+}

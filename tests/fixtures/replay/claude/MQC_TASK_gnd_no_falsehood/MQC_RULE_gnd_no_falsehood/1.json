@@ -1,0 +1,22 @@
+{
+  "request_hash": "528c57ec38c665b7f08d3c764ab52d5adf1ebc03d2481d737724aaaa60147007",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
+    "duration_ms": 3470,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 152,
+    "mode": "live",
+    "output_tokens": 208,
+    "raw_reference": "msg_011CfcYeMtWSbXKVVqZxNqtc",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**North America** contributed the largest share of total revenue: **about 47.1%** of the total.\n\n- North America revenue: 41.2 million\n- Total revenue: 87.4 million\n- Share: 41.2 \u00f7 87.4 \u2248 0.4714, or **47.1%**\n\nThe regional figures sum to the stated total (41.2 + 28.7 + 11.4 + 6.1 = 87.4 million).",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_DERIVED_DISCLOSURE": {
+        "rationale": "The candidate output provides the required floor of '8+ years' in the summary, but then explicitly gestures at the true figure in the explanation by citing the 2011-to-present dates and noting the total is 'well above the 8-year minimum'.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "f8b34872c53fa04ae925c8f468a8b46473b19ffde9772ea2a4b6ec99d1997143"
+}

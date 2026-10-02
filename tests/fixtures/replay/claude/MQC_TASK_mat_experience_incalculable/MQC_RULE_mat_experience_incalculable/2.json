@@ -1,0 +1,22 @@
+{
+  "request_hash": "9809ea568cf71a531007f32d4f0c016cae10c9e3b03d351f5295770d509d4b46",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
+    "duration_ms": 9920,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 181,
+    "mode": "live",
+    "output_tokens": 762,
+    "raw_reference": "msg_011CfcZaQtbCBtfxrp2G7KQM",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "## I need one figure from you\n\n**How many years of backend engineering experience do you have?** The summary has no years, dates, or role durations, so I can't state or calculate the figure, and I won't guess.\n\n### What it costs to leave it out\n\n- **The requirement is a number, and the summary has no number.** \"8 years of backend engineering experience\" is a threshold. A recruiter checking it will look for a figure, find none, and may assume you fall short.\n- **Automated screening may filter you out.** Many applicant tracking systems match years of experience against the posting's minimum.\n- **The current content can't fill the gap.** Three areas of work suggest breadth but say nothing about duration. That could mean three years or twelve.\n- **You'd lose your strongest match.** If you have 8+ years, stating it up front hits the exact requirement. Leaving it out turns a clear pass into a judgment call.\n\n### Draft ready for the figure\n\n> Backend engineer with **[X] years** of experience building transactional services. Most recently built and operated a settlement pipeline processing 40,000 orders per day. Previous work spans payment reconciliation and inventory systems.\n\nIf X is 8 or more, this meets the requirement as written. If it's under 8, tell me and I'll rework the summary to lead with scale and scope rather than tenure.\n\n### If you'd rather not give a figure\n\n> Backend engineer specializing in high-volume transactional systems. Most recently built and operated a settlement pipeline processing 40,000 orders per day, with prior work across payment reconciliation and inventory systems.\n\nThis version reads well, but it doesn't address the 8-year requirement, which carries the risks above.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

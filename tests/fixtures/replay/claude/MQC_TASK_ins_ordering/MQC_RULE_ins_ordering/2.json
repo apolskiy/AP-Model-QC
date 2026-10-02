@@ -1,0 +1,22 @@
+{
+  "request_hash": "21ded9af55dec2b3d7ffb1ef5630b05901e6a897d09720dca9bf39db788ad4b1",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_ordering::MQC_RULE_ins_ordering",
+    "duration_ms": 2294,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 134,
+    "mode": "live",
+    "output_tokens": 121,
+    "raw_reference": "msg_011CfcZAXzJzCU2xJcrKjLHk",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Changes with a measurable quantity:**\n1. The export job now completes in under 30 seconds.\n2. The importer accepts files up to 2 GB.\n\n**Remaining changes:**\n3. The login page was restyled.\n4. The help link points to the new documentation.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

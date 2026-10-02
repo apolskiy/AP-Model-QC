@@ -1,0 +1,22 @@
+{
+  "request_hash": "0e754d7c43c693019ad7676e79a66e74452312e400264f2625640d9aad0590cb",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_experience_stated::MQC_RULE_mat_experience_stated",
+    "duration_ms": 6185,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 172,
+    "mode": "live",
+    "output_tokens": 385,
+    "raw_reference": "msg_011CfcZVdiNiwa8nMqf4hi8G",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Rewritten summary:**\n\nBackend engineering: 15+ years building transactional services. Most recently designed and ran a settlement pipeline that handles 40,000 orders a day.\n\nThe years-of-experience statement (\"15+ years building transactional services\") is reproduced word for word. It already satisfies the posting's 8-year backend engineering requirement, so I didn't add a comparison or restate the figure.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

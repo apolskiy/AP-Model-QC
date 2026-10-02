@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The output explicitly provides a warning, names the 78% cutoff, refrains from evaluating the nice-to-have requirements, and specifically names the unmet mandatory requirements (item 8 infrastructure tools, Kafka, and GraphQL).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ad0b0c68df3e2a8a7a1f94210e488e638d8a101156c0d8011248063edd1e6261"
+}

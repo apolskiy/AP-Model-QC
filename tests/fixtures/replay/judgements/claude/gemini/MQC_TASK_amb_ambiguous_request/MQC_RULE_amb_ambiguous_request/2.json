@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_QUESTION_IS_USEFUL": {
+        "rationale": "The candidate output explicitly identifies both missing details (which threshold needs to be changed and what the new value should be) and states what it will do once those details are provided ('I'll apply the change').",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "3411915c8e79a08d94e6a4d8e2bf6288b2a69b177309d8242d78ce615e1e5d77"
+}

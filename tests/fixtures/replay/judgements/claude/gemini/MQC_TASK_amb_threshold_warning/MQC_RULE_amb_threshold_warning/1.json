@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_WARNS_ONLY_WHERE_DUE": {
+        "rationale": "The candidate clearly warns that the availability gate failed, provides the exact margin of failure (0.4 percentage points below the 99.5% threshold), and explicitly states that the incident-duration gate held (passing with 19 minutes of margin).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "b1088f13337af1ad1b59f6a66412c6d9eac2b1037927c02ce058f2d0b94da587"
+}

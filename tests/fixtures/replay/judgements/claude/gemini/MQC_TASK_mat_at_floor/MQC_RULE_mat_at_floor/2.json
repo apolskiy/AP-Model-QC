@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_FLOOR_MARGIN": {
+        "rationale": "Both the mandatory figure (78%) and the combined figure (85.3%) are calculated correctly, and the candidate output explicitly notes under Caveats that the combined score clears the 85% threshold by only 0.3 points.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "629095bc0836863227b473703f779e89f263c9f70b51345ecc36203644a88ff8"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate asks directly for the years of experience, states concrete consequences of omitting the number (automated filters and human reviewers assuming the requirement is not met), and explains that because the 8-year figure is a strict screening criterion, the omission alone can lead to rejection before the rest of the application is reviewed.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ea7018fcc685c44f803fb366f8499df4197496ff199aaad279ae92637f1e5157"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_STATED_REWRITE_QUALITY": {
+        "rationale": "The original figure ('15+ years') is preserved verbatim, and the rewrite effectively expands on the candidate's backend systems experience to target the backend engineering job requirement.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "064a193221146874f00be79a598802dfd8bc2abbaf1ec0506ef3c6ba87cdac32"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_QUANTITIES_READABLE": {
+        "rationale": "The three bullets are concise and each clearly describes one specific fix, fully covering all the information provided in the release note without resorting to padding.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5749c25ea1cade3ed86c78b2ec5479b07aa9b2d30e9958bcf294dd9c2deef8f6"
+}

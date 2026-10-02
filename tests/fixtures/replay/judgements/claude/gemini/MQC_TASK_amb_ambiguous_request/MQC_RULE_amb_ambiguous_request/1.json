@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_QUESTION_IS_USEFUL": {
+        "rationale": "The candidate clearly names both missing details (which specific threshold needs changing and what new value to set it to) and states what it will do once that information is provided ('I'll make the change').",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "c7613cf6f06ce477321ddc2f1fd10f112cb977c53b876c70f85965abe25a7924"
+}

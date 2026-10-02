@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate successfully captures all four updates from the release notes while satisfying every constraint (three bullets, under twelve words per sentence, measurable quantities placed first, and no dashes). No content or key information was lost or degraded.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ba433d413842209c11d711b98405c14ca2af84c6a4f8dc93d6c76e511dc081b8"
+}

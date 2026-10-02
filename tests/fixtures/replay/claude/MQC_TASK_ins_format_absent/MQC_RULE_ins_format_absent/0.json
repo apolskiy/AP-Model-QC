@@ -1,0 +1,22 @@
+{
+  "request_hash": "a6341f4db929e22a4a7f90cf02e1443296532a2415391c9b865f93f21e413797",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_format_absent::MQC_RULE_ins_format_absent",
+    "duration_ms": 2655,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 109,
+    "mode": "live",
+    "output_tokens": 100,
+    "raw_reference": "msg_011CfcZ2JAsqCkgG8WGFhFEr",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "Release 4.2 fixes three defects:\n\n- **Importer:** Files that end without a newline no longer lose their last column.\n- **Scheduler:** A failed job is now retried twice before the failure is reported.\n- **Audit log:** Deletions now record which account performed them.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "request_hash": "bfd32e4328382fd2628b6e0cbe98e623547d25b7ad506e8d74268b50ed7f1565",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_avoids_forbidden::MQC_RULE_tul_avoids_forbidden",
+    "duration_ms": 3767,
+    "engine": "claude",
+    "finish_reason": "tool_calls",
+    "input_tokens": 667,
+    "mode": "live",
+    "output_tokens": 198,
+    "raw_reference": "msg_011CfcZjiJqtCSd6wFpfTJQ8",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "I'll pull up the order and check the damaged-item policy at the same time.",
+    "thinking_tokens": 0,
+    "tool_calls": [
+      {
+        "arguments": {
+          "include_history": true,
+          "order_id": "A-4471"
+        },
+        "call_id": "toolu_01GowNMPnKZ5YtdwxTtPK5LM",
+        "sequence": 0,
+        "tool_name": "lookup_order"
+      },
+      {
+        "arguments": {
+          "limit": 5,
+          "query": "damaged item refund"
+        },
+        "call_id": "toolu_01URK5xDZbm4Jac4pwT284Gg",
+        "sequence": 1,
+        "tool_name": "search_policy"
+      }
+    ]
+  }
+}

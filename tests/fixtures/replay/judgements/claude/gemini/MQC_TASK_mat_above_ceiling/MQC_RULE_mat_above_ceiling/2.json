@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_CEILING_PROCEEDS": {
+        "rationale": "The candidate assessment correctly concludes that the candidate proceeds based on exceeding the 85% mandatory match threshold, and explicitly notes that the nice-to-have / optional set does not affect the outcome.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "909ea9e6d97940718e51ba80f686d7c5d23c97db24b5642702ab69561464e58a"
+}

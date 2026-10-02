@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_HEADER_EVIDENCE": {
+        "rationale": "Both headers are classified correctly (mandatory and optional), and for each header, the response explicitly quotes the specific phrases ('you will need', 'on day one', 'would', 'stand out') that determined the classification.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "050754822f2da78af0d7f85886d64b50bdcfed8a75bc1739a83f4e6991472f1e"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_AND_REASONING": {
+        "rationale": "The candidate provides the correct figure (50%), shows clear working, and explicitly names Kubernetes as the gap.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "794afaf858eb8d477eff860410632ab18cf8516aef3d26b68447e2ba445482fa"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "6b940c4f9efa41873b13fc10ecfe4f7cf6b78469ddad7dbea68e76b64bd4875f",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
+    "duration_ms": 4744,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 99,
+    "mode": "live",
+    "output_tokens": 341,
+    "raw_reference": "msg_011CfcYPyK4FFwKe6sh9FbSF",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "The excerpt contains one function, `fetch_profile`, so I'm assuming that's the one you mean.\n\n**What it does:**\n\n1. It takes two parameters, `client` and `user_id`.\n2. It calls `client.get(...)` with a path built from an f-string, `f\"/users/{user_id}\"`, which inserts `user_id` into the path.\n3. It stores the result of that call in `response`.\n4. It calls `response.json()` and returns the result.\n\nIn short, it requests `/users/<user_id>` through the given `client` and returns the response body as parsed JSON.\n\n**Calls and attributes used in the function:** `client.get` and `response.json`. Nothing else is called or accessed.\n\nThe file imports `httpx`, but the function never references it. `client` is passed in, so its type isn't fixed by the function itself.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

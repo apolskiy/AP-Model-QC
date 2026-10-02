@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_SUMMARY_PROPORTION": {
+        "rationale": "The response consists of exactly three sentences that successfully incorporate every figure from the source text (41.2 million, 28.7 million, 11.4 million, 6.1 million, and 87.4 million) without feeling like a bare list, flowing naturally and reading like a cohesive summary.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "11d3cc917b3b3702027a917db490b3eace18c9d99b25c4e926266633645b6258"
+}

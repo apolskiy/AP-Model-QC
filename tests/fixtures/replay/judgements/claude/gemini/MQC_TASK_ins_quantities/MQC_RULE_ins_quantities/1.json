@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_QUANTITIES_READABLE": {
+        "rationale": "The candidate output consists of three terse, informative bullets that fully and accurately cover all three defects mentioned in the release note while staying within the word-count ceilings.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "d168b589f3fb0c80ac360438abbac7024ffcc8f5c637d96f60e572a045497448"
+}

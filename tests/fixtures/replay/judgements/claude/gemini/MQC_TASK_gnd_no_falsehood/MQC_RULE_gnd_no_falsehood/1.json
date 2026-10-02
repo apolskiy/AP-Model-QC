@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_ARITHMETIC_SHOWN": {
+        "rationale": "The candidate provides the correct percentage (47.1%) and explicitly names and provides both figures it derives from: North America revenue (41.2 million) and Total revenue (87.4 million), showing the calculation clearly.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "f17e463eac3ef0f253a0b2f167c1b252643d7f3f791355aee96f213db9f95105"
+}

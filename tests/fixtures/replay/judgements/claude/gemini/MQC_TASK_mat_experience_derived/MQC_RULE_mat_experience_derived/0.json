@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_DERIVED_DISCLOSURE": {
+        "rationale": "The candidate states the floor ('8+ years') in the revised summary, but then includes an explanation referencing the full date range ('from 2011, continuing through Corvus Data to the present') that exceeds the minimum, thereby gesturing at the real figure.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "b137efde0afc9f34764065d111f853f0d241ea4896c0b9b58c605ef49337d8b0"
+}

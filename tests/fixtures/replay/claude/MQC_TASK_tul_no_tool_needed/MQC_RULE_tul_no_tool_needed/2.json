@@ -1,0 +1,22 @@
+{
+  "request_hash": "144a610d1ab890ac9145efe9276ffb15dacd58b132a5926b21f241fb6bfcca23",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_tool_needed::MQC_RULE_tul_no_tool_needed",
+    "duration_ms": 3030,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 671,
+    "mode": "live",
+    "output_tokens": 66,
+    "raw_reference": "msg_011CfcZoefvooDkEirjurrSf",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "Here's a one-sentence reply you can send:\n\n\"RMA stands for Return Merchandise Authorisation, which is the approval and reference number we give you so we can identify and process your return when it reaches us.\"",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

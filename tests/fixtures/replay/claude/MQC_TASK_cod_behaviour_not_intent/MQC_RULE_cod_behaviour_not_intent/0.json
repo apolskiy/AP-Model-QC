@@ -1,0 +1,22 @@
+{
+  "request_hash": "81055d6368d42d71cf86e76d7e90c4d39ac2de8f6ab13b65106da85298b0d18f",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
+    "duration_ms": 5861,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 135,
+    "mode": "live",
+    "output_tokens": 450,
+    "raw_reference": "msg_011CfcYQouYd7q4eAtzm6QdV",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "It returns **the first two rows in their original order: the rows scoring 10 and 90** (assuming the input list is in the order 10, 90, 50).\n\nThe function does not sort anything:\n\n1. `sorted(entries, key=..., reverse=True)` builds a new list ordered by score from highest to lowest, `[90, 50, 10]`. But it returns that list rather than modifying `entries`, and the result is never assigned. The sorted list is discarded immediately.\n2. `entries` is untouched and still holds the original order `[10, 90, 50]`.\n3. `return entries[:limit]` slices the first two elements of the unsorted list, giving the rows scoring **10 and 90**.\n\nSo the function just returns the first `limit` rows as they were passed in. Here it returns the lowest-scoring row and omits the row scoring 50, which an actual top-two would include.\n\nThe apparent intent (returning 90 and 50) would need either:\n\n```python\nentries = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n```\n\nor an in-place sort, which mutates the caller's list:\n\n```python\nentries.sort(key=lambda row: row[\"score\"], reverse=True)\n```",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

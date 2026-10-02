@@ -1,0 +1,22 @@
+{
+  "request_hash": "ee0c6603a578b3273b187c77076739d3af45f83e42b28ab065b0d1fbc0c0f871",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
+    "duration_ms": 5714,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 104,
+    "mode": "live",
+    "output_tokens": 455,
+    "raw_reference": "msg_011CfcZEhTS7HCAR7J5Hw37n",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Result: **100%**\n\n## How I arrived at it\n\n**1. What the requirement asks for**\n- DOC_req_closed_or: *\"Required: Python, Go, **or** Rust.\"*\n- The word \"or\" makes this a single requirement that any one of three languages satisfies. The candidate doesn't need all three.\n\n**2. Check the candidate against the options**\n- DOC_candidate_python: *\"Languages: Python, SQL, Bash.\"*\n\n| Option | Candidate has it? |\n|--------|-------------------|\n| Python | \u2705 Yes |\n| Go     | \u274c No |\n| Rust   | \u274c No |\n\n**3. Evaluate**\n- At least one option is met (Python), so the requirement is fully satisfied.\n- **1 of 1 requirement met = 100%.**\n\n## Why not 33%?\nCounting 1 of 3 languages (\u224833%) would treat the list as \"Python, Go, **and** Rust.\" The requirement uses \"or,\" so the missing Go and Rust don't count against the candidate.\n\nSQL and Bash don't affect the score because they aren't part of this requirement.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}
