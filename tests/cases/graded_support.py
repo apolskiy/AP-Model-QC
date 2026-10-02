@@ -54,6 +54,32 @@ def repository_root() -> Path:
 
 
 @lru_cache(maxsize=1)
+@lru_cache(maxsize=1)
+def shipped_corpus() -> tuple[tuple[Any, ...], tuple[Any, ...]]:
+    """Return every shipped task and rule set, loaded once.
+
+    **The one place the corpus files are walked.** Three callers had their own
+    copy of this loop until 2026-10-01: this module's :func:`shipped_cases`, and
+    a fixture in each of two unit modules. Pylint's duplication gate caught the
+    third as it was written.
+
+    **Tuples rather than lists, because the result is cached.** A caller that
+    appended to a shared list would change what every later caller sees, and the
+    callers here are tests.
+
+    Returns:
+        tuple: Every task, then every rule set.
+    """
+    root = repository_root()
+    tasks: list[Any] = []
+    rules: list[Any] = []
+    for source in sorted((root / "data" / "tasks").glob("*.yaml")):
+        tasks.extend(load_tasks_from_yaml(source))
+    for source in sorted((root / "data" / "rules").glob("*.yaml")):
+        rules.extend(load_rule_sets_from_yaml(source))
+    return tuple(tasks), tuple(rules)
+
+
 def shipped_cases() -> dict[str, Any]:
     """Return every evaluation case the shipped corpus defines.
 
@@ -64,14 +90,11 @@ def shipped_cases() -> dict[str, Any]:
     Returns:
         dict[str, Any]: Case identifier to :class:`EvaluationCase`.
     """
-    root = repository_root()
-    tasks: list[Any] = []
-    rules: list[Any] = []
-    for source in sorted((root / "data" / "tasks").glob("*.yaml")):
-        tasks.extend(load_tasks_from_yaml(source))
-    for source in sorted((root / "data" / "rules").glob("*.yaml")):
-        rules.extend(load_rule_sets_from_yaml(source))
-    return {case.case_id: case for case in build_evaluation_cases(tasks, rules)}
+    tasks, rules = shipped_corpus()
+    return {
+        case.case_id: case
+        for case in build_evaluation_cases(list(tasks), list(rules))
+    }
 
 
 

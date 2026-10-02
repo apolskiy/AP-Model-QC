@@ -116,6 +116,7 @@ requirements exist, and that is exactly what `10448` checks.
 | `MQC_REQ_CAS_COR_0016` | Every authored rubric anchor carries an exemplar, so calibration can measure judge drift against a known intended level |
 | `MQC_REQ_CAS_COR_0017` | A level 5 exemplar passes the assertions of the rule it belongs to, since a case cannot award a top score through a failed gate |
 | `MQC_REQ_CAS_COR_0018` | The code comprehension task file is reproducible from its shipped generator, so a hand edit to a generated file is reported |
+| `MQC_REQ_CAS_COR_0020` | A recorded response that withheld content states the provider's own reason for withholding it, so a refusal is not read as a model failure |
 | `MQC_REQ_CAS_COR_0019` | Every pair a graded case names is one the corpus builds, so a task and rule that exist separately and were never joined is reported without dispatching anything |
 
 
@@ -562,8 +563,9 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `10438` | N | `a_spending_workflow_that_skips_the_green_gate_is_reported` |
 | `10461` | N | `a_task_and_rule_pair_bound_by_two_graded_cases_is_reported` |
 | `10462` | N | `an_assertion_sensitive_to_trailing_whitespace_is_reported` |
+| `10463` | N | `a_recorded_refusal_without_a_stated_reason_is_reported` |
 
-**Inventory: 23 cases, 17 negative, 6 positive, 0 boundary.**
+**Inventory: 24 cases, 18 negative, 6 positive, 0 boundary.**
 
 The `CAS` block also carries `10406` through `10422`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set
