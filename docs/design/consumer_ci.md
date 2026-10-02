@@ -532,10 +532,14 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `10459` | N | `the_candidate_engine_reaches_the_plan_the_channel_uses` |
 | `10460` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
 | `10469` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
+| `10472` | P | `the_tool_writes_what_reconciling_decided` |
+| `10473` | P | `one_dispatch_session_serves_a_whole_run` |
+| `10474` | P | `the_session_records_the_models_it_served` |
+| `10475` | N | `the_tool_refuses_a_date_it_cannot_parse` |
 | `10470` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `10471` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 42 cases, 27 negative, 8 positive, 4 boundary.**
+**Inventory: 46 cases, 28 negative, 11 positive, 4 boundary.**
 
 ### 4A. The harness is a dependency, not the directory next door
 
@@ -703,6 +707,104 @@ override sets the count the run begins with and
 `cmn.observations.further_observations` decides what a disagreement adds. An
 override that suppressed escalation would make a named count quietly mean
 something different from a configured one.
+
+### 4.14 Confirming a quarantine entry, which is the only thing that can
+
+Added 2026-10-02. Harness `cmn_verdict_and_cli.md` sections 4.6.5 and 4.6.10
+specify the split: the harness decides, this repository runs and writes.
+
+**The entries live here**, at `config/quarantine/<engine>.yaml`. A quarantine
+entry can only be about a graded case, and the harness holds none, so the data
+is this repository's and the harness ships none of it.
+
+`tools/quarantine.py` re-observes every case its engine's file names, asks
+`cmn.quarantine.reconcile` what each entry becomes, and writes the file back.
+
+| Observed | Action |
+|---|---|
+| Every observation passed | The entry is dropped |
+| Any observation failed | `quarantined_on` and `observed_model` are stamped with today's run |
+| Nothing observed | The entry is kept and reported as undecided |
+
+**An entry can outlive its case.** A renamed or deleted case leaves an entry
+naming a pair the corpus no longer defines, and that entry is **unobservable
+rather than passing**: dropping it would be deciding on no evidence, and raising
+would let one stale entry block every other entry in the file. It reports and
+falls through to undecided, which is the same outcome as a case nobody ran,
+because it is the same situation.
+
+**It re-observes under the escalation policy, not once.** Three observations,
+with two more on a single disagreement, per harness section 4.9.2. Dropping an
+entry on one green observation would un-quarantine a flaky case on its lucky
+run, which is exactly the reading the repeats exist to prevent.
+
+**It spends money, and that is the point.** "Does this still fail?" is a
+question about the current model, so the useful run is live. It therefore takes
+`--mode` and `--max-spend` like any spending surface, and a replay confirms
+only that the recorded fixtures still fail, which is a different question worth
+asking separately.
+
+**It writes by default and `--dry-run` previews.** Writing is the job; the
+review happens on the diff, like any other configuration change. The tool
+prints every action whichever mode it is in, so the change is legible before
+the file is read.
+
+**It never commits.** The operator reviews the diff and commits, which is the
+project's standing rule and also the reason this is a tool rather than a step
+in a gate: a gate that rewrote tracked configuration would race between the
+platform and band legs that run in parallel.
+
+### 4.15 The session did not survive the run, and the ceiling stopped nothing
+
+Found 2026-10-02 while implementing `tools/quarantine.py`, which passes a spend
+ceiling and would have been governed by none.
+
+**`dispatch_session` built a fresh session on every observation.** It carries
+no cache, and `observe` calls it per dispatch, so every piece of run-level
+state it holds was discarded between observations:
+
+| State | Intended | Actual before this |
+|---|---|---|
+| `spent` against `max_spend` | Accumulates until the ceiling refuses | **Reset to 0.0 each observation**, so the ceiling could never be reached |
+| `last_request_at` | Spaces requests at the roster's `spacing_sec` | Reset, so the free-tier spacing was never applied between observations |
+| `consecutive_failures` | Opens the circuit breaker | Reset, so the breaker could not open |
+
+**`_channel`'s own docstring asserts the opposite.** It explains its cache by
+saying it is "the same reason `DispatchSession` outlives one dispatch", and the
+session did not outlive one dispatch. A document claiming a property the code
+lacks is worse than silence, because a reader stops looking: that is the rule
+`testing-standards.md` states about design, found here in a docstring.
+
+**This is the first instance of the recurring shape, reopened.** Harness
+`cmn_verdict_and_cli.md` section 7.1.0.1 records `--max-spend` as the original
+case of a flag that reached nothing, and `MQC_CAS_UNI_10467` closed it by
+asserting the flag reaches the session's ceiling. **It does, and that was half
+of a two-part claim**: a ceiling on a session rebuilt per observation is still
+a ceiling that stops nothing. `10467` is correct and was never sufficient.
+
+| Established by `10467` | Not established by anything |
+|---|---|
+| `--max-spend` reaches `DispatchSession.max_spend` | That the session holding it survives more than one dispatch |
+
+**Cached on what defines a session**, the engine and the ceiling, in the same
+shape `_channel` already uses. Keying on the configuration object would cache
+on identity and tie the lifetime to pytest's internals rather than to the two
+values that actually determine the session.
+
+### 4.15.1 The session now says which models it served
+
+`reconcile` stamps the model a re-observation ran against, and nothing could
+report it: the resolved model reaches `DispatchSession.record_spend` and was
+used for pricing and then dropped, while `EvaluationResult` never carried it.
+
+**The session records it, because the session is already the run's state.** It
+keeps `unpriced` for exactly this kind of question, so `served` sits beside it
+and answers "what did this run actually run against" for any caller.
+
+**One model or none.** A caller reading `served` and finding two is looking at a
+mixed corpus, which is the same condition `mixed_model_engines` reports from
+observations, and `reconcile` treats an empty model as the window alone
+applying rather than guessing between them.
 
 ## 5. Governance Parity With The Harness
 

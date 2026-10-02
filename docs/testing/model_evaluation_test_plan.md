@@ -93,6 +93,9 @@ requirements exist, and that is exactly what `10448` checks.
 | `MQC_REQ_CAS_CI_0021` | The case, requirement, graded-case, corpus and task figures stated in README.md are recomputed from the repository, so the front page cannot describe work that is absent or omit work that exists | consumer_ci.md section 4.11 |
 | `MQC_REQ_CAS_CI_0022` | A harness gate that has not concluded is waited for within a bounded budget rather than refused, while a red conclusion, an absent run and an exhausted wait are each refused at once | consumer_ci.md section 3.11 |
 | `MQC_REQ_CAS_CI_0023` | Every workflow invocation emits both JUnit XML and Allure raw results, so a debug or graded run produces the reporting evidence the downstream artifact contract requires and not half of it | consumer_ci.md section 4.12 |
+| `MQC_REQ_CAS_CI_0024` | The quarantine entries this repository owns are re-observed under the escalation policy and written back, so an entry is confirmed by measurement rather than by having been left alone | consumer_ci.md section 4.14 |
+| `MQC_REQ_CAS_CI_0025` | One dispatch session serves a whole run, so the spend ceiling accumulates toward refusal, request spacing is applied between observations and the circuit breaker can open | consumer_ci.md section 4.15 |
+| `MQC_REQ_CAS_CI_0026` | The dispatch session records every model a response reported, so a caller can say what a run ran against without re-deriving it from observations | consumer_ci.md section 4.15.1 |
 
 
 ### 2.5.2 `COR`, The corpus: what the shipped data must satisfy

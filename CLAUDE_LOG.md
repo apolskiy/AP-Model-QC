@@ -1974,3 +1974,56 @@ means.
 
 71 preconditions passing, graded replay 66 passed with the 2 known
 `gemini-3.8-flash` findings and 1 skip, pylint 10.00/10 exit 0.
+
+## 2026-10-02: tools/quarantine.py, and one session for the run
+
+### The tool
+
+`tools/quarantine.py` re-observes every case its engine's quarantine file names,
+asks the harness's `reconcile` what each entry becomes, and writes the file
+back. Entries live here, at `config/quarantine/<engine>.yaml`, because a
+quarantine entry can only be about a graded case and the harness holds none.
+
+| Observed | Action |
+|---|---|
+| Every observation passed | The entry is dropped |
+| Any observation failed | `quarantined_on` and `observed_model` are stamped |
+| Nothing observed | Kept and reported undecided, which is the exit code |
+
+**It re-observes under the escalation policy**, three with two more on a single
+disagreement, because dropping an entry on one green observation would
+un-quarantine a flaky case on its lucky run.
+
+**An entry can outlive its case.** A renamed or deleted case leaves an entry
+naming a pair the corpus no longer defines, and the first version **raised a
+`KeyError` and stopped**, so one stale entry blocked every other. It reports and
+falls through to undecided, which is the same situation as a case nobody ran.
+`10472` found this, not a reading of the code.
+
+### The session did not survive the run
+
+`dispatch_session` carried no cache and `observe` calls it per dispatch, so
+every piece of run-level state was discarded between observations:
+
+| State | Actual before this |
+|---|---|
+| `spent` against `--max-spend` | **Reset to 0.0 each observation**, so the ceiling could never refuse |
+| `last_request_at` | Reset, so the roster's spacing was never applied between observations |
+| `consecutive_failures` | Reset, so the circuit breaker could not open |
+
+**`MQC_CAS_UNI_10467` closed the `--max-spend` gap by asserting the flag
+reaches the session's ceiling. It does, and that was half of a two-part
+claim**: a ceiling on a session rebuilt per observation stops nothing. Cached on
+the engine and the ceiling, which are what define a session, in the shape
+`_channel` already used.
+
+Also corrected: `shipped_corpus` carried a doubled `@lru_cache`, and
+`_channel`'s docstring claimed the session outlived one dispatch while it did
+not.
+
+### State
+
+75 preconditions passing, graded replay 66 passed with the 2 known
+`gemini-3.8-flash` findings and 1 skip, pylint 10.00/10 exit 0. Verified end to
+end: the tool re-stamped a still-failing case with `2026-10-02` and
+`gemini-3.8-flash`, keeping its ticket.

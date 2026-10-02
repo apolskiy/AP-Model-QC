@@ -56,7 +56,6 @@ def repository_root() -> Path:
 
 
 @lru_cache(maxsize=1)
-@lru_cache(maxsize=1)
 def shipped_corpus() -> tuple[tuple[Any, ...], tuple[Any, ...]]:
     """Return every shipped task and rule set, loaded once.
 
@@ -178,7 +177,31 @@ def dispatch_plan(config: Any) -> DispatchPlan:
 
 
 def dispatch_session(config: Any) -> DispatchSession:
-    """Return run-level pacing state and spending state, from the roster and flags.
+    """Return the run's one session, built on first use.
+
+    Delegates to a cached builder keyed on the engine and the ceiling, which
+    are what define a session. **One session per run is the whole point**: it
+    holds the spend accumulated toward ``--max-spend``, the time the roster's
+    spacing is measured from, and the consecutive failures that open the
+    circuit breaker, and a session rebuilt per observation discards all three.
+
+    Design: ``consumer_ci.md`` section 4.15.
+
+    Args:
+        config (Any): pytest's configuration.
+
+    Returns:
+        DispatchSession: The run's session.
+    """
+    return _session(
+        str(config.getoption("--engine") or ""),
+        float(config.getoption("--max-spend") or 0.0),
+    )
+
+
+@lru_cache(maxsize=4)
+def _session(engine: str, ceiling: float) -> DispatchSession:
+    """Build one session for an engine and ceiling, from the roster and flags.
 
     **Spacing is per engine because free-tier ceilings differ.** A session built
     without it would issue every request at once and be rate limited into a run
@@ -201,11 +224,9 @@ def dispatch_session(config: Any) -> DispatchSession:
         is loaded only where a ceiling is set**, so a replay gate neither reads
         the file nor prices anything it did not pay for.
     """
-    engine = config.getoption("--engine")
     roster = engine_roster()
     spacing = roster[engine].spacing_sec if engine in roster else 0.0
 
-    ceiling = float(config.getoption("--max-spend") or 0.0)
     if ceiling <= 0:
         return DispatchSession(spacing_sec=spacing)
 
@@ -271,7 +292,10 @@ def _channel(
 
     **Cached because pacing is per channel.** A fresh channel per case would
     reset `last_request_at` and defeat the spacing the free tier requires,
-    which is the same reason `DispatchSession` outlives one dispatch.
+    which is the same reason `dispatch_session` is cached. **That claim was
+    false when written**: the session was rebuilt per observation until
+    2026-10-02, so this docstring asserted a property the code lacked
+    (`consumer_ci.md` section 4.15).
 
     Args:
         engine (str): The judge engine, empty for the configured primary.

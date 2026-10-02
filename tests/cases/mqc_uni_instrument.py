@@ -26,6 +26,7 @@ harness ``framework-rules.md`` section 3.3.
 import ast
 import json
 import re
+from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Final
@@ -34,16 +35,27 @@ import allure
 import pytest
 
 from cmn.observations import further_observations
+from cmn.config import load_quarantine_for
 from cmn.vectors import is_registered_vector, match_vectors
 from evaluation.assertions import run_assertions
 from ingestion.schemas import GoldenRuleSet, TaskDataSet
+from execution.dispatch import DispatchOutcome, DispatchSession
+from execution.normalize import NormalizedResponse
+from tools.quarantine import main as quarantine_tool, parse_as_of
 from tests.cases.graded_support import (
+    dispatch_session,
     judge_binding,
     observation_count,
     shipped_corpus,
 )
 
 pytestmark = pytest.mark.unit
+
+
+# A SHIPPED CASE WITH RECORDED FIXTURES, so the tool's case replays rather than
+# dispatching. Named here because what it relies on is that the pair exists and
+# replays green, not anything about its subject.
+_REPLAYABLE_CASE = "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request"
 
 # THIS REPOSITORY HAS TWO INVENTORY SHAPES. The precondition table carries an
 # identifier, a category and a behaviour; the graded tables carry a priority and
@@ -671,3 +683,254 @@ class TestMQCNamedInstrument:
         # count meaning the same as a configured one.
         assert further_observations([True, False, True]) == 2
         assert further_observations([True, True, True]) == 0
+
+
+def _outcome(model: str, mode: str = "live") -> Any:
+    """Build one dispatch outcome reporting a resolved model.
+
+    Args:
+        model (str): What the response reported serving.
+        mode (str): ``live`` or ``replay``.
+
+    Returns:
+        Any: The :class:`DispatchOutcome`.
+    """
+    return DispatchOutcome(
+        case_id="MQC_TASK_a::MQC_RULE_r", engine="gemini", mode=mode,
+        duration_ms=12, duration_kind="measured", attempts=1,
+        rate_limit_encounters=0,
+        response=NormalizedResponse(
+            case_id="MQC_TASK_a::MQC_RULE_r", engine="gemini", mode=mode,
+            requested_model=model, resolved_model=model, text="answer",
+            output_tokens=7, duration_ms=12, finish_reason="stop",
+            raw_reference="",
+        ),
+    )
+
+class _FakeDispatchConfig:
+    """The flags ``dispatch_session`` reads, with the rest at their defaults."""
+
+    def __init__(self, engine: str = "gemini", ceiling: float = 0.0) -> None:
+        """Hold the two values that define a session.
+
+        Args:
+            engine (str): Which engine paces the run.
+            ceiling (float): The spend ceiling, zero for none.
+
+        Returns:
+            None
+        """
+        self._values: dict[str, Any] = {
+            "--engine": engine,
+            "--mode": "replay",
+            "--max-spend": ceiling,
+            "--keep-connection": False,
+            "--fill-gaps": False,
+        }
+
+    def getoption(self, name: str, default: Any = None) -> Any:
+        """Return a parsed value, as pytest would.
+
+        Args:
+            name (str): The option's flag name.
+            default (Any): What to return when it is unset.
+
+        Returns:
+            Any: The value.
+        """
+        return self._values.get(name, default)
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Consumer CI")
+class TestMQCRunLevelSession:
+    """The session is the run's state, so it has to be the run's session."""
+
+    @allure.story("One session serves the run")
+    def MQC_CAS_UNI_10473_one_dispatch_session_serves_a_whole_run(self) -> None:
+        """Every observation in a run dispatches through one session.
+
+        The session holds the state that is only meaningful across a run: the
+        spend accumulated toward ``--max-spend``, the time of the last request
+        the roster's spacing is measured from, and the consecutive failures
+        that open the circuit breaker. A session rebuilt per observation
+        discards all three, and a ceiling on it stops nothing.
+
+        **A different engine or ceiling is a different session**, because those
+        are what define one.
+
+        Design: ``consumer_ci.md`` section 4.15.
+
+        Returns:
+            None
+        """
+        config = _FakeDispatchConfig(ceiling=5.0)
+        first = dispatch_session(config)
+
+        assert dispatch_session(config) is first, (
+            "a second observation built a second session, so the spend ceiling "
+            "restarts at zero and can never refuse a run"
+        )
+
+        # THE SPEND ACCUMULATES, which is the whole point of the ceiling.
+        first.spent = 4.99
+        assert dispatch_session(config).spent == 4.99
+
+        # AND SO DOES THE PACING STATE the spacing is measured from.
+        first.last_request_at = 1234.5
+        assert dispatch_session(config).last_request_at == 1234.5
+
+        # A DIFFERENT CEILING IS A DIFFERENT SESSION, so one run's budget does
+        # not silently govern another's.
+        other = dispatch_session(_FakeDispatchConfig(ceiling=1.0))
+        assert other is not first
+        assert other.max_spend == 1.0
+
+        # AND SO IS A DIFFERENT ENGINE, which paces on its own roster entry.
+        assert dispatch_session(_FakeDispatchConfig(engine="openai")) is not first
+
+    @allure.story("The session reports what it served")
+    def MQC_CAS_UNI_10474_the_session_records_the_models_it_served(self) -> None:
+        """The session records every model a response reported.
+
+        ``reconcile`` stamps a quarantine entry with the model its
+        re-observation ran against, and the resolved model reaches
+        ``record_spend`` for pricing. Recording it there answers what the run
+        ran against without a caller re-deriving it.
+
+        **Two entries mean a mixed corpus**, the condition
+        ``mixed_model_engines`` reports from the other direction.
+
+        Design: ``consumer_ci.md`` section 4.15.1.
+
+        Returns:
+            None
+        """
+        session = DispatchSession()
+        assert not session.served
+
+        session.note_outcome(_outcome("gemini-3.8-flash"))
+        session.note_outcome(_outcome("gemini-3.8-flash"))
+        assert session.served == {"gemini-3.8-flash"}
+
+        # A MIXED RUN IS VISIBLE, and an unnamed model is not recorded as one.
+        session.note_outcome(_outcome("gemini-4.0-pro"))
+        session.note_outcome(_outcome(""))
+        assert session.served == {"gemini-3.8-flash", "gemini-4.0-pro"}
+
+        # A REPLAY IS INCLUDED, NOT EXEMPT, which is the whole defect this
+        # guards: recording on the spending hook left a replay reporting no
+        # model while the fixture it replayed names one.
+        replaying = DispatchSession()
+        replaying.note_outcome(_outcome("gemini-3.8-flash", mode="replay"))
+
+        assert replaying.served == {"gemini-3.8-flash"}, (
+            "a replayed outcome reported no model, so the quarantine tool "
+            "stamps an empty model from a replay whose fixture names one"
+        )
+
+        # AND AN OUTCOME CARRYING NO RESPONSE records nothing rather than
+        # raising: a skipped case has no model to report.
+        skipped = DispatchSession()
+        skipped.note_outcome(
+            DispatchOutcome(
+                case_id="MQC_TASK_a::MQC_RULE_r", engine="gemini", mode="replay",
+                duration_ms=0, duration_kind="measured", attempts=0,
+                rate_limit_encounters=0, taxonomy_code="QC_HARNESS_FIXTURE_MISSING",
+            )
+        )
+        assert not skipped.served
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Consumer CI")
+class TestMQCQuarantineTool:
+    """Re-observing the quarantined cases, and what gets written back."""
+
+    @allure.story("The tool writes what reconciling decided")
+    def MQC_CAS_UNI_10472_the_tool_writes_what_reconciling_decided(
+        self, tmp_path: Path
+    ) -> None:
+        """The tool re-observes each entry's case and writes the result back.
+
+        A case that replays green loses its entry; one that was never
+        observable is kept and reported undecided, which is the exit code.
+        A dry run decides the same thing and writes nothing.
+
+        **Driven in replay**, so the case contacts no provider: what is under
+        test is the tool's reading, deciding and writing, not whether a model
+        still fails. The live question is the operator's.
+
+        Design: ``consumer_ci.md`` section 4.14.
+
+        Args:
+            tmp_path (Path): Standing in for ``config/``.
+
+        Returns:
+            None
+        """
+        folder = tmp_path / "quarantine"
+        folder.mkdir()
+        target = folder / "gemini.yaml"
+        target.write_text(
+            "quarantine:\n"
+            f"  - case_id: {_REPLAYABLE_CASE}\n"
+            "    reason: flaky under load\n"
+            "    quarantined_on: 2026-09-01\n"
+            "    observed_model: stale-model\n"
+            "    ticket: MQC-7\n"
+            "  - case_id: MQC_TASK_absent::MQC_RULE_absent\n"
+            "    reason: never reproduced since\n"
+            "    quarantined_on: 2026-09-01\n"
+            "    observed_model: stale-model\n",
+            encoding="utf-8",
+        )
+        before = target.read_text(encoding="utf-8")
+
+        arguments = [
+            "--engine", "gemini", "--mode", "replay",
+            "--as-of", "2026-10-02", "--config-dir", str(tmp_path),
+        ]
+
+        # A DRY RUN DECIDES AND WRITES NOTHING, so the file is byte-identical.
+        assert quarantine_tool(arguments + ["--dry-run"]) == 1
+        assert target.read_text(encoding="utf-8") == before
+
+        # AND THE REAL RUN WRITES. Exit 1 because the absent case produced no
+        # observations, so its entry could not be decided.
+        assert quarantine_tool(arguments) == 1
+
+        written = load_quarantine_for(tmp_path, "gemini")
+        remaining = {entry.case_id: entry for entry in written}
+
+        assert _REPLAYABLE_CASE not in remaining, (
+            "a case that replayed green kept its entry, so a finding that no "
+            "longer reproduces goes on excluding"
+        )
+
+        # THE UNDECIDED ENTRY SURVIVES UNCHANGED, because a run that did not
+        # ask must not extend an entry's window.
+        undecided = remaining["MQC_TASK_absent::MQC_RULE_absent"]
+        assert undecided.quarantined_on == date(2026, 9, 1)
+        assert undecided.observed_model == "stale-model"
+
+        # AND WHAT IT WROTE IS READABLE BY THE LOADER THAT WROTE IT, header and
+        # all: a file this tool cannot read back is a file nobody can.
+        assert "SPDX-License-Identifier: MIT" in target.read_text(encoding="utf-8")
+
+    @allure.story("A stamped date is never guessed")
+    def MQC_CAS_UNI_10475_the_tool_refuses_a_date_it_cannot_parse(self) -> None:
+        """A date that is not ISO is refused rather than defaulted to today.
+
+        A stamped date decides a 21-day window, so a silent default would make
+        the stamp depend on when the tool happened to run.
+
+        Design: ``consumer_ci.md`` section 4.14.
+
+        Returns:
+            None
+        """
+        with pytest.raises(ValueError, match="QC_HARNESS_PARSER_ERROR"):
+            parse_as_of("next Tuesday")
+
+        assert parse_as_of("2026-10-02") == date(2026, 10, 2)
