@@ -25,6 +25,7 @@ from typing import Any, Optional
 import pytest
 
 from cmn.observations import further_observations
+from cmn.pytest_support import corpus_selection
 from cmn.config import (
     load_engines,
     packaged_config_root,
@@ -38,7 +39,7 @@ from evaluation.pipeline import ObservationContext, evaluate_observation
 from execution.dispatch import DispatchPlan, DispatchSession, dispatch_case
 from execution.judge_channel import JudgementPlan, judge_channel_from_roster
 from ingestion.cases import build_evaluation_cases
-from ingestion.loaders import load_rule_sets_from_yaml, load_tasks_from_yaml
+from ingestion.loaders import load_corpus
 
 # Recorded responses live beside the corpus they answer, in the repository that
 # owns the data. The harness owns none of it.
@@ -59,10 +60,11 @@ def repository_root() -> Path:
 def shipped_corpus() -> tuple[tuple[Any, ...], tuple[Any, ...]]:
     """Return every shipped task and rule set, loaded once.
 
-    **The one place the corpus files are walked.** Three callers had their own
-    copy of this loop until 2026-10-01: this module's :func:`shipped_cases`, and
-    a fixture in each of two unit modules. Pylint's duplication gate caught the
-    third as it was written.
+    **Through the harness's `load_corpus`**, which chooses each file's reader
+    from its suffix, so a CSV task file loads as readily as a YAML one. The
+    corpus is the one `--golden-rules` names, falling back to this repository's
+    own `data/`: the harness owns no corpus and cannot know what the default is
+    (harness `tier1_ingestion.md` sections 4.5 and 4.6).
 
     **Tuples rather than lists, because the result is cached.** A caller that
     appended to a shared list would change what every later caller sees, and the
@@ -71,13 +73,11 @@ def shipped_corpus() -> tuple[tuple[Any, ...], tuple[Any, ...]]:
     Returns:
         tuple: Every task, then every rule set.
     """
-    root = repository_root()
-    tasks: list[Any] = []
-    rules: list[Any] = []
-    for source in sorted((root / "data" / "tasks").glob("*.yaml")):
-        tasks.extend(load_tasks_from_yaml(source))
-    for source in sorted((root / "data" / "rules").glob("*.yaml")):
-        rules.extend(load_rule_sets_from_yaml(source))
+    named, policy = corpus_selection()
+    root = named or (repository_root() / "data")
+    tasks, rules = load_corpus(
+        root, **({"unknown_columns": policy} if policy else {})
+    )
     return tuple(tasks), tuple(rules)
 
 
