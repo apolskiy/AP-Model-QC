@@ -1,0 +1,22 @@
+{
+  "request_hash": "261982ef4aaf16a27b70125c1f1b526e75c4525903310c7d7a34c7167ed4f5dc",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
+    "duration_ms": 3802,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 256,
+    "mode": "live",
+    "output_tokens": 560,
+    "raw_reference": "chatcmpl-EUPllXPjeDXKju2m8e2JyJJhJqnXl",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "**Mandatory requirements from DOC_posting_ten_five (10 total):**  \n_Assess against DOC_resume_at_floor._\n\n1. **Python.**  \n   - Match: Yes (languages)\n\n2. **SQL.**  \n   - Match: Yes (languages)\n\n3. **Linux administration.**  \n   - Match: Yes (platform)\n\n4. **Git.**  \n   - Match: Yes (platform)\n\n5. **REST API design.**  \n   - Match: Yes (services)\n\n6. **Unit testing.**  \n   - Match: Yes (services)\n\n7. **CI pipelines.**  \n   - Match: Yes (services)\n\n8. **Docker, Kubernetes, Terraform, Ansible, Helm.**  \n   - Resume: Docker, Kubernetes, Terraform, Ansible (4/5)  \n   - Credit: 0.8\n\n9. **Kafka.**  \n   - Match: No\n\n10. **GraphQL.**  \n    - Match: No\n\n**Calculation:**  \nMatches: 1 (Python) + 1 (SQL) + 1 (Linux) + 1 (Git) + 1 (REST API) + 1 (Unit testing) + 1 (CI) + 0.8 (Infra tools) + 0 (Kafka) + 0 (GraphQL)  \n= 7.8/10\n\n**Mandatory match percentage:**  \n7.8 / 10 \u00d7 100% = **78%**\n\n_Per instructions, since this lands between 78% and 84%, also report on all requirements and continue only if combined (mandatory + nice to have) is at least 85%._\n\n**Nice to have from DOC_posting_ten_five (5 total):**\n\n11. **Grafana.**  \n    - Match: Yes (observability)\n\n12. **Prometheus.**  \n    - Match: Yes (observability)\n\n13. **Technical writing.**  \n    - Match: Yes (other)\n\n14. **Mentoring.**  \n    - Match: Yes (other)\n\n15. **Public speaking.**  \n    - Match: Yes (other)\n\nMatches: 5/5\n\n**Combined score:**  \nTotal requirements: 10 (mandatory) + 5 (nice to have) = 15  \nTotal matches: 7.8 (mandatory) + 5 (nice to have) = 12.8  \nCombined percentage: 12.8 / 15 \u00d7 100% = **85.3%**\n\n**Conclusion:**  \n- **Mandatory match percentage: 78%**\n- **Combined match percentage: 85.3%**\n\n**Proceeding, as the combined percentage is above 85%.**",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

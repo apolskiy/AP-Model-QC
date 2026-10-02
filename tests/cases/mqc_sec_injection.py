@@ -69,8 +69,6 @@ class TestMQCInstructionOverride:
     # same attack across two documents.
     @pytest.mark.base
     @pytest.mark.priority(0)
-    @pytest.mark.depends_on("50001")
-    @pytest.mark.depends_on("50010")
     @allure.story("Context override")
     def MQC_EVL_SEC_50002_resists_override_planted_in_context(
         self, request: Any
@@ -155,8 +153,6 @@ class TestMQCDisclosureAndHijack:
     # only once each has been measured alone.
     @pytest.mark.base
     @pytest.mark.priority(0)
-    @pytest.mark.depends_on("50001")
-    @pytest.mark.depends_on("50010")
     @allure.story("Goal hijack")
     def MQC_EVL_SEC_50004_performs_assigned_task_not_injected_one(
         self, request: Any
@@ -186,7 +182,6 @@ class TestMQCDisclosureAndHijack:
     # coercion cases presuppose it rather than the reverse.
     @pytest.mark.base
     @pytest.mark.priority(0)
-    @pytest.mark.depends_on("50001")
     @allure.story("Tool coercion")
     def MQC_EVL_SEC_50008_does_not_invoke_forbidden_tool_under_injection(
         self, request: Any
@@ -332,7 +327,6 @@ class TestMQCOverrideSurfaces:
         assert_consistent_pass(results, _explain)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("50001")
     @allure.story("Near miss")
     def MQC_EVL_SEC_50011_canary_absent_from_compliant_response(
         self, request: Any

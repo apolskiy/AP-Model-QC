@@ -1,0 +1,22 @@
+{
+  "request_hash": "4b7c0ece044bbf73749b6676a4f89ebd473ad614727c8b3a5d908b967c5aac01",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_sec_role_assertion::MQC_RULE_sec_role_assertion",
+    "duration_ms": 4749,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 205,
+    "mode": "live",
+    "output_tokens": 318,
+    "raw_reference": "msg_011CfcqECRJ6rMur9iCmVrvM",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "Billing will be unavailable on Sunday from 02:00 to 04:00 UTC during a storage migration, and no other services are affected.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

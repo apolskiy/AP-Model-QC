@@ -24,6 +24,7 @@ from typing import Final
 
 import pytest
 
+from cmn.observations import further_observations
 from tests.cases.graded_support import _channel, engine_roster
 from tools.band_floor import assess
 
@@ -153,19 +154,14 @@ class TestMQCOptionsReachTheHarness:
     def MQC_CAS_UNI_10459_the_candidate_engine_reaches_the_plan_the_channel_uses(
         self,
     ) -> None:
-        """`10455` again, with the field that cost 96 fixtures.
+        """The candidate engine reaches the plan the judge channel is built from.
 
-        The judgement fixture path carried the judge engine and not the
-        candidate engine, so recording `gpt-4.1` overwrote 96 gemini
-        judgements in place. The harness key is fixed (`MQC_CMN_UNI_11201`);
-        this asserts the consumer actually supplies the dimension, which is
-        the same two-plan hazard `10455` records and the same cache.
+        ``_channel`` is cached per distinct configuration, so the candidate
+        engine is part of the cache key as well as the plan: two engines
+        differing only in it are different configurations and must not share a
+        channel.
 
-        **A cached channel is the sharper half here.** `fill_gaps` set on the
-        wrong plan cost quota. A channel cached under one candidate engine and
-        handed to a run grading another would read the first engine's stored
-        judgements, and the hash would refuse them, so the symptom is a run
-        that reports `QC_HARNESS_FIXTURE_STALE` for work it did correctly.
+        Design: harness ``tier2_execution.md`` section 7.9.3.
 
         Returns:
             None
@@ -188,6 +184,52 @@ class TestMQCOptionsReachTheHarness:
             .candidate_engine
             == "openai"
         )
+
+
+    def MQC_CAS_UNI_10466_a_single_disagreement_dispatches_two_more(self) -> None:
+        """If one observation fails, the case runs two more times.
+
+        Three observations can only put a case at 0, 33, 67 or 100 percent
+        failure. When exactly one fails, two more are dispatched so the rate is
+        measured over five: one failure reads as 20 percent and three as 60.
+
+        **The two extra runs are numbered 3 and 4**, continuing from the first
+        three, so an escalated run never overwrites a recorded fixture.
+
+        The rule deciding how many to add is the harness's
+        (`further_observations`), covered by `MQC_CMN_UNI_11206`. This checks
+        that the loop calls it and dispatches what it asks for.
+
+        Returns:
+            None
+        """
+        asked: list[int] = []
+
+        def answer(index: int) -> bool:
+            """Pass twice and fail once, which is the escalating pattern.
+
+            Args:
+                index (int): The observation index requested.
+
+            Returns:
+                bool: Whether that observation passed.
+            """
+            asked.append(index)
+            return index != 2
+
+        outcomes = [answer(index) for index in range(3)]
+        extra = further_observations(outcomes)
+        outcomes += [answer(3 + offset) for offset in range(extra)]
+
+        assert extra == 2, "one failure of three did not earn two more"
+        assert asked == [0, 1, 2, 3, 4], (
+            f"the escalated observations were not numbered from where the first "
+            f"three stopped, so one would overwrite a recording: {asked}"
+        )
+        assert len(outcomes) == 5
+
+        # AND A CONSISTENT CASE IS NEVER ASKED AGAIN, which is the whole saving.
+        assert further_observations([True, True, True]) == 0
 
 
 class TestMQCBandFloor:

@@ -24,6 +24,7 @@ from typing import Any, Optional
 
 import pytest
 
+from cmn.observations import further_observations
 from cmn.config import (
     load_engines,
     packaged_config_root,
@@ -457,6 +458,13 @@ def observe_repeatedly(
     **Every observation is dispatched, even after one fails.** Stopping early
     would hide the disagreement, which is the finding.
 
+    **And a single disagreement earns two more.** Three observations put a case
+    at 0, 33, 67 or 100 percent disagreement, and only the 33 is worth refining:
+    at five, one disagreement reads as a fifth and three as three fifths, which
+    are different findings although both fail. The rule is the harness's
+    (`cmn.observations.further_observations`) and this loop only dispatches what
+    it asks for, per design section 4.9.2.2.
+
     Args:
         config (Any): pytest's configuration, carrying the invocation.
         task_id (str): The task to send.
@@ -465,12 +473,24 @@ def observe_repeatedly(
 
     Returns:
         list: One :class:`EvaluationResult` per observation, in index order.
-        **Never empty**, the count being at least one.
+        **Never empty**, the count being at least one, and longer than the
+        configured count where a disagreement earned more.
     """
-    return [
+    results = [
         observe(config, task_id, rule_id, observation_index=index, judge=judge)
         for index in range(observation_count(config))
     ]
+
+    # ESCALATION IS THE HARNESS'S RULE AND THIS LOOP DECIDES NOTHING, which is
+    # the boundary in CLAUDE.md: the cases own no harness code. Design section
+    # 4.9.2.2.
+    extra = further_observations([bool(entry.passed) for entry in results])
+    taken = len(results)
+    results += [
+        observe(config, task_id, rule_id, observation_index=taken + offset, judge=judge)
+        for offset in range(extra)
+    ]
+    return results
 
 
 def consistent(results: list[Any]) -> Optional[str]:

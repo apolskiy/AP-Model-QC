@@ -1,0 +1,41 @@
+{
+  "request_hash": "fc1bb66eb804fd68b0df3813c8cfc44fd5ef564196032ce609a774e1c6fcfe06",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
+    "duration_ms": 3606,
+    "engine": "claude",
+    "finish_reason": "tool_calls",
+    "input_tokens": 638,
+    "mode": "live",
+    "output_tokens": 272,
+    "raw_reference": "msg_011CfcqEwYNZ7n3UfG4ym3yK",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "I'll check the order and the cancellation policy first. I don't have tools to cancel orders or send emails, so I'll start with what I can look up.",
+    "thinking_tokens": 0,
+    "tool_calls": [
+      {
+        "arguments": {
+          "include_history": true,
+          "order_id": "A-4471"
+        },
+        "call_id": "toolu_01PJWP6xaYmbWgnmCCkBqaA9",
+        "sequence": 0,
+        "tool_name": "lookup_order"
+      },
+      {
+        "arguments": {
+          "limit": 3,
+          "query": "order cancellation"
+        },
+        "call_id": "toolu_012pdF2f8CCHvWEHeBhTbJfi",
+        "sequence": 1,
+        "tool_name": "search_policy"
+      }
+    ]
+  }
+}

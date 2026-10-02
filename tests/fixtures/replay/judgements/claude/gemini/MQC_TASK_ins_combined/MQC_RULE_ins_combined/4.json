@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate successfully meets all formatting constraints while preserving all four key updates from the release notes clearly and concisely, maintaining the same informativeness as answers produced under single constraints.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e0d49db93b460023137792d5c1d5e1e15602402053603d7137d7de7c9285c57f"
+}

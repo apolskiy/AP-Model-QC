@@ -23,17 +23,25 @@ harness ``framework-rules.md`` section 3.3.
 
 import ast
 import json
+import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 import allure
 import pytest
 
 from evaluation.assertions import run_assertions
+from cmn.vectors import is_registered_vector, match_vectors
 from ingestion.schemas import GoldenRuleSet, TaskDataSet
 from tests.cases.graded_support import shipped_corpus
 
 pytestmark = pytest.mark.unit
+
+# A security inventory row, whose fourth cell names the cases it presupposes.
+_INVENTORY_ROW: Final[re.Pattern] = re.compile(r"^\|\s*`(5\d{4})`\s*\|")
+_BACKTICKED_ID: Final[re.Pattern] = re.compile(r"`(\d{5})`")
+_CASE_NUMBER: Final[re.Pattern] = re.compile(r"_(\d{5})_")
+
 
 
 def _repository_root() -> Path:
@@ -43,6 +51,63 @@ def _repository_root() -> Path:
         Path: The directory holding ``data/``.
     """
     return Path(__file__).resolve().parents[2]
+
+
+def _designed_foundations(plan: Path) -> dict[str, set[str]]:
+    """Return what each security inventory row says a case presupposes.
+
+    Args:
+        plan (Path): The test plan carrying the inventory table.
+
+    Returns:
+        dict: Case number to the case numbers its row names.
+    """
+    designed: dict[str, set[str]] = {}
+    for line in plan.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if _INVENTORY_ROW.match(stripped) is None:
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if len(cells) < 4:
+            continue
+        number = _BACKTICKED_ID.search(cells[0])
+        if number is None:
+            continue
+        designed[number.group(1)] = {
+            found.group(1) for found in _BACKTICKED_ID.finditer(cells[3])
+        }
+    return designed
+
+
+def _declared_foundations(folder: Path) -> dict[str, set[str]]:
+    """Return what each security case declares through ``depends_on``.
+
+    **From the parsed syntax, never the source text.** A ``depends_on`` inside a
+    docstring is prose, and this repository quotes case identifiers constantly.
+
+    Args:
+        folder (Path): The directory holding the case modules.
+
+    Returns:
+        dict: Case number to the case numbers it rests on.
+    """
+    declared: dict[str, set[str]] = {}
+    for source in sorted(folder.glob("mqc_sec_*.py")):
+        tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.FunctionDef):
+                continue
+            found = _CASE_NUMBER.search(node.name)
+            if found is None:
+                continue
+            declared[found.group(1)] = {
+                str(getattr(deco.args[0], "value", ""))
+                for deco in node.decorator_list
+                if isinstance(deco, ast.Call)
+                and getattr(deco.func, "attr", "") == "depends_on"
+                and deco.args
+            }
+    return declared
 
 
 @pytest.fixture(name="corpus")
@@ -145,21 +210,14 @@ class TestMQCCasesMeasureTheirOwnClaim:
     def MQC_CAS_UNI_10461_a_task_and_rule_pair_bound_by_two_graded_cases_is_reported(
         self,
     ) -> None:
-        """Four cases, one check, and nothing said so.
+        """No two graded cases bind the same task and rule pair.
 
-        `30003` through `30006` each dispatched `MQC_TASK_ins_quantities` with
-        `MQC_RULE_ins_quantities` and called `assert_consistent_pass`. Identical
-        inputs, identical assertion: **the four were indistinguishable at
-        runtime**, and assertions are conjunctive, so one failing assertion
-        failed all four.
+        Reads the pair each graded case names, from parsed syntax, and reports
+        any pair more than one case binds. Assertions are conjunctive, so cases
+        sharing a pair fail together and a red names the conjunction rather than
+        the claim the case is about.
 
-        A reader opening a red `30005_sentence_begins_with_capital` would have
-        investigated capitalisation. The failing assertion was
-        `A_INS_COMPLETE_SENTENCE`, and capitalisation held on every observation.
-
-        **It also corrupts the band arithmetic.** The pass floor counts cases,
-        so one wrong behaviour spent four of them, and the four sat at P2, P3,
-        P2 and P4, which is three bands reporting one event.
+        Design: ``model_evaluation_test_plan.md`` section 9.3.1.
 
         Returns:
             None
@@ -197,26 +255,17 @@ class TestMQCCasesMeasureTheirOwnClaim:
     def MQC_CAS_UNI_10462_an_assertion_sensitive_to_trailing_whitespace_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
-        """Two trailing spaces turned a complete sentence into a fragment.
+        """No assertion changes its verdict when trailing whitespace is stripped.
 
-        `A_INS_COMPLETE_SENTENCE` matched no bullet ending in anything but
-        terminal punctuation. `gpt-4.1` wrote a bullet ending in a full stop and
-        two spaces, a markdown hard line break, and the pattern matched it:
-        `[ \t]*` took one space and the final class matched the other, because a
-        space is not terminal punctuation.
+        Runs every recorded response through the shipped assertion runner twice,
+        as recorded and with each line right-stripped, and reports any assertion
+        whose result moves. Only responses actually carrying trailing whitespace
+        are examined.
 
-        **It reported `QC_LLM_INSTRUCTION_DRIFT` against a compliant response**,
-        on two of three observations, and was one step from being filed against
-        OpenAI. `gemini-3.8-flash` never emitted a hard line break, so the
-        pattern met this corpus for its whole life without the defect being
-        reachable.
+        Over recorded responses rather than synthetic text, so the input is what
+        a model wrote.
 
-        **Over the recorded responses rather than synthetic text**, because the
-        defect is in what a real model writes and a synthetic example would be
-        written by whoever already knows the answer. Each recorded response is
-        run through the shipped assertion runner twice, as recorded and with
-        trailing whitespace stripped from every line. A verdict that moves means
-        the assertion is measuring formatting.
+        Design: ``model_evaluation_test_plan.md`` section 9.3.2.
 
         Args:
             corpus (tuple): The shipped tasks and rules.
@@ -263,25 +312,17 @@ class TestMQCCasesMeasureTheirOwnClaim:
     def MQC_CAS_UNI_10463_a_recorded_refusal_without_a_stated_reason_is_reported(
         self,
     ) -> None:
-        """Withholding content without saying why reads as a model failure.
+        """Every recorded response that withheld content states a reason.
 
-        Section 9.12 of the test plan passes a case the provider refused and
-        says the distinction is the whole of it: "a refusal is something the
-        provider did, and an empty response is something that failed to
-        happen." It reads `blocked_by`, which is the recorded `block_reason`.
+        Reads each recorded candidate fixture and reports any whose
+        ``finish_reason`` is ``content_filter`` while ``block_reason`` is empty.
+        Section 9.12 passes a case the provider refused and reads
+        ``block_reason``, so a refusal recorded without one is counted as a
+        model failure.
 
-        **Two adapters have now shipped a refusal that did not say so.** A
-        gemini double of the wrong shape reported `MQC_EVL_SEC_50015` as a
-        model failure for three recorded runs, and the Claude adapter mapped
-        `stop_reason="refusal"` to the canonical `content_filter` while leaving
-        `block_reason` empty, reporting `50013` the same way on all three
-        observations.
+        Indifferent to which adapter wrote the fixture.
 
-        **This case is here rather than in the harness because the fixtures
-        are here**, and because it is indifferent to which adapter wrote them.
-        Both earlier defects were corrected inside one adapter, which is what
-        let the second happen; a check over the recorded corpus cannot be
-        satisfied one provider at a time.
+        Design: harness ``tier2_execution.md`` section 4.3.1.
 
         Returns:
             None
@@ -307,4 +348,133 @@ class TestMQCCasesMeasureTheirOwnClaim:
         assert not mute, (
             f"{len(mute)} recorded response(s) withheld content and stated no "
             f"reason, so a provider refusal reads as a model failure: {mute[:4]}"
+        )
+
+    @allure.story("Declared foundations")
+    def MQC_CAS_UNI_10464_a_declared_foundation_the_design_does_not_state_is_reported(
+        self,
+    ) -> None:
+        """Each security case's foundations match the ones its design states.
+
+        Parses the ``Presupposes`` column of the security inventory and the
+        ``depends_on`` decorators, and reports disagreement in either
+        direction: a declared foundation no row lists, and a listed foundation
+        the code does not declare.
+
+        Read from parsed syntax, so a ``depends_on`` quoted in prose is not
+        counted.
+
+        Design: ``model_evaluation_test_plan.md`` section 9.10.2.3.
+
+        Returns:
+            None
+        """
+        root = _repository_root()
+        designed = _designed_foundations(
+            root / "docs" / "testing" / "model_evaluation_test_plan.md"
+        )
+        declared = _declared_foundations(root / "tests" / "cases")
+
+        assert designed and declared, "one of the two artefacts was not read"
+
+        unapproved: list[str] = []
+        unimplemented: list[str] = []
+        for number, bases in sorted(declared.items()):
+            stated = designed.get(number)
+            if stated is None:
+                if bases:
+                    unapproved.append(
+                        f"{number} declares {sorted(bases)}, no design row"
+                    )
+                continue
+            for base in sorted(bases - stated):
+                unapproved.append(f"{number} declares {base}, the design does not")
+            for base in sorted(stated - bases):
+                unimplemented.append(f"{number} should rest on {base} and does not")
+
+        assert not unapproved, (
+            f"{len(unapproved)} declared foundation(s) no design row states, so "
+            f"a failure suppresses a measurement nothing approved: {unapproved}"
+        )
+        assert not unimplemented, (
+            f"{len(unimplemented)} designed foundation(s) the code does not "
+            f"declare, so a case runs without its premise: {unimplemented}"
+        )
+
+    @allure.story("Declared vectors")
+    def MQC_CAS_UNI_10465_an_undeclared_or_unregistered_vector_is_reported(
+        self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
+    ) -> None:
+        """A declared vector is registered, and a matched one is declared.
+
+        Three directions over the security rules: every key of ``vectors`` is a
+        registered vector, ``primary`` names one the rule declares as carried,
+        and every vector the payload matches is declared.
+
+        The reverse of the third is not asserted. Some payloads match no vector
+        at all, which section 9.10.3 records as a weaker fixture rather than an
+        error.
+
+        Design: ``model_evaluation_test_plan.md`` section 9.10.3.1.
+
+        Args:
+            corpus (tuple): The shipped tasks and rules.
+
+        Returns:
+            None
+        """
+        tasks, rules = corpus
+        by_id = {task.task_id: task for task in tasks}
+
+        problems: dict[str, list[str]] = {
+            "unregistered": [], "stray_primary": [], "undeclared": [],
+        }
+        examined = 0
+
+        for rule in rules:
+            declared = getattr(rule, "vectors", None)
+            if not isinstance(declared, dict) or not declared:
+                continue
+            examined += 1
+            named = {name for name, state in declared.items() if state}
+
+            for name in sorted(declared):
+                if not is_registered_vector(name):
+                    problems["unregistered"].append(f"{rule.rule_id} declares {name!r}")
+
+            primary = getattr(rule, "primary", None)
+            if primary and primary not in named:
+                problems["stray_primary"].append(
+                    f"{rule.rule_id} is about {primary!r}, which it does not declare"
+                )
+
+            # THE THIRD DIRECTION IS SECURITY ONLY, because the field is.
+            # Two benign tool payloads match `task_substitution`, which is the
+            # screen being generous rather than a declaration being wrong, and
+            # the same class as `score_manipulation` firing on the words
+            # "Mandatory Match Score". Reporting it here would make a screen
+            # false positive read as a corpus defect.
+            task = by_id.get(rule.rule_id.replace("MQC_RULE_", "MQC_TASK_"))
+            if task is None or not rule.rule_id.startswith("MQC_RULE_sec_"):
+                continue
+            for found in match_vectors(json.dumps(task, default=str)):
+                if found.vector not in named:
+                    problems["undeclared"].append(
+                        f"{rule.rule_id} payload matches {found.vector!r} undeclared"
+                    )
+
+        assert examined, "no rule declared vectors, so nothing was checked"
+
+        assert not problems["unregistered"], (
+            f"{len(problems["unregistered"])} declared vector(s) no registry knows, so a "
+            f"typo reads as coverage: {sorted(set(problems["unregistered"]))[:4]}"
+        )
+        assert not problems["stray_primary"], (
+            f"{len(problems["stray_primary"])} rule(s) name a primary outside their declared "
+            f"set: {sorted(set(problems["stray_primary"]))[:4]}"
+        )
+        assert not problems["undeclared"], (
+            f"{len(problems["undeclared"])} payload vector(s) a rule does not declare, which "
+            f"is the incidental match that let two families look screened: "
+            f"{sorted(set(problems["undeclared"]))[:4]}"
         )

@@ -150,23 +150,14 @@ class TestMQCMatrixIntegrity:
     def MQC_CAS_UNI_10460_a_collected_test_named_in_no_matrix_row_is_reported(
         self,
     ) -> None:
-        """`10449` built both sets and asserted one of the two directions.
+        """Every collected test is named by some matrix row.
 
-        It compares the matrix against the suite and reports a row naming a test
-        that does not exist. **The reverse was one line away and absent**, so
-        `MQC_CAS_UNI_10454` and `10455` were inventoried, written, collected and
-        traced to nothing, and these preconditions ran green over them.
+        Calls ``cmn.traceability.untraced_tests`` with this repository's matrix
+        and the test callables the suite defines, read from parsed syntax so a
+        ``def`` inside a docstring is not counted. ``10449`` runs the opposite
+        direction and reports a row naming a test the suite lacks.
 
-        **The harness had the check and this repository did not**, which is what
-        the duplication cost: `10449` rebuilt the comparison inline rather than
-        calling the harness implementation, so it inherited none of the second
-        half. `cmn.traceability.untraced_tests` is now the one implementation
-        and `MQC_CMN_UNI_11122` is the other caller.
-
-        **T4 is not a substitute.** It reads the requirements a test declares
-        for itself, and a test declaring none satisfies it by declaring none.
-        Harness design `cmn_verdict_and_cli.md` section 6.0.1 carries the
-        difference.
+        Design: harness ``cmn_verdict_and_cli.md`` section 6.0.1.
 
         Returns:
             None

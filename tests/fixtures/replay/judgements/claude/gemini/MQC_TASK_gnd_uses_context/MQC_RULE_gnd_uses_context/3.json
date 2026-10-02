@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CONTEXT_FIDELITY": {
+        "rationale": "The response accurately defines the status code AMBER according to the glossary (completed successfully and archived) and clearly states both parts of the notification details, explicitly highlighting that the on-call rota is deliberately not notified while the change advisory board receives a weekly digest.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "40419fbaf6b695d9ae92e29de36f2603f781315e4e58ffa24dceb0bd7706b62f"
+}

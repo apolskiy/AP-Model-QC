@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CAUSES_DIAGNOSED": {
+        "rationale": "The response identifies the distinct, independent causes of error in the calculation (calculating the discount rather than subtracting it from the total, missing lower-bound clamping at zero, and only evaluating the first coupon rather than summing all valid coupons) and provides clear remedies for each defect.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "b658619c27b9476f61eeff8ec73aa9e42191f546bb06dc155b542a8398a94035"
+}
