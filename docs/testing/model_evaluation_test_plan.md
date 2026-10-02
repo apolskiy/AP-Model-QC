@@ -116,6 +116,7 @@ requirements exist, and that is exactly what `10448` checks.
 | `MQC_REQ_CAS_COR_0016` | Every authored rubric anchor carries an exemplar, so calibration can measure judge drift against a known intended level |
 | `MQC_REQ_CAS_COR_0017` | A level 5 exemplar passes the assertions of the rule it belongs to, since a case cannot award a top score through a failed gate |
 | `MQC_REQ_CAS_COR_0018` | The code comprehension task file is reproducible from its shipped generator, so a hand edit to a generated file is reported |
+| `MQC_REQ_CAS_PRE_0007` | Every inventory row in this repository's design and test plan names a case the suite implements, reported so an unbuilt design is visible rather than forgotten | model_evaluation_test_plan.md section 8.1.1 |
 | `MQC_REQ_CAS_COR_0022` | Every security case declares every vector its payload carries and names the one it is about, so an incidental match cannot stand in for coverage |
 | `MQC_REQ_CAS_COR_0021` | Every graded case's declared foundations are exactly the ones its design inventory states, so a dependency cannot be added in code without a document approving it |
 | `MQC_REQ_CAS_COR_0020` | A recorded response that withheld content states the provider's own reason for withholding it, so a refusal is not read as a model failure |
@@ -570,12 +571,35 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `10465` | N | `an_undeclared_or_unregistered_vector_is_reported` |
 | `10466` | P | `a_single_disagreement_dispatches_two_more` |
 | `10467` | P | `max_spend_reaches_the_session_ceiling` |
+| `10468` | N | `an_inventory_row_without_an_implementation_is_reported` |
 
-**Inventory: 28 cases, 20 negative, 8 positive, 0 boundary.**
+**Inventory: 29 cases, 21 negative, 8 positive, 0 boundary.**
 
 The `CAS` block also carries `10406` through `10422`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set
 runs against, which is a property of the repository rather than of the cases.
+
+#### 8.1.1 This repository checks its own inventory rows
+
+Added 2026-10-02. `MQC_CAS_UNI_10468` reads every inventory row in this
+repository's design and test plan and reports any naming a case the suite does
+not implement.
+
+**Two row shapes, because this repository has two.** The precondition inventory
+at section 8.1 carries an identifier, a category and a behaviour. The graded
+inventories at section 4 carry an identifier, a priority, a condition, a
+category, a behaviour and the requirements it traces to. Both are inventories
+and both are counted; a row that is neither is a citation and is not.
+
+**Reported, never gated**, which is the decision recorded at harness
+`cmn_verdict_and_cli.md` section 10.19.1: an unimplemented row is the normal
+state while a family is authored, and this repository requires the design first.
+
+**Each repository checks its own.** The harness equivalent is
+`MQC_CMN_UNI_11205`, and the split is the boundary in `CLAUDE.md`: neither side
+may read the other's tests, and the installed wheel ships none. The harness
+version read this checkout for one day and could pass only on a machine holding
+both, which harness design section 10.19.2 records.
 
 ### 8.2 Why these are preconditions and not graded cases
 

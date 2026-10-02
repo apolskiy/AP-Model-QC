@@ -37,6 +37,17 @@ from tests.cases.graded_support import shipped_corpus
 
 pytestmark = pytest.mark.unit
 
+# THIS REPOSITORY HAS TWO INVENTORY SHAPES. The precondition table carries an
+# identifier, a category and a behaviour; the graded tables carry a priority and
+# a condition between them. A row matching neither is a citation.
+_PRECONDITION_ROW: Final[re.Pattern] = re.compile(
+    r"^\|\s*`(\d{5})`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
+)
+_GRADED_ROW: Final[re.Pattern] = re.compile(
+    r"^\|\s*`(\d{5})`\s*\|\s*P\d\s*\|\s*`[A-Z0-9_]+`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
+)
+
+
 # A security inventory row, whose fourth cell names the cases it presupposes.
 _INVENTORY_ROW: Final[re.Pattern] = re.compile(r"^\|\s*`(5\d{4})`\s*\|")
 _BACKTICKED_ID: Final[re.Pattern] = re.compile(r"`(\d{5})`")
@@ -477,4 +488,63 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"{len(problems["undeclared"])} payload vector(s) a rule does not declare, which "
             f"is the incidental match that let two families look screened: "
             f"{sorted(set(problems["undeclared"]))[:4]}"
+        )
+
+    @allure.story("Inventory")
+    def MQC_CAS_UNI_10468_an_inventory_row_without_an_implementation_is_reported(
+        self,
+    ) -> None:
+        """Every inventory row in this repository names a case the suite defines.
+
+        Reads both row shapes: the precondition inventory carries an identifier,
+        a category and a behaviour, and the graded inventories carry a priority
+        and a condition between them. A row matching neither is a citation and
+        is not counted.
+
+        Reported rather than gated: an unimplemented row is the normal state
+        while a family is authored, and the design comes first here.
+
+        Design: harness ``cmn_verdict_and_cli.md`` section 10.19.1, and
+        ``model_evaluation_test_plan.md`` section 8.1.1.
+
+        Returns:
+            None
+        """
+        root = _repository_root()
+
+        built: set[str] = set()
+        for source in sorted((root / "tests").rglob("*.py")):
+            tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+            for node in ast.walk(tree):
+                if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    continue
+                found = _CASE_NUMBER.search(node.name)
+                if found is not None and node.name.startswith("MQC_"):
+                    built.add(found.group(1))
+
+        designed: dict[str, str] = {}
+        for document in sorted(root.rglob("docs/**/*.md")):
+            for line in document.read_text(encoding="utf-8").splitlines():
+                stripped = line.strip()
+                for pattern in (_PRECONDITION_ROW, _GRADED_ROW):
+                    found = pattern.match(stripped)
+                    if found is not None:
+                        designed.setdefault(found.group(1), document.name)
+                        break
+
+        assert len(designed) > 60, (
+            f"only {len(designed)} inventory rows were recognised, so a row "
+            f"pattern no longer matches the inventories it is checking"
+        )
+
+        unbuilt = sorted(
+            f"{number} [{document}]"
+            for number, document in designed.items()
+            if number not in built
+        )
+
+        assert not unbuilt, (
+            f"{len(unbuilt)} inventory row(s) name a case this suite does not "
+            f"implement. Implement it or record the omission with its reason; "
+            f"do not remove the row: {unbuilt[:6]}"
         )

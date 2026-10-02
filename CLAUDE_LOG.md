@@ -1714,3 +1714,64 @@ this month because reading them turned an unknown into a defect and a decision.
   * Harness: 648 passing, pylint 10.00/10 exit 0.
   * Cases: 67 preconditions, pylint 10.00/10 exit 0.
   * gemini 2 failed, `gpt-4.1` 8 failed, `claude-opus-5-5` 10 failed, 9 skipped.
+
+## 2026-10-02: A check that could only pass on my machine
+
+Run 36968051295. Lint green on both platforms, `unit` red on both, and the
+whole of it was `MQC_CMN_UNI_11205`, written the previous afternoon.
+
+It read `_REPOSITORY_ROOT.parent / "AP-Model-QC"`. **That path exists on a
+developer's disk and never in CI**, so the harness scanned nine inventory rows
+whose implementations live in a checkout that was not there.
+
+**CLAUDE.md names this exact failure**: "a check here that reads a file that
+repository owns is a boundary violation, and one shipped undetected until the
+split made it real." It shipped again, by me, one day after I used the same
+directive to argue that `MQC_CAS_UNI_10463` belonged on the consumer side.
+
+### The reasoning was almost right, which is what made it dangerous
+
+A per-repository scan reported nine unimplemented rows. Those nine do exist as
+cases, in the other repository. Therefore the scan needs both repositories.
+Every step follows and the conclusion is wrong, because the premise was a row
+pattern that counted **citations**.
+
+| Row | Shape | Should count |
+|---|---|---|
+| Harness inventory | id, category, behaviour | Yes |
+| Consumer graded inventory | id, priority, condition, category, behaviour, traces | By the consumer |
+| **A citation in prose** | id, and whatever the table is about | **No** |
+
+Harness documents cite consumer case numbers freely. `40001` and `50001` appear
+in harness tables as references, not as claims about what the harness builds.
+**I widened the pattern to catch six-column graded inventories**, which live in
+the consumer, and the widening swept up every citation on the way.
+
+With the strict pattern the harness scan needs no sibling at all: **500 rows,
+500 implemented.**
+
+### The boundary was the evidence and I read it as an obstacle
+
+A conditional would have worked. Guarding the read with `is_dir()` keeps CI
+green and leaves the check meaning two different things depending on the
+checkout: thorough on a developer machine, partial in the gate that decides
+anything. **The pattern means the same thing everywhere**, which is why the fix
+is the pattern and not a guard.
+
+`MQC_CAS_UNI_10468` now does the consumer's half, reading both of its row
+shapes, so no coverage was traded for the correction.
+
+### What I should have done, and now did
+
+**Ran the suite in a checkout without the sibling**, which takes seconds: copy
+the repository to a directory of its own and run lint and the gate there. It
+reproduces the failure exactly and would have caught this before the push. Both
+checks were then verified by injecting an unbuilt row into each repository's
+inventory and confirming each names its own.
+
+* **Code Quality & Compliance Audit:**
+  * Harness, isolated checkout: 647 passed, 1 skipped, pylint 10.00/10 exit 0.
+    The skip is `mqc_uni_credentials.py`, which predates this and skips by
+    design when the consumer is absent.
+  * Harness, beside the consumer: 648 passed.
+  * Cases: 68 preconditions, pylint 10.00/10 exit 0.
