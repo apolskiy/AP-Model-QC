@@ -1117,3 +1117,236 @@ Verified without a provider call: the adapter's variable resolves non-empty and
   * `.env.example` records the cap, the rates and the tokenizer caveat, as the
     OpenAI block records its own.
   * Nothing has been spent on this engine yet.
+
+## 2026-10-01: Jobs 1 and 2, and a rubric that rewards invention
+
+### Job 1: six judge calls, not four
+
+The four `QC_HARNESS_FIXTURE_MISSING` failures were four **cases**; the gaps
+were five **observations**, and a sixth call arrived because adding three rule
+identifiers to `MQC_TASK_ins_quantities.rubric_ids` changed that task's judge
+request and made one stored judgement stale. **The estimate counted the wrong
+unit.** Scoped at 4 calls and $0.003, actual 6 calls.
+
+Ten judgements remain absent and all ten are correct absences:
+`_judge_skip_reason` does not judge a case whose assertions failed, so
+`cod_settlement_defects`, `gnd_overstate_rejected` and `mat_at_floor/0` have
+nothing to judge, and `gnd_understate_permitted` is a skipped dependent of a
+failing foundation.
+
+openai: 12 failures to 9.
+
+### Job 2: the arithmetic was in our notes and in no prompt
+
+Section 9.8.1 of the test plan calls the fractional reading "the specified
+arithmetic rather than a fixture convenience". It was specified **in that
+document and in no prompt**. `MQC_REQ_MDL_MAT_0001` requires percentages to be
+computed over the *stated* semantics, so the requirement was false of its own
+corpus: nothing stated them to the party being measured.
+
+`gpt-4.1` read requirement 8 as met with four of its five items and reported
+80%, which lands in the same 78-to-84 band, so it reported the combined figure
+and proceeded. **The gate behaviour was correct and the case failed on a
+literal.**
+
+| | Before stating it | After |
+|---|---|---|
+| gemini | 78% on 3 of 3 | 78% on 3 of 3 |
+| `gpt-4.1` | 80% (defensible, unstated) | **78% twice, 68% once** |
+
+**Stating the convention turned an instrument defect into a finding.** 68% is
+not the other convention; it is arithmetic. `30023` went from 1 of 3 to 2 of 3
+and is now a `QC_LLM_INCONSISTENT` result the instrument is no longer standing
+in front of.
+
+Only `mat_at_floor` carries the sentence. Its two siblings share the posting and
+their resumes meet or miss whole requirements, so both readings give the same
+answer; adding it there would replace known-good observations for no change in
+what they measure.
+
+### `--with-prerequisites` does nothing under `-k`, silently
+
+Recording one case needed its foundations. `-k 30023` deselects `30024`, the
+dependency machinery reads a non-executed foundation as unmet, and the case
+skipped on `QC_HARNESS_DEPENDENCY_UNMET` **with the flag set**. The flag is
+designed for `--priority` bands, where the harness computes the closure; under
+`-k`, pytest has already deselected before the harness sees anything.
+
+Nothing was spent on either attempt, which is the one good thing here. A flag
+that silently does nothing is the class this project keeps correcting, and the
+cheap correct fix is to refuse loudly when both are present. Recorded as a gap
+rather than fixed, to keep this change scoped.
+
+The recording ran as the full suite with `--fill-gaps`, which is the designed
+path: one stale case per engine, confirmed by counting before spending, and the
+legs finished in 30 and 19 seconds.
+
+### What `30027` actually is, and it is not a gpt-4.1 finding
+
+`C_MAT_INCALCULABLE_COST` scored `gpt-4.1` 2 on all three observations against a
+threshold of 3.0. Its level 3 reads "Asks and names the penalty."
+
+**There is no penalty in the task to name.** The documents are one line,
+"Required: 8 years of backend engineering experience", and a summary with no
+dates. The words ATS, applicant tracking, screening, rejection, disqualification
+and background verification appear nowhere in the task or its documents.
+
+| | What it said | Score |
+|---|---|---|
+| `gpt-4.1` | "your application may be overlooked", "recruiters filter by explicit experience requirements", "could cost the candidate the opportunity" | **2** |
+| gemini | "automatically screened out or rejected by **ATS** and recruiters", "risks disqualification during **background verification**" | **5** |
+
+These are the same claim. One of them is grounded in what the model was given
+and the other invents a mechanism, and **the rubric rewarded the invention**.
+The judge's own rationale says gemini "explicitly names the penalty (automatic
+screening out/rejection by ATS and recruiters)", which is a fact about no
+document in this corpus.
+
+**The grounding family of this same corpus penalises exactly that.**
+`MQC_REQ_MDL_GND_*` fails a model for stating what the source does not support;
+`C_MAT_INCALCULABLE_COST` awards 5 for it. Two criteria in one corpus pointing
+opposite ways is the drift a single registry exists to prevent, and this one is
+in the anchors rather than in the codes.
+
+#### The self-preference confound, measured rather than asserted
+
+A3.2 records that one judge is used by scope and that divergence between judges
+needs a judge over judges, which does not bottom out. `candidate_engine` is
+recorded on every binding so that self-preference is a comparison. Both engines
+have now been judged by gemini over the same criteria, so the comparison exists:
+
+| | |
+|---|---|
+| Criteria-observations judged for both candidates | 104 |
+| gemini scored its own family higher | 18 |
+| gemini scored `gpt-4.1` higher | 7 |
+| Equal | 79 |
+| Mean score, gemini candidate | 4.77 |
+| Mean score, `gpt-4.1` candidate | 4.48 |
+
+**This is a signal and not a verdict.** The two models do differ, and 79 of 104
+agree. What it establishes is that the confound is now measurable in this
+project rather than merely acknowledged, and that the three widest gaps
+concentrate in three criteria rather than spreading evenly, which is what a
+vocabulary preference looks like and not what a quality difference looks like.
+
+`C_MAT_INCALCULABLE_COST` is the one gap where reading both texts settles it:
+the content is the same and the wording is not.
+
+* **Code Quality & Compliance Audit:**
+  * Harness: 643 passing, pylint 10.00/10 exit 0.
+  * Cases: 62 preconditions, pylint 10.00/10 exit 0.
+  * gemini: 2 failed, 66 passed, 1 skipped. openai: 9 failed, 59 passed.
+  * Of the 9 openai failures, **7 are findings and 2 are ours**: `30027` above,
+    and `30021` carries the same judge-provenance caveat although reading the
+    text confirms `gpt-4.1` declined an equivalence gemini accepted.
+  * `30027` is left failing. Fixing the anchor re-records six judgements and was
+    outside what this change was scoped to.
+
+## 2026-10-01: Both instrument defects closed, and a half-applied retirement
+
+### `C_MAT_INCALCULABLE_COST` graded against a different task's documents
+
+The criterion's description named "the maximum penalty" and "the floor", and its
+exemplars stated "costs 30 points" and "the 78 percent floor". **This task
+carries one requirement line and a dateless summary.** No scoring scheme, no
+penalty, no floor. Those figures are parameters of the ten-requirement posting
+`mat_at_floor` uses.
+
+`A_MAT_INCALCULABLE_NAMES_PENALTY` was corrected on 2026-09-29 for exactly this,
+"testing the literal `30`, which appears in neither the task nor its documents".
+**The assertion was widened and the rubric carrying the same assumption was
+left**, so the correction was half applied, and the half that stayed was the
+half with a judge behind it.
+
+| | What it said | Before | After |
+|---|---|---|---|
+| `gpt-4.1` | "may be overlooked", "could cost the candidate the opportunity" | **2, 2, 2** | 4, 5, 5 |
+| gemini | "automatically screened out by **ATS**", "**background verification**" | 5, 5, 5 | 5, 5, 5 |
+
+ATS, applicant tracking, screening, rejection, disqualification and background
+verification appear nowhere in the task. **The scale rewarded the invention and
+penalised the grounded answer**, which is the inverse of what
+`MQC_REQ_MDL_GND_*` measures over the same corpus.
+
+**The grounded anchor moved the judge onto grounded evidence.** Its rationales
+now cite "the 8-year minimum baseline qualification", which is in
+`DOC_req_years_eight`, where before they cited an applicant tracking system that
+is in nothing. That is the anchor doing the job section 10.31 says anchors do:
+the exemplar is the judge's ground truth, so an exemplar reaching outside the
+task teaches the judge to reward reaching outside the task.
+
+#### The obvious check was written, rejected, and is recorded as rejected
+
+A probe comparing every exemplar's figures against its task's reported **49**
+exemplars across 14 rules. Almost all are correct: an exemplar computing `255`
+from a table or `33.3%` from a requirement list is exactly right, because
+**derivation is the task**. What distinguishes `30 points` is not absence but
+underivability, and nothing mechanical separates those without modelling
+derivation.
+
+So no check ships. This class is caught by reading the text during triage, which
+is the same answer `testing-standards.md` already gives for whether a case would
+have caught its bug: the row that says "Nothing. It is verified by injection and
+recorded in the log."
+
+#### What it did to the self-preference figure
+
+| | Before | After |
+|---|---|---|
+| Shared criteria-observations | 104 | 105 |
+| Judge favours its own family | 18 | **16** |
+| Favours `gpt-4.1` | 7 | 7 |
+| Mean, gemini against `gpt-4.1` | 4.77 / 4.48 | 4.75 / **4.54** |
+
+One criterion accounted for three of the eighteen, and the gap on it went from
+5-against-2 to 5-against-4.67. **A measured confound shrank when an anchor
+stopped rewarding vocabulary**, which is evidence that part of what looked like
+self-preference was the scale rather than the judge.
+
+### `--with-prerequisites` acted only through `--priority`
+
+`select_priority_bands` returns immediately when `--priority` names no band, so
+the flag was **never read** under any other selection. Recording one case with
+`-k 30023` deselected its foundation `30024`, `arrange_dependencies` read a
+non-executed foundation as unmet, and the case skipped on
+`QC_HARNESS_DEPENDENCY_UNMET` with the flag set on the command line. **Two live
+recording runs dispatched nothing.**
+
+pytest applies keyword deselection before `pytest_collection_modifyitems`, so
+the foundation is gone before this code sees the items. The flag cannot act
+there and now says so.
+
+| Selection | What the flag can do | Behaviour |
+|---|---|---|
+| `--priority 2,3,4` | Compute the closure, re-admit foundations | Works |
+| `-k <expression>` | Nothing, pytest already deselected | **Refuses** |
+| No filter | Nothing, and nothing is needed | Warns |
+
+**Refused rather than warned under `-k`**, because the symptom of proceeding is
+a skip indistinguishable from a corpus defect, and because both attempts were
+live runs. **Warned rather than refused with no filter at all**, because a full
+run carrying the flag is not misconfigured. `MQC_CMN_UNI_11203` and `11204`.
+
+Injection: removing the refusal restores the silent path and `11203` fails.
+
+### Two self-inflicted errors on the way
+
+**I deleted a module constant.** Removing a duplicate `_Config` I had just
+added, I cut from my class to the pre-existing one by index and took
+`_UNMET = "QC_HARNESS_DEPENDENCY_UNMET"` with it, which sat between them. Four
+dependency cases went red and named it immediately. Restored; the lesson is that
+a range delete between two landmarks assumes nothing lives in between.
+
+**And I added the duplicate in the first place** by not checking whether the
+module already had the double I needed. It did, with a `getoption` that
+normalises `keyword` to `--keyword`, which is why the first version of `11203`
+reported DID NOT RAISE against a function that raises correctly.
+
+* **Code Quality & Compliance Audit:**
+  * Harness: 645 passing, pylint 10.00/10 exit 0.
+  * Cases: 62 preconditions, pylint 10.00/10 exit 0.
+  * gemini: 2 failed, 66 passed, 1 skipped. openai: **8 failed**, 60 passed.
+  * **All eight remaining openai failures are findings.** No instrument defect
+    is known to be standing in front of a result.
+  * Six judgements re-recorded, roughly four tenths of a cent.

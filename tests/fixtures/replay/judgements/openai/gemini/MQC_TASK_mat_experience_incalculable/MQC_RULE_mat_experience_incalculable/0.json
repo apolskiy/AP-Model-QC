@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The response asks for the missing years of backend engineering experience and explains a concrete consequence (being overlooked or rejected by recruiters and automated filters). It clearly exceeds Level 3 by identifying the mechanism through which the omission leads directly to rejection (filtering for required experience levels), but falls slightly short of Level 5 as it hedges ('could result') and does not explicitly state that the omission alone can definitively decide the outcome.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "708274875e5d274258f0b490e59198dc138c041a6a16d2fcc70297a7c1c1cbce"
+}

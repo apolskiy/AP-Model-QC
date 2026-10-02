@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate asks for the missing years of experience, names the penalty (screening disqualification/rejection), and explains that lacking this figure alone can trigger immediate disqualification.",
+        "rationale": "The candidate asks for the missing figure, clearly articulates the concrete consequence in connection to the 8-year requirement, and specifies that this omission alone leads to immediate ATS/recruiter screening disqualification.",
         "score": 5
       }
     }
   },
-  "request_hash": "6851ac50e729350e5ce1d0c1f447d80df039af0f956c0bd997ce0738ade06dae"
+  "request_hash": "c8924e79e75ef1230e292a6b7c08553445b2a4ca4141ba6db9197406d785f3e1"
 }

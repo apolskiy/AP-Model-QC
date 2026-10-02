@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_FLOOR_MARGIN": {
+        "rationale": "Both the mandatory figure (78%) and the combined figure (85.3%) are calculated correctly, but the candidate output does not remark on the narrow margin or state that it only just clears the 85% threshold.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "cf30f6eba3a5d58fecf1a26165afdb6192e587d2ea3ed4c46f78581a4891618f"
+}

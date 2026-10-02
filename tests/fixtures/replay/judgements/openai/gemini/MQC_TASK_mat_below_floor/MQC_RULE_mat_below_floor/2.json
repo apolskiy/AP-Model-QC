@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The candidate output provides a warning, specifies the 78% cutoff, and refrains from evaluating the nice-to-have requirements. It clearly identifies and names the three unmet mandatory requirements (Docker/Kubernetes/Terraform/Ansible/Helm, Kafka, and GraphQL) in the matching breakdown above. However, it falls short of Level 5 because the warning/refusal statement itself does not summarize or integrate these gaps into actionable advice.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "7a66fa03442de572ed410b8b423c4cc230ea81ddeeccb3bd1baf0768cf4b509e"
+}

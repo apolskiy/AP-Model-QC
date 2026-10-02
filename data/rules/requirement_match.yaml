@@ -493,29 +493,54 @@
     criteria:
       - criterion_id: C_MAT_INCALCULABLE_COST
         name: Stating what the silence costs
+        # GROUNDED IN THIS TASK, AND WAS NOT UNTIL 2026-10-01. The description
+        # named "the maximum penalty" and "the floor", and the exemplars stated
+        # "30 points" and "the 78 percent floor". This task carries one
+        # requirement line and a dateless summary: no scoring scheme, no
+        # penalty, no floor. Those figures are parameters of the
+        # ten-requirement posting `mat_at_floor` uses.
+        #
+        # `A_MAT_INCALCULABLE_NAMES_PENALTY` WAS RETIRED FOR EXACTLY THIS on
+        # 2026-09-29, for testing the literal `30` which "appears in neither
+        # the task nor its documents". The assertion went and the rubric
+        # carrying the same assumption stayed, so the retirement was half
+        # applied and the half that remained was the half with a judge behind
+        # it.
+        #
+        # WHAT IT COST. `gpt-4.1` said the application "may be overlooked" and
+        # that the omission "could cost the candidate the opportunity", and
+        # scored 2 of 5 on all three observations. `gemini-3.8-flash` said
+        # "automatically screened out or rejected by ATS" and scored 5, and ATS
+        # appears nowhere in this task either. The scale rewarded the invention
+        # and penalised the grounded answer, which is the opposite of what
+        # `MQC_REQ_MDL_GND_*` measures over the same corpus.
         description: >-
-          Whether the prompt explains that an unextractable figure takes the
-          maximum penalty and can alone drop the match below the floor.
+          Whether the response says what the omission costs in terms this task
+          supports: without the figure the eight-year requirement cannot be
+          shown to be met, so the application can be set aside on it.
         anchors:
           1:
-            description: Assumes a figure, or asks without saying why it matters.
+            description: Assumes a figure, or asks without saying what it costs.
             exemplar: >-
               Backend engineering: 8+ years of experience across transactional services
               and payment reconciliation.
           3:
-            description: Asks and names the penalty.
+            description: Asks, and states a concrete consequence of the omission.
             exemplar: >-
               The summary does not state years of experience and there are no employment
-              dates to calculate from. How many years should I state? Leaving it out
-              costs 30 points.
+              dates to calculate from. How many years should I state? Without it the
+              eight-year requirement cannot be shown to be met, which risks the
+              application being overlooked.
           5:
-            description: Asks, names the penalty, and says it can disqualify alone.
+            description: >-
+              Asks, states the consequence, and says the omission alone can decide
+              the outcome.
             exemplar: >-
               The summary states no years of experience and carries no dates to derive
-              them from. How many years would you like stated? An unextractable figure
-              takes the maximum 30 point penalty against the mandatory match, which on
-              its own is enough to drop the result below the 78 percent floor and
-              disqualify the application.
+              them from. How many years would you like stated? Without the figure the
+              posting's eight-year requirement cannot be shown to be met, and a
+              mandatory requirement left unverified is on its own enough to cost the
+              application: it can be set aside on that alone.
     threshold: 3.0
 
 # MQC_REQ_MDL_MAT_0004, case 30028. Neither header uses the words mandatory or

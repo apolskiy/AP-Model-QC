@@ -131,7 +131,9 @@
 - task_id: MQC_TASK_mat_at_floor
   rubric_ids: [MQC_RULE_mat_at_floor]
   user_prompt: |
-    Assess the candidate against the posting below. Report the mandatory match
+    Assess the candidate against the posting below. A numbered requirement that
+    lists several items counts as one requirement, credited in proportion to how
+    many of those items the candidate shows. Report the mandatory match
     percentage. If it lands between 78 and 84 percent, also report the combined
     figure over all requirements and proceed only if that reaches 85 percent.
   constraints:

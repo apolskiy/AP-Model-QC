@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate output asks for the unstated figure, explicitly names the penalty (automatic screening out/rejection by ATS and recruiters), and clearly states that missing this requirement can alone lead to disqualification for failing to meet the baseline qualification.",
+        "rationale": "The candidate asks for the missing figure, outlines the concrete consequence (failure to meet the 8-year minimum baseline qualification), and explains that this omission alone can decide the outcome (being automatically screened out or rejected by recruiters/ATS).",
         "score": 5
       }
     }
   },
-  "request_hash": "47a744ae89f09bda251c495fa09065b7884ea9cb8961c79986aae0395563857e"
+  "request_hash": "f48935a03719c651baecb6c3656dce4d221781e19908e1a4e2295e36498b89d0"
 }

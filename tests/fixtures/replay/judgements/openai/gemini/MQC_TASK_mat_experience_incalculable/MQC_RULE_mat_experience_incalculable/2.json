@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate output asks for the missing years of backend engineering experience, explains the concrete consequence that the application may be overlooked, and specifies that this omission alone (failing to show the required 8 years) can decide the outcome.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5334896103bba515b52ec8c48b604541ed2241efa44cb6520121c4dfebebe50d"
+}

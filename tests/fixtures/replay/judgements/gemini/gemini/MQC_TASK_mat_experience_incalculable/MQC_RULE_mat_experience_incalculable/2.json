@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate asks for the missing years of backend engineering experience, explicitly names the penalty ('Automatic Disqualification' / 'screened out immediately'), and explains that omitting this figure can disqualify the candidate on its own based on baseline ATS thresholds.",
+        "rationale": "The response asks for the missing years of backend engineering experience, states the concrete consequence of not providing the number, and explicitly notes that the omission alone can decide the outcome (leading to automatic disqualification or being screened out immediately because the 8-year requirement cannot be verified).",
         "score": 5
       }
     }
   },
-  "request_hash": "36901209dbf86607f3716481eaa22b44a7fdb0ca04be3a74ff21e96402713823"
+  "request_hash": "11bfc661f77e4ac121775f9ebca83005f1202140ebb330595e8c4008ce695e5c"
 }

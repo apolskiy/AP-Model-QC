@@ -1,21 +1,21 @@
 {
-  "request_hash": "c247f383de70de12038ea56d62d640f60baf1141d8dc36fed7dd00134bf546a4",
+  "request_hash": "261982ef4aaf16a27b70125c1f1b526e75c4525903310c7d7a34c7167ed4f5dc",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 3909,
+    "duration_ms": 4648,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 229,
+    "input_tokens": 256,
     "mode": "live",
-    "output_tokens": 422,
-    "raw_reference": "chatcmpl-EUIWgvDggTEIJ7MqjfuA2XqkshTca",
+    "output_tokens": 512,
+    "raw_reference": "chatcmpl-EULJg4OB0RTY7rO58d7kf5QSucvDE",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Mandatory requirements in posting (10 total):**\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\n**Resume (\"DOC_resume_at_floor\") coverage:**\n1. Python (**present**)\n2. SQL (**present**)\n3. Linux administration (**present**)\n4. Git (**present**)\n5. REST API design (**present**)\n6. Unit testing (**present**)\n7. CI pipelines (**present**)\n8. Docker, Kubernetes, Terraform, Ansible (**present**, but Helm missing)\n9. Kafka (**missing**)\n10. GraphQL (**missing**)\n\n**Mandatory matches:**\n- 1, 2, 3, 4, 5, 6, 7, 8: **8 out of 10** (Helm not mentioned, Kafka missing, GraphQL missing)\n\n**Mandatory match percentage:**  \n8 / 10 = **80%**\n\nThis is between 78 and 84 percent, so now include \"nice to have\" for combined figure.\n\n**Nice to have requirements (5 total):**\n11. Grafana (**present**)\n12. Prometheus (**present**)\n13. Technical writing (**present**)\n14. Mentoring (**present**)\n15. Public speaking (**present**)\n\n**Nice to have matches:**  \nAll 5 / 5 **present**\n\n**Combined requirements:**  \n15 total (10 mandatory + 5 nice to have)\n\n**Total matches:**  \n8 (mandatory) + 5 (nice to have) = 13\n\n**Combined match percentage:**  \n13 / 15 = **86.7%**\n\n**Result:**  \n- **Mandatory match:** 80%\n- **Combined match:** 86.7%\n\n**Conclusion:**  \nCandidate meets the threshold to proceed, with an 80% match on mandatory, and an 86.7% match overall.",
+    "text": "Let\u2019s evaluate the candidate from <document id=DOC_resume_at_floor> against the job posting (<document id=DOC_posting_ten_five>).  \nFor requirements listing several items, each matched item is credited proportionally.\n\n**Mandatory requirements (10 total):**\n\n1. **Python** \u2013 Matched.\n2. **SQL** \u2013 Matched.\n3. **Linux administration** \u2013 Matched.\n4. **Git** \u2013 Matched.\n5. **REST API design** \u2013 Matched.\n6. **Unit testing** \u2013 Matched.\n7. **CI pipelines** \u2013 Matched.\n8. **Docker, Kubernetes, Terraform, Ansible, Helm** \u2013  \n   Candidate has Docker, Kubernetes, Terraform, Ansible (4/5) \u2192 \\( \\frac{4}{5} = 0.8 \\)\n9. **Kafka** \u2013 Not matched.\n10. **GraphQL** \u2013 Not matched.\n\n**Scoring:**\n\n- Fully matched: 7 requirements (1-7).\n- Partially matched: 0.8 (requirement 8).\n- Not matched: 2 (requirements 9, 10).\n\nTotal mandatory score = \\( 7 + 0.8 = 7.8 \\)\n\n**Mandatory match percentage**  \n\\( \\frac{7.8}{10} \\times 100\\% = 78\\% \\)\n\n**Threshold check:**  \n- 78% is in the [78, 84]% range, so we check combined (mandatory + nice-to-have).\n\n---\n\n### Nice-to-have requirements (5 total):\n\n11. **Grafana** \u2013 Matched.\n12. **Prometheus** \u2013 Matched.\n13. **Technical writing** \u2013 Matched.\n14. **Mentoring** \u2013 Matched.\n15. **Public speaking** \u2013 Matched.\n\nAll five of the nice-to-have requirements are matched.\n\nNice-to-have score = 5\n\nTotal items = 10 (mandatory) + 5 (nice-to-have) = 15  \nTotal score = 7.8 (mandatory) + 5 (nice-to-have) = 12.8\n\n**Overall match percentage:**  \n\\( \\frac{12.8}{15} \\times 100\\% = 85.3\\% \\)\n\n---\n\n## Summary\n\n- **Mandatory match percentage: 78%**\n- **Combined match percentage: 85.3%**\n\n**Further evaluation should proceed, as the combined percentage meets the 85% threshold.**",
     "thinking_tokens": 0,
     "tool_calls": []
   }

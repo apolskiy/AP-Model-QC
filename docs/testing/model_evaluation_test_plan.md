@@ -925,6 +925,43 @@ reporting a nice-to-have percentage after failing the mandatory cutoff has done
 work it was told to skip, and section 7.1.2 records that this is visible in the
 output. The assertion is the absence of that figure.
 
+#### 9.8.1.1 The arithmetic was specified here and never sent to the model
+
+Corrected 2026-10-01, triaging `gpt-4.1`.
+
+Section 9.8.1 states that a list-bearing line is one requirement with
+fractional credit, and calls it "the specified arithmetic rather than a fixture
+convenience". **It was specified in this document and in no prompt.**
+`MQC_TASK_mat_at_floor` asked for the mandatory match percentage and said
+nothing about how to count a line listing five tools.
+
+`gpt-4.1` counted requirement 8 as met, having four of its five items, and
+reported **80%**. The corpus expects 78%, which needs the fractional reading.
+Both are defensible against a prompt that states neither.
+
+| | Mandatory | In the 78 to 84 band | Gate behaviour |
+|---|---|---|---|
+| Corpus expectation | 7.8/10 = 78.0% | Yes | Report combined, proceed at 85% |
+| What `gpt-4.1` reported | 8/10 = 80.0% | **Yes** | Report combined, proceed at 85% |
+
+**The gate behaviour was identical and correct**, which is what `30023` is named
+for: `mandatory_at_floor_with_sufficient_combined_proceeds`. It reported the
+combined figure at 86.7% and proceeded. The case failed on an assertion
+demanding the literal figure `78%`.
+
+**`MQC_REQ_MDL_MAT_0001` says percentages are computed over the stated
+semantics**, and the requirement was therefore false of its own corpus: nothing
+stated them to the party being measured. A model cannot be marked wrong for not
+knowing a convention held in the grader's notes.
+
+**Only `mat_at_floor` carries the sentence**, and the asymmetry is deliberate
+rather than an oversight. `mat_below_floor` and `mat_above_ceiling` share the
+same posting, and their resumes meet or miss whole requirements, so both
+readings give 70% and 90% respectively. Adding the sentence there would change
+their request hashes and replace known-good recorded observations with new ones
+for no change in what they measure. **`mat_at_floor` is the only task where the
+two readings diverge, which is also why it is the boundary case.**
+
 #### 9.8.2 The connector cases turn on phrasing alone
 
 `30019` through `30021` hold the candidate fixed and vary only the connector in
