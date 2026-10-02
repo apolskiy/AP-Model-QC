@@ -1939,3 +1939,38 @@ Also corrected: the README claimed 68 preconditions and 83 requirements against
 
 69 preconditions passing, graded replay 66 passed with the 2 known
 `gemini-3.8-flash` findings and 1 skip, pylint 10.00/10 exit 0.
+
+## 2026-10-02: the judge the run named, and the judge that graded
+
+`judge_binding` passed a literal empty string where the judge engine goes, so
+`--judge-engine openai` graded with gemini. The flag is recorded in result
+metadata, so a run naming a judge produced an artifact attributing its scores to
+an engine that did not produce them.
+
+**The empty string is why it read as correct.** `_channel("")` and
+`judge_channel_from_roster(..., engine or None)` both treat empty as "take the
+configured one", so a dropped argument looked like a deliberate choice to use
+the configured judge. `MQC_CAS_UNI_10470` asserts the behaviour instead of the
+shape: it fails on the resolved engine, which is what the metadata records.
+
+The harness side was never wrong. `judge_channel_from_roster` implements the
+documented precedence and was reached with an empty first term; harness
+`tier3_evaluation.md` section 5A.3 carries that half.
+
+**Latent.** No workflow passes the flag and no case did, so the recorded
+self-preference figures came from runs that named no judge and got the one their
+metadata claims. Nothing shipped needs re-measuring.
+
+### `--observations` was the control
+
+The same gap sentence was written about `--observations`, and that one genuinely
+worked: the flag reaches `observation_count` as an override above the roster
+entry. `10471` passed on its first run, which is what makes `10470`'s failure
+informative rather than a coincidence of two new cases. `10471` also pins that
+an override still earns escalation, so a named count means what a configured one
+means.
+
+### State
+
+71 preconditions passing, graded replay 66 passed with the 2 known
+`gemini-3.8-flash` findings and 1 skip, pylint 10.00/10 exit 0.

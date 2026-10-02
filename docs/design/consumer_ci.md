@@ -532,8 +532,10 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `10459` | N | `the_candidate_engine_reaches_the_plan_the_channel_uses` |
 | `10460` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
 | `10469` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
+| `10470` | P | `the_named_judge_engine_is_the_one_that_grades` |
+| `10471` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 40 cases, 27 negative, 6 positive, 4 boundary.**
+**Inventory: 42 cases, 27 negative, 8 positive, 4 boundary.**
 
 ### 4A. The harness is a dependency, not the directory next door
 
@@ -642,6 +644,65 @@ hidden.** The flag implementation fixed the gap before the case existed, so the
 case was verified by injection instead: removing `--out-dir` from the debug
 workflow makes it report that workflow, which is the state this repository was
 in until 2026-10-02.
+
+### 4.13 The judge engine a run names, and the one that graded it
+
+Added 2026-10-02, from reading the last two dated flag gaps.
+
+**`judge_binding` passed a literal empty string where the judge engine goes.**
+
+```
+channel = _channel(
+    "",                 <- the judge engine, hardcoded
+    plan.mode, plan.record, ...
+)
+```
+
+So `--judge-engine openai` resolved to gemini, which the probe that found this
+confirms directly:
+
+| Passed | Graded by |
+|---|---|
+| nothing | gemini |
+| `--judge-engine openai` | **gemini** |
+| `--judge-engine claude` | **gemini** |
+
+**The harness side was never wrong.** `judge_channel_from_roster` takes the
+override and resolves `engine or load_judge_engine(...)`, which is the
+documented precedence; it was reached with an empty first term. Harness
+`tier3_evaluation.md` section 5A.3 carries that half.
+
+**The flag is recorded, which is what makes it a defect rather than a missing
+feature.** A run naming a judge produced metadata naming it while a different
+engine graded, so the artifact attributed scores to an instrument that did not
+produce them. For a repository whose headline finding is self-preference, a
+comparison of candidate against judge, that is not a degraded measurement but a
+differently-meaning one.
+
+**Latent, and treated the same.** No workflow passes the flag and no case did,
+which is why nothing shipped is affected and also why it survived: the declared
+gap in `flag_coverage.yaml` said "nothing covers the flag reaching it", which
+was accurate and read as a coverage gap rather than as the defect it was
+describing.
+
+**The empty string is why it read as correct.** `_channel("")` and
+`judge_channel_from_roster(..., engine or None)` both treat empty as "take the
+configured one", so the call site looked like a deliberate choice to use the
+configured judge rather than like a dropped argument. `10470` fails on the
+behaviour instead of on the shape.
+
+### 4.13.1 The observation count, covered rather than fixed
+
+`--observations` is read: `observation_count` takes it as an override above the
+roster entry. Nothing varied it and asserted the dispatched population changed,
+which the same gap entry recorded accurately.
+
+**It interacts with escalation, and that is what `10471` pins.** A run naming
+three observations where one disagrees still earns two more, because the
+override sets the count the run begins with and
+`cmn.observations.further_observations` decides what a disagreement adds. An
+override that suppressed escalation would make a named count quietly mean
+something different from a configured one.
 
 ## 5. Governance Parity With The Harness
 

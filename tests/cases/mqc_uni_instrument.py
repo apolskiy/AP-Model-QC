@@ -3,7 +3,9 @@
 """Whether the instrument measures the claim each case name makes.
 
 Covers ``MQC_CAS_UNI_10461``, ``10462`` and ``10463``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 8.1.
+``docs/testing/model_evaluation_test_plan.md`` section 8.1, and
+``MQC_CAS_UNI_10470`` and ``10471``, inventoried in ``consumer_ci.md``
+section 4 and designed in sections 4.13 and 4.13.1.
 
 **Three failures of one kind, found on one day.** Four cases bound one task and
 rule pair and asserted the conjunction of its four assertions, so a red named
@@ -25,15 +27,21 @@ import ast
 import json
 import re
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Final
 
 import allure
 import pytest
 
-from evaluation.assertions import run_assertions
+from cmn.observations import further_observations
 from cmn.vectors import is_registered_vector, match_vectors
+from evaluation.assertions import run_assertions
 from ingestion.schemas import GoldenRuleSet, TaskDataSet
-from tests.cases.graded_support import shipped_corpus
+from tests.cases.graded_support import (
+    judge_binding,
+    observation_count,
+    shipped_corpus,
+)
 
 pytestmark = pytest.mark.unit
 
@@ -548,3 +556,118 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"implement. Implement it or record the omission with its reason; "
             f"do not remove the row: {unbuilt[:6]}"
         )
+
+
+class _FakeGradedConfig:
+    """Enough of pytest's config for the graded helpers to read a run.
+
+    Built here rather than through a pytest run because the question is what
+    the helpers conclude from a given command line, which needs no session.
+    """
+
+    def __init__(self, judge_engine: str, observations: int = 0) -> None:
+        """Hold the flags these two cases vary, with the rest at their defaults.
+
+        Args:
+            judge_engine (str): What ``--judge-engine`` was given.
+            observations (int): What ``--observations`` was given, zero for
+                unnamed.
+
+        Returns:
+            None
+        """
+        self._values: dict[str, Any] = {
+            "--engine": "gemini",
+            "--mode": "replay",
+            "--judge-mode": "",
+            "--judge-engine": judge_engine,
+            "--observations": observations,
+            "--keep-connection": False,
+            "--fill-gaps": False,
+            "--max-spend": 0.0,
+        }
+        self.option = SimpleNamespace()
+
+    def getoption(self, name: str, default: Any = None) -> Any:
+        """Return a parsed value, as pytest would.
+
+        Args:
+            name (str): The option's flag or destination name.
+            default (Any): What to return when it is unset.
+
+        Returns:
+            Any: The value.
+        """
+        return self._values.get(name, default)
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Consumer CI")
+class TestMQCNamedInstrument:
+    """A flag that names an instrument selects it, or the record is wrong."""
+
+    @allure.story("The named judge grades")
+    def MQC_CAS_UNI_10470_the_named_judge_engine_is_the_one_that_grades(
+        self,
+    ) -> None:
+        """``--judge-engine`` selects the engine that grades the run.
+
+        Absent, the roster's configured judge grades. Named, that engine does,
+        which is the precedence the harness resolver implements:
+        ``--judge-engine``, then the roster entry, then the built-in fallback.
+
+        **The flag reaches result metadata**, so a run whose named judge were
+        ignored would record one instrument and be graded by another.
+
+        Design: ``consumer_ci.md`` section 4.13.
+
+        Returns:
+            None
+        """
+        configured = judge_binding(_FakeGradedConfig(""), "gemini")
+        assert configured.judge_engine == "gemini", (
+            "an unnamed judge did not resolve to the configured one, so this "
+            "case cannot tell an override from the default"
+        )
+
+        for named in ("openai", "claude"):
+            binding = judge_binding(_FakeGradedConfig(named), "gemini")
+
+            assert binding.judge_engine == named, (
+                f"--judge-engine {named} graded with "
+                f"{binding.judge_engine!r}, so the run recorded a judge that "
+                f"did not produce its scores"
+            )
+
+    @allure.story("The named count is dispatched")
+    def MQC_CAS_UNI_10471_the_named_observation_count_is_the_one_dispatched(
+        self,
+    ) -> None:
+        """``--observations`` sets how many observations a case begins with.
+
+        Absent, the roster entry's count applies. Named, that count does, and
+        it is at least one so a run can never dispatch nothing.
+
+        **An override still earns escalation.** The count is what a run begins
+        with, and a single disagreement among them adds two more, so a named
+        count and a configured one mean the same thing.
+
+        Design: ``consumer_ci.md`` section 4.13.1.
+
+        Returns:
+            None
+        """
+        assert observation_count(_FakeGradedConfig("", observations=0)) >= 1
+
+        for named in (1, 2, 5):
+            counted = observation_count(_FakeGradedConfig("", observations=named))
+
+            assert counted == named, (
+                f"--observations {named} dispatched {counted}, so the run "
+                f"measured a population it does not record"
+            )
+
+        # ESCALATION IS UNCHANGED BY AN OVERRIDE, which is what keeps a named
+        # count meaning the same as a configured one.
+        assert further_observations([True, False, True]) == 2
+        assert further_observations([True, True, True]) == 0

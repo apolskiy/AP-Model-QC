@@ -324,8 +324,14 @@ def judge_binding(config: Any, candidate_engine: str) -> Any:
         Any: The :class:`JudgeBinding`.
     """
     plan = judgement_plan(config, candidate_engine)
+    # THE NAMED JUDGE, NOT A HARDCODED EMPTY STRING. This passed "" and the
+    # roster's judge graded every run, while the flag is recorded, so a run
+    # naming a judge produced metadata attributing its scores to an engine that
+    # did not produce them. Empty still means "take the configured one", which
+    # is why the dropped argument read as a deliberate choice.
+    # Design `consumer_ci.md` section 4.13.
     channel = _channel(
-        "",
+        str(config.getoption("--judge-engine") or ""),
         plan.mode,
         plan.record,
         bool(config.getoption("--keep-connection")),

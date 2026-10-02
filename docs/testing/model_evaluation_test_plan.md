@@ -118,6 +118,8 @@ requirements exist, and that is exactly what `10448` checks.
 | `MQC_REQ_CAS_COR_0017` | A level 5 exemplar passes the assertions of the rule it belongs to, since a case cannot award a top score through a failed gate |
 | `MQC_REQ_CAS_COR_0018` | The code comprehension task file is reproducible from its shipped generator, so a hand edit to a generated file is reported |
 | `MQC_REQ_CAS_PRE_0007` | Every inventory row in this repository's design and test plan names a case the suite implements, reported so an unbuilt design is visible rather than forgotten | model_evaluation_test_plan.md section 8.1.1 |
+| `MQC_REQ_CAS_PRE_0008` | The judge engine a run names on the command line is the engine that grades it, so the judge recorded in result metadata is the instrument that produced the scores | consumer_ci.md section 4.13 |
+| `MQC_REQ_CAS_PRE_0009` | The observation count a run names on the command line is the count dispatched, so a run that measured a different population is distinguishable from one that did not | consumer_ci.md section 4.13.1 |
 | `MQC_REQ_CAS_COR_0022` | Every security case declares every vector its payload carries and names the one it is about, so an incidental match cannot stand in for coverage |
 | `MQC_REQ_CAS_COR_0021` | Every graded case's declared foundations are exactly the ones its design inventory states, so a dependency cannot be added in code without a document approving it |
 | `MQC_REQ_CAS_COR_0020` | A recorded response that withheld content states the provider's own reason for withholding it, so a refusal is not read as a model failure |
