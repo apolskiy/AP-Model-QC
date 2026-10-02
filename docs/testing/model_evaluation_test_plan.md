@@ -569,8 +569,9 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `10464` | N | `a_declared_foundation_the_design_does_not_state_is_reported` |
 | `10465` | N | `an_undeclared_or_unregistered_vector_is_reported` |
 | `10466` | P | `a_single_disagreement_dispatches_two_more` |
+| `10467` | P | `max_spend_reaches_the_session_ceiling` |
 
-**Inventory: 27 cases, 20 negative, 7 positive, 0 boundary.**
+**Inventory: 28 cases, 20 negative, 8 positive, 0 boundary.**
 
 The `CAS` block also carries `10406` through `10422`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set

@@ -1664,3 +1664,53 @@ that cannot fail is not evidence.
   * Still outstanding: the adaptive escalation is designed and **not yet
     implemented**, and the eight dated gaps in `config/flag_coverage.yaml`
     expire 2026-10-31.
+
+## 2026-10-01: The flag coverage gaps, read rather than restated
+
+Eight dated gaps. Every reason said what was **unknown** about the flag, so the
+first work was reading the code behind each.
+
+| Flag | Registered | Behaviour exists | Connected | Outcome |
+|---|---|---|---|---|
+| `--max-spend` | Yes | Yes | **Yes** | **Closed**, `MQC_CAS_UNI_10467` |
+| `--extra-columns` | Yes | **Yes**, unwired | **No** | A defect, dated 2026-10-31 |
+| `--out-dir` | Yes | No | n/a | A decision, dated 2026-10-31 |
+| `--tests` | Workflow input | In the workflow | Not a pytest flag | Reworded, 2026-11-30 |
+| `--as-of`, `--golden-rules`, `--judge-engine`, `--observations` | Yes | Yes | Yes | Still gaps, 2026-11-30 |
+
+### `--extra-columns` is the third instance of what created this file
+
+`--max-spend` accepted a ceiling that could not stop a request. `--priority`
+named a band and ran every band. **`--extra-columns` names a column policy,
+is recorded into the invocation record, and reaches no code** while
+`ingestion/loaders.py` implements reject and drop beside it.
+
+So a run can record a policy it never applied, which is the same shape as the
+other two: not a missing feature, a claim in the record that nothing backs. The
+expiry moved to 2026-10-31 because it is now a known defect rather than an
+unread gap, and wiring it is a behaviour change with its own cycle.
+
+### `--out-dir` has nothing behind it either way
+
+No reader, and no unwired implementation. pytest's own `--junitxml` and
+`--alluredir` write the artifacts and are what the workflows pass. So the
+question is whether the flag should exist, which is a decision rather than a
+defect, and section 7.3 loses a row if the answer is no.
+
+### `--max-spend` closed
+
+The consumer reads the flag into the dispatch session's ceiling, and that was
+the broken half: `MQC_EXE_UNI_10301` and `10303` already covered the session and
+the fail-closed rule, while nothing proved the flag reached them.
+`MQC_CAS_UNI_10467` asserts it, and that absent and an explicit zero both mean
+unbounded.
+
+Injection: replacing the read with a literal zero, and the case names it.
+
+**Eleven flags now owned by a case, seven still gapped**, two of those dated
+this month because reading them turned an unknown into a defect and a decision.
+
+* **Code Quality & Compliance Audit:**
+  * Harness: 648 passing, pylint 10.00/10 exit 0.
+  * Cases: 67 preconditions, pylint 10.00/10 exit 0.
+  * gemini 2 failed, `gpt-4.1` 8 failed, `claude-opus-5-5` 10 failed, 9 skipped.

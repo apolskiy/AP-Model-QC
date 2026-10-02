@@ -25,7 +25,7 @@ from typing import Final
 import pytest
 
 from cmn.observations import further_observations
-from tests.cases.graded_support import _channel, engine_roster
+from tests.cases.graded_support import dispatch_session, _channel, engine_roster
 from tools.band_floor import assess
 
 pytestmark = pytest.mark.unit
@@ -117,6 +117,38 @@ class TestMQCHarnessLocatedByInstall:
         # model that recorded it and takes that model from here.
         assert "gemini" in roster
         assert roster["gemini"].model
+
+
+class _Invocation:
+    """The parts of pytest's configuration an option reader reaches.
+
+    Attributes:
+        supplied (dict): Option values, keyed by the flag as typed.
+    """
+
+    def __init__(self, supplied: dict[str, object]) -> None:
+        """Store the supplied options.
+
+        Args:
+            supplied (dict): Option values, keyed by flag including dashes.
+
+        Returns:
+            None
+        """
+        self.supplied = supplied
+
+    def getoption(self, name: str, default: object = None) -> object:
+        """Return one option value.
+
+        Args:
+            name (str): The flag, with or without leading dashes.
+            default (object): What an unsupplied option returns.
+
+        Returns:
+            object: The supplied value, or the default.
+        """
+        wanted = f"--{name.lstrip('-')}"
+        return self.supplied.get(wanted, default)
 
 
 class TestMQCOptionsReachTheHarness:
@@ -230,6 +262,34 @@ class TestMQCOptionsReachTheHarness:
 
         # AND A CONSISTENT CASE IS NEVER ASKED AGAIN, which is the whole saving.
         assert further_observations([True, True, True]) == 0
+
+
+    def MQC_CAS_UNI_10467_max_spend_reaches_the_session_ceiling(self) -> None:
+        """``--max-spend`` arrives as the dispatch session's ceiling.
+
+        The session enforces the ceiling and fails closed on an unpriced model,
+        which ``MQC_EXE_UNI_10301`` and ``10303`` cover. This covers the half
+        that was broken: the flag reaching it.
+
+        A ceiling of zero means unbounded, so the absent flag and an explicit
+        zero both yield a session that stops nothing.
+
+        Design: harness ``cmn_verdict_and_cli.md`` section 7.1.0.
+
+        Returns:
+            None
+        """
+        session = dispatch_session(_Invocation({"--max-spend": 2.50}))
+
+        assert session.max_spend == 2.50, (
+            "the session was built with no ceiling, so a budgeted run would "
+            "dispatch past the figure it was given"
+        )
+
+        # ABSENT AND ZERO BOTH MEAN UNBOUNDED, which is what the session reads
+        # as "no ceiling" rather than "a ceiling of nothing".
+        assert dispatch_session(_Invocation({})).max_spend == 0.0
+        assert dispatch_session(_Invocation({"--max-spend": 0})).max_spend == 0.0
 
 
 class TestMQCBandFloor:
