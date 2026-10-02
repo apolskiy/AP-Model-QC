@@ -1910,3 +1910,32 @@ before it is believed.
   * Cases: 68 preconditions, pylint 10.00/10 exit 0.
   * `--extra-columns` and `--golden-rules` move from dated gaps to owners, so
     `config/flag_coverage.yaml` carries five gaps where it carried seven.
+
+## 2026-10-02: the debug workflow emitted half the artifact contract
+
+`debug-cases-on-demand.yml` passed `--out-dir` and `--junitxml` with no
+`--alluredir`, so the one workflow reached for when something has already gone
+wrong produced no Allure results and therefore no report. Found in the harness,
+where four invocations across both repositories were in that state and nothing
+read a workflow against `testing-standards.md` section 5.
+
+**It is fixed without this workflow changing.** `--out-dir` now derives both
+destinations, so the flag this workflow already passed supplies the Allure
+directory: harness `cmn_verdict_and_cli.md` section 7.1.0.2.
+
+`MQC_CAS_UNI_10469` calls the harness's `artifact_mandate_gaps` with this root,
+the arrangement the encoding and header rules use, because the harness owns no
+case data and this repository owns its workflows.
+
+**It was green when written, so it was verified by injection**: removing
+`--out-dir` from the debug workflow makes it report that workflow, which is the
+state this repository was in until today. The file was restored and confirmed
+byte-identical.
+
+Also corrected: the README claimed 68 preconditions and 83 requirements against
+69 and 84.
+
+### State
+
+69 preconditions passing, graded replay 66 passed with the 2 known
+`gemini-3.8-flash` findings and 1 skip, pylint 10.00/10 exit 0.

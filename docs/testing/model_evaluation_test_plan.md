@@ -92,6 +92,7 @@ requirements exist, and that is exactly what `10448` checks.
 | `MQC_REQ_CAS_CI_0020` | Every test named by a traceability matrix row is defined by this suite, so a requirement cannot read as covered by a case that was never written | consumer_ci.md section 4.10 |
 | `MQC_REQ_CAS_CI_0021` | The case, requirement, graded-case, corpus and task figures stated in README.md are recomputed from the repository, so the front page cannot describe work that is absent or omit work that exists | consumer_ci.md section 4.11 |
 | `MQC_REQ_CAS_CI_0022` | A harness gate that has not concluded is waited for within a bounded budget rather than refused, while a red conclusion, an absent run and an exhausted wait are each refused at once | consumer_ci.md section 3.11 |
+| `MQC_REQ_CAS_CI_0023` | Every workflow invocation emits both JUnit XML and Allure raw results, so a debug or graded run produces the reporting evidence the downstream artifact contract requires and not half of it | consumer_ci.md section 4.12 |
 
 
 ### 2.5.2 `COR`, The corpus: what the shipped data must satisfy

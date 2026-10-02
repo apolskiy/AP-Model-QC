@@ -531,8 +531,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `10458` | N | `an_error_refuses_rather_than_averaging` |
 | `10459` | N | `the_candidate_engine_reaches_the_plan_the_channel_uses` |
 | `10460` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
+| `10469` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
 
-**Inventory: 39 cases, 26 negative, 6 positive, 4 boundary.**
+**Inventory: 40 cases, 27 negative, 6 positive, 4 boundary.**
 
 ### 4A. The harness is a dependency, not the directory next door
 
@@ -607,6 +608,40 @@ with `main`, so a stabilization branch could quietly run against the wrong
 harness while looking configured.
 
 ---
+
+### 4.12 Both mandated artifacts, checked on this side too
+
+Added 2026-10-02, from a harness finding that reached this repository.
+
+`testing-standards.md` section 5 mandates **both** JUnit XML and Allure raw
+results, and they answer different questions: JUnit is how a failure is
+triaged, Allure is what a report is assembled from and what readiness is judged
+against. Emitting one is not a reduced record, it is a missing reader.
+
+**`debug-cases-on-demand.yml` emitted JUnit alone.** It passed `--out-dir` and
+`--junitxml` with no `--alluredir`, so the one workflow reached for when
+something has already gone wrong produced no report. **It is already fixed
+without this workflow changing**, because `--out-dir` now derives both
+destinations: harness `cmn_verdict_and_cli.md` section 7.1.0.2.
+
+| Workflow | Emits both |
+|---|---|
+| `gate-on-change.yml`, every band | Yes, throughout |
+| `evaluate-live-weekly.yml`, every leg | Yes, throughout |
+| `debug-cases-on-demand.yml` | **Now, through `--out-dir`** |
+
+**The scanner lives in the harness and is called from both sides.** The harness
+owns no case data and this repository owns its own workflows, so
+`cmn.code_standards.artifact_mandate_gaps` takes a root and
+`MQC_CMN_UNI_11211` and `MQC_CAS_UNI_10469` call it with one each. The same
+one-implementation-two-callers arrangement as the encoding and header rules,
+for the same boundary reason.
+
+**This check was green when it was written, and that is recorded rather than
+hidden.** The flag implementation fixed the gap before the case existed, so the
+case was verified by injection instead: removing `--out-dir` from the debug
+workflow makes it report that workflow, which is the state this repository was
+in until 2026-10-02.
 
 ## 5. Governance Parity With The Harness
 

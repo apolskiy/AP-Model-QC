@@ -21,6 +21,8 @@ import allure
 import pytest
 import yaml
 
+from cmn.code_standards import artifact_mandate_gaps
+
 pytestmark = pytest.mark.unit
 
 _WORKFLOWS = Path(__file__).resolve().parents[2] / ".github" / "workflows"
@@ -614,6 +616,41 @@ class TestMQCResolveObligation:
                 f"{workflow} job {job_name!r} reads step {producer!r}, which "
                 f"it does not contain, so the pin expands to empty"
             )
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Consumer CI")
+class TestMQCArtifactContract:
+    """The downstream artifact contract, against what the workflows run."""
+
+    @allure.story("Both mandated artifacts are emitted")
+    def MQC_CAS_UNI_10469_a_workflow_emitting_one_mandated_artifact_is_reported(
+        self,
+    ) -> None:
+        """Every workflow invocation writing an artifact writes both of them.
+
+        ``testing-standards.md`` section 5 mandates JUnit XML and Allure raw
+        results together, and they are read by different people: JUnit for
+        triaging a failure, Allure for the report readiness is judged from. An
+        invocation naming ``--out-dir`` satisfies both, since the flag derives
+        each destination.
+
+        **The scanner is the harness's and is called with this root.** The
+        harness owns no case data and this repository owns its workflows, so
+        ``MQC_CMN_UNI_11211`` calls the same function with the other one.
+
+        Design: ``consumer_ci.md`` section 4.12.
+
+        Returns:
+            None
+        """
+        gaps = artifact_mandate_gaps(Path(__file__).resolve().parents[2])
+
+        assert not gaps, (
+            "workflow invocations emit one of the two mandated artifacts, so "
+            "the run produces no report to judge readiness from: "
+            + "; ".join(gaps)
+        )
 
 
 @allure.epic("AP-Model-QC")
