@@ -97,6 +97,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0025` | One dispatch session serves a whole run, so the spend ceiling accumulates toward refusal, request spacing is applied between observations and the circuit breaker can open | consumer_ci.md section 4.15 |
 | `MQC_REQ_CAS_CI_0026` | The dispatch session records every model a response reported, so a caller can say what a run ran against without re-deriving it from observations | consumer_ci.md section 4.15.1 |
 | `MQC_REQ_CAS_CI_0027` | Every identifier this repository collects carries six digits whose layer and module positions agree with its tokens, so a case cannot sit in a block it was not allocated | consumer_ci.md section 5 |
+| `MQC_REQ_CAS_CI_0028` | Every graded job names the engine it measured, and the artifacts it carries and publishes are keyed by that engine, so a failure is attributable to one model without reading a log and two engines cannot overwrite one another's outcomes | consumer_ci.md section 4.17 |
 
 
 ### 2.5.2 `COR`, The corpus: what the shipped data must satisfy

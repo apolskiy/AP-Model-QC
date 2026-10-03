@@ -104,8 +104,15 @@ jobs:
   #
   # NO ENVIRONMENT AND NO PROVIDER SECRET, because both sides are replayed.
   deterministic:
-    name: 1 - our code (replay, replay)
+    name: 1 - our code (replay, replay) on ${{ matrix.engine }}
     needs: resolve
+    strategy:
+      # ONE LEG PER ENGINE, so a red names the model it is about. Both sides
+      # are replayed here, so the legs cost nothing and run together.
+      # Design `consumer_ci.md` section 4.17.
+      fail-fast: false
+      matrix:
+        engine: [gemini, openai, claude]
     # A RED PAIRING MEANS NO LADDER. Rung 1 is free, but running it
     # against an unverified instrument produces a green nobody can
     # rely on, and rungs 2 and 3 would then spend on that basis.
@@ -144,7 +151,7 @@ jobs:
       - name: Graded layers, both sides replayed
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine gemini \
+            --engine ${{ matrix.engine }} \
             --mode replay \
             --junitxml=reports/junit_replay_replay.xml \
             --alluredir=reports/allure-results
@@ -152,7 +159,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: mqc-reports-cases-gemini-replay-replay
+          name: mqc-reports-cases-${{ matrix.engine }}-replay-replay
           path: reports/
           retention-days: 90
 
@@ -164,8 +171,20 @@ jobs:
   # verdicts is known-correct. An exemplar is known-correct by construction, so
   # calibration says whether the judge still means what the anchors say.
   judge:
-    name: 2 - the judge (replay, live)
+    name: 2 - the judge (replay, live) on ${{ matrix.engine }}
     needs: [resolve, deterministic]
+    strategy:
+      # ONE LEG PER ENGINE, AND ONE AT A TIME. A provider's legs share its
+      # quota exactly as priority bands do, which is the reasoning
+      # `testing-standards.md` section 2 gives for serialising within a run.
+      # Design `consumer_ci.md` section 4.17.
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        engine: [gemini, openai, claude]
+    concurrency:
+      group: evaluate-live-${{ matrix.engine }}-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     environment: live
     steps:
@@ -203,7 +222,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine gemini \
+            --engine ${{ matrix.engine }} \
             --mode replay \
             --judge-mode live \
             -k calibration \
@@ -216,7 +235,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine gemini \
+            --engine ${{ matrix.engine }} \
             --mode replay \
             --judge-mode live \
             --junitxml=reports/junit_replay_live.xml \
@@ -225,7 +244,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: mqc-reports-cases-gemini-replay-live
+          name: mqc-reports-cases-${{ matrix.engine }}-replay-live
           path: reports/
           retention-days: 90
 
@@ -256,8 +275,20 @@ jobs:
   # MODEL, and per A2 a model regression never blocks a merge: it is reported
   # as an alert and gates nothing.
   model:
-    name: 3 - the model (live, live)
+    name: 3 - the model (live, live) on ${{ matrix.engine }}
     needs: [resolve, judge]
+    strategy:
+      # ONE LEG PER ENGINE, AND ONE AT A TIME. A provider's legs share its
+      # quota exactly as priority bands do, which is the reasoning
+      # `testing-standards.md` section 2 gives for serialising within a run.
+      # Design `consumer_ci.md` section 4.17.
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        engine: [gemini, openai, claude]
+    concurrency:
+      group: evaluate-live-${{ matrix.engine }}-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     environment: live
     steps:
@@ -291,10 +322,17 @@ jobs:
 
       - name: Graded layers, live throughout
         env:
+          # EVERY PROVIDER'S KEY IS OFFERED AND EACH ADAPTER READS ITS OWN,
+          # which is the variable it declares through `credential_variables`.
+          # A leg whose key is absent refuses at preflight: an absent
+          # credential is our configuration, not a finding about a model
+          # (`consumer_ci.md` section 4.17.2).
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine gemini \
+            --engine ${{ matrix.engine }} \
             --mode live \
             --junitxml=reports/junit_live_live.xml \
             --alluredir=reports/allure-results
@@ -302,7 +340,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: mqc-reports-cases-gemini-live-live
+          name: mqc-reports-cases-${{ matrix.engine }}-live-live
           path: reports/
           retention-days: 90
 

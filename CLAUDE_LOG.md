@@ -2056,3 +2056,70 @@ clean.
 
 76 preconditions passing, graded replay 66 passed with the 2 known
 `gemini-3.8-flash` findings and 1 skip, pylint 10.00/10 exit 0.
+
+## 2026-10-03: one job per evaluated engine
+
+### Why
+
+A job covering three engines produces a red that names none of them, so an
+engineer or an analysis has to read a log to learn which model failed. That is
+section 3.12's argument about priority bands, applied to engines and more
+strongly: **each finding is filed with one provider**, so the run that produced
+it has to be one engine's run.
+
+**Both workflows evaluated one engine of three.** Every graded step named
+`--engine gemini` literally, so `openai` and `claude` were measured only by
+hand, and the findings this project reports about them came from local runs
+rather than from any gate.
+
+### What changed
+
+| | |
+|---|---|
+| `gate-on-change.yml` | The three graded bands take a platform-by-engine matrix: 6 legs each, 18 graded jobs. Replay contacts no provider and fixtures exist for all three, so this costs jobs and not quota |
+| `evaluate-live-weekly.yml` | Each rung runs per engine. Rung 1 is free and parallel; rungs 2 and 3 spend, so `max-parallel: 1` and a concurrency group per engine |
+| Job names | Every graded job carries its engine, which is the whole point |
+| Rung 3's credentials | Every provider's key is offered and each adapter reads the variable it declares |
+
+### The collision this avoided by design rather than by discovery
+
+The bands chain: P0 uploads `reports/carry.json` and P1 takes it. The artifact
+was named `carry-after-p0-<os>`.
+
+**Three engines on that name is one name.** Each engine's P0 would upload to it
+and P1 would download whichever finished last, so two of three bands would
+proceed on another engine's outcomes and report about a model they never
+measured.
+
+**That is the defect `JudgementKey` already had**, where recording `openai`
+overwrote 96 `gemini` judgements and only a hash guard caught it. So the engine
+joins the carry name, the carry download, and every report artifact.
+
+`MQC_CAS_UNI_115709` checks all three properties of every graded job, and
+**both injections were caught**: removing the engine from a job name, and
+removing it from the carry artifact.
+
+### What it immediately exposes
+
+With the gate running all three engines in replay:
+
+| Engine | Graded replay |
+|---|---|
+| `gemini` | 2 failed, 66 passed, 1 skipped |
+| `openai` | **8 failed**, 60 passed |
+| `claude` | **10 failed**, 50 passed |
+
+**Those twenty failures are findings about third-party models, and the gate now
+blocks on them.** That is correct as a measurement and wrong as a gate: these
+are not our defects and we cannot fix them, which is exactly the situation
+quarantine exists for. The remedy is the mechanism added on 2026-10-02: one
+quarantine file per engine, each entry carrying the date it was accepted, the
+model it was observed against, and its ticket once filed.
+
+So the next step is triage, not a threshold change: each finding is either
+accepted into its engine's quarantine with a reason, or it is a defect in our
+corpus and the corpus is wrong.
+
+### State
+
+77 preconditions passing, pylint 10.00/10 exit 0. Harness unchanged and green.

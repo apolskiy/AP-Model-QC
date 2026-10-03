@@ -517,6 +517,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115316` | N | `a_pull_request_taking_its_source_strictness_is_reported` |
 | `115505` | N | `a_file_open_declaring_no_encoding_is_reported` |
 | `115506` | N | `an_identifier_outside_its_module_block_is_reported` |
+| `115709` | N | `a_graded_job_not_naming_its_engine_is_reported` |
 | `115009` | P | `the_obfuscated_payloads_survive_a_load_as_code_points` |
 | `115010` | N | `a_graded_evaluation_rule_without_a_rubric_is_reported` |
 | `115600` | N | `a_requirement_traced_but_stated_in_no_plan_is_reported` |
@@ -540,7 +541,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 46 cases, 28 negative, 11 positive, 4 boundary.**
+**Inventory: 48 cases, 32 negative, 11 positive, 5 boundary.** Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 ### 4A. The harness is a dependency, not the directory next door
 
@@ -835,6 +836,69 @@ the emission hook, then per-engine jobs, then the live run.
 **Each engine is run and reported separately**, because each finding is filed
 separately with the provider that owns it. That is the reason the jobs separate
 rather than a preference about CI layout.
+
+### 4.17 One job per evaluated engine, because a red has to say which engine
+
+Added 2026-10-03 at the project owner's instruction: a job covering several
+engines produces a result nobody can act on, and an engineer or an analysis has
+to go digging through a log to find out which model failed.
+
+**Both workflows evaluated one engine of three.** Every graded step named
+`--engine gemini` literally, so `openai` and `claude` were measured only by
+hand. The findings this project reports about them came from local runs rather
+than from any gate.
+
+**This is section 3.12's argument about bands, applied to engines.** That
+section put each priority band in its own job and gave the reason: "The band in
+the job name answers that before anything is opened." A graded failure is a
+finding about **one model**, so the engine belongs in the job name for exactly
+the same reason, and more strongly:
+
+| | |
+|---|---|
+| A red naming no engine | Someone opens the log and searches to learn which model failed, per failure |
+| **Each finding is filed with one provider** | The run that produced it has to be one engine's run, or the ticket cites a run that measured three models |
+| A model regresses while another improves | One job's status cannot express both, so the signal is whichever happened to fail |
+
+**In the gate it costs nothing.** The graded bands run in replay, and fixtures
+exist for all three engines: 204 recorded responses for `gemini`, 210 for
+`openai`, 192 for `claude`. No credential, no quota, pure CPU. The matrix
+becomes platform by engine.
+
+#### 4.17.1 The carried outcomes must be keyed by engine, or three engines overwrite one
+
+The bands chain: P0 uploads `reports/carry.json` and P1 takes it, so a
+foundation established once is not re-established. The artifact is named
+`carry-after-p0-<os>`.
+
+**Three engines on that name is one name.** Each engine's P0 would upload to it
+and P1 would download whichever finished last, so two of the three bands would
+proceed on another engine's outcomes and report about a model they did not
+measure.
+
+**That is the defect the judgement fixtures already had.** `JudgementKey` lacked
+the candidate engine, and recording `openai` overwrote 96 `gemini` judgements
+that were only recovered because a hash guard refused them. The shape is
+identical: an artifact key missing the dimension that distinguishes two runs.
+So the engine joins both the carry name and the report name, by design rather
+than after an overwrite.
+
+#### 4.17.2 A live leg with no credential skips, and never fails
+
+The weekly ladder runs live, so each engine's leg needs that engine's key.
+A leg whose secret is absent **skips**: an absent credential is our
+configuration, not a finding about a model, and `framework-rules.md` section 4
+resolves a `QC_HARNESS_*` condition to skip or broken and never to a failure.
+
+**Failing it would attribute our misconfiguration to the provider**, which is
+the error the consumer-regression gate exists to avoid and the same reason an
+undated quarantine entry does not fail a run (section 4.6.4 of the harness
+design).
+
+**The legs stay serialised.** `max-parallel: 1` within the run and a
+concurrency group keyed on engine and mode between runs, which
+`testing-standards.md` section 2 already specifies: priority bands share a
+provider quota, and so do a provider's own legs.
 
 ## 5. Governance Parity With The Harness
 

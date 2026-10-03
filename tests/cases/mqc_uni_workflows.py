@@ -776,3 +776,95 @@ class TestMQCRefusalReachesTheRun:
             f"{_DEBUG} no longer says why it is exempt, so the next reader "
             f"sees an omission rather than a decision"
         )
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Consumer CI")
+class TestMQCEngineAttribution:
+    """A graded red has to say which model it is about."""
+
+    @allure.story("Every graded job names its engine")
+    def MQC_CAS_UNI_115709_a_graded_job_not_naming_its_engine_is_reported(
+        self,
+    ) -> None:
+        """Every graded job runs one engine, names it, and keys its artifacts.
+
+        A graded failure is a finding about one model, so a job covering
+        several produces a red that names none of them and an engineer has to
+        read a log to learn which model failed.
+
+        Three things are checked of each graded job:
+
+        * it takes its engine from a matrix rather than naming one literally,
+        * its job name carries the engine, so the red is attributable in a
+          listing,
+        * every artifact it uploads is keyed by the engine, because two
+          engines sharing an artifact name is one name and the later upload
+          wins.
+
+        **The third is the one with a precedent.** ``JudgementKey`` lacked the
+        candidate engine, and recording ``openai`` overwrote 96 ``gemini``
+        judgements.
+
+        Design: ``consumer_ci.md`` section 4.17.
+
+        Returns:
+            None
+        """
+        problems: list[str] = []
+        examined = 0
+
+        for workflow in (_GATE, _LIVE):
+            loaded = _load(workflow)
+            for job_name, job in _jobs(loaded).items():
+                graded = _graded_invocations(job)
+                if not graded:
+                    continue
+                examined += 1
+                where = f"{workflow}:{job_name}"
+
+                engines = (
+                    ((job.get("strategy") or {}).get("matrix") or {}).get("engine")
+                )
+                if not engines:
+                    problems.append(
+                        f"{where} runs graded cases and declares no engine "
+                        f"matrix, so it measures one engine chosen literally"
+                    )
+                elif len(engines) < 2:
+                    problems.append(
+                        f"{where} declares {engines}, so the other engines are "
+                        f"measured by nothing"
+                    )
+
+                if "matrix.engine" not in str(job.get("name") or ""):
+                    problems.append(
+                        f"{where} runs graded cases and its name does not carry "
+                        f"the engine, so a red names no model"
+                    )
+
+                for body in graded:
+                    if "matrix.engine" not in body:
+                        problems.append(
+                            f"{where} names its engine literally rather than "
+                            f"taking it from the matrix"
+                        )
+
+                for step in job.get("steps") or []:
+                    if "upload-artifact" not in str(step.get("uses") or ""):
+                        continue
+                    name = str(((step.get("with") or {}).get("name")) or "")
+                    if name and "matrix.engine" not in name:
+                        problems.append(
+                            f"{where} uploads {name!r}, which is not keyed by "
+                            f"the engine, so two engines share one artifact name"
+                        )
+
+        assert examined >= 4, (
+            f"only {examined} graded jobs were examined, so this check would "
+            f"pass by finding almost nothing"
+        )
+        assert not problems, (
+            "graded jobs do not attribute their results to one engine: "
+            + "; ".join(problems)
+        )

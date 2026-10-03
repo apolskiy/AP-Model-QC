@@ -226,7 +226,7 @@ jobs:
   # preconditions failed, so one band going red still leaves the others
   # reporting. A chain stopping at the first red would be the single job again.
   graded-p0:
-    name: graded P0, release blocking (${{ matrix.os }})
+    name: graded P0, release blocking (${{ matrix.engine }}, ${{ matrix.os }})
     needs: [resolve, lint, preconditions]
     # NO STATUS FUNCTION, DELIBERATELY. A job-level `always()` or
     # `!cancelled()` outruns the resolver's refusal, which is what
@@ -237,9 +237,14 @@ jobs:
     # skipped job is not a successful one.
     if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     strategy:
+      # ONE JOB PER ENGINE, so a red names the model it is about rather than
+      # leaving somebody to read a log for it. Replay contacts no provider and
+      # fixtures exist for all three, so this costs jobs and not quota.
+      # Design `consumer_ci.md` section 4.17.
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-latest]
+        engine: [gemini, openai, claude]
     runs-on: ${{ matrix.os }}
     env:
       # THE PROVENANCE GUARD COMPARES BOTH REFS, because a commit is a property
@@ -262,7 +267,7 @@ jobs:
         shell: bash
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine gemini \
+            --engine ${{ matrix.engine }} \
             --mode replay \
             --priority 0 \
             --carry-outcomes reports/carry.json \
@@ -273,7 +278,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: carry-after-p0-${{ matrix.os }}
+          name: carry-after-p0-${{ matrix.engine }}-${{ matrix.os }}
           path: reports/carry.json
           retention-days: 1
 
@@ -282,13 +287,13 @@ jobs:
         with:
           name: >-
             ${{ needs.resolve.outputs.gated == 'true'
-                && format('mqc-reports-cases-p0-replay-{0}', matrix.os)
-                || format('scratch-ungated-cases-p0-{0}-{1}', matrix.os, github.run_id) }}
+                && format('mqc-reports-cases-p0-replay-{0}-{1}', matrix.engine, matrix.os)
+                || format('scratch-ungated-cases-p0-{0}-{1}-{2}', matrix.engine, matrix.os, github.run_id) }}
           path: reports/
           retention-days: 90
 
   graded-p1:
-    name: graded P1, release blocking (${{ matrix.os }})
+    name: graded P1, release blocking (${{ matrix.engine }}, ${{ matrix.os }})
     needs: [resolve, lint, preconditions, graded-p0]
     # NO STATUS FUNCTION, DELIBERATELY. A job-level `always()` or
     # `!cancelled()` outruns the resolver's refusal, which is what
@@ -299,9 +304,14 @@ jobs:
     # skipped job is not a successful one.
     if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     strategy:
+      # ONE JOB PER ENGINE, so a red names the model it is about rather than
+      # leaving somebody to read a log for it. Replay contacts no provider and
+      # fixtures exist for all three, so this costs jobs and not quota.
+      # Design `consumer_ci.md` section 4.17.
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-latest]
+        engine: [gemini, openai, claude]
     runs-on: ${{ matrix.os }}
     env:
       MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
@@ -324,14 +334,14 @@ jobs:
       - name: Take the outcomes P0 established
         uses: actions/download-artifact@v6
         with:
-          name: carry-after-p0-${{ matrix.os }}
+          name: carry-after-p0-${{ matrix.engine }}-${{ matrix.os }}
           path: reports/
 
       - name: Band P1, both sides replayed
         shell: bash
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine gemini \
+            --engine ${{ matrix.engine }} \
             --mode replay \
             --priority 1 \
             --carry-outcomes reports/carry.json \
@@ -342,7 +352,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: carry-after-p1-${{ matrix.os }}
+          name: carry-after-p1-${{ matrix.engine }}-${{ matrix.os }}
           path: reports/carry.json
           retention-days: 1
 
@@ -351,13 +361,13 @@ jobs:
         with:
           name: >-
             ${{ needs.resolve.outputs.gated == 'true'
-                && format('mqc-reports-cases-p1-replay-{0}', matrix.os)
-                || format('scratch-ungated-cases-p1-{0}-{1}', matrix.os, github.run_id) }}
+                && format('mqc-reports-cases-p1-replay-{0}-{1}', matrix.engine, matrix.os)
+                || format('scratch-ungated-cases-p1-{0}-{1}-{2}', matrix.engine, matrix.os, github.run_id) }}
           path: reports/
           retention-days: 90
 
   graded-lower:
-    name: graded P2-P4, pass floor (${{ matrix.os }})
+    name: graded P2-P4, pass floor (${{ matrix.engine }}, ${{ matrix.os }})
     needs: [resolve, lint, preconditions, graded-p1]
     # NO STATUS FUNCTION, DELIBERATELY. A job-level `always()` or
     # `!cancelled()` outruns the resolver's refusal, which is what
@@ -368,9 +378,14 @@ jobs:
     # skipped job is not a successful one.
     if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     strategy:
+      # ONE JOB PER ENGINE, so a red names the model it is about rather than
+      # leaving somebody to read a log for it. Replay contacts no provider and
+      # fixtures exist for all three, so this costs jobs and not quota.
+      # Design `consumer_ci.md` section 4.17.
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-latest]
+        engine: [gemini, openai, claude]
     runs-on: ${{ matrix.os }}
     env:
       MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
@@ -389,7 +404,7 @@ jobs:
       - name: Take the outcomes P0 and P1 established
         uses: actions/download-artifact@v6
         with:
-          name: carry-after-p1-${{ matrix.os }}
+          name: carry-after-p1-${{ matrix.engine }}-${{ matrix.os }}
           path: reports/
 
       # THE STEP DOES NOT GATE, THE FLOOR DOES. This is the only band where a
@@ -400,7 +415,7 @@ jobs:
         shell: bash
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine gemini \
+            --engine ${{ matrix.engine }} \
             --mode replay \
             --priority 2,3,4 \
             --carry-outcomes reports/carry.json \
@@ -418,7 +433,7 @@ jobs:
         with:
           name: >-
             ${{ needs.resolve.outputs.gated == 'true'
-                && format('mqc-reports-cases-p2p4-replay-{0}', matrix.os)
-                || format('scratch-ungated-cases-p2p4-{0}-{1}', matrix.os, github.run_id) }}
+                && format('mqc-reports-cases-p2p4-replay-{0}-{1}', matrix.engine, matrix.os)
+                || format('scratch-ungated-cases-p2p4-{0}-{1}-{2}', matrix.engine, matrix.os, github.run_id) }}
           path: reports/
           retention-days: 90
