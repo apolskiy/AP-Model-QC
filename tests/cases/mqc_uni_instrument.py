@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: MIT
 """Whether the instrument measures the claim each case name makes.
 
-Covers ``MQC_CAS_UNI_10461``, ``10462`` and ``10463``, inventoried in
+Covers ``MQC_CAS_UNI_115400``, ``115401`` and ``115402``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 8.1, and
-``MQC_CAS_UNI_10470`` and ``10471``, inventoried in ``consumer_ci.md``
+``MQC_CAS_UNI_115406`` and ``115407``, inventoried in ``consumer_ci.md``
 section 4 and designed in sections 4.13 and 4.13.1.
 
 **Three failures of one kind, found on one day.** Four cases bound one task and
@@ -61,17 +61,20 @@ _REPLAYABLE_CASE = "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_r
 # identifier, a category and a behaviour; the graded tables carry a priority and
 # a condition between them. A row matching neither is a citation.
 _PRECONDITION_ROW: Final[re.Pattern] = re.compile(
-    r"^\|\s*`(\d{5,6})`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
+    r"^\|\s*`(\d{6})`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
 )
 _GRADED_ROW: Final[re.Pattern] = re.compile(
-    r"^\|\s*`(\d{5,6})`\s*\|\s*P\d\s*\|\s*`[A-Z0-9_]+`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
+    r"^\|\s*`(\d{6})`\s*\|\s*P\d\s*\|\s*`[A-Z0-9_]+`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
 )
 
 
 # A security inventory row, whose fourth cell names the cases it presupposes.
-_INVENTORY_ROW: Final[re.Pattern] = re.compile(r"^\|\s*`(5\d{4})`\s*\|")
-_BACKTICKED_ID: Final[re.Pattern] = re.compile(r"`(\d{5,6})`")
-_CASE_NUMBER: Final[re.Pattern] = re.compile(r"_(\d{5,6})_")
+# THE SECURITY BLOCK, which the six-digit scheme moved from 5xxxx to 15xxxx:
+# domain 1, layer 5. This encoded the block prefix rather than a digit count,
+# so the widening sweep did not reach it and the row stopped matching at all.
+_INVENTORY_ROW: Final[re.Pattern] = re.compile(r"^\|\s*`(15\d{4})`\s*\|")
+_BACKTICKED_ID: Final[re.Pattern] = re.compile(r"`(\d{6})`")
+_CASE_NUMBER: Final[re.Pattern] = re.compile(r"_(\d{6})_")
 
 
 
@@ -160,7 +163,7 @@ def _named_pairs_in(node: ast.FunctionDef) -> list[tuple[int, str, str]]:
     """Return every task and rule pair one test callable names literally.
 
     **Scoped to one callable**, where :func:`_named_pairs` reads a whole module.
-    `10461` asks which case bound which pair, so the owning callable has to be
+    `115400` asks which case bound which pair, so the owning callable has to be
     known rather than the file.
 
     Args:
@@ -230,15 +233,15 @@ def _recorded_text(fixture: Path) -> str:
 class TestMQCCasesMeasureTheirOwnClaim:
     """A red has to name the claim that failed.
 
-    All three were written on 2026-10-01 from one triage. `30003` through
-    `30006` bound one task and one rule and asserted the conjunction of its four
+    All three were written on 2026-10-01 from one triage. `134302` through
+    `134305` bound one task and one rule and asserted the conjunction of its four
     assertions, and one of those assertions was defeated by trailing whitespace.
     **Four cases went red and one behaviour was wrong, and that behaviour was
     the model complying.** Test plan sections 9.3.1 and 9.3.2.
     """
 
     @allure.story("Distinct pairs")
-    def MQC_CAS_UNI_10461_a_task_and_rule_pair_bound_by_two_graded_cases_is_reported(
+    def MQC_CAS_UNI_115400_a_task_and_rule_pair_bound_by_two_graded_cases_is_reported(
         self,
     ) -> None:
         """No two graded cases bind the same task and rule pair.
@@ -283,7 +286,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
         )
 
     @allure.story("Whitespace insensitivity")
-    def MQC_CAS_UNI_10462_an_assertion_sensitive_to_trailing_whitespace_is_reported(
+    def MQC_CAS_UNI_115401_an_assertion_sensitive_to_trailing_whitespace_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """No assertion changes its verdict when trailing whitespace is stripped.
@@ -340,7 +343,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"{moved[:4]}"
         )
     @allure.story("Refusals")
-    def MQC_CAS_UNI_10463_a_recorded_refusal_without_a_stated_reason_is_reported(
+    def MQC_CAS_UNI_115402_a_recorded_refusal_without_a_stated_reason_is_reported(
         self,
     ) -> None:
         """Every recorded response that withheld content states a reason.
@@ -382,7 +385,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
         )
 
     @allure.story("Declared foundations")
-    def MQC_CAS_UNI_10464_a_declared_foundation_the_design_does_not_state_is_reported(
+    def MQC_CAS_UNI_115403_a_declared_foundation_the_design_does_not_state_is_reported(
         self,
     ) -> None:
         """Each security case's foundations match the ones its design states.
@@ -433,7 +436,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
         )
 
     @allure.story("Declared vectors")
-    def MQC_CAS_UNI_10465_an_undeclared_or_unregistered_vector_is_reported(
+    def MQC_CAS_UNI_115404_an_undeclared_or_unregistered_vector_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """A declared vector is registered, and a matched one is declared.
@@ -511,7 +514,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
         )
 
     @allure.story("Inventory")
-    def MQC_CAS_UNI_10468_an_inventory_row_without_an_implementation_is_reported(
+    def MQC_CAS_UNI_115405_an_inventory_row_without_an_implementation_is_reported(
         self,
     ) -> None:
         """Every inventory row in this repository names a case the suite defines.
@@ -619,7 +622,7 @@ class TestMQCNamedInstrument:
     """A flag that names an instrument selects it, or the record is wrong."""
 
     @allure.story("The named judge grades")
-    def MQC_CAS_UNI_10470_the_named_judge_engine_is_the_one_that_grades(
+    def MQC_CAS_UNI_115406_the_named_judge_engine_is_the_one_that_grades(
         self,
     ) -> None:
         """``--judge-engine`` selects the engine that grades the run.
@@ -652,7 +655,7 @@ class TestMQCNamedInstrument:
             )
 
     @allure.story("The named count is dispatched")
-    def MQC_CAS_UNI_10471_the_named_observation_count_is_the_one_dispatched(
+    def MQC_CAS_UNI_115407_the_named_observation_count_is_the_one_dispatched(
         self,
     ) -> None:
         """``--observations`` sets how many observations a case begins with.
@@ -747,7 +750,7 @@ class TestMQCRunLevelSession:
     """The session is the run's state, so it has to be the run's session."""
 
     @allure.story("One session serves the run")
-    def MQC_CAS_UNI_10473_one_dispatch_session_serves_a_whole_run(self) -> None:
+    def MQC_CAS_UNI_115409_one_dispatch_session_serves_a_whole_run(self) -> None:
         """Every observation in a run dispatches through one session.
 
         The session holds the state that is only meaningful across a run: the
@@ -790,7 +793,7 @@ class TestMQCRunLevelSession:
         assert dispatch_session(_FakeDispatchConfig(engine="openai")) is not first
 
     @allure.story("The session reports what it served")
-    def MQC_CAS_UNI_10474_the_session_records_the_models_it_served(self) -> None:
+    def MQC_CAS_UNI_115410_the_session_records_the_models_it_served(self) -> None:
         """The session records every model a response reported.
 
         ``reconcile`` stamps a quarantine entry with the model its
@@ -848,7 +851,7 @@ class TestMQCQuarantineTool:
     """Re-observing the quarantined cases, and what gets written back."""
 
     @allure.story("The tool writes what reconciling decided")
-    def MQC_CAS_UNI_10472_the_tool_writes_what_reconciling_decided(
+    def MQC_CAS_UNI_115408_the_tool_writes_what_reconciling_decided(
         self, tmp_path: Path
     ) -> None:
         """The tool re-observes each entry's case and writes the result back.
@@ -919,7 +922,7 @@ class TestMQCQuarantineTool:
         assert "SPDX-License-Identifier: MIT" in target.read_text(encoding="utf-8")
 
     @allure.story("A stamped date is never guessed")
-    def MQC_CAS_UNI_10475_the_tool_refuses_a_date_it_cannot_parse(self) -> None:
+    def MQC_CAS_UNI_115411_the_tool_refuses_a_date_it_cannot_parse(self) -> None:
         """A date that is not ISO is refused rather than defaulted to today.
 
         A stamped date decides a 21-day window, so a silent default would make

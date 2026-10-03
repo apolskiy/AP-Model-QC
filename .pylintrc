@@ -64,8 +64,8 @@ class-attribute-rgx=^_?[a-z_][a-z0-9_]{2,40}$|^_?[A-Z][A-Z0-9_]{2,40}$|^id$
 # `(?!Test(?!MQC))` on classes and `(?!test_)` on modules: anything named for
 # pytest's defaults rather than this project's prefix is now a lint failure rather
 # than a test that quietly does not exist.
-function-rgx=^(?!test_)(_?[a-z_][a-z0-9_]{2,60}|MQC_[A-Z]{3}_[A-Z]{3,5}_\d{5,6}_[a-z0-9_]{3,60})$
-method-rgx=^(?!test_)(_?[a-z_][a-z0-9_]{2,60}|MQC_[A-Z]{3}_[A-Z]{3,5}_\d{5,6}_[a-z0-9_]{3,60})$
+function-rgx=^(?!test_)(_?[a-z_][a-z0-9_]{2,60}|MQC_[A-Z]{3}_[A-Z]{3,5}_\d{6}_[a-z0-9_]{3,60})$
+method-rgx=^(?!test_)(_?[a-z_][a-z0-9_]{2,60}|MQC_[A-Z]{3}_[A-Z]{3,5}_\d{6}_[a-z0-9_]{3,60})$
 
 # Test classes carry the project prefix too: TestMQC<Component>, matching the
 # python_classes pattern in pytest.ini.

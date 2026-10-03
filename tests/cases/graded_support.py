@@ -214,7 +214,7 @@ def _session(engine: str, ceiling: float) -> DispatchSession:
 
     **The price table comes with it**, because a ceiling without rates cannot be
     computed, and an uncomputable ceiling stops a budgeted run rather than
-    pretending to hold (harness `MQC_EXE_UNI_10303`).
+    pretending to hold (harness `MQC_EXE_UNI_113702`).
 
     Args:
         config (Any): pytest's configuration.

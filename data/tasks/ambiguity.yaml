@@ -49,7 +49,7 @@
 # not ask would assert obedience to an instruction that was never given: the
 # instruction says to ask WHEN UNCLEAR, and nothing here is unclear, so there
 # is no constraint to check. What this task measures is judgement, which the
-# rubric scores. MQC_CAS_UNI_10425 protects that absence.
+# rubric scores. MQC_CAS_UNI_115002 protects that absence.
 - task_id: MQC_TASK_amb_unambiguous_request
   rubric_ids: [MQC_RULE_amb_unambiguous_request]
   user_prompt: |

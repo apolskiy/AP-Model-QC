@@ -131,7 +131,7 @@ jobs:
       #
       # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
       # comment inside a run body is part of the shell script, and
-      # `MQC_CAS_UNI_10435` reads run bodies looking for a graded invocation: an
+      # `MQC_CAS_UNI_115702` reads run bodies looking for a graded invocation: an
       # earlier version of this note said "toolchain" beside the word for the
       # test runner, and `tool` matched inside it.
       - name: Install the resolved harness and this repository
@@ -188,7 +188,7 @@ jobs:
       #
       # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
       # comment inside a run body is part of the shell script, and
-      # `MQC_CAS_UNI_10435` reads run bodies looking for a graded invocation: an
+      # `MQC_CAS_UNI_115702` reads run bodies looking for a graded invocation: an
       # earlier version of this note said "toolchain" beside the word for the
       # test runner, and `tool` matched inside it.
       - name: Install the resolved harness and this repository
@@ -279,7 +279,7 @@ jobs:
       #
       # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
       # comment inside a run body is part of the shell script, and
-      # `MQC_CAS_UNI_10435` reads run bodies looking for a graded invocation: an
+      # `MQC_CAS_UNI_115702` reads run bodies looking for a graded invocation: an
       # earlier version of this note said "toolchain" beside the word for the
       # test runner, and `tool` matched inside it.
       - name: Install the resolved harness and this repository

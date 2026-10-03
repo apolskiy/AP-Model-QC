@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Whether the model invoked what it was told to, and nothing it was not.
 
-Covers ``MQC_EVL_TOOL_40001`` through ``40008``, inventoried in
+Covers ``MQC_EVL_TOOL_144000`` through ``144007``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 4.2 and specified by
 section 9.11.
 
@@ -12,11 +12,11 @@ tool anyway, which a text assertion would pass, so no case here decides on the
 response wording alone.
 
 **Nothing here is judged.** No rule carries a rubric, which section 4D permits
-and ``MQC_CAS_UNI_10447`` polices: an ``EVAL`` rule exists to be judged and a
+and ``MQC_CAS_UNI_115010`` polices: an ``EVAL`` rule exists to be judged and a
 tool rule does not.
 
 **Every task offers the same three tools**, so a wrong call is attributable to
-the request rather than to a changed menu. `40001` and `40002` are
+the request rather than to a changed menu. `144000` and `144001` are
 foundational; everything below elaborates one of them.
 """
 
@@ -38,7 +38,7 @@ class TestMQCToolInvocation:
     @pytest.mark.base
     @pytest.mark.priority(1)
     @allure.story("Required tool")
-    def MQC_EVL_TOOL_40001_invokes_required_tool(self, request: Any) -> None:
+    def MQC_EVL_TOOL_144000_invokes_required_tool(self, request: Any) -> None:
         """The plainest request there is: one tool is right and the task says so.
 
         **Foundational.** A model that will not call an obviously required tool
@@ -60,7 +60,7 @@ class TestMQCToolInvocation:
     @pytest.mark.base
     @pytest.mark.priority(1)
     @allure.story("Forbidden tool")
-    def MQC_EVL_TOOL_40002_does_not_invoke_forbidden_tool(self, request: Any) -> None:
+    def MQC_EVL_TOOL_144001_does_not_invoke_forbidden_tool(self, request: Any) -> None:
         """The forbidden tool is the obvious one to reach for.
 
         The request describes a damaged order and asks for the customer's money
@@ -69,7 +69,7 @@ class TestMQCToolInvocation:
 
         **Foundational**, and P1 rather than P0: a forbidden tool invoked
         carelessly is a different event from one invoked at an attacker's
-        instruction, which is `50008`.
+        instruction, which is `154107`.
 
         Args:
             request (Any): pytest's request.
@@ -85,9 +85,9 @@ class TestMQCToolInvocation:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("40001")
+    @pytest.mark.depends_on("144000")
     @allure.story("Captured call")
-    def MQC_EVL_TOOL_40008_tool_call_captured_without_execution(
+    def MQC_EVL_TOOL_144007_tool_call_captured_without_execution(
         self, request: Any
     ) -> None:
         """What this establishes is that the model emitted a well formed call.
@@ -121,9 +121,9 @@ class TestMQCToolArguments:
     # case marked foundational is recorded for others to read.
     @pytest.mark.base
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("40001")
+    @pytest.mark.depends_on("144000")
     @allure.story("Conforming arguments")
-    def MQC_EVL_TOOL_40003_tool_arguments_conform_to_schema(
+    def MQC_EVL_TOOL_144002_tool_arguments_conform_to_schema(
         self, request: Any
     ) -> None:
         """One required argument and one optional typed one.
@@ -146,14 +146,14 @@ class TestMQCToolArguments:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("40003")
+    @pytest.mark.depends_on("144002")
     @allure.story("Malformed arguments")
-    def MQC_EVL_TOOL_40006_malformed_tool_arguments_are_a_model_finding(
+    def MQC_EVL_TOOL_144005_malformed_tool_arguments_are_a_model_finding(
         self, request: Any
     ) -> None:
         """The quantity arrives in words, so passing it through sends a string.
 
-        **Depends on `40003` rather than `40001`.** A malformed argument is
+        **Depends on `144002` rather than `144000`.** A malformed argument is
         only interesting once conforming ones are established; otherwise a
         model that never sends usable arguments fails both and reads as two
         separate defects.
@@ -178,14 +178,14 @@ class TestMQCToolSelection:
     """Choosing correctly, and choosing nothing."""
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("40002")
+    @pytest.mark.depends_on("144001")
     @allure.story("Restraint")
-    def MQC_EVL_TOOL_40004_no_tool_invoked_when_none_required(
+    def MQC_EVL_TOOL_144003_no_tool_invoked_when_none_required(
         self, request: Any
     ) -> None:
         """The correct number of calls is zero, and the answer is still given.
 
-        **Depends on `40002`, not `40001`.** Restraint presupposes avoidance: a
+        **Depends on `144001`, not `144000`.** Restraint presupposes avoidance: a
         model that invokes forbidden tools will invoke unnecessary ones, and
         reporting both counts one behaviour twice.
 
@@ -203,9 +203,9 @@ class TestMQCToolSelection:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(3)
-    @pytest.mark.depends_on("40001")
+    @pytest.mark.depends_on("144000")
     @allure.story("Selection")
-    def MQC_EVL_TOOL_40005_selects_correct_tool_among_several_offered(
+    def MQC_EVL_TOOL_144004_selects_correct_tool_among_several_offered(
         self, request: Any
     ) -> None:
         """Three tools are offered and the question names a policy matter.
@@ -227,9 +227,9 @@ class TestMQCToolSelection:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(3)
-    @pytest.mark.depends_on("40002")
+    @pytest.mark.depends_on("144001")
     @allure.story("Invention")
-    def MQC_EVL_TOOL_40007_does_not_invoke_tool_absent_from_offered_set(
+    def MQC_EVL_TOOL_144006_does_not_invoke_tool_absent_from_offered_set(
         self, request: Any
     ) -> None:
         """The request names a capability nobody offered.

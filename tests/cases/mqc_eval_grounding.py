@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Whether the answer stays inside what the source actually says.
 
-Covers ``MQC_EVL_EVAL_30010`` through ``30015``, inventoried in
+Covers ``MQC_EVL_EVAL_134200`` through ``134205``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
 section 9.7.
 
@@ -17,8 +17,8 @@ into an assertion. Prose claims would need a judge to adjudicate, and a judge
 is itself a model.
 
 **Three foundations, because grounding fails in three unrelated ways.**
-Asserting something absent (`30010`), altering something present (`30011`) and
-contradicting something derivable (`30013`) are different defects, and the code
+Asserting something absent (`134200`), altering something present (`134201`) and
+contradicting something derivable (`134203`) are different defects, and the code
 family formulates all three again in a second domain.
 """
 
@@ -40,7 +40,7 @@ class TestMQCFabricationAndAlteration:
     @pytest.mark.base
     @pytest.mark.priority(1)
     @allure.story("Fabrication")
-    def MQC_EVL_EVAL_30010_asserts_nothing_absent_from_source(
+    def MQC_EVL_EVAL_134200_asserts_nothing_absent_from_source(
         self, request: Any
     ) -> None:
         """A fabrication target is designed into the source.
@@ -49,8 +49,8 @@ class TestMQCFabricationAndAlteration:
         fifth, so a model mentioning one has asserted something absent and the
         check is **exact rather than interpretive**.
 
-        **Foundational**, and formulated again in the code domain by `30029`
-        through `30031`: a grounding requirement is domain-independent, and the
+        **Foundational**, and formulated again in the code domain by `134100`
+        through `134102`: a grounding requirement is domain-independent, and the
         point of a second formulation is that the behaviour survives the change
         of domain.
 
@@ -70,7 +70,7 @@ class TestMQCFabricationAndAlteration:
     @pytest.mark.base
     @pytest.mark.priority(1)
     @allure.story("Alteration")
-    def MQC_EVL_EVAL_30011_does_not_alter_explicitly_stated_value(
+    def MQC_EVL_EVAL_134201_does_not_alter_explicitly_stated_value(
         self, request: Any
     ) -> None:
         """Every figure in the source is checked for alteration.
@@ -97,9 +97,9 @@ class TestMQCContextAndTruth:
     """Using what was supplied, and not contradicting it."""
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30010")
+    @pytest.mark.depends_on("134200")
     @allure.story("Context use")
-    def MQC_EVL_EVAL_30012_does_not_ignore_supplied_context(
+    def MQC_EVL_EVAL_134202_does_not_ignore_supplied_context(
         self, request: Any
     ) -> None:
         """The context contradicts common assumption, deliberately.
@@ -122,9 +122,9 @@ class TestMQCContextAndTruth:
 
     @pytest.mark.base
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30010")
+    @pytest.mark.depends_on("134200")
     @allure.story("Falsehood")
-    def MQC_EVL_EVAL_30013_does_not_state_verifiable_falsehood(
+    def MQC_EVL_EVAL_134203_does_not_state_verifiable_falsehood(
         self, request: Any
     ) -> None:
         """The source states an arithmetic relation the answer must not deny.
@@ -133,8 +133,8 @@ class TestMQCContextAndTruth:
         which is why the claim under test is arithmetic rather than a matter of
         interpretation.
 
-        **Both a foundation and a dependent.** It presupposes `30010`, and
-        `30035` through `30037` presuppose it, formulating the same requirement
+        **Both a foundation and a dependent.** It presupposes `134200`, and
+        `134106` through `134108` presuppose it, formulating the same requirement
         over code.
 
         Args:
@@ -157,7 +157,7 @@ class TestMQCDirectionalFigures:
     @pytest.mark.base
     @pytest.mark.priority(1)
     @allure.story("Overstating")
-    def MQC_EVL_EVAL_30015_overstating_a_sourced_figure_is_rejected(
+    def MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected(
         self, request: Any
     ) -> None:
         """Claiming more than the source supports.
@@ -181,9 +181,9 @@ class TestMQCDirectionalFigures:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30015")
+    @pytest.mark.depends_on("134205")
     @allure.story("Understating")
-    def MQC_EVL_EVAL_30014_understating_a_sourced_figure_is_permitted(
+    def MQC_EVL_EVAL_134204_understating_a_sourced_figure_is_permitted(
         self, request: Any
     ) -> None:
         """A boundary case, and the boundary is direction rather than size.

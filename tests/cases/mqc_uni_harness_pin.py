@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Which harness this case set runs against, and what it refuses to use.
 
-Covers ``MQC_CAS_UNI_10406`` through ``10418``, inventoried in
+Covers ``MQC_CAS_UNI_115300`` through ``115312``, inventoried in
 ``docs/design/consumer_ci.md`` section 4.
 
 **Every negative here is a way for the gate to fail open**, and a gate that
@@ -174,7 +174,7 @@ class TestMQCHarnessPairing:
     """Which harness ref a branch of this repository declares."""
 
     @allure.story("Declared pairings")
-    def MQC_CAS_UNI_10406_a_named_case_branch_resolves_to_its_declared_harness_ref(
+    def MQC_CAS_UNI_115300_a_named_case_branch_resolves_to_its_declared_harness_ref(
         self, mapping: dict[str, object]
     ) -> None:
         """Stabilization on one side is verified against the other.
@@ -195,7 +195,7 @@ class TestMQCHarnessPairing:
         assert stabilizing.harness_ref == "main"
 
     @allure.story("Declared pairings")
-    def MQC_CAS_UNI_10407_a_glob_entry_matches_an_expansion_branch(
+    def MQC_CAS_UNI_115301_a_glob_entry_matches_an_expansion_branch(
         self, mapping: dict[str, object]
     ) -> None:
         """The branch that needs a harness extension pairs with the branch carrying it.
@@ -232,7 +232,7 @@ class TestMQCHarnessPairing:
         assert debugging.require_green is False
 
     @allure.story("Declared pairings")
-    def MQC_CAS_UNI_10408_an_unmatched_branch_takes_the_default_pairing(
+    def MQC_CAS_UNI_115302_an_unmatched_branch_takes_the_default_pairing(
         self, mapping: dict[str, object]
     ) -> None:
         """A branch outside the convention is tested, not rejected.
@@ -253,7 +253,7 @@ class TestMQCHarnessPairing:
         assert resolved.require_green is False
 
     @allure.story("Declared pairings")
-    def MQC_CAS_UNI_10409_an_explicit_entry_wins_over_a_glob_listed_after_it(
+    def MQC_CAS_UNI_115303_an_explicit_entry_wins_over_a_glob_listed_after_it(
         self,
     ) -> None:
         """First match wins in file order, so ordering is the whole rule.
@@ -279,7 +279,7 @@ class TestMQCHarnessPairing:
         assert resolved.require_green is True
 
     @allure.story("Strictness")
-    def MQC_CAS_UNI_10417_main_requires_green_and_a_stabilization_branch_does_not(
+    def MQC_CAS_UNI_115311_main_requires_green_and_a_stabilization_branch_does_not(
         self, mapping: dict[str, object]
     ) -> None:
         """One strictness cannot serve both branches.
@@ -320,7 +320,7 @@ class TestMQCGreenness:
     """What establishes a harness commit, and what does not."""
 
     @allure.story("Green")
-    def MQC_CAS_UNI_10410_a_successful_required_run_on_the_commit_is_green(
+    def MQC_CAS_UNI_115304_a_successful_required_run_on_the_commit_is_green(
         self,
     ) -> None:
         """The one case that permits a gated run.
@@ -334,7 +334,7 @@ class TestMQCGreenness:
         assert verdict.conclusion == "success"
 
     @allure.story("Not green")
-    def MQC_CAS_UNI_10411_a_failed_required_run_is_not_green(self) -> None:
+    def MQC_CAS_UNI_115305_a_failed_required_run_is_not_green(self) -> None:
         """The obvious case, and the only one most implementations get right.
 
         Returns:
@@ -347,7 +347,7 @@ class TestMQCGreenness:
         assert "QC_HARNESS_UPSTREAM_UNVERIFIED" in verdict.reason
 
     @allure.story("Not green")
-    def MQC_CAS_UNI_10412_no_run_at_all_for_the_commit_is_not_green(self) -> None:
+    def MQC_CAS_UNI_115306_no_run_at_all_for_the_commit_is_not_green(self) -> None:
         """A commit with no run is the normal state of a fresh push.
 
         **Treating absence as a pass is how an unverified harness becomes the
@@ -366,7 +366,7 @@ class TestMQCGreenness:
         assert "no gate-on-change.yml run exists" in verdict.reason
 
     @allure.story("Not green")
-    def MQC_CAS_UNI_10413_a_run_still_in_progress_is_not_green(self) -> None:
+    def MQC_CAS_UNI_115307_a_run_still_in_progress_is_not_green(self) -> None:
         """A run that has not concluded has established nothing yet.
 
         Returns:
@@ -381,7 +381,7 @@ class TestMQCGreenness:
         assert "in_progress" in verdict.reason
 
     @allure.story("Not green")
-    def MQC_CAS_UNI_10414_a_success_on_a_different_commit_does_not_make_this_one_green(
+    def MQC_CAS_UNI_115308_a_success_on_a_different_commit_does_not_make_this_one_green(
         self,
     ) -> None:
         """Green is a property of a commit, never of a branch.
@@ -399,7 +399,7 @@ class TestMQCGreenness:
         assert verdict.conclusion is None
 
     @allure.story("Not green")
-    def MQC_CAS_UNI_10415_a_success_from_an_unrequired_workflow_is_not_green(
+    def MQC_CAS_UNI_115309_a_success_from_an_unrequired_workflow_is_not_green(
         self,
     ) -> None:
         """Naming one workflow keeps green single-valued.
@@ -418,7 +418,7 @@ class TestMQCGreenness:
         assert verdict.conclusion is None
 
     @allure.story("Green")
-    def MQC_CAS_UNI_10416_the_latest_attempt_decides_when_a_run_was_retried(
+    def MQC_CAS_UNI_115310_the_latest_attempt_decides_when_a_run_was_retried(
         self,
     ) -> None:
         """An earlier failure does not veto a later success, or the reverse.
@@ -451,7 +451,7 @@ class TestMQCUnresolvablePairing:
     """A harness branch that does not exist is not a finding about a model."""
 
     @allure.story("Refusal")
-    def MQC_CAS_UNI_10422_an_unresolvable_paired_ref_refuses_rather_than_crashing(
+    def MQC_CAS_UNI_115313_an_unresolvable_paired_ref_refuses_rather_than_crashing(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         """Exit 1 is the one code this must never produce.
@@ -513,7 +513,7 @@ class TestMQCResolverIndependence:
     """The check cannot come from the thing it checks."""
 
     @allure.story("Independence")
-    def MQC_CAS_UNI_10418_the_module_imports_nothing_from_the_harness(self) -> None:
+    def MQC_CAS_UNI_115312_the_module_imports_nothing_from_the_harness(self) -> None:
         """A harness import here is circular twice over.
 
         It runs **before** the harness is installed, so the import is not
@@ -575,7 +575,7 @@ def _inventoried_case_ids() -> frozenset[str]:
     found: set[str] = set()
     for source in (_root() / "tests").rglob("mqc_*.py"):
         text = source.read_text(encoding="utf-8")
-        found.update(re.findall(r"def MQC_[A-Z]+_[A-Z]+_(\d{5,6})_", text))
+        found.update(re.findall(r"def MQC_[A-Z]+_[A-Z]+_(\d{6})_", text))
     return frozenset(found)
 
 
@@ -585,13 +585,13 @@ class TestMQCBranchPolicyHere:
     """What the branch policy means on the side that owns the cases.
 
     The grammar, the staleness bands and the merge route are one
-    implementation in ``cmn.branch_policy``, checked by ``MQC_CMN_UNI_11144``
-    through ``11148``. These two are the parts that depend on this repository,
+    implementation in ``cmn.branch_policy``, checked by ``MQC_CMN_UNI_112505``
+    through ``112509``. These two are the parts that depend on this repository,
     designed in ``docs/design/consumer_ci.md`` section 4.3.
     """
 
     @allure.story("Referents resolve here")
-    def MQC_CAS_UNI_10442_a_case_referent_naming_no_inventoried_case_is_reported(
+    def MQC_CAS_UNI_115314_a_case_referent_naming_no_inventoried_case_is_reported(
         self,
     ) -> None:
         """One rule over two inventories, not two rules.
@@ -613,16 +613,18 @@ class TestMQCBranchPolicyHere:
         sample = sorted(known)[0]
         assert not referent_problems(f"expand-09-24-2026-{sample}", known)
 
-        # A five-digit identifier outside the CAS block cannot be a case here.
-        assert referent_problems("expand-99999-09-24-2026", known)
+        # AN IDENTIFIER OUTSIDE THE CAS BLOCK cannot be a case here. Six
+        # digits, because a five-digit referent no longer matches the case
+        # kind at all and would report nothing rather than a problem.
+        assert referent_problems("expand-999999-09-24-2026", known)
 
         # A harness identifier is not inventoried in this repository, which is
         # the boundary this case exists to hold: the two blocks are separate
         # and a branch here names a case here.
-        assert referent_problems("extend-11144-09-24-2026", known)
+        assert referent_problems("extend-112505-09-24-2026", known)
 
     @allure.story("The pairing covers every kind")
-    def MQC_CAS_UNI_10443_a_pairing_not_covering_a_dated_branch_is_reported(
+    def MQC_CAS_UNI_115315_a_pairing_not_covering_a_dated_branch_is_reported(
         self,
     ) -> None:
         """A kind falling through to the default is configured by accident.
@@ -670,7 +672,7 @@ class TestMQCTargetStrictness:
     """
 
     @allure.story("Strictness")
-    def MQC_CAS_UNI_10444_a_pull_request_taking_its_source_strictness_is_reported(
+    def MQC_CAS_UNI_115316_a_pull_request_taking_its_source_strictness_is_reported(
         self, mapping: dict[str, object]
     ) -> None:
         """Code could land on main never measured with a green harness.
@@ -750,7 +752,7 @@ class TestMQCTargetStrictness:
 
     @allure.story("Plan and matrix agree")
 
-    def MQC_CAS_UNI_10451_a_pending_harness_gate_is_waited_for_not_refused(
+    def MQC_CAS_UNI_115318_a_pending_harness_gate_is_waited_for_not_refused(
         self,
     ) -> None:
         """Four paired pushes in a row produced a red run that meant nothing.
@@ -808,7 +810,7 @@ class TestMQCTargetStrictness:
         assert waited == 60.0
         assert "is not a commit that passed" in never.reason
 
-    def MQC_CAS_UNI_10450_a_readme_figure_disagreeing_with_the_repository_is_reported(
+    def MQC_CAS_UNI_115317_a_readme_figure_disagreeing_with_the_repository_is_reported(
         self,
     ) -> None:
         """Every figure on the front page had drifted, and one was false.
@@ -821,7 +823,7 @@ class TestMQCTargetStrictness:
         the work exists at all.
 
         **Nothing checked the README**, here or in the harness, until
-        `MQC_CMN_UNI_11180` was written the same day for the same reason.
+        `MQC_CMN_UNI_112323` was written the same day for the same reason.
 
         **It recomputes rather than storing the numbers again**, because a
         second copy is what drifted in the first place.

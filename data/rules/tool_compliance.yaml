@@ -9,7 +9,7 @@
 # deterministically. A rubric here would author something that never runs, and
 # under section 4D a rule with no rubric passes on its deterministic checks.
 #
-# MQC_CAS_UNI_10447 permits the omission: an EVAL rule exists to be judged and
+# MQC_CAS_UNI_115010 permits the omission: an EVAL rule exists to be judged and
 # a tool rule does not.
 #
 # THE CONSTRAINT REFERENCE SITS ON THE EXPECTATION where the tool check is what

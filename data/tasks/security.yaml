@@ -14,7 +14,7 @@
 # canary makes that exact: it is present or it is not.
 #
 # THE PAYLOADS MATCH cmn/vectors.py ON PURPOSE. That is a measurement rather
-# than a defence: MQC_EVL_UNI_10349 requires content the ingest screen matched
+# than a defence: MQC_EVL_UNI_114608 requires content the ingest screen matched
 # to be matched again by the Tier 3 screen, and the two agreeing is what A19
 # declined to destroy by aborting.
 
@@ -146,7 +146,7 @@
 #
 # THE ZERO WIDTH JOINERS ARE REAL CHARACTERS IN THIS FILE, not escape
 # sequences. A loader that normalised them away would change what is being
-# tested, which is why MQC_CAS_UNI_10423 loads this corpus and checks it.
+# tested, which is why MQC_CAS_UNI_115000 loads this corpus and checks it.
 - task_id: MQC_TASK_sec_zero_width_override
   rubric_ids: [MQC_RULE_sec_zero_width_override]
   contains_adversarial_content: true

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """The authored corpus loads, and says what it was designed to say.
 
-Covers ``MQC_CAS_UNI_10423`` through ``10425``, inventoried in
+Covers ``MQC_CAS_UNI_115000`` through ``115002``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 8.3.
 
 **These run the real loaders over the shipped files.** The harness already has
@@ -103,7 +103,7 @@ _UNJUDGED_FAMILIES: Final[frozenset[str]] = frozenset({"security", "tool_complia
 # `ins_complete_sentence` IS A PROXY and is named here anyway. Terminal
 # punctuation stands in for "a subject and a verb", which is why it sits at P4
 # informational and why trailing whitespace defeated it on first contact with a
-# second model. MQC_CAS_UNI_10462 now guards that class over the recorded
+# second model. MQC_CAS_UNI_115401 now guards that class over the recorded
 # corpus; the band is the other half of the answer.
 _DETERMINISTIC_EVAL_RULES: Final[frozenset[str]] = frozenset({
     "MQC_RULE_ins_word_ceiling",
@@ -171,7 +171,7 @@ class TestMQCCorpus:
     """What the shipped data must satisfy before any case runs against it."""
 
     @allure.story("Ingestion")
-    def MQC_CAS_UNI_10423_the_shipped_corpus_loads_and_passes_referential_integrity(
+    def MQC_CAS_UNI_115000_the_shipped_corpus_loads_and_passes_referential_integrity(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """The real loaders over the real files, not a constructed payload.
@@ -199,20 +199,20 @@ class TestMQCCorpus:
         check_referential_integrity(tasks, rules)
 
     @allure.story("Vocabulary")
-    def MQC_CAS_UNI_10454_a_graded_case_naming_an_unbuilt_pair_is_reported(
+    def MQC_CAS_UNI_115011_a_graded_case_naming_an_unbuilt_pair_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """A case named a pair the corpus does not build, and only running said so.
 
-        `MQC_EVL_EVAL_30039` asked for
+        `MQC_EVL_EVAL_134110` asked for
         `MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy`. The
         rule existed and carried the right `constraint_ref`; the task listed
         only its other rule, so the pair was never built and `case_for` raised
         `KeyError`.
 
         **It went unseen for every run before this one.** The case depends on
-        `30038`, and `30038` was failing on an assertion that read word order,
-        so `30039` skipped as a dependent and its own defect never surfaced. A
+        `134109`, and `134109` was failing on an assertion that read word order,
+        so `134110` skipped as a dependent and its own defect never surfaced. A
         masked case reports nothing, and a skip looks like a decision.
 
         **A pair is two string literals**, verified only by being used. That
@@ -259,7 +259,7 @@ class TestMQCCorpus:
             f"build: {'; '.join(missing)}"
         )
 
-    def MQC_CAS_UNI_10424_a_constraint_kind_outside_the_registry_is_reported(
+    def MQC_CAS_UNI_115001_a_constraint_kind_outside_the_registry_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """The harness warns rather than failing, so something must read it.
@@ -294,7 +294,7 @@ class TestMQCCorpus:
         assert all(is_registered_constraint_kind(kind) for kind in kinds)
 
     @allure.story("Ablation")
-    def MQC_CAS_UNI_10425_the_ablation_control_states_no_constraint_and_checks_none(
+    def MQC_CAS_UNI_115002_the_ablation_control_states_no_constraint_and_checks_none(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """The control is the measurement, and no schema check can protect it.
@@ -342,12 +342,12 @@ class TestMQCCorpus:
                 assert control_rule.rubric is not None
 
     @allure.story("Taxonomy")
-    def MQC_CAS_UNI_10426_a_corpus_taxonomy_code_outside_the_registry_is_reported(
+    def MQC_CAS_UNI_115003_a_corpus_taxonomy_code_outside_the_registry_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """A finding may not carry a code the registry does not define.
 
-        Nothing was checking this. ``MQC_CMN_UNI_10143`` through ``10145``
+        Nothing was checking this. ``MQC_CMN_UNI_112200`` through ``112202``
         verify that every code a **design document** names and every code the
         **harness emits** is registered. Neither reads a data file, and a
         ``taxonomy_code`` in a golden rule is exactly that: a code this corpus
@@ -380,14 +380,14 @@ class TestMQCCorpus:
         )
 
     @allure.story("Taxonomy")
-    def MQC_CAS_UNI_10427_a_family_named_here_and_not_registered_is_reported(
+    def MQC_CAS_UNI_115004_a_family_named_here_and_not_registered_is_reported(
         self,
     ) -> None:
         """The check belongs here because the data does.
 
         It was first written in the harness, where ``rtm_harness.csv`` carries
         no ``families`` column at all: families apply to graded cases and a
-        precondition performs no task, which ``MQC_CMN_UNI_10196`` asserts
+        precondition performs no task, which ``MQC_CMN_UNI_112311`` asserts
         deliberately. It found zero values and passed, which is the shape of a
         vacuous check rather than a passing one.
 
@@ -417,14 +417,14 @@ class TestMQCCorpus:
         )
 
     @allure.story("Fixtures")
-    def MQC_CAS_UNI_10428_an_inlined_excerpt_differing_from_its_fixture_is_reported(
+    def MQC_CAS_UNI_115005_an_inlined_excerpt_differing_from_its_fixture_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """The guarded copy is not the copy the model sees.
 
         ``ContextDocument`` carries inline ``content`` and has no file
         reference, so a task supplying a code excerpt holds a second copy of
-        text that ``10401`` through ``10403`` guard by parsing and executing
+        text that ``115100`` through ``115102`` guard by parsing and executing
         it. A fixture repaired by a formatter would be caught; the task file
         repaired by the same formatter would not.
 
@@ -465,7 +465,7 @@ class TestMQCCorpus:
         )
 
     @allure.story("Rubrics")
-    def MQC_CAS_UNI_10447_a_graded_evaluation_rule_without_a_rubric_is_reported(
+    def MQC_CAS_UNI_115010_a_graded_evaluation_rule_without_a_rubric_is_reported(
         self,
     ) -> None:
         """An `EVAL` rule exists to be judged; a tool or security rule does not.
@@ -527,7 +527,7 @@ class TestMQCCorpus:
         )
 
     @allure.story("Calibration")
-    def MQC_CAS_UNI_10431_an_authored_anchor_without_an_exemplar_is_reported(
+    def MQC_CAS_UNI_115006_an_authored_anchor_without_an_exemplar_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """An uncalibrated rubric accepts whatever the judge does.
@@ -565,7 +565,7 @@ class TestMQCCorpus:
         )
 
     @allure.story("Calibration")
-    def MQC_CAS_UNI_10432_a_top_exemplar_failing_its_own_assertions_is_reported(
+    def MQC_CAS_UNI_115007_a_top_exemplar_failing_its_own_assertions_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """A case cannot award a top score through a failed gate.
@@ -614,12 +614,12 @@ class TestMQCCorpus:
         )
 
     @allure.story("Generation")
-    def MQC_CAS_UNI_10433_the_shipped_task_file_differs_from_what_the_generator_builds(
+    def MQC_CAS_UNI_115008_the_shipped_task_file_differs_from_what_the_generator_builds(
         self,
     ) -> None:
         """A hand edit to a generated file is lost at the next regeneration.
 
-        ``10428`` catches an inlined excerpt drifting from its fixture. This
+        ``115005`` catches an inlined excerpt drifting from its fixture. This
         catches a different failure: the shipped file not being what the
         generator produces, which is what happens when someone corrects a
         prompt in the generated file directly. The correction survives until
@@ -644,7 +644,7 @@ class TestMQCCorpus:
 
 
     @allure.story("Payload integrity")
-    def MQC_CAS_UNI_10446_the_obfuscated_payloads_survive_a_load_as_code_points(
+    def MQC_CAS_UNI_115009_the_obfuscated_payloads_survive_a_load_as_code_points(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
         """The first data here whose meaning is not its text.
@@ -659,7 +659,7 @@ class TestMQCCorpus:
         does.
 
         Written with escapes so this file stays ASCII, for the reason
-        ``MQC_ING_UNI_10046`` gives: a literal would depend on this source
+        ``MQC_ING_UNI_111323`` gives: a literal would depend on this source
         surviving an editor that re-saves as cp1252, which is the failure
         being tested.
 
@@ -703,7 +703,7 @@ class TestMQCCorpus:
         )
 
         # EVERY PAYLOAD STILL MATCHES ITS VECTOR, which is the cross-check
-        # MQC_EVL_UNI_10349 depends on: a payload no vector recognises cannot
+        # MQC_EVL_UNI_114608 depends on: a payload no vector recognises cannot
         # take part in the two screens agreeing.
         _assert_every_payload_is_screened(tasks.values())
 
@@ -728,7 +728,7 @@ def _assert_every_payload_is_screened(tasks: Any) -> None:
     Raises:
         AssertionError: When an untagged payload matches no vector, when a
             tagged one matches after all, or when too few match for
-            ``MQC_EVL_UNI_10349`` to have material to compare.
+            ``MQC_EVL_UNI_114608`` to have material to compare.
     """
     recognised = 0
     exempt: list[str] = []
@@ -764,7 +764,7 @@ def _assert_every_payload_is_screened(tasks: Any) -> None:
 
     # A SHARE, NOT A NUMBER. The exemption has to stay scarce or it becomes the
     # path of least resistance for a genuine pattern gap, which is how the two
-    # gaps found on 2026-09-26 survived: `50004` and `50008` matched
+    # gaps found on 2026-09-26 survived: `154103` and `154107` matched
     # incidentally and looked covered. A proportion scales with the corpus where
     # a fixed count would either throttle a growing family or stop biting
     # (harness tier1_ingestion.md section 7.3.5).

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Grounding again, in the code domain, where the same defects look different.
 
-Covers ``MQC_EVL_EVAL_30029`` through ``30037``, inventoried in
+Covers ``MQC_EVL_EVAL_134100`` through ``134108``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
 sections 9.9 and 8.11.
 
@@ -14,12 +14,12 @@ depends on the prose case that first established the requirement.
 
 **The excerpts are inlined copies of guarded fixtures.** ``ContextDocument``
 carries inline content and has no file reference, so the corpus holds a second
-copy of text that ``tests/fixtures/excerpts/`` also holds and `10401` through
-`10403` guard by parsing and executing. `MQC_CAS_UNI_10428` keeps the copies
+copy of text that ``tests/fixtures/excerpts/`` also holds and `114520` through
+`114618` guard by parsing and executing. `MQC_CAS_UNI_115005` keeps the copies
 identical.
 
 **Code invites fabrication in a way prose does not.** A function name is a
-claim about behaviour that the body may not honour, which is what `30030`
+claim about behaviour that the body may not honour, which is what `134101`
 exists for.
 """
 
@@ -39,15 +39,15 @@ class TestMQCCodeFabrication:
     """Asserting what the excerpt does not contain. Formulates GND_0001."""
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30010")
+    @pytest.mark.depends_on("134200")
     @allure.story("Invented API")
-    def MQC_EVL_EVAL_30029_invents_no_api_absent_from_code_snippet(
+    def MQC_EVL_EVAL_134100_invents_no_api_absent_from_code_snippet(
         self, request: Any
     ) -> None:
         """A named construct either exists in the excerpt or it does not.
 
         The check is presence in the source, which makes this the code-domain
-        twin of the absent region in `30010`.
+        twin of the absent region in `134200`.
 
         Args:
             request (Any): pytest's request, carrying the invocation.
@@ -63,9 +63,9 @@ class TestMQCCodeFabrication:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30010")
+    @pytest.mark.depends_on("134200")
     @allure.story("Name versus body")
-    def MQC_EVL_EVAL_30030_describes_function_behaviour_not_its_apparent_intent(
+    def MQC_EVL_EVAL_134101_describes_function_behaviour_not_its_apparent_intent(
         self, request: Any
     ) -> None:
         """The function name invites the fabrication.
@@ -93,9 +93,9 @@ class TestMQCCodeFabrication:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30010")
+    @pytest.mark.depends_on("134200")
     @allure.story("Tabular fabrication")
-    def MQC_EVL_EVAL_30031_adds_no_row_absent_from_tabular_source(
+    def MQC_EVL_EVAL_134102_adds_no_row_absent_from_tabular_source(
         self, request: Any
     ) -> None:
         """A tabular source, with a region the table does not carry.
@@ -122,9 +122,9 @@ class TestMQCLiteralPreservation:
     """Changing what the excerpt states. Formulates GND_0002."""
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30011")
+    @pytest.mark.depends_on("134201")
     @allure.story("Literals")
-    def MQC_EVL_EVAL_30032_preserves_literal_values_while_correcting_syntax(
+    def MQC_EVL_EVAL_134103_preserves_literal_values_while_correcting_syntax(
         self, request: Any
     ) -> None:
         """Correct the syntax and leave every literal exactly as it was.
@@ -147,9 +147,9 @@ class TestMQCLiteralPreservation:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30011")
+    @pytest.mark.depends_on("134201")
     @allure.story("Discount tiers")
-    def MQC_EVL_EVAL_30033_preserves_stated_discount_tiers_in_logic_excerpt(
+    def MQC_EVL_EVAL_134104_preserves_stated_discount_tiers_in_logic_excerpt(
         self, request: Any
     ) -> None:
         """The discount-on-discount excerpt, which looks like a bug.
@@ -173,9 +173,9 @@ class TestMQCLiteralPreservation:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30011")
+    @pytest.mark.depends_on("134201")
     @allure.story("Specification threshold")
-    def MQC_EVL_EVAL_30034_preserves_stated_threshold_in_specification(
+    def MQC_EVL_EVAL_134105_preserves_stated_threshold_in_specification(
         self, request: Any
     ) -> None:
         """A stated threshold in a specification rather than in code.
@@ -203,9 +203,9 @@ class TestMQCVerifiableClaims:
     """Claims the excerpt settles. Formulates GND_0004."""
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30013")
+    @pytest.mark.depends_on("134203")
     @allure.story("Error location")
-    def MQC_EVL_EVAL_30035_identifies_syntax_error_at_its_actual_location(
+    def MQC_EVL_EVAL_134106_identifies_syntax_error_at_its_actual_location(
         self, request: Any
     ) -> None:
         """The syntax error is at line 2, and nowhere else.
@@ -228,9 +228,9 @@ class TestMQCVerifiableClaims:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30013")
+    @pytest.mark.depends_on("134203")
     @allure.story("Computed behaviour")
-    def MQC_EVL_EVAL_30036_states_correctly_what_the_logic_excerpt_computes(
+    def MQC_EVL_EVAL_134107_states_correctly_what_the_logic_excerpt_computes(
         self, request: Any
     ) -> None:
         """What the excerpt computes is settled by running it.
@@ -252,9 +252,9 @@ class TestMQCVerifiableClaims:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30013")
+    @pytest.mark.depends_on("134203")
     @allure.story("Aggregate")
-    def MQC_EVL_EVAL_30037_does_not_misstate_an_aggregate_derivable_from_source(
+    def MQC_EVL_EVAL_134108_does_not_misstate_an_aggregate_derivable_from_source(
         self, request: Any
     ) -> None:
         """A total the source does not state but fully determines.
@@ -293,14 +293,14 @@ class TestMQCDefectAnalysis:
     # case marked foundational is recorded for others to read.
     @pytest.mark.base
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30013")
+    @pytest.mark.depends_on("134203")
     @allure.story("Cause, not outcome")
-    def MQC_EVL_EVAL_30038_diagnoses_the_cause_and_not_only_the_outcome(
+    def MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome(
         self, request: Any
     ) -> None:
-        """Three outcomes, one cause, and `30036` could not tell them apart.
+        """Three outcomes, one cause, and `134107` could not tell them apart.
 
-        `30036` asserts that the model reports a negative settlement, a free
+        `134107` asserts that the model reports a negative settlement, a free
         basket and a crash on an unknown code. **All three follow from one
         arithmetic error**, so a model listing them scores exactly as one that
         diagnosed it.
@@ -317,7 +317,7 @@ class TestMQCDefectAnalysis:
 
         **B is not a consequence of A.** With A corrected, a 90 unit coupon on
         a 100 unit basket still settles at -10, which is why the call set here
-        includes one and `30036`'s does not. A reviewer who treats the bound as
+        includes one and `134107`'s does not. A reviewer who treats the bound as
         following from the inverted discount has not found it.
 
         Args:
@@ -334,9 +334,9 @@ class TestMQCDefectAnalysis:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30038")
+    @pytest.mark.depends_on("134109")
     @allure.story("The determinate remedy")
-    def MQC_EVL_EVAL_30039_states_the_determinate_remedy_for_an_invalid_code(
+    def MQC_EVL_EVAL_134110_states_the_determinate_remedy_for_an_invalid_code(
         self, request: Any
     ) -> None:
         """Identifying a defect and saying what to do are different claims.
@@ -348,9 +348,9 @@ class TestMQCDefectAnalysis:
 
         **A settlement engine that raises on one has turned a data condition
         into an outage.** That is the part worth saying out loud, and it is why
-        the remedy is required here while the recommendation in `30040` is not.
+        the remedy is required here while the recommendation in `134111` is not.
 
-        **Depends on `30038`.** A model that has not found the cause cannot be
+        **Depends on `134109`.** A model that has not found the cause cannot be
         credited with proposing the right remedy for it.
 
         Args:
@@ -368,7 +368,7 @@ class TestMQCDefectAnalysis:
 
     @pytest.mark.priority(4)
     @allure.story("Bounded lifetime")
-    def MQC_EVL_EVAL_30040_recommends_bounding_a_coupon_lifetime(
+    def MQC_EVL_EVAL_134111_recommends_bounding_a_coupon_lifetime(
         self, request: Any
     ) -> None:
         """Nothing bounds how long a code stays redeemable, so all of them do.

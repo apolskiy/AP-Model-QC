@@ -6,7 +6,7 @@
 #
 # GROUND TRUTH IS A PARSER OR AN EXECUTION, which is the admission criterion
 # this family was registered under. Every expectation below is recorded in
-# section 9.9.1 and guarded by MQC_CAS_UNI_10401 through 10403: the syntactic
+# section 9.9.1 and guarded by MQC_CAS_UNI_115100 through 115102: the syntactic
 # excerpt fails at line 2, the logical one returns the 10 and 90 holders, and
 # the settlement returns -10.0 where 50.0 is correct.
 
@@ -245,7 +245,7 @@
   # correct answer writes "80% of total for standard, 70% for premium" —
   # the remainders after the stated discounts — and any pattern pairing a tier
   # name with a number matches it. The rule's own level 5 exemplar failed the
-  # last attempt, which is how MQC_CAS_UNI_10432 reported the problem.
+  # last attempt, which is how MQC_CAS_UNI_115007 reported the problem.
   #
   # C_COD_TIERS_UNCHANGED below carries the claim instead.
   rubric:

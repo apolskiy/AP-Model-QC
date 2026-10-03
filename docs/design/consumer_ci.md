@@ -284,11 +284,11 @@ on the live ones.
 `if: always()` inside a job that needs the resolver is correct and common: it
 makes Gate 4 report even when Gate 2 failed, within a job that would not have
 started at all had the resolver refused. Only a **job-level** status function
-can outrun a refusal, so that is what `MQC_CAS_UNI_10439` checks.
+can outrun a refusal, so that is what `MQC_CAS_UNI_115706` checks.
 
 #### 3.9.2 What the exemption protects, and what it does not
 
-`debug-cases-on-demand.yml` is exempt by design, and `10440` holds it exempt:
+`debug-cases-on-demand.yml` is exempt by design, and `115707` holds it exempt:
 refusing to debug against a harness that is not green would withhold the tool
 exactly when it is needed. It tolerates a refusal rather than being spared one,
 by letting the resolver fail without failing the step.
@@ -350,7 +350,7 @@ run, and the example in section 3.9.1 named it.
 
 **Wiring is the harness's subject.** `SYS` covers dispatch, normalization and
 pipeline wiring, none of which this repository owns, and the harness now carries
-`MQC_CMN_SYS_20301` to `20303`, which run the whole chain to both a green and a
+`MQC_CMN_SYS_122000` to `122002`, which run the whole chain to both a green and a
 red verdict.
 
 **What this repository proves is that its own corpus composes**, and that is Gate
@@ -417,7 +417,7 @@ the window than the case that found it.
 so the budget absorbs a queued runner without letting a wedged upstream run hold a
 consumer job all day.
 
-**The clock is injected**, so `MQC_CAS_UNI_10451` exercises the timeout without
+**The clock is injected**, so `MQC_CAS_UNI_115318` exercises the timeout without
 spending it.
 
 ### 3.12 One job per band, because the job name is the diagnosis
@@ -492,52 +492,53 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 
 | ID | Category | Behaviour |
 |---|---|---|
-| `10406` | P | `a_named_case_branch_resolves_to_its_declared_harness_ref` |
-| `10407` | P | `a_glob_entry_matches_an_expansion_branch` |
-| `10408` | B | `an_unmatched_branch_takes_the_default_pairing` |
-| `10409` | B | `an_explicit_entry_wins_over_a_glob_listed_after_it` |
-| `10410` | P | `a_successful_required_run_on_the_commit_is_green` |
-| `10411` | N | `a_failed_required_run_is_not_green` |
-| `10412` | N | `no_run_at_all_for_the_commit_is_not_green` |
-| `10413` | N | `a_run_still_in_progress_is_not_green` |
-| `10414` | N | `a_success_on_a_different_commit_does_not_make_this_one_green` |
-| `10415` | N | `a_success_from_an_unrequired_workflow_is_not_green` |
-| `10416` | B | `the_latest_attempt_decides_when_a_run_was_retried` |
-| `10417` | P | `main_requires_green_and_a_stabilization_branch_does_not` |
-| `10418` | N | `the_module_imports_nothing_from_the_harness` |
-| `10419` | N | `every_callable_carries_parameter_and_return_hints` |
-| `10420` | N | `pep_563_future_annotations_import_is_rejected` |
-| `10421` | N | `every_python_file_carries_its_mit_spdx_header` |
-| `10422` | N | `an_unresolvable_paired_ref_refuses_rather_than_crashing` |
-| `10439` | N | `a_test_executing_job_that_outruns_a_refusal_is_reported` |
-| `10440` | N | `a_debug_workflow_blocked_by_a_red_harness_is_reported` |
-| `10441` | N | `a_runbook_command_naming_an_undeclared_input_is_reported` |
-| `10442` | N | `a_case_referent_naming_no_inventoried_case_is_reported` |
-| `10443` | N | `a_pairing_not_covering_a_dated_branch_is_reported` |
-| `10444` | N | `a_pull_request_taking_its_source_strictness_is_reported` |
-| `10445` | N | `a_file_open_declaring_no_encoding_is_reported` |
-| `10446` | P | `the_obfuscated_payloads_survive_a_load_as_code_points` |
-| `10447` | N | `a_graded_evaluation_rule_without_a_rubric_is_reported` |
-| `10448` | N | `a_requirement_traced_but_stated_in_no_plan_is_reported` |
-| `10449` | N | `a_matrix_row_naming_a_test_the_suite_lacks_is_reported` |
-| `10450` | N | `a_readme_figure_disagreeing_with_the_repository_is_reported` |
-| `10451` | B | `a_pending_harness_gate_is_waited_for_not_refused` |
-| `10452` | N | `harness_files_are_not_located_by_directory_adjacency` |
-| `10453` | N | `the_roster_resolves_and_names_engines` |
-| `10454` | N | `a_graded_case_naming_an_unbuilt_pair_is_reported` |
-| `10455` | N | `fill_gaps_reaches_the_plan_the_channel_uses` |
-| `10456` | B | `a_lower_band_is_judged_against_the_floor` |
-| `10457` | P | `a_skip_leaves_the_denominator` |
-| `10458` | N | `an_error_refuses_rather_than_averaging` |
-| `10459` | N | `the_candidate_engine_reaches_the_plan_the_channel_uses` |
-| `10460` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
-| `10469` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
-| `10472` | P | `the_tool_writes_what_reconciling_decided` |
-| `10473` | P | `one_dispatch_session_serves_a_whole_run` |
-| `10474` | P | `the_session_records_the_models_it_served` |
-| `10475` | N | `the_tool_refuses_a_date_it_cannot_parse` |
-| `10470` | P | `the_named_judge_engine_is_the_one_that_grades` |
-| `10471` | P | `the_named_observation_count_is_the_one_dispatched` |
+| `115300` | P | `a_named_case_branch_resolves_to_its_declared_harness_ref` |
+| `115301` | P | `a_glob_entry_matches_an_expansion_branch` |
+| `115302` | B | `an_unmatched_branch_takes_the_default_pairing` |
+| `115303` | B | `an_explicit_entry_wins_over_a_glob_listed_after_it` |
+| `115304` | P | `a_successful_required_run_on_the_commit_is_green` |
+| `115305` | N | `a_failed_required_run_is_not_green` |
+| `115306` | N | `no_run_at_all_for_the_commit_is_not_green` |
+| `115307` | N | `a_run_still_in_progress_is_not_green` |
+| `115308` | N | `a_success_on_a_different_commit_does_not_make_this_one_green` |
+| `115309` | N | `a_success_from_an_unrequired_workflow_is_not_green` |
+| `115310` | B | `the_latest_attempt_decides_when_a_run_was_retried` |
+| `115311` | P | `main_requires_green_and_a_stabilization_branch_does_not` |
+| `115312` | N | `the_module_imports_nothing_from_the_harness` |
+| `115500` | N | `every_callable_carries_parameter_and_return_hints` |
+| `115501` | N | `pep_563_future_annotations_import_is_rejected` |
+| `115502` | N | `every_python_file_carries_its_mit_spdx_header` |
+| `115313` | N | `an_unresolvable_paired_ref_refuses_rather_than_crashing` |
+| `115706` | N | `a_test_executing_job_that_outruns_a_refusal_is_reported` |
+| `115707` | N | `a_debug_workflow_blocked_by_a_red_harness_is_reported` |
+| `115504` | N | `a_runbook_command_naming_an_undeclared_input_is_reported` |
+| `115314` | N | `a_case_referent_naming_no_inventoried_case_is_reported` |
+| `115315` | N | `a_pairing_not_covering_a_dated_branch_is_reported` |
+| `115316` | N | `a_pull_request_taking_its_source_strictness_is_reported` |
+| `115505` | N | `a_file_open_declaring_no_encoding_is_reported` |
+| `115506` | N | `an_identifier_outside_its_module_block_is_reported` |
+| `115009` | P | `the_obfuscated_payloads_survive_a_load_as_code_points` |
+| `115010` | N | `a_graded_evaluation_rule_without_a_rubric_is_reported` |
+| `115600` | N | `a_requirement_traced_but_stated_in_no_plan_is_reported` |
+| `115601` | N | `a_matrix_row_naming_a_test_the_suite_lacks_is_reported` |
+| `115317` | N | `a_readme_figure_disagreeing_with_the_repository_is_reported` |
+| `115318` | B | `a_pending_harness_gate_is_waited_for_not_refused` |
+| `115200` | N | `harness_files_are_not_located_by_directory_adjacency` |
+| `115201` | N | `the_roster_resolves_and_names_engines` |
+| `115011` | N | `a_graded_case_naming_an_unbuilt_pair_is_reported` |
+| `115202` | N | `fill_gaps_reaches_the_plan_the_channel_uses` |
+| `115203` | B | `a_lower_band_is_judged_against_the_floor` |
+| `115204` | P | `a_skip_leaves_the_denominator` |
+| `115205` | N | `an_error_refuses_rather_than_averaging` |
+| `115206` | N | `the_candidate_engine_reaches_the_plan_the_channel_uses` |
+| `115602` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
+| `115708` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
+| `115408` | P | `the_tool_writes_what_reconciling_decided` |
+| `115409` | P | `one_dispatch_session_serves_a_whole_run` |
+| `115410` | P | `the_session_records_the_models_it_served` |
+| `115411` | N | `the_tool_refuses_a_date_it_cannot_parse` |
+| `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
+| `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
 **Inventory: 46 cases, 28 negative, 11 positive, 4 boundary.**
 
@@ -563,11 +564,11 @@ through `cmn.config.packaged_roster_path` (harness `cmn_verdict_and_cli.md`
 section 10.37). Nothing here reaches out of this repository to find harness
 files.
 
-`MQC_CAS_UNI_10452` asserts the shape rather than the outcome, over the syntax
+`MQC_CAS_UNI_115200` asserts the shape rather than the outcome, over the syntax
 tree rather than the text: no path expression in `tests/` or `tools/` may name
 the harness directory. Scanning the text flagged the prose that explains the
 rule and the pin's own `apolskiy/AP-Harness-QC`, neither of which reaches
-anywhere. `MQC_CAS_UNI_10453` pins the consequence — the roster resolves and
+anywhere. `MQC_CAS_UNI_115201` pins the consequence — the roster resolves and
 names engines — because an empty roster is what the failure actually looked
 like.
 
@@ -575,11 +576,11 @@ like.
 
 Every row in the table at section 3.2 is a way for the gate to **fail open**,
 and a gate that fails open is indistinguishable from no gate at all until the
-day it matters. `10412` through `10415` are each one such way, written
+day it matters. `115306` through `115309` are each one such way, written
 separately because a single case asserting "not green" would pass with an
 implementation that returned `False` unconditionally.
 
-`10418` is the boundary check for section 3.6, and it is a source check rather
+`115312` is the boundary check for section 3.6, and it is a source check rather
 than a behavioural one because the defect it guards is an import that works
 perfectly on a developer machine where the harness is already installed, and
 fails only in CI at the one moment the gate is supposed to run.
@@ -588,27 +589,27 @@ fails only in CI at the one moment the gate is supposed to run.
 
 ### 4.2 The refusal is only worth what the workflows do with it
 
-Added 2026-09-24. `10439` and `10440` are the two halves of section 3.9, and
+Added 2026-09-24. `115706` and `115707` are the two halves of section 3.9, and
 they are separate identifiers because they are opposite claims: one says a
 regression run stops, the other says a debug run does not.
 
 **Both are source checks on workflow definitions**, which is the only place
-the property lives. `10422` establishes that the resolver refuses; nothing
+the property lives. `115313` establishes that the resolver refuses; nothing
 established that a refusal reached anything, so the protection was structural
 and unasserted, which is the state this project has learned to distrust.
 ### 4.3 The branch policy reaches the pairing
 
-Added 2026-09-24. `10442` and `10443` cover what `ci_pipeline.md` section 3C.6
+Added 2026-09-24. `115314` and `115315` cover what `ci_pipeline.md` section 3C.6
 means on this side, where branches are dated and the pairing mapping has to
 match them.
 
-**`10442` is the half that cannot live in the harness.** A referent naming a
+**`115314` is the half that cannot live in the harness.** A referent naming a
 case identifier is checked for existence, and the inventory it is checked
 against is this repository's. The harness checks its own identifiers against
 its own, which is one rule enforced by one implementation over two inventories,
 not two rules.
 
-**`10443` reports a pairing that no longer covers the branches CI runs on.** A
+**`115315` reports a pairing that no longer covers the branches CI runs on.** A
 dated branch matching no entry takes the default, which is silent and pairs it
 with `main`, so a stabilization branch could quietly run against the wrong
 harness while looking configured.
@@ -639,7 +640,7 @@ destinations: harness `cmn_verdict_and_cli.md` section 7.1.0.2.
 **The scanner lives in the harness and is called from both sides.** The harness
 owns no case data and this repository owns its own workflows, so
 `cmn.code_standards.artifact_mandate_gaps` takes a root and
-`MQC_CMN_UNI_11211` and `MQC_CAS_UNI_10469` call it with one each. The same
+`MQC_CMN_UNI_112525` and `MQC_CAS_UNI_115708` call it with one each. The same
 one-implementation-two-callers arrangement as the encoding and header rules,
 for the same boundary reason.
 
@@ -692,7 +693,7 @@ describing.
 **The empty string is why it read as correct.** `_channel("")` and
 `judge_channel_from_roster(..., engine or None)` both treat empty as "take the
 configured one", so the call site looked like a deliberate choice to use the
-configured judge rather than like a dropped argument. `10470` fails on the
+configured judge rather than like a dropped argument. `115406` fails on the
 behaviour instead of on the shape.
 
 ### 4.13.1 The observation count, covered rather than fixed
@@ -701,7 +702,7 @@ behaviour instead of on the shape.
 roster entry. Nothing varied it and asserted the dispatched population changed,
 which the same gap entry recorded accurately.
 
-**It interacts with escalation, and that is what `10471` pins.** A run naming
+**It interacts with escalation, and that is what `115407` pins.** A run naming
 three observations where one disagrees still earns two more, because the
 override sets the count the run begins with and
 `cmn.observations.further_observations` decides what a disagreement adds. An
@@ -777,12 +778,12 @@ lacks is worse than silence, because a reader stops looking: that is the rule
 
 **This is the first instance of the recurring shape, reopened.** Harness
 `cmn_verdict_and_cli.md` section 7.1.0.1 records `--max-spend` as the original
-case of a flag that reached nothing, and `MQC_CAS_UNI_10467` closed it by
+case of a flag that reached nothing, and `MQC_CAS_UNI_115208` closed it by
 asserting the flag reaches the session's ceiling. **It does, and that was half
 of a two-part claim**: a ceiling on a session rebuilt per observation is still
-a ceiling that stops nothing. `10467` is correct and was never sufficient.
+a ceiling that stops nothing. `115208` is correct and was never sufficient.
 
-| Established by `10467` | Not established by anything |
+| Established by `115208` | Not established by anything |
 |---|---|
 | `--max-spend` reaches `DispatchSession.max_spend` | That the session holding it survives more than one dispatch |
 
@@ -1136,9 +1137,9 @@ A dispatch naming an input the workflow does not declare is rejected by GitHub
 with a message about the input, and a reader following the documented procedure
 concludes the procedure is broken rather than the page.
 
-`MQC_CAS_UNI_10441` reads every fenced command in `running_jobs.md`, extracts
+`MQC_CAS_UNI_115504` reads every fenced command in `running_jobs.md`, extracts
 the workflow and the inputs each one names, and requires that the workflow
-exists and declares every input. It is the same obligation `10437` places on a
+exists and declares every input. It is the same obligation `115704` places on a
 workflow installing the harness, applied to prose instead of to YAML.
 
 **Prose is checked here for the same reason data is checked elsewhere.** This
@@ -1192,7 +1193,7 @@ its foundation failed reports one defect twice.
 
 ### 4.7 The obfuscated payloads are guarded as code points
 
-Added 2026-09-24. `10446` loads the shipped corpus through the real loader and
+Added 2026-09-24. `115009` loads the shipped corpus through the real loader and
 asserts the obfuscation payloads still carry the code points they are made of.
 
 **These are the first data in the project whose meaning is not its text.** A
@@ -1202,24 +1203,24 @@ diff, every review and every editor.
 
 | Payload | What must survive | Why nothing else would notice |
 |---|---|---|
-| `50006` | Zero-width characters between the letters | They render as nothing |
-| `50007` | Cyrillic letters inside Latin words | They render identically to Latin |
-| `50005` | A base64 blob that decodes to the override | It decodes or it does not |
+| `154105` | Zero-width characters between the letters | They render as nothing |
+| `154106` | Cyrillic letters inside Latin words | They render identically to Latin |
+| `154104` | A base64 blob that decodes to the override | It decodes or it does not |
 
 **The canary assertions cannot catch this.** They are ASCII and would keep
 passing against a mangled payload, which is precisely the failure mode: the
-fixture goes on working and stops saying whether it still does. `10446`
+fixture goes on working and stops saying whether it still does. `115009`
 decodes the base64 and counts the code points, so a corruption is a failure
 rather than a silence.
 
 **It also pins the vectors.** Each payload must still match the registered
 vector it was written for, which is the two-screen cross-check
-`MQC_EVL_UNI_10349` depends on.
+`MQC_EVL_UNI_114608` depends on.
 
 
 ### 4.8 A graded evaluation rule carries a rubric
 
-Added 2026-09-24. `10447` covers the corpus half of `tier3_evaluation.md`
+Added 2026-09-24. `115010` covers the corpus half of `tier3_evaluation.md`
 section 4D.3.
 
 **Omitting a rubric now decides something**, so it has to be visible. A rule
@@ -1235,7 +1236,7 @@ serves is a fact about this corpus.
 
 ### 4.9 The plan and the matrix are compared here too
 
-Added 2026-09-25. `10448` is the parity of `MQC_CMN_UNI_11131`, which the
+Added 2026-09-25. `115600` is the parity of `MQC_CMN_UNI_112229`, which the
 harness has had since the matrices were written and this repository did not.
 
 **Thirty-nine requirements were traced and stated nowhere.** They existed only
@@ -1253,36 +1254,36 @@ two: a matrix row looks like completeness.
 
 Added 2026-09-26, found while reconciling the inventory before the first commit.
 
-**`10447` was inventoried in section 4.8, traced by `MQC_REQ_CAS_CI_0019`, cited
+**`115010` was inventoried in section 4.8, traced by `MQC_REQ_CAS_CI_0019`, cited
 by `mqc_tool_compliance.py` and by the test plan as the thing that permitted
 their rubricless rules — and never written.** Three documents and a matrix row
 described a check that did not exist.
 
-**Section 4.9 could not see it.** `10448` compares the matrix against the plan,
+**Section 4.9 could not see it.** `115600` compares the matrix against the plan,
 and here the two agreed with each other; neither of them is the suite. The
-harness has had `MQC_CMN_UNI_11122` for this direction since the matrices were
+harness has had `MQC_CMN_UNI_112313` for this direction since the matrices were
 written, and it scans the harness's own tests.
 
 | Direction | Catches | Where |
 |---|---|---|
-| Stated, never traced | An uncovered requirement | `10448` |
-| Traced, never stated | A claim nobody wrote down | `10448` |
-| **Traced, never implemented** | **A row that reads as completeness** | **`10449`** |
+| Stated, never traced | An uncovered requirement | `115600` |
+| Traced, never stated | A claim nobody wrote down | `115600` |
+| **Traced, never implemented** | **A row that reads as completeness** | **`115601`** |
 
 **It reads parsed syntax rather than source text**, because this repository
 quotes case identifiers inside docstrings — including the two that quoted
-`10447` while it did not exist. A regex would have found those mentions and
+`115010` while it did not exist. A regex would have found those mentions and
 called the case present.
 
-**It found five more on its first run.** `10401` to `10405` were renamed and the
-matrix kept the old behaviour slugs, with `10403` present under both its old and
+**It found five more on its first run.** `115100` to `115104` were renamed and the
+matrix kept the old behaviour slugs, with `115102` present under both its old and
 its new name. Those are stale references rather than missing tests, and they are
 repointed.
 
 
 ### 4.11 The README's own figures are checked
 
-Added 2026-09-26, alongside `MQC_CMN_UNI_11180` in the harness, for the same
+Added 2026-09-26, alongside `MQC_CMN_UNI_112323` in the harness, for the same
 reason and on the same day.
 
 **Every figure on the front page had drifted, and one was not a number.**

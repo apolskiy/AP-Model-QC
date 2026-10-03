@@ -155,7 +155,7 @@ jobs:
       #
       # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
       # comment inside a run body is part of the shell script, and
-      # `MQC_CAS_UNI_10435` reads run bodies looking for a graded invocation: an
+      # `MQC_CAS_UNI_115702` reads run bodies looking for a graded invocation: an
       # earlier version of this note said "toolchain" beside the word for the
       # test runner, and `tool` matched inside it.
       - name: Install the resolved harness and this repository
@@ -215,7 +215,7 @@ jobs:
   # here is either a `UNI` precondition over the shipped corpus or a graded case
   # in a band below. A marker matching zero tests exits 5, so the step failed the
   # job it was meant to complete, every run. Wiring is the harness's subject and
-  # `MQC_CMN_SYS_20301` to `20303` cover it there.
+  # `MQC_CMN_SYS_122000` to `122002` cover it there.
 
   # THE BANDS. One job each, because the job name is the diagnosis: a red at P0
   # or P1 is a release blocker, and a red at P2-P4 is a bug to open and quarantine
@@ -230,7 +230,7 @@ jobs:
     needs: [resolve, lint, preconditions]
     # NO STATUS FUNCTION, DELIBERATELY. A job-level `always()` or
     # `!cancelled()` outruns the resolver's refusal, which is what
-    # `MQC_CAS_UNI_10439` reports and what this first carried. Naming the
+    # `MQC_CAS_UNI_115706` reports and what this first carried. Naming the
     # preconditions result alone replaces the default needs-success gating,
     # so a failed band before this one does not hide it while a refusal
     # upstream still skips it: a refused resolve skips preconditions, and a
@@ -292,7 +292,7 @@ jobs:
     needs: [resolve, lint, preconditions, graded-p0]
     # NO STATUS FUNCTION, DELIBERATELY. A job-level `always()` or
     # `!cancelled()` outruns the resolver's refusal, which is what
-    # `MQC_CAS_UNI_10439` reports and what this first carried. Naming the
+    # `MQC_CAS_UNI_115706` reports and what this first carried. Naming the
     # preconditions result alone replaces the default needs-success gating,
     # so a failed band before this one does not hide it while a refusal
     # upstream still skips it: a refused resolve skips preconditions, and a
@@ -361,7 +361,7 @@ jobs:
     needs: [resolve, lint, preconditions, graded-p1]
     # NO STATUS FUNCTION, DELIBERATELY. A job-level `always()` or
     # `!cancelled()` outruns the resolver's refusal, which is what
-    # `MQC_CAS_UNI_10439` reports and what this first carried. Naming the
+    # `MQC_CAS_UNI_115706` reports and what this first carried. Naming the
     # preconditions result alone replaces the default needs-success gating,
     # so a failed band before this one does not hide it while a refusal
     # upstream still skips it: a refused resolve skips preconditions, and a

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """The code-style rules pylint cannot express, enforced on this tree.
 
-Covers ``MQC_CAS_UNI_10419`` through ``10421``, inventoried in
+Covers ``MQC_CAS_UNI_115500`` through ``115502``, inventoried in
 ``docs/design/consumer_ci.md`` section 4.
 
 **One project spans two repositories**, and a rule enforced on one side only is
@@ -24,6 +24,7 @@ import allure
 import pytest
 
 from cmn.code_standards import (
+    identifier_block_problems,
     annotation_gaps,
     encoding_gaps,
     future_annotation_imports,
@@ -32,6 +33,9 @@ from cmn.code_standards import (
     markup_header_problems,
     markup_sources,
 )
+
+# This repository's root, two levels above a case module.
+_REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 
 pytestmark = pytest.mark.unit
 
@@ -55,7 +59,7 @@ class TestMQCCodeStandards:
     """The rules that stood in a document while nothing checked them."""
 
     @allure.story("Annotations")
-    def MQC_CAS_UNI_10419_every_callable_carries_parameter_and_return_hints(
+    def MQC_CAS_UNI_115500_every_callable_carries_parameter_and_return_hints(
         self,
     ) -> None:
         """Pylint does not check annotation presence, so nothing else does.
@@ -73,7 +77,7 @@ class TestMQCCodeStandards:
         assert not gaps, f"{len(gaps)} annotation gaps: " + "; ".join(gaps[:10])
 
     @allure.story("Annotations")
-    def MQC_CAS_UNI_10420_pep_563_future_annotations_import_is_rejected(self) -> None:
+    def MQC_CAS_UNI_115501_pep_563_future_annotations_import_is_rejected(self) -> None:
         """Laziness comes from the interpreter, not from stringizing.
 
         Python 3.14 implements PEP 649, so annotations are already evaluated
@@ -91,7 +95,7 @@ class TestMQCCodeStandards:
         )
 
     @allure.story("Authorship")
-    def MQC_CAS_UNI_10421_every_python_file_carries_its_mit_spdx_header(self) -> None:
+    def MQC_CAS_UNI_115502_every_python_file_carries_its_mit_spdx_header(self) -> None:
         """This repository is MIT, and its files have to say so themselves.
 
         **The licence is named rather than accepted as any valid tag**, which is
@@ -109,7 +113,7 @@ class TestMQCCodeStandards:
         )
 
     @allure.story("Authorship")
-    def MQC_CAS_UNI_10434_a_document_or_data_file_without_its_mit_header_is_reported(
+    def MQC_CAS_UNI_115503_a_document_or_data_file_without_its_mit_header_is_reported(
         self,
     ) -> None:
         """The corpus is the material this licence rationale names.
@@ -137,7 +141,7 @@ class TestMQCRunbook:
     """The operating procedure, checked against the workflows it describes."""
 
     @allure.story("The runbook works")
-    def MQC_CAS_UNI_10441_a_runbook_command_naming_an_undeclared_input_is_reported(
+    def MQC_CAS_UNI_115504_a_runbook_command_naming_an_undeclared_input_is_reported(
         self,
     ) -> None:
         """A documented dispatch that GitHub rejects is worse than none.
@@ -164,7 +168,7 @@ class TestMQCRunbook:
 class TestMQCEncodingDeclared:
     """The rule that fails more quietly than any other here."""
 
-    def MQC_CAS_UNI_10445_a_file_open_declaring_no_encoding_is_reported(
+    def MQC_CAS_UNI_115505_a_file_open_declaring_no_encoding_is_reported(
         self, tmp_path: Path
     ) -> None:
         """A missing encoding raises nothing and changes the value.
@@ -219,3 +223,33 @@ class TestMQCEncodingDeclared:
         # AND NEITHER CORRECT CALL. A binary open carries no encoding and must
         # not claim one; a declared read is simply right.
         assert not any("binary" in entry or "declared" in entry for entry in reported)
+
+
+    @allure.story("Identifiers sit in their own block")
+    def MQC_CAS_UNI_115506_an_identifier_outside_its_module_block_is_reported(
+        self,
+    ) -> None:
+        """Every identifier's digits say what its tokens say.
+
+        An identifier is six positional digits: domain, layer, module,
+        category, case. This reads the layer and module tokens off each name
+        and checks the digits that encode them.
+
+        **Nothing checked the previous allocation**, which is how `EXE/UNI`
+        came to sit inside `EVL`'s block, `EVL/UNI` inside `CAS`'s and
+        `CMN/UNI` past its last allocated block, all at once and silently.
+
+        **The duplicate-binding check cannot see this.** Two modules occupying
+        one block are two distinct identifiers, so counting bindings balances.
+
+        Design: ``test_taxonomy.md`` section 3.2.1.4.
+
+        Returns:
+            None
+        """
+        problems = identifier_block_problems(_REPOSITORY_ROOT)
+
+        assert not problems, (
+            "identifiers carry digits their tokens contradict, so a module "
+            "occupies a block it was not allocated: " + "; ".join(problems)
+        )

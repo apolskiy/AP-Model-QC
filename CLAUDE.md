@@ -65,11 +65,11 @@ defect that ships.
 These are the only places the two repositories differ, and each is a
 consequence of the split rather than a preference.
 
-* **Licence is MIT**, so every tracked file's SPDX header names `MIT`: Python, markdown and YAML alike, written when the file is created rather than in a later pass (`code-style.md` sections 1.1 and 1.2, enforced by `MQC_CAS_UNI_10421` and `10434`). **The corpus matters most here**, being the material this rationale names. The cases
+* **Licence is MIT**, so every tracked file's SPDX header names `MIT`: Python, markdown and YAML alike, written when the file is created rather than in a later pass (`code-style.md` sections 1.1 and 1.2, enforced by `MQC_CAS_UNI_115502` and `115503`). **The corpus matters most here**, being the material this rationale names. The cases
   are material people copy and adapt; the harness is a tool others depend on and
   takes Apache 2.0 for its patent grant.
 * **The module code is `CAS`**, and identifiers come from the block
-  `10401-10499`, partitioned in the harness `test_taxonomy.md` section 3.2.1.
+  `115000-115999`, partitioned in the harness `test_taxonomy.md` section 3.2.1.
 * **The Allure epic is `AP-Model-QC`**, so a collector reading both repositories
   can tell which produced a result.
 * **`conftest.py` is a delegation**, never a second configuration. Every hook

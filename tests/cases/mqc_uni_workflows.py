@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """What the workflows must and must not do.
 
-Covers ``MQC_CAS_UNI_10429``, ``10430``, ``10435`` and ``10436``, inventoried
+Covers ``MQC_CAS_UNI_115700``, ``115701``, ``115702`` and ``115703``, inventoried
 in ``docs/testing/model_evaluation_test_plan.md`` section 8.1.
 
 **Workflow files are configuration, not collected code**, so ``pytest.ini``
@@ -166,7 +166,7 @@ def _selects_a_graded_marker(line: str) -> bool:
     asked whether the body contained "pytest" and any of the marker names as a
     bare substring, and a run body is one string per step including its shell
     comments. A note explaining an install said "toolchain" next to the word for
-    the test runner, `tool` matched inside it, and `10435` reported the install
+    the test runner, `tool` matched inside it, and `115702` reported the install
     step as an ungated graded invocation.
 
     **"sec" is the dangerous one**, being a substring of section, second,
@@ -263,7 +263,7 @@ class TestMQCWorkflowProperties:
     """The debug workflow's exclusions, and what only it may do."""
 
     @allure.story("No verdict")
-    def MQC_CAS_UNI_10429_the_debug_workflow_yields_no_verdict_and_gates_nothing(
+    def MQC_CAS_UNI_115700_the_debug_workflow_yields_no_verdict_and_gates_nothing(
         self,
     ) -> None:
         """A hand-typed selection is arbitrary and has no backstop.
@@ -305,7 +305,7 @@ class TestMQCWorkflowProperties:
         assert "no verdict" in source.lower()
 
     @allure.story("Judging")
-    def MQC_CAS_UNI_10430_only_the_debug_workflow_judges_a_failed_case(
+    def MQC_CAS_UNI_115701_only_the_debug_workflow_judges_a_failed_case(
         self,
     ) -> None:
         """The gate spends nothing on a case that has already failed.
@@ -354,7 +354,7 @@ class TestMQCAttributionLadder:
     """
 
     @allure.story("The gate stays credential-free")
-    def MQC_CAS_UNI_10435_a_graded_gate_job_that_needs_a_credential_is_reported(
+    def MQC_CAS_UNI_115702_a_graded_gate_job_that_needs_a_credential_is_reported(
         self,
     ) -> None:
         """The gate grades only because both sides are replayed.
@@ -409,7 +409,7 @@ class TestMQCAttributionLadder:
                 )
 
     @allure.story("The ladder")
-    def MQC_CAS_UNI_10436_a_live_job_that_does_not_follow_the_ladder_is_reported(
+    def MQC_CAS_UNI_115703_a_live_job_that_does_not_follow_the_ladder_is_reported(
         self,
     ) -> None:
         """A red rung stops the ladder, and each rung moves one thing.
@@ -498,13 +498,13 @@ class TestMQCAttributionLadder:
 class TestMQCResolveObligation:
     """Who is obliged to call the resolver, as opposed to what it does.
 
-    ``MQC_CAS_UNI_10406`` through ``10422`` cover the resolver itself. This
+    ``MQC_CAS_UNI_115300`` through ``115313`` cover the resolver itself. This
     covers the workflows' duty to use it, designed in
     ``docs/design/consumer_ci.md`` sections 3.1 and 7.6.
     """
 
     @allure.story("Install by resolved commit")
-    def MQC_CAS_UNI_10437_a_workflow_installing_an_unresolved_harness_is_reported(
+    def MQC_CAS_UNI_115704_a_workflow_installing_an_unresolved_harness_is_reported(
         self,
     ) -> None:
         """An unverified instrument attributes our defect to the model.
@@ -538,7 +538,7 @@ class TestMQCResolveObligation:
         )
 
     @allure.story("Spending waits for green")
-    def MQC_CAS_UNI_10438_a_spending_workflow_that_skips_the_green_gate_is_reported(
+    def MQC_CAS_UNI_115705_a_spending_workflow_that_skips_the_green_gate_is_reported(
         self,
     ) -> None:
         """A red pairing stops a spending ladder before its first rung.
@@ -624,7 +624,7 @@ class TestMQCArtifactContract:
     """The downstream artifact contract, against what the workflows run."""
 
     @allure.story("Both mandated artifacts are emitted")
-    def MQC_CAS_UNI_10469_a_workflow_emitting_one_mandated_artifact_is_reported(
+    def MQC_CAS_UNI_115708_a_workflow_emitting_one_mandated_artifact_is_reported(
         self,
     ) -> None:
         """Every workflow invocation writing an artifact writes both of them.
@@ -637,7 +637,7 @@ class TestMQCArtifactContract:
 
         **The scanner is the harness's and is called with this root.** The
         harness owns no case data and this repository owns its workflows, so
-        ``MQC_CMN_UNI_11211`` calls the same function with the other one.
+        ``MQC_CMN_UNI_112525`` calls the same function with the other one.
 
         Design: ``consumer_ci.md`` section 4.12.
 
@@ -658,13 +658,13 @@ class TestMQCArtifactContract:
 class TestMQCRefusalReachesTheRun:
     """A refusal is worth what the workflows do with it.
 
-    ``MQC_CAS_UNI_10422`` establishes that the resolver refuses. These
+    ``MQC_CAS_UNI_115313`` establishes that the resolver refuses. These
     establish that a refusal stops a regression run and does not stop a debug
     run, designed in ``docs/design/consumer_ci.md`` section 3.9.
     """
 
     @allure.story("A refusal stops the run")
-    def MQC_CAS_UNI_10439_a_test_executing_job_that_outruns_a_refusal_is_reported(
+    def MQC_CAS_UNI_115706_a_test_executing_job_that_outruns_a_refusal_is_reported(
         self,
     ) -> None:
         """Exit 4 is only a refusal if something declines to run.
@@ -734,7 +734,7 @@ class TestMQCRefusalReachesTheRun:
         )
 
     @allure.story("Development is exempt")
-    def MQC_CAS_UNI_10440_a_debug_workflow_blocked_by_a_red_harness_is_reported(
+    def MQC_CAS_UNI_115707_a_debug_workflow_blocked_by_a_red_harness_is_reported(
         self,
     ) -> None:
         """Withholding the tool when it is needed is the failure here.

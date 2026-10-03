@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Preconditions guarding the code excerpts the graded cases assert against.
 
-Covers `MQC_CAS_UNI_10401` through `10405`, inventoried in
+Covers `MQC_CAS_UNI_115100` through `115104`, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 8.
 
 **These were harness cases until the repository split.** They read files this
@@ -57,7 +57,7 @@ def _execute_excerpt(name: str) -> dict:
 class TestMQCCodeExcerptFixtures:
     """The excerpts still hold the defects every graded case asserts against."""
 
-    def MQC_CAS_UNI_10401_syntactic_excerpt_still_fails_to_parse_at_recorded_line(
+    def MQC_CAS_UNI_115100_syntactic_excerpt_still_fails_to_parse_at_recorded_line(
         self, tmp_path: Path
     ) -> None:
         """The parser is the ground truth, and it names the line.
@@ -83,7 +83,7 @@ class TestMQCCodeExcerptFixtures:
         assert "was never closed" in message
         assert "line 2" in message
 
-    def MQC_CAS_UNI_10402_logical_excerpt_still_returns_the_recorded_wrong_value(
+    def MQC_CAS_UNI_115101_logical_excerpt_still_returns_the_recorded_wrong_value(
         self,
     ) -> None:
         """This one parses, runs and raises nothing. The defect is a discarded line.
@@ -103,7 +103,7 @@ class TestMQCCodeExcerptFixtures:
         assert [row["score"] for row in returned] == [10, 90]
         assert [row["score"] for row in returned] != [90, 50]
 
-    def MQC_CAS_UNI_10403_settlement_excerpt_still_exhibits_every_recorded_defect(
+    def MQC_CAS_UNI_115102_settlement_excerpt_still_exhibits_every_recorded_defect(
         self,
     ) -> None:
         """Verification is by execution, so the finding is arithmetic.
@@ -145,7 +145,7 @@ class TestMQCCodeExcerptFixtures:
         with pytest.raises(KeyError):
             settle_order("enterprise", 100, ["SAVE10"], {"SAVE10": 30})
 
-    def MQC_CAS_UNI_10404_the_two_top_scorer_excerpts_are_the_same_function(self) -> None:
+    def MQC_CAS_UNI_115103_the_two_top_scorer_excerpts_are_the_same_function(self) -> None:
         """Defect class is the only variable between the pair.
 
         That is what makes the pair worth having: without it, defect class would
@@ -165,7 +165,7 @@ class TestMQCCodeExcerptFixtures:
         assert len(syntactic.splitlines()) < 20
         assert len(logical.splitlines()) < 20
 
-    def MQC_CAS_UNI_10405_excerpts_are_not_collected_or_linted_as_case_code(self) -> None:
+    def MQC_CAS_UNI_115104_excerpts_are_not_collected_or_linted_as_case_code(self) -> None:
         """They carry a text suffix so no tool silently corrects them.
 
         A Python suffix would put them in the path of pylint, pytest collection

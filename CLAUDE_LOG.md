@@ -2027,3 +2027,32 @@ not.
 `gemini-3.8-flash` findings and 1 skip, pylint 10.00/10 exit 0. Verified end to
 end: the tool re-stamped a still-failing case with `2026-10-02` and
 `gemini-3.8-flash`, keeping its ticket.
+
+## 2026-10-02: renumbered to six digits, and one pattern that matched a block
+
+Every identifier here moved with the harness's: `CAS` preconditions to
+`115xxx`, graded cases to `134xxx`, `144xxx` and `154xxx`. The mapping is
+recorded in the harness's `identifier_map.csv`.
+
+**`_INVENTORY_ROW` matched a block prefix rather than a digit count.** It read
+`` `(5\d{4})` `` for the old security block, so against `154xxx` it matched
+nothing and `MQC_CAS_UNI_115403` reported no problems because it found no rows
+to check. The widening sweep searched for patterns matching on **width** and
+could not see one matching on **block**, which is the failure the sweep existed
+to prevent arriving in the one shape it could not detect.
+
+**Two branch-referent samples stopped meaning anything.** `99999` and `11144`
+are five digits, and a five-digit referent no longer matches the case kind at
+all, so `referent_problems` returned nothing and the assertion that it reports a
+problem failed. Widened to `999999` and `112505`, which keeps each sample's
+point: one is not a case anywhere, the other is a harness case and not
+inventoried here.
+
+`MQC_CAS_UNI_115506` calls the harness's new block check with this root, the
+arrangement `CAS_CI_0017` already uses for the encoding scanner. It reports
+clean.
+
+### State
+
+76 preconditions passing, graded replay 66 passed with the 2 known
+`gemini-3.8-flash` findings and 1 skip, pylint 10.00/10 exit 0.

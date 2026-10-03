@@ -17,7 +17,7 @@ paid tier.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 69 graded cases specified |
-| `docs/testing/rtm_model.csv` | 89 requirements, traced |
+| `docs/testing/rtm_model.csv` | 90 requirements, traced |
 | `data/tasks/`, `data/rules/` | **7 corpora, 65 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
 | Preconditions (`CAS`, `UNI`) | **75 cases, all passing** |

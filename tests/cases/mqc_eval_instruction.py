@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Whether the model does what the instruction said, in the shape it said.
 
-Covers ``MQC_EVL_EVAL_30001`` through ``30009``, inventoried in
+Covers ``MQC_EVL_EVAL_134300`` through ``134308``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
 section 9.5.
 
@@ -14,9 +14,9 @@ grades quality inside it.
 **30001 and 30002 are an ablation pair**, differing only in whether the format
 instruction is stated at all. A model returning JSON when nothing asked for it
 is following a habit rather than an instruction, and the pair exists so that
-`30001` cannot take credit for that habit.
+`134300` cannot take credit for that habit.
 
-**Everything here presupposes `30001`.** A model that will not honour a format
+**Everything here presupposes `134300`.** A model that will not honour a format
 it was handed tells us nothing further by also mishandling a bullet ceiling.
 """
 
@@ -38,7 +38,7 @@ class TestMQCDeclaredFormat:
     @pytest.mark.base
     @pytest.mark.priority(1)
     @allure.story("Declared format")
-    def MQC_EVL_EVAL_30001_obeys_declared_output_format(self, request: Any) -> None:
+    def MQC_EVL_EVAL_134300_obeys_declared_output_format(self, request: Any) -> None:
         """Two named keys and nothing outside the object.
 
         **Parsing and preamble are checked separately**, because a response
@@ -62,14 +62,14 @@ class TestMQCDeclaredFormat:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30001")
+    @pytest.mark.depends_on("134300")
     @allure.story("Ablation control")
-    def MQC_EVL_EVAL_30002_format_violation_is_recorded(self, request: Any) -> None:
+    def MQC_EVL_EVAL_134301_format_violation_is_recorded(self, request: Any) -> None:
         """The same task with the format instruction removed.
 
         **The control, and it runs the opposite way.** Identical material and
         request, so a model returning JSON here is exhibiting a habit. Without
-        this case `30001` would be credited for behaviour no instruction
+        this case `134300` would be credited for behaviour no instruction
         produced.
 
         Args:
@@ -97,9 +97,9 @@ class TestMQCQuantitativeCeilings:
     """
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30001")
+    @pytest.mark.depends_on("134300")
     @allure.story("Bullet ceiling")
-    def MQC_EVL_EVAL_30003_rejects_output_exceeding_bullet_ceiling(
+    def MQC_EVL_EVAL_134302_rejects_output_exceeding_bullet_ceiling(
         self, request: Any
     ) -> None:
         """A count, which is the least interpretive check in the family.
@@ -116,9 +116,9 @@ class TestMQCQuantitativeCeilings:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(3)
-    @pytest.mark.depends_on("30001")
+    @pytest.mark.depends_on("134300")
     @allure.story("Word ceiling")
-    def MQC_EVL_EVAL_30004_rejects_sentence_exceeding_word_ceiling(
+    def MQC_EVL_EVAL_134303_rejects_sentence_exceeding_word_ceiling(
         self, request: Any
     ) -> None:
         """A per-sentence ceiling, which a whole-response count would miss.
@@ -139,9 +139,9 @@ class TestMQCQuantitativeCeilings:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30001")
+    @pytest.mark.depends_on("134300")
     @allure.story("Capitalisation")
-    def MQC_EVL_EVAL_30005_sentence_begins_with_capital(self, request: Any) -> None:
+    def MQC_EVL_EVAL_134304_sentence_begins_with_capital(self, request: Any) -> None:
         """A positive check, and the family needs one.
 
         The other three ceilings are all violations to be caught. **A suite of
@@ -160,9 +160,9 @@ class TestMQCQuantitativeCeilings:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(4)
-    @pytest.mark.depends_on("30001")
+    @pytest.mark.depends_on("134300")
     @allure.story("Sentence completeness")
-    def MQC_EVL_EVAL_30006_sentence_lacking_subject_or_verb_is_flagged(
+    def MQC_EVL_EVAL_134305_sentence_lacking_subject_or_verb_is_flagged(
         self, request: Any
     ) -> None:
         """A fragment under a word ceiling is the predictable way to comply.
@@ -189,9 +189,9 @@ class TestMQCOrderingAndProhibition:
     """Instructions about arrangement and about what must not appear."""
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30001")
+    @pytest.mark.depends_on("134300")
     @allure.story("Ordering")
-    def MQC_EVL_EVAL_30007_measurables_ordered_above_remainder(
+    def MQC_EVL_EVAL_134306_measurables_ordered_above_remainder(
         self, request: Any
     ) -> None:
         """An instruction about arrangement rather than about content.
@@ -211,9 +211,9 @@ class TestMQCOrderingAndProhibition:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30001")
+    @pytest.mark.depends_on("134300")
     @allure.story("Prohibition")
-    def MQC_EVL_EVAL_30008_prohibited_glyph_is_recorded(self, request: Any) -> None:
+    def MQC_EVL_EVAL_134307_prohibited_glyph_is_recorded(self, request: Any) -> None:
         """A prohibition, which is the inverse of every ceiling above.
 
         A ceiling says how much; this says never. **The distinction matters
@@ -232,9 +232,9 @@ class TestMQCOrderingAndProhibition:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30001")
+    @pytest.mark.depends_on("134300")
     @allure.story("Combined constraints")
-    def MQC_EVL_EVAL_30009_combined_constraints_do_not_degrade_each_other(
+    def MQC_EVL_EVAL_134308_combined_constraints_do_not_degrade_each_other(
         self, request: Any
     ) -> None:
         """Every constraint above, in one request.

@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: MIT
 """The matrix checked against the two things that are not the matrix.
 
-Covers ``MQC_CAS_UNI_10448``, ``10449`` and ``10460``, inventoried in
+Covers ``MQC_CAS_UNI_115600``, ``115601`` and ``115602``, inventoried in
 ``docs/design/consumer_ci.md`` section 3.2. The checks themselves are the
 harness's, specified in ``cmn_verdict_and_cli.md`` section 6.
 
-**Three directions, and each one was blind to the others.** `10448` compares
-the matrix against the test plan, `10449` the matrix against the suite, and
-`10460` the suite against the matrix. The first two passed over two cases that
+**Three directions, and each one was blind to the others.** `115600` compares
+the matrix against the test plan, `115601` the matrix against the suite, and
+`115602` the suite against the matrix. The first two passed over two cases that
 ran traced to nothing, because neither of them looks that way.
 
 **Extracted from ``mqc_uni_harness_pin.py`` on 2026-10-01**, which had grown
@@ -51,7 +51,7 @@ class TestMQCMatrixIntegrity:
     Designed in ``docs/design/consumer_ci.md`` section 4.8.
     """
 
-    def MQC_CAS_UNI_10448_a_requirement_traced_but_stated_in_no_plan_is_reported(
+    def MQC_CAS_UNI_115600_a_requirement_traced_but_stated_in_no_plan_is_reported(
         self,
     ) -> None:
         """Thirty-nine requirements were traced and stated nowhere.
@@ -60,7 +60,7 @@ class TestMQCMatrixIntegrity:
         repository promises could be read only by opening a CSV and
         reconstructing it. **Nothing reported it, because the check that would
         have found it lived on one side of the split**: the harness has had
-        ``MQC_CMN_UNI_11131`` since the matrices were written.
+        ``MQC_CMN_UNI_112229`` since the matrices were written.
 
         **Both directions.** A requirement stated and never traced is
         uncovered; one traced and never stated is a claim nobody wrote down.
@@ -97,26 +97,26 @@ class TestMQCMatrixIntegrity:
             f"so the promise exists only as a matrix row: {unstated[:6]}"
         )
 
-    def MQC_CAS_UNI_10449_a_matrix_row_naming_a_test_the_suite_lacks_is_reported(
+    def MQC_CAS_UNI_115601_a_matrix_row_naming_a_test_the_suite_lacks_is_reported(
         self,
     ) -> None:
-        """`10447` was traced, cited by two docstrings, and never written.
+        """`115010` was traced, cited by two docstrings, and never written.
 
         **A matrix row looks exactly like completeness.** `MQC_REQ_CAS_CI_0019`
-        named `MQC_CAS_UNI_10447`, `consumer_ci.md` section 4.8 described it,
+        named `MQC_CAS_UNI_115010`, `consumer_ci.md` section 4.8 described it,
         and `mqc_tool_compliance.py` said it policed the rubricless tool rules.
         Nothing ran. It was found by reconciling the inventory by hand before
         the first commit, which is not a check.
 
-        **`10448` runs the other way** and could not see this: it compares the
+        **`115600` runs the other way** and could not see this: it compares the
         matrix against the plan, and both agreed. Neither of them is the suite.
-        The harness has had `MQC_CMN_UNI_11122` for this direction since the
+        The harness has had `MQC_CMN_UNI_112313` for this direction since the
         matrices were written, and it scans the harness's own tests.
 
         **Read from parsed syntax, not from source text.** A `def` inside a
         string literal is data, and this repository embeds several in
         docstrings that quote case names — including the ones that quoted
-        `10447` while it did not exist.
+        `115010` while it did not exist.
 
         Returns:
             None
@@ -147,14 +147,14 @@ class TestMQCMatrixIntegrity:
             f"define, so a requirement reads as covered by nothing: {absent[:6]}"
         )
 
-    def MQC_CAS_UNI_10460_a_collected_test_named_in_no_matrix_row_is_reported(
+    def MQC_CAS_UNI_115602_a_collected_test_named_in_no_matrix_row_is_reported(
         self,
     ) -> None:
         """Every collected test is named by some matrix row.
 
         Calls ``cmn.traceability.untraced_tests`` with this repository's matrix
         and the test callables the suite defines, read from parsed syntax so a
-        ``def`` inside a docstring is not counted. ``10449`` runs the opposite
+        ``def`` inside a docstring is not counted. ``115601`` runs the opposite
         direction and reports a row naming a test the suite lacks.
 
         Design: harness ``cmn_verdict_and_cli.md`` section 6.0.1.

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """How this case set finds the harness, which is by install and not by path.
 
-Covers ``MQC_CAS_UNI_10452`` and ``10453``, inventoried in
+Covers ``MQC_CAS_UNI_115200`` and ``115201``, inventoried in
 ``docs/design/consumer_ci.md`` section 4A.
 
 **Gate 4 failed in CI and could not fail on any developer's disk.** The roster
@@ -31,7 +31,7 @@ from tools.band_floor import assess
 pytestmark = pytest.mark.unit
 
 # SPELT IN PIECES so this module is not itself a hit for the rule
-# `MQC_CAS_UNI_10452` enforces over the repository.
+# `MQC_CAS_UNI_115200` enforces over the repository.
 _HARNESS_DIRECTORY: Final[str] = "AP-" + "Harness-QC"
 
 
@@ -47,7 +47,7 @@ def _root() -> Path:
 class TestMQCHarnessLocatedByInstall:
     """The harness is a dependency, not the directory next door."""
 
-    def MQC_CAS_UNI_10452_harness_files_are_not_located_by_directory_adjacency(
+    def MQC_CAS_UNI_115200_harness_files_are_not_located_by_directory_adjacency(
         self,
     ) -> None:
         """Gate 4 failed in CI and could not fail on any developer's disk.
@@ -98,7 +98,7 @@ class TestMQCHarnessLocatedByInstall:
             "package, as cmn.config.packaged_roster_path does."
         )
 
-    def MQC_CAS_UNI_10453_the_roster_resolves_and_names_engines(self) -> None:
+    def MQC_CAS_UNI_115201_the_roster_resolves_and_names_engines(self) -> None:
         """An empty roster is a broken install, not a starting condition.
 
         `load_yaml_config` yields an empty mapping for an absent file, which is
@@ -154,7 +154,7 @@ class _Invocation:
 class TestMQCOptionsReachTheHarness:
     """A flag set here has to arrive where the harness reads it."""
 
-    def MQC_CAS_UNI_10455_fill_gaps_reaches_the_plan_the_channel_uses(self) -> None:
+    def MQC_CAS_UNI_115202_fill_gaps_reaches_the_plan_the_channel_uses(self) -> None:
         """The flag was set on a plan nothing ran with.
 
         `judgement_plan` builds a `JudgementPlan` and `_channel` builds a
@@ -183,7 +183,7 @@ class TestMQCOptionsReachTheHarness:
         assert _channel("gemini", "live", True, False, True).plan.fill_gaps is True
 
 
-    def MQC_CAS_UNI_10459_the_candidate_engine_reaches_the_plan_the_channel_uses(
+    def MQC_CAS_UNI_115206_the_candidate_engine_reaches_the_plan_the_channel_uses(
         self,
     ) -> None:
         """The candidate engine reaches the plan the judge channel is built from.
@@ -218,7 +218,7 @@ class TestMQCOptionsReachTheHarness:
         )
 
 
-    def MQC_CAS_UNI_10466_a_single_disagreement_dispatches_two_more(self) -> None:
+    def MQC_CAS_UNI_115207_a_single_disagreement_dispatches_two_more(self) -> None:
         """If one observation fails, the case runs two more times.
 
         Three observations can only put a case at 0, 33, 67 or 100 percent
@@ -229,7 +229,7 @@ class TestMQCOptionsReachTheHarness:
         three, so an escalated run never overwrites a recorded fixture.
 
         The rule deciding how many to add is the harness's
-        (`further_observations`), covered by `MQC_CMN_UNI_11206`. This checks
+        (`further_observations`), covered by `MQC_CMN_UNI_112036`. This checks
         that the loop calls it and dispatches what it asks for.
 
         Returns:
@@ -264,11 +264,11 @@ class TestMQCOptionsReachTheHarness:
         assert further_observations([True, True, True]) == 0
 
 
-    def MQC_CAS_UNI_10467_max_spend_reaches_the_session_ceiling(self) -> None:
+    def MQC_CAS_UNI_115208_max_spend_reaches_the_session_ceiling(self) -> None:
         """``--max-spend`` arrives as the dispatch session's ceiling.
 
         The session enforces the ceiling and fails closed on an unpriced model,
-        which ``MQC_EXE_UNI_10301`` and ``10303`` cover. This covers the half
+        which ``MQC_EXE_UNI_113700`` and ``113702`` cover. This covers the half
         that was broken: the flag reaching it.
 
         A ceiling of zero means unbounded, so the absent flag and an explicit
@@ -329,7 +329,7 @@ class TestMQCBandFloor:
         )
         return path
 
-    def MQC_CAS_UNI_10456_a_lower_band_is_judged_against_the_floor(
+    def MQC_CAS_UNI_115203_a_lower_band_is_judged_against_the_floor(
         self, tmp_path: Path
     ) -> None:
         """P0 and P1 need no rate; this band is the only one that does.
@@ -362,7 +362,7 @@ class TestMQCBandFloor:
         # a reader to the artifact to learn by how much.
         assert "80.0%" in message and "90%" in message
 
-    def MQC_CAS_UNI_10457_a_skip_leaves_the_denominator(
+    def MQC_CAS_UNI_115204_a_skip_leaves_the_denominator(
         self, tmp_path: Path
     ) -> None:
         """A foundation that did not hold must not charge the later band.
@@ -386,7 +386,7 @@ class TestMQCBandFloor:
         assert "40 skipped" in message
         assert "9 of 10 measured" in message
 
-    def MQC_CAS_UNI_10458_an_error_refuses_rather_than_averaging(
+    def MQC_CAS_UNI_115205_an_error_refuses_rather_than_averaging(
         self, tmp_path: Path
     ) -> None:
         """An error is our defect, and a floor is about the model.

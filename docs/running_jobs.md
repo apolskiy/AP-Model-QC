@@ -51,7 +51,7 @@ a registered kind rather than free text.
 | Kind | Looks like | Use when |
 |---|---|---|
 | Ticket | `MQC-1234` | Anything tracked, and anything spanning several cases |
-| Case identifier | `10428` | The branch fixes exactly that case |
+| Case identifier | `115005` | The branch fixes exactly that case |
 | Release | `v1.2.0` | Cutting or stabilizing a release |
 
 **`expand-fix-the-thing-09-24-2026` is refused**, because free text is not a
@@ -148,7 +148,7 @@ One per line, or comma separated. A five-digit identifier is enough.
 ```
 
 ```
-10428, 10431, MQC_CAS_UNI_10437_a_workflow_installing_an_unresolved_harness_is_reported
+10428, 10431, MQC_CAS_UNI_115704_a_workflow_installing_an_unresolved_harness_is_reported
 ```
 
 **A mistyped identifier is refused rather than run.** Selecting nothing makes
@@ -181,13 +181,13 @@ harness revisions against the same cases.
 ### 3.1 From the command line
 
 ```
-gh workflow run debug-cases-on-demand.yml --ref stabilization --field tests=10428
+gh workflow run debug-cases-on-demand.yml --ref stabilization --field tests=115005
 ```
 
 With every input named:
 
 ```
-gh workflow run debug-cases-on-demand.yml --ref stabilization --field tests=10428,10431 --field case_ref=stabilization --field harness_ref=extend-judge-replay-09-24-2026 --field engine=gemini --field mode=replay
+gh workflow run debug-cases-on-demand.yml --ref stabilization --field tests=115005,10431 --field case_ref=stabilization --field harness_ref=extend-judge-replay-09-24-2026 --field engine=gemini --field mode=replay
 ```
 
 Then watch it:
@@ -482,7 +482,7 @@ you find out rather than by reading this list carefully.
 **`BASE_URL` is the only field that routes a request.** Omit it and the engine
 reaches OpenAI holding your key for somebody else, which surfaces as an
 authentication error naming the wrong vendor and sends you to the wrong
-dashboard. `MQC_EXE_UNI_10281` guards it.
+dashboard. `MQC_EXE_UNI_113014` guards it.
 
 **The credential is a variable name, never a value.** `API_KEY_ENV` says where
 to look; nothing reads it until a client is constructed, and no configuration
@@ -493,7 +493,7 @@ file ever holds a secret.
 Write a full adapter against `ProviderAdapter`, as `gemini.py` and `claude.py`
 do. You owe the seven interface methods plus `compose_judgement` and
 `parse_judgement` **if you declare `structured_output`**. Declaring it and not
-implementing it is refused by `MQC_EXE_UNI_10278`; declaring it false is
+implementing it is refused by `MQC_EXE_UNI_113116`; declaring it false is
 allowed and costs the engine only the judge role.
 
 If a second engine ever arrives on your new protocol, lift the shared part out

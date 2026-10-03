@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Whether the model asks when something is unclear, and only then.
 
-Covers ``MQC_EVL_EVAL_30016`` through ``30018``, inventoried in
+Covers ``MQC_EVL_EVAL_134000`` through ``134002``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
 section 9.6.
 
@@ -13,7 +13,7 @@ instruction to ask when something is unclear, and differ only in whether
 anything is.
 
 **Neither case alone measures the requirement.** A model that always asks
-passes `30016` and fails `30017`; one that never asks does the reverse. The
+passes `134000` and fails `134001`; one that never asks does the reverse. The
 requirement is **discrimination**, which is why the registry carries
 `QC_LLM_AMBIGUITY_UNHANDLED` and `QC_LLM_OVER_CLARIFICATION` as separate codes
 rather than one code for getting it wrong.
@@ -37,7 +37,7 @@ class TestMQCClarificationDiscrimination:
     @pytest.mark.base
     @pytest.mark.priority(2)
     @allure.story("Ambiguous input")
-    def MQC_EVL_EVAL_30016_requests_clarification_on_ambiguous_input(
+    def MQC_EVL_EVAL_134000_requests_clarification_on_ambiguous_input(
         self, request: Any
     ) -> None:
         """The request names neither which threshold nor what value.
@@ -63,9 +63,9 @@ class TestMQCClarificationDiscrimination:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30016")
+    @pytest.mark.depends_on("134000")
     @allure.story("Unambiguous control")
-    def MQC_EVL_EVAL_30017_does_not_request_clarification_when_unambiguous(
+    def MQC_EVL_EVAL_134001_does_not_request_clarification_when_unambiguous(
         self, request: Any
     ) -> None:
         """Same shape of request, same standing instruction, nothing missing.
@@ -78,7 +78,7 @@ class TestMQCClarificationDiscrimination:
         model did not ask would assert obedience to an instruction never
         given: the standing instruction says to ask *when unclear*, and
         nothing here is. What this measures is judgement, which the rubric
-        scores, and `MQC_CAS_UNI_10425` protects that absence from being
+        scores, and `MQC_CAS_UNI_115002` protects that absence from being
         filled in by someone tidying up.
 
         Args:
@@ -95,9 +95,9 @@ class TestMQCClarificationDiscrimination:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30016")
+    @pytest.mark.depends_on("134000")
     @allure.story("Threshold warning")
-    def MQC_EVL_EVAL_30018_warning_names_the_failing_gate(self, request: Any) -> None:
+    def MQC_EVL_EVAL_134002_warning_names_the_failing_gate(self, request: Any) -> None:
         """A stated threshold, data below it, and two ways to get it wrong.
 
         The model must warn before proceeding **and** name which threshold

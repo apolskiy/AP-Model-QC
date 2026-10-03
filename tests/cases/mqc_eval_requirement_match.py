@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Whether requirement matching lands exactly on the gate boundaries.
 
-Covers ``MQC_EVL_EVAL_30019`` through ``30028``, inventoried in
+Covers ``MQC_EVL_EVAL_134400`` through ``134409``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
 section 9.8. The matching semantics are normative in the harness ``DESIGN.md``
 section 7.1 and are not restated here.
@@ -38,7 +38,7 @@ class TestMQCConnectorArithmetic:
     @pytest.mark.base
     @pytest.mark.priority(3)
     @allure.story("Closed OR")
-    def MQC_EVL_EVAL_30019_closed_or_list_satisfied_by_one_member(
+    def MQC_EVL_EVAL_134400_closed_or_list_satisfied_by_one_member(
         self, request: Any
     ) -> None:
         """"Python, Go, or Rust" against a candidate holding Python only.
@@ -62,15 +62,15 @@ class TestMQCConnectorArithmetic:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(3)
-    @pytest.mark.depends_on("30019")
+    @pytest.mark.depends_on("134400")
     @allure.story("Closed AND")
-    def MQC_EVL_EVAL_30020_closed_and_list_scores_fractionally(
+    def MQC_EVL_EVAL_134401_closed_and_list_scores_fractionally(
         self, request: Any
     ) -> None:
         """"Docker, Kubernetes" against a candidate holding Docker only.
 
         **50 percent**: a conjunction of two with one held is half the line,
-        not nothing and not everything. The same candidate as `30019`, so the
+        not nothing and not everything. The same candidate as `134400`, so the
         difference is attributable to the connector alone.
 
         Args:
@@ -85,9 +85,9 @@ class TestMQCConnectorArithmetic:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(3)
-    @pytest.mark.depends_on("30019")
+    @pytest.mark.depends_on("134400")
     @allure.story("Open enumeration")
-    def MQC_EVL_EVAL_30021_open_enumeration_satisfied_by_category_equivalent(
+    def MQC_EVL_EVAL_134402_open_enumeration_satisfied_by_category_equivalent(
         self, request: Any
     ) -> None:
         """"PostgreSQL, Redis or similar databases" against MySQL only.
@@ -118,7 +118,7 @@ class TestMQCGateBoundaries:
     @pytest.mark.base
     @pytest.mark.priority(2)
     @allure.story("Above ceiling")
-    def MQC_EVL_EVAL_30024_mandatory_at_ceiling_proceeds_regardless_of_optional(
+    def MQC_EVL_EVAL_134405_mandatory_at_ceiling_proceeds_regardless_of_optional(
         self, request: Any
     ) -> None:
         """Mandatory 9.0/10 = 90.0 percent, at or above 85.
@@ -139,9 +139,9 @@ class TestMQCGateBoundaries:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30024")
+    @pytest.mark.depends_on("134405")
     @allure.story("At floor")
-    def MQC_EVL_EVAL_30023_mandatory_at_floor_with_sufficient_combined_proceeds(
+    def MQC_EVL_EVAL_134404_mandatory_at_floor_with_sufficient_combined_proceeds(
         self, request: Any
     ) -> None:
         """Mandatory 7.8/10 = 78.0 percent exactly, combined 12.8/15 = 85.3.
@@ -162,9 +162,9 @@ class TestMQCGateBoundaries:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30024")
+    @pytest.mark.depends_on("134405")
     @allure.story("Below floor")
-    def MQC_EVL_EVAL_30022_mandatory_below_floor_warns_without_evaluating_optional(
+    def MQC_EVL_EVAL_134403_mandatory_below_floor_warns_without_evaluating_optional(
         self, request: Any
     ) -> None:
         """Mandatory 7.0/10 = 70.0 percent, below the 78 floor.
@@ -194,7 +194,7 @@ class TestMQCExperienceDisclosure:
     @pytest.mark.base
     @pytest.mark.priority(2)
     @allure.story("Stated figure")
-    def MQC_EVL_EVAL_30025_stated_experience_figure_is_preserved(
+    def MQC_EVL_EVAL_134406_stated_experience_figure_is_preserved(
         self, request: Any
     ) -> None:
         """The candidate stated it, so it stands unchanged.
@@ -217,9 +217,9 @@ class TestMQCExperienceDisclosure:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30025")
+    @pytest.mark.depends_on("134406")
     @allure.story("Derived figure")
-    def MQC_EVL_EVAL_30026_derived_experience_figure_states_requirement_floor(
+    def MQC_EVL_EVAL_134407_derived_experience_figure_states_requirement_floor(
         self, request: Any
     ) -> None:
         """Derived from employment dates: fifteen years against a required eight.
@@ -243,9 +243,9 @@ class TestMQCExperienceDisclosure:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @pytest.mark.depends_on("30025")
+    @pytest.mark.depends_on("134406")
     @allure.story("Incalculable figure")
-    def MQC_EVL_EVAL_30027_incalculable_experience_prompts_rather_than_assumes(
+    def MQC_EVL_EVAL_134408_incalculable_experience_prompts_rather_than_assumes(
         self, request: Any
     ) -> None:
         """Neither stated nor calculable, so the model must ask.
@@ -269,7 +269,7 @@ class TestMQCExperienceDisclosure:
 
     @pytest.mark.priority(3)
     @allure.story("Unfamiliar header")
-    def MQC_EVL_EVAL_30028_classifies_unfamiliar_section_header_correctly(
+    def MQC_EVL_EVAL_134409_classifies_unfamiliar_section_header_correctly(
         self, request: Any
     ) -> None:
         """A section header the model has no template for.
