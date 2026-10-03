@@ -19,20 +19,32 @@ from typing import Any
 
 import allure
 import pytest
-import yaml
-
 from cmn.code_standards import artifact_mandate_gaps
+
+from tests.cases.workflow_support import (
+    GRADED_MARKERS as _GRADED_MARKERS,
+    WORKFLOWS as _WORKFLOWS,
+    graded_invocations as _graded_invocations,
+    jobs as _jobs,
+    load as _load,
+    needs as _needs,
+    run_lines as _run_lines,
+    selects_a_graded_marker as _selects_a_graded_marker,
+)
 
 pytestmark = pytest.mark.unit
 
-_WORKFLOWS = Path(__file__).resolve().parents[2] / ".github" / "workflows"
 
 # The prefix a downstream collector matches. A debug run must not carry it.
 _COLLECTOR_PREFIX = "mqc-reports-"
 
 # The workflows the ladder is split across, and the rungs in order.
 _GATE = "gate-on-change.yml"
-_LIVE = "evaluate-live-weekly.yml"
+# THE LADDER ITSELF, which one workflow per engine calls. The rungs moved
+# here on 2026-10-03: a combined weekly result averages over three
+# vendors' products, so each engine has its own caller and its own
+# history. Design `consumer_ci.md` section 4.18.
+_LIVE = "evaluate-engine.yml"
 _RUNGS = ("deterministic", "judge", "model")
 
 # The GitHub Environment holding every provider secret. A1's approval boundary.
@@ -40,7 +52,6 @@ _ENVIRONMENT = "live"
 
 # The markers selecting a graded layer. A gate step naming one of these is
 # grading, whatever the step is called.
-_GRADED_MARKERS = ("evaluator", "tool", "sec")
 
 # The distribution name, as every install line spells it.
 _HARNESS_PACKAGE = "ap-harness-qc"
@@ -49,6 +60,11 @@ _HARNESS_PACKAGE = "ap-harness-qc"
 # a job output and the debug workflow as a step output, which is the same fact
 # reaching the install line by the two routes Actions offers.
 _RESOLVED_SHA = "outputs.harness_sha"
+
+# The same commit as a called workflow reads it. A call receives the
+# resolution rather than performing it, and the caller is checked
+# separately for passing a resolved value in.
+_CALLED_SHA = "inputs.harness_sha"
 
 # The resolve job's green assessment, as a job condition reads it.
 _GREEN = "outputs.green"
@@ -68,16 +84,6 @@ _TOLERATES = "|| true"
 _STATUS_FUNCTIONS = ("always(", "failure(", "cancelled(")
 
 
-def _load(name: str) -> dict[str, Any]:
-    """Return a parsed workflow definition.
-
-    Args:
-        name (str): The workflow filename.
-
-    Returns:
-        dict: The parsed document.
-    """
-    return yaml.safe_load((_WORKFLOWS / name).read_text(encoding="utf-8"))
 
 
 def _steps(workflow: dict[str, Any]) -> list[dict[str, Any]]:
@@ -96,33 +102,8 @@ def _steps(workflow: dict[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
-def _jobs(workflow: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    """Return the workflow's jobs.
-
-    Args:
-        workflow (dict): A parsed workflow.
-
-    Returns:
-        dict: Job name to definition.
-    """
-    return workflow.get("jobs") or {}
 
 
-def _needs(job: dict[str, Any]) -> list[str]:
-    """Return the jobs one job depends on, however the key was written.
-
-    Args:
-        job (dict): A parsed job.
-
-    Returns:
-        list[str]: The named dependencies. A bare string is a list of one,
-        which is what makes the two spellings indistinguishable to a reader
-        and therefore worth normalizing here rather than at each call.
-    """
-    declared = job.get("needs") or []
-    if isinstance(declared, str):
-        return [declared]
-    return list(declared)
 
 
 def _provider_secrets(text: str) -> set[str]:
@@ -140,69 +121,15 @@ def _provider_secrets(text: str) -> set[str]:
     return named - {"GITHUB_TOKEN"}
 
 
-def _run_lines(job: dict[str, Any]) -> list[str]:
-    """Return every shell command a job runs, one entry per step.
-
-    Args:
-        job (dict): A parsed job.
-
-    Returns:
-        list[str]: The ``run`` bodies, line continuations folded away so a
-        flag and its value can be matched on one string.
-    """
-    bodies: list[str] = []
-    for step in job.get("steps") or []:
-        body = step.get("run")
-        if body:
-            bodies.append(re.sub(r"\\\s*", " ", str(body)))
-    return bodies
 
 
 
-def _selects_a_graded_marker(line: str) -> bool:
-    """Report whether a command selects a graded marker with `-m`.
-
-    **The marker has to be selected, not merely mentioned.** An earlier version
-    asked whether the body contained "pytest" and any of the marker names as a
-    bare substring, and a run body is one string per step including its shell
-    comments. A note explaining an install said "toolchain" next to the word for
-    the test runner, `tool` matched inside it, and `115702` reported the install
-    step as an ungated graded invocation.
-
-    **"sec" is the dangerous one**, being a substring of section, second,
-    security and secret, all of which belong in a comment about a gate.
-
-    Args:
-        line (str): One step's run body, continuations already folded.
-
-    Returns:
-        bool: True where the body invokes pytest and a ``-m`` expression selects
-        a graded marker as a whole word. **A computed expression selects
-        nothing here**, which is unchanged: a dispatch passing a marker through
-        an input never carried a literal one to match.
-    """
-    if "pytest" not in line:
-        return False
-    for quoted, bare in re.findall(r'-m\s+(?:"([^"]*)"|(\S+))', line):
-        selected = quoted or bare
-        if any(
-            re.search(rf"\b{re.escape(marker)}\b", selected)
-            for marker in _GRADED_MARKERS
-        ):
-            return True
-    return False
 
 
-def _graded_invocations(job: dict[str, Any]) -> list[str]:
-    """Return the job's commands that execute a graded layer.
 
-    Args:
-        job (dict): A parsed job.
 
-    Returns:
-        list[str]: The pytest invocations selecting a graded marker.
-    """
-    return [line for line in _run_lines(job) if _selects_a_graded_marker(line)]
+
+
 
 
 def _step_ids(job: dict[str, Any]) -> set[str]:
@@ -384,8 +311,29 @@ class TestMQCAttributionLadder:
             f"structural"
         )
 
+        # THE GRADED JOBS MOVED INTO THE WORKFLOW THE GATE CALLS, one call per
+        # engine, so the gate's own jobs carry none. The credential boundary is
+        # a property of what runs, so it follows the bands.
+        # Design `consumer_ci.md` section 4.17.3.
+        reached = {_GATE: gate}
+        for job in _jobs(gate).values():
+            used = str(job.get("uses") or "")
+            if used.startswith("./.github/workflows/"):
+                called = used.rsplit("/", 1)[1]
+                reached[called] = _load(called)
+                secrets_named = _provider_secrets(
+                    (_WORKFLOWS / called).read_text(encoding="utf-8")
+                )
+                assert not secrets_named, (
+                    f"{called} references provider {sorted(secrets_named)} and "
+                    f"is called by the gate, so the gate can spend quota on "
+                    f"every push through it"
+                )
+
         graded_jobs = {
-            name: job for name, job in _jobs(gate).items()
+            f"{workflow}:{name}": job
+            for workflow, loaded in reached.items()
+            for name, job in _jobs(loaded).items()
             if _graded_invocations(job)
         }
         assert graded_jobs, (
@@ -537,6 +485,29 @@ class TestMQCResolveObligation:
             "nothing and the obligation it states is unenforced"
         )
 
+        # AND EVERY CALLER PASSES A RESOLVED COMMIT INTO THE INPUT. Without
+        # this half, a called workflow installing `inputs.harness_sha` would
+        # satisfy the check above while its caller passed a branch name.
+        calls = 0
+        for workflow in sorted(_WORKFLOWS.glob("*.yml")):
+            for name, job in _jobs(_load(workflow.name)).items():
+                if not str(job.get("uses") or "").startswith("./.github/"):
+                    continue
+                passed = str(((job.get("with") or {}).get("harness_sha")) or "")
+                if not passed:
+                    continue
+                calls += 1
+                assert _RESOLVED_SHA in passed, (
+                    f"{workflow.name} job {name!r} passes {passed!r} as the "
+                    f"harness commit, which is not a resolved one, so the "
+                    f"called workflow installs whatever that names"
+                )
+
+        assert calls, (
+            "no workflow passes a harness commit into a called one, so the "
+            "second half of this case establishes nothing"
+        )
+
     @allure.story("Spending waits for green")
     def MQC_CAS_UNI_115705_a_spending_workflow_that_skips_the_green_gate_is_reported(
         self,
@@ -592,6 +563,14 @@ class TestMQCResolveObligation:
         Returns:
             None
         """
+        # A CALLED WORKFLOW RECEIVES THE COMMIT RATHER THAN RESOLVING IT, so
+        # `inputs.harness_sha` is a resolved commit here and the caller is
+        # where that is established. The second half of this case checks every
+        # caller passes a resolved value into it, which is what keeps the
+        # obligation whole across the call boundary.
+        if _CALLED_SHA in line:
+            return
+
         assert _RESOLVED_SHA in line, (
             f"{workflow} job {job_name!r} installs the harness without a "
             f"resolved commit, so pip takes whatever the branch head is at "
@@ -775,96 +754,4 @@ class TestMQCRefusalReachesTheRun:
         assert "GREEN GATE DOES NOT APPLY" in source, (
             f"{_DEBUG} no longer says why it is exempt, so the next reader "
             f"sees an omission rather than a decision"
-        )
-
-
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
-class TestMQCEngineAttribution:
-    """A graded red has to say which model it is about."""
-
-    @allure.story("Every graded job names its engine")
-    def MQC_CAS_UNI_115709_a_graded_job_not_naming_its_engine_is_reported(
-        self,
-    ) -> None:
-        """Every graded job runs one engine, names it, and keys its artifacts.
-
-        A graded failure is a finding about one model, so a job covering
-        several produces a red that names none of them and an engineer has to
-        read a log to learn which model failed.
-
-        Three things are checked of each graded job:
-
-        * it takes its engine from a matrix rather than naming one literally,
-        * its job name carries the engine, so the red is attributable in a
-          listing,
-        * every artifact it uploads is keyed by the engine, because two
-          engines sharing an artifact name is one name and the later upload
-          wins.
-
-        **The third is the one with a precedent.** ``JudgementKey`` lacked the
-        candidate engine, and recording ``openai`` overwrote 96 ``gemini``
-        judgements.
-
-        Design: ``consumer_ci.md`` section 4.17.
-
-        Returns:
-            None
-        """
-        problems: list[str] = []
-        examined = 0
-
-        for workflow in (_GATE, _LIVE):
-            loaded = _load(workflow)
-            for job_name, job in _jobs(loaded).items():
-                graded = _graded_invocations(job)
-                if not graded:
-                    continue
-                examined += 1
-                where = f"{workflow}:{job_name}"
-
-                engines = (
-                    ((job.get("strategy") or {}).get("matrix") or {}).get("engine")
-                )
-                if not engines:
-                    problems.append(
-                        f"{where} runs graded cases and declares no engine "
-                        f"matrix, so it measures one engine chosen literally"
-                    )
-                elif len(engines) < 2:
-                    problems.append(
-                        f"{where} declares {engines}, so the other engines are "
-                        f"measured by nothing"
-                    )
-
-                if "matrix.engine" not in str(job.get("name") or ""):
-                    problems.append(
-                        f"{where} runs graded cases and its name does not carry "
-                        f"the engine, so a red names no model"
-                    )
-
-                for body in graded:
-                    if "matrix.engine" not in body:
-                        problems.append(
-                            f"{where} names its engine literally rather than "
-                            f"taking it from the matrix"
-                        )
-
-                for step in job.get("steps") or []:
-                    if "upload-artifact" not in str(step.get("uses") or ""):
-                        continue
-                    name = str(((step.get("with") or {}).get("name")) or "")
-                    if name and "matrix.engine" not in name:
-                        problems.append(
-                            f"{where} uploads {name!r}, which is not keyed by "
-                            f"the engine, so two engines share one artifact name"
-                        )
-
-        assert examined >= 4, (
-            f"only {examined} graded jobs were examined, so this check would "
-            f"pass by finding almost nothing"
-        )
-        assert not problems, (
-            "graded jobs do not attribute their results to one engine: "
-            + "; ".join(problems)
         )

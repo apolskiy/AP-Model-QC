@@ -1,0 +1,241 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+#
+# THE GRADED BANDS FOR ONE ENGINE. Called once per engine by
+# `gate-on-change.yml`, so each engine is its own job: a finding about one model
+# reddens that engine's check and leaves the others reporting their own verdict,
+# one engine can be re-run alone, and diagnosis and quarantine stay per engine.
+#
+# A MATRIX WOULD NOT DO. A matrix is one job with legs and its status
+# aggregates, so one engine's finding would redden a check covering three.
+# Design `consumer_ci.md` section 4.17.3.
+#
+# THE BANDS STILL CHAIN WITHIN AN ENGINE, carrying the outcome record forward,
+# which is section 3.12's arrangement unchanged.
+name: graded-engine
+
+on:
+  workflow_call:
+    inputs:
+      engine:
+        description: "Which engine the bands measure"
+        required: true
+        type: string
+      harness_repository:
+        description: "The paired harness repository the resolver chose"
+        required: true
+        type: string
+      harness_sha:
+        description: "The commit the resolver verified"
+        required: true
+        type: string
+      gated:
+        description: "Whether this run yields a verdict, as the resolver assessed"
+        required: true
+        type: string
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  # THE BANDS. One job each, because the job name is the diagnosis: a red at P0
+  # or P1 is a release blocker, and a red at P2-P4 is a bug to open and quarantine
+  # while review sets the date. Design section 3.12.
+  #
+  # CHAINED, AND A FAILURE DOES NOT HIDE THE NEXT. Each needs the band before it,
+  # which orders them and carries the outcome record; each runs unless the
+  # preconditions failed, so one band going red still leaves the others
+  # reporting. A chain stopping at the first red would be the single job again.
+  band-p0:
+    name: graded P0, release blocking (${{ inputs.engine }}, ${{ matrix.os }})
+    # THE CALLER GATED ON THE PRECONDITIONS, so a band here only has to
+    # outrun a cancellation: a red band must not hide the band after it.
+    if: ${{ !cancelled() }}
+    strategy:
+      # ONE JOB PER ENGINE, so a red names the model it is about rather than
+      # leaving somebody to read a log for it. Replay contacts no provider and
+      # fixtures exist for all three, so this costs jobs and not quota.
+      # Design `consumer_ci.md` section 4.17.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      # THE PROVENANCE GUARD COMPARES BOTH REFS, because a commit is a property
+      # of the checkout rather than of the invocation. Harness
+      # `cmn_verdict_and_cli.md` section 7.6.1.
+      MQC_CODE_REF: ${{ inputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ inputs.harness_repository }}@${{ inputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      - name: Band P0, both sides replayed
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine ${{ inputs.engine }} \
+            --mode replay \
+            --priority 0 \
+            --carry-outcomes reports/carry.json \
+            --junitxml=reports/junit_mqc_p0.xml \
+            --alluredir=reports/allure-results
+
+      - name: Carry the outcomes to P1
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: carry-after-p0-${{ inputs.engine }}-${{ matrix.os }}
+          path: reports/carry.json
+          retention-days: 1
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ inputs.gated == 'true'
+                && format('mqc-reports-cases-p0-replay-{0}-{1}', inputs.engine, matrix.os)
+                || format('scratch-ungated-cases-p0-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90
+
+  band-p1:
+    name: graded P1, release blocking (${{ inputs.engine }}, ${{ matrix.os }})
+    needs: band-p0
+    # THE CALLER GATED ON THE PRECONDITIONS, so a band here only has to
+    # outrun a cancellation: a red band must not hide the band after it.
+    if: ${{ !cancelled() }}
+    strategy:
+      # ONE JOB PER ENGINE, so a red names the model it is about rather than
+      # leaving somebody to read a log for it. Replay contacts no provider and
+      # fixtures exist for all three, so this costs jobs and not quota.
+      # Design `consumer_ci.md` section 4.17.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      MQC_CODE_REF: ${{ inputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ inputs.harness_repository }}@${{ inputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      # WHAT P0 ESTABLISHED, NOT WHAT P0 RAN. A P1 case resting on a P0
+      # foundation is resolvable from the record, so the foundation is not
+      # dispatched again and a P0 failure skips its dependents here rather than
+      # failing them.
+      - name: Take the outcomes P0 established
+        uses: actions/download-artifact@v6
+        with:
+          name: carry-after-p0-${{ inputs.engine }}-${{ matrix.os }}
+          path: reports/
+
+      - name: Band P1, both sides replayed
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine ${{ inputs.engine }} \
+            --mode replay \
+            --priority 1 \
+            --carry-outcomes reports/carry.json \
+            --junitxml=reports/junit_mqc_p1.xml \
+            --alluredir=reports/allure-results
+
+      - name: Carry the outcomes to P2-P4
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: carry-after-p1-${{ inputs.engine }}-${{ matrix.os }}
+          path: reports/carry.json
+          retention-days: 1
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ inputs.gated == 'true'
+                && format('mqc-reports-cases-p1-replay-{0}-{1}', inputs.engine, matrix.os)
+                || format('scratch-ungated-cases-p1-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90
+
+  band-lower:
+    name: graded P2-P4, pass floor (${{ inputs.engine }}, ${{ matrix.os }})
+    needs: band-p1
+    # THE CALLER GATED ON THE PRECONDITIONS, so a band here only has to
+    # outrun a cancellation: a red band must not hide the band after it.
+    if: ${{ !cancelled() }}
+    strategy:
+      # ONE JOB PER ENGINE, so a red names the model it is about rather than
+      # leaving somebody to read a log for it. Replay contacts no provider and
+      # fixtures exist for all three, so this costs jobs and not quota.
+      # Design `consumer_ci.md` section 4.17.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      MQC_CODE_REF: ${{ inputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ inputs.harness_repository }}@${{ inputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      - name: Take the outcomes P0 and P1 established
+        uses: actions/download-artifact@v6
+        with:
+          name: carry-after-p1-${{ inputs.engine }}-${{ matrix.os }}
+          path: reports/
+
+      # THE STEP DOES NOT GATE, THE FLOOR DOES. This is the only band where a
+      # failure is not automatically fatal, so pytest reports and the next step
+      # decides. Design section 3.12.2.
+      - name: Band P2-P4, both sides replayed
+        continue-on-error: true
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine ${{ inputs.engine }} \
+            --mode replay \
+            --priority 2,3,4 \
+            --carry-outcomes reports/carry.json \
+            --junitxml=reports/junit_mqc_p2_p4.xml \
+            --alluredir=reports/allure-results
+
+      # REFUSES ON AN ERROR RATHER THAN AVERAGING IT. An error is our defect and
+      # a floor is a statement about the model, so a band carrying one exits 4
+      # instead of being scored.
+      - name: Compare the band against its pass floor
+        run: python tools/band_floor.py reports/junit_mqc_p2_p4.xml
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ inputs.gated == 'true'
+                && format('mqc-reports-cases-p2p4-replay-{0}-{1}', inputs.engine, matrix.os)
+                || format('scratch-ungated-cases-p2p4-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90

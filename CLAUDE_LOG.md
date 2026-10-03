@@ -2123,3 +2123,129 @@ corpus and the corpus is wrong.
 ### State
 
 77 preconditions passing, pylint 10.00/10 exit 0. Harness unchanged and green.
+
+## 2026-10-03: a separate job per engine, not a matrix leg
+
+### What the correction was
+
+The first attempt gave the graded bands an engine matrix. **A matrix is one job
+with legs**, and the job is the unit everything else reads:
+
+| | Matrix legs | A job per engine |
+|---|---|---|
+| One engine fails | **The job is red**, so a required check is red for a finding about a model we do not own | That engine is red, the others report their own verdict |
+| Re-running one engine | A leg, which is not a thing a reader can point at | A job |
+| Diagnosis and quarantine | Three engines' findings under one job | Per engine by construction, as the quarantine files already are |
+| Adding an engine | A matrix value | One call |
+
+**The bands were not triplicated to get it.** They moved into
+`graded-engine.yml`, which takes the engine as an input, and the gate calls it
+once per engine. Adding an engine is one call, which is B8's "an entry, never a
+module" applied to CI.
+
+### The sequence is `needs:`, and not a concurrency group
+
+The ordering request was for engine jobs to wait on each other.
+**A concurrency group cannot do that**: it holds exactly one pending job, so
+three engines contending for it means one is cancelled, and
+`testing-standards.md` section 2 already records that the losers "surface as
+cancelled, which reads as failure". Serialising that way would manufacture the
+red this separation exists to remove.
+
+**And `needs:` alone would re-couple what the separation decoupled.** A job
+whose dependency failed is skipped by default, so a red on `gemini` would leave
+`openai` and `claude` unmeasured. Each call carries
+`if: ${{ !cancelled() && needs.preconditions.result == 'success' }}`, which
+keeps the order, keeps the precondition gate, and drops the coupling between
+engines.
+
+### Two existing cases had to follow the call boundary
+
+Extracting the bands moved the graded jobs out of the gate and turned the
+resolved commit into an input, so two checks that were whole became halves:
+
+| Case | What it now does |
+|---|---|
+| `115702` | Follows the gate's `uses:` into the called workflow, and checks the credential boundary there as well as in the gate |
+| `115704` | Accepts `inputs.harness_sha` as resolved **and** checks every caller passes a resolved commit into that input. Without the second half, a called workflow installing an input would satisfy the first while its caller passed a branch name |
+
+### What `115709` guards, and that it is not vacuous
+
+Four properties: the bands take the engine from an input, every rostered engine
+has a call, each caller names its engine, and the calls are chained **with** a
+status function. Three injections were each caught: a missing status function,
+a missing call, and a carry artifact that lost its engine key.
+
+### Still open, with a date
+
+**The weekly ladder is still a matrix.** Its rungs serialise with
+`max-parallel: 1` and key their artifacts per engine, but a rung's status still
+aggregates, so one engine's live finding reddens a rung covering three. The gate
+came first because it blocks merges. Recorded in `consumer_ci.md` section 4.17
+with an expiry of 2026-11-30.
+
+### State
+
+77 preconditions passing, pylint 10.00/10 exit 0.
+
+## 2026-10-03: a weekly workflow per engine, and no cron yet
+
+### Separate engines, separate evaluations
+
+The owner's instruction, and it is better founded than the per-engine jobs it
+replaced: **these are the products of different companies.** A combined weekly
+result is an average over three vendors, which nobody ships against, nobody
+files and nobody can read a regression out of.
+
+| What a reader wants | What an aggregate gives |
+|---|---|
+| Did **this** model regress since **its** last evaluation | A figure that moved because another vendor's model moved |
+| A history per engine, to compare engine against engine | One history whose points mix three subjects |
+| A re-run after one vendor ships | A re-run of three, spending on two that did not change |
+
+Engine against engine is a comparison **of** separate evaluations, not a
+property of one run. Aggregating first destroys the dimension the comparison is
+over.
+
+**A job per engine was not enough**, which is why this supersedes a gap written
+hours earlier: one workflow still means one run, one status, one history and one
+artifact set to pick apart. The ladder moved into `evaluate-engine.yml` and each
+engine got a thin caller.
+
+### The stagger would be the serialisation, and that removes a mechanism
+
+Reserved at eight-hour spacing: `gemini` 02:00, `openai` 10:00, `claude` 18:00
+UTC on Monday. With the three never overlapping by schedule there is no
+cross-engine concurrency group and no chain, so nothing can cancel one of them.
+`testing-standards.md` section 2 warns a concurrency group holds one pending job
+and cancels the rest; the stagger needs no group. Each engine still guards
+against overlapping **itself**, which is the use that section endorses.
+
+### No cron, and what gates its return
+
+The owner withheld the schedule: a live firing spends real money, and until the
+system runs end to end a weekly firing buys a result nobody is reading.
+
+**And a weekly run is a fallback for inactivity, not a model-update tracker.**
+Any evaluation of that engine inside the window makes the weekly redundant,
+whatever prompted it: a vendor shipping a model, the harness changing, the
+corpus changing. **Stating it as "were there runs in between" rather than "did
+the model change" is what makes it cheap**: the run needs no record of versions
+and no comparison, only whether this engine was evaluated since the window
+opened, which its own run history answers. A rule about causes would need a
+state store; a rule about activity needs a query.
+
+The remaining gate is the triage: with 2 findings for `gemini`, 8 for `openai`
+and 10 for `claude`, every firing would be red for reasons recorded days
+earlier, and a cron that is always red communicates nothing.
+
+### What `115709` guards
+
+One caller per rostered engine, each naming its engine, each with its own
+concurrency group, **and no schedule** until the conditions above are met. Two
+injections caught: a schedule added early, and a caller removed so an engine
+would have no evaluation of its own.
+
+### State
+
+77 preconditions passing, pylint 10.00/10 exit 0.

@@ -862,8 +862,54 @@ the same reason, and more strongly:
 
 **In the gate it costs nothing.** The graded bands run in replay, and fixtures
 exist for all three engines: 204 recorded responses for `gemini`, 210 for
-`openai`, 192 for `claude`. No credential, no quota, pure CPU. The matrix
-becomes platform by engine.
+`openai`, 192 for `claude`. No credential, no quota, pure CPU.
+
+**Each engine is a separate job and not a matrix leg**, for the reasons section
+4.17.3 gives: a matrix aggregates its legs into one status, so one engine's
+finding would redden a check covering three.
+
+#### 4.17.3 Separate jobs, not matrix legs, and the sequence is `needs:`
+
+Revised 2026-10-03, after the matrix landed. **A matrix is one job with legs**,
+and the job is the unit everything else reads:
+
+| | Matrix legs | A job per engine |
+|---|---|---|
+| One engine fails | **The job is red**, so a required check on it is red for a finding about a model we do not own | That engine is red and the others report their own verdict |
+| Re-running one engine | Re-running a leg, which is not a thing a reader can point at | Re-running a job |
+| Diagnosis and quarantine | Three engines' findings arrive under one job | Per engine by construction, which is how the quarantine files are already keyed |
+| Adding an engine | A matrix value | One call |
+
+**The bands are not triplicated to get this.** The graded bands move into
+`graded-engine.yml`, a workflow taking the engine as an input, and the gate
+calls it once per engine. Adding an engine is one call, which is B8's "an entry,
+never a module" applied to CI rather than to the roster.
+
+**The sequence is `needs:`, and deliberately not a shared concurrency group.**
+A concurrency group is a mutex holding exactly one pending job, so three engines
+contending for one slot means one is cancelled, and `testing-standards.md`
+section 2 records what that costs: "the losers surface as cancelled, which reads
+as failure". Serialising by cancellation would manufacture the red this
+separation exists to remove.
+
+**Each link runs whatever the engine before it concluded.** `needs:` alone skips
+a job whose dependency failed, which would re-couple exactly what the
+separation decoupled: a red on `gemini` would mean `openai` was never measured.
+So each call carries `if: ${{ !cancelled() && needs.preconditions.result ==
+'success' }}`, which keeps the order, keeps the precondition gate, and drops the
+coupling between engines.
+
+**What the order buys, beyond politeness to a provider.** A sequence is
+reproducible: the same engine meets the same quota state on every run, so a
+rate-limited leg is a finding about pacing rather than about which three jobs
+happened to start together. The replay gate needs none of this and gets it
+anyway, because the ordering is a property of the call graph rather than of the
+mode.
+
+**The weekly ladder is a workflow per engine**, staggered across the day, which
+section 4.18 specifies. The gap recorded here on 2026-10-03 proposed per-engine
+jobs inside one weekly workflow and was superseded the same day: a job per
+engine still leaves one run, one status and one history covering three vendors.
 
 #### 4.17.1 The carried outcomes must be keyed by engine, or three engines overwrite one
 
@@ -899,6 +945,134 @@ design).
 concurrency group keyed on engine and mode between runs, which
 `testing-standards.md` section 2 already specifies: priority bands share a
 provider quota, and so do a provider's own legs.
+
+### 4.18 One weekly workflow per engine, staggered, because nothing aggregates
+
+Added 2026-10-03 at the project owner's instruction, superseding the dated gap
+section 4.17 recorded a few hours earlier. That gap proposed per-engine **jobs**
+inside one weekly workflow; the instruction is stronger and better founded:
+**separate engines, separate evaluations.**
+
+**There is nothing to aggregate.** These are the products of different
+companies, evaluated against one harness and one corpus. A combined weekly
+result is an average over three vendors, which answers no question anybody
+asks: nobody ships against it, nobody files it, and nobody can read a regression
+out of it.
+
+| What a reader wants | What an aggregate gives |
+|---|---|
+| Did **this** model regress since **its** last evaluation | A figure that moved because a different vendor's model moved |
+| A history per engine, to compare engine against engine | One history whose points mix three subjects |
+| A re-run after **one** vendor ships an update | A re-run of all three, spending on two that did not change |
+
+**Engine against engine is a comparison of separate evaluations**, not a
+property of one run. The artifact contract already carries what a comparison
+needs, per engine; aggregating first destroys exactly the dimension the
+comparison is over.
+
+#### 4.18.1 Separate workflows, not separate jobs
+
+A job per engine inside one workflow still leaves one workflow run, one status,
+one history and one artifact set to pick apart.
+
+| | One workflow, jobs per engine | A workflow per engine |
+|---|---|---|
+| Status | One run's conclusion covers three vendors | One per engine |
+| History | One run history, points mixing subjects | One per engine, which is what a trend needs |
+| A model update | Re-runs three engines | Re-runs the one that changed |
+| Schedule | One time for all three | **Its own time**, which is what makes the stagger possible |
+
+The ladder itself is unchanged and moves into `evaluate-engine.yml`, taking the
+engine as an input. Each engine gets a thin caller carrying its own schedule.
+Adding an engine is a caller, which is the same shape `graded-engine.yml` has in
+the gate.
+
+#### 4.18.2 The stagger is the serialisation, and that removes a mechanism
+
+Eight hours apart on the same day, **reserved and not yet active** per
+section 4.18.3:
+
+| Engine | Fires |
+|---|---|
+| `gemini` | Monday 02:00 UTC |
+| `openai` | Monday 10:00 UTC |
+| `claude` | Monday 18:00 UTC |
+
+**Serialisation becomes a property of the clock rather than of a lock.** With
+the three never overlapping by schedule, there is no cross-engine concurrency
+group, no `needs:` chain between engines, and therefore no cancellation and no
+coupling. `testing-standards.md` section 2 warns that a concurrency group holds
+one pending job and cancels the rest; the stagger needs no group at all.
+
+**Each engine still guards against overlapping itself.** A concurrency group
+keyed on the engine prevents a second run of the same engine starting while one
+is live, which is precisely the use that section endorses: "correct only for
+preventing overlap *between* runs."
+
+**And a run that overruns its window is visible rather than contended.** Eight
+hours is far longer than a ladder takes, so a leg still running when the next
+engine fires is a finding about pacing or about a provider, not a scheduling
+accident.
+
+#### 4.18.3 The schedule stays withheld, and two things gate its return
+
+Each engine's workflow carries `workflow_dispatch` alone. The slot is reserved
+and documented in the file, and the cron is not written yet.
+
+**A live firing spends real money**, so a schedule is worth having only once
+something is reading its output. Two conditions gate it, and neither is a
+matter of taste.
+
+**One: the findings already known have to be triaged.** The gate's replay
+reports 2 findings for `gemini`, 8 for `openai` and 10 for `claude`. A weekly
+live run would report at least those, so every firing would be red for reasons
+recorded days earlier. **A cron that is always red communicates nothing**, and
+the remedy is the quarantine mechanism of 2026-10-02 rather than a threshold:
+each finding is accepted into its engine's quarantine with a reason and a
+ticket, or it is a defect in our corpus.
+
+**Two: the weekly must decline when anything else has already evaluated this
+engine.** The weekly is a **fallback for inactivity**, not a model-update
+tracker. Any evaluation of that engine inside the window makes it redundant,
+whatever prompted the earlier one:
+
+| What already ran this cycle | The weekly |
+|---|---|
+| An evaluation after that vendor shipped a model | **Skip** |
+| An evaluation after the harness was updated | **Skip** |
+| An evaluation after the corpus or a test changed | **Skip** |
+| Nothing | Run. This is the only case the cron exists for |
+
+**Stating it as "were there any runs in between" rather than "did the model
+change" is what makes it cheap.** The run does not have to know why an earlier
+evaluation happened, or which model version it measured, or keep a record
+comparing versions: it asks whether this engine was evaluated since the window
+opened, and that is in the workflow's own run history, well inside retention
+for a weekly window. **A rule about causes would need a state store; a rule
+about activity needs a query.**
+
+**So one condition is left gating the cron**, which is the triage above: until
+the known findings are quarantined or fixed, every firing is red for reasons
+recorded days earlier, and a cron that is always red communicates nothing.
+
+#### 4.18.4 Two extractions this needed, and one duplication it caused
+
+The ladder moved into `evaluate-engine.yml` and the engine-separation cases
+into `mqc_uni_engine_jobs.py`, which `mqc_uni_workflows.py` had outgrown at
+1034 lines against the thousand-line ceiling.
+
+**Writing the support module and leaving the originals in place duplicated
+them.** Six workflow readers existed twice until pylint's duplicate-code check
+reported it, which is the drift a support module exists to prevent: a case
+comparing against a stale copy of a reader reports about the copy.
+`workflow_support.py` owns them now and both modules import them.
+
+| New | Holds |
+|---|---|
+| `evaluate-engine.yml` | The ladder, taking the engine as an input |
+| `evaluate-<engine>-weekly.yml` | One caller per engine, each with its own concurrency group and no cron |
+| `mqc_uni_engine_jobs.py` | `115709`, and the three helpers that read the topology |
+| `workflow_support.py` | The readers both case modules share |
 
 ## 5. Governance Parity With The Harness
 

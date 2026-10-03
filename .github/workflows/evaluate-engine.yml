@@ -1,36 +1,32 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-# The attribution ladder, one rung at a time.
+# The attribution ladder for ONE engine.
 #
-# Specified by docs/design/consumer_ci.md section 7.
+# Specified by docs/design/consumer_ci.md sections 7 and 4.18.
 #
 # A GRADED RUN HAS TWO MOVING PARTS, the candidate and the judge, and a single
-# job that moves both can only report that something changed. Each job here
-# holds everything fixed except one thing, which is the same principle the
-# repository split was built on.
+# job that moves both can only report that something changed. Each rung holds
+# everything fixed except one thing.
 #
 #   1  fixture candidate, fixture judge  ->  OUR CODE changed a frozen outcome
 #   2  fixture candidate, live judge     ->  THE JUDGE moved
 #   3  live candidate,    live judge     ->  THE MODEL moved
 #
-# THEY RUN IN SEQUENCE AND A RED RUNG STOPS THE LADDER. Running the judge live
-# after our own code changed a frozen outcome spends quota to rediscover
-# something already established, which is the reasoning framework-rules.md
-# section 1 uses for preconditions gating the graded layers, one level up.
-name: evaluate-live-weekly
+# ONE ENGINE PER CALL, AND NOTHING AGGREGATES. These are the products of
+# different companies evaluated against one harness: a combined weekly result
+# is an average over three vendors, which answers no question anybody asks.
+# Each engine has its own caller, its own schedule, its own status and its own
+# history, and engine against engine is a comparison of those rather than a
+# property of one run. Design section 4.18.
+name: evaluate-engine
 
 on:
-  # NO SCHEDULE UNTIL MAIN IS STABLE, decided 2026-09-26. A cron firing against
-  # an unstabilized main produces a weekly red nobody acts on, and it spends
-  # provider quota on a branch still moving. Weekly regression is set up once
-  # main is stable, and this stanza returns then.
-  workflow_dispatch:
-
-# NOT cancel-in-progress. A cancelled live run yields partial artifacts, which
-# A6 forbids presenting as complete.
-concurrency:
-  group: evaluate-live
-  cancel-in-progress: false
+  workflow_call:
+    inputs:
+      engine:
+        description: "Which engine the ladder evaluates"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -104,15 +100,8 @@ jobs:
   #
   # NO ENVIRONMENT AND NO PROVIDER SECRET, because both sides are replayed.
   deterministic:
-    name: 1 - our code (replay, replay) on ${{ matrix.engine }}
+    name: 1 - our code (replay, replay) on ${{ inputs.engine }}
     needs: resolve
-    strategy:
-      # ONE LEG PER ENGINE, so a red names the model it is about. Both sides
-      # are replayed here, so the legs cost nothing and run together.
-      # Design `consumer_ci.md` section 4.17.
-      fail-fast: false
-      matrix:
-        engine: [gemini, openai, claude]
     # A RED PAIRING MEANS NO LADDER. Rung 1 is free, but running it
     # against an unverified instrument produces a green nobody can
     # rely on, and rungs 2 and 3 would then spend on that basis.
@@ -151,7 +140,7 @@ jobs:
       - name: Graded layers, both sides replayed
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine ${{ matrix.engine }} \
+            --engine ${{ inputs.engine }} \
             --mode replay \
             --junitxml=reports/junit_replay_replay.xml \
             --alluredir=reports/allure-results
@@ -159,7 +148,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: mqc-reports-cases-${{ matrix.engine }}-replay-replay
+          name: mqc-reports-cases-${{ inputs.engine }}-replay-replay
           path: reports/
           retention-days: 90
 
@@ -171,19 +160,10 @@ jobs:
   # verdicts is known-correct. An exemplar is known-correct by construction, so
   # calibration says whether the judge still means what the anchors say.
   judge:
-    name: 2 - the judge (replay, live) on ${{ matrix.engine }}
+    name: 2 - the judge (replay, live) on ${{ inputs.engine }}
     needs: [resolve, deterministic]
-    strategy:
-      # ONE LEG PER ENGINE, AND ONE AT A TIME. A provider's legs share its
-      # quota exactly as priority bands do, which is the reasoning
-      # `testing-standards.md` section 2 gives for serialising within a run.
-      # Design `consumer_ci.md` section 4.17.
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        engine: [gemini, openai, claude]
     concurrency:
-      group: evaluate-live-${{ matrix.engine }}-${{ github.ref }}
+      group: evaluate-live-${{ inputs.engine }}-${{ github.ref }}
       cancel-in-progress: false
     runs-on: ubuntu-24.04
     environment: live
@@ -222,7 +202,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine ${{ matrix.engine }} \
+            --engine ${{ inputs.engine }} \
             --mode replay \
             --judge-mode live \
             -k calibration \
@@ -235,7 +215,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine ${{ matrix.engine }} \
+            --engine ${{ inputs.engine }} \
             --mode replay \
             --judge-mode live \
             --junitxml=reports/junit_replay_live.xml \
@@ -244,7 +224,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: mqc-reports-cases-${{ matrix.engine }}-replay-live
+          name: mqc-reports-cases-${{ inputs.engine }}-replay-live
           path: reports/
           retention-days: 90
 
@@ -275,19 +255,10 @@ jobs:
   # MODEL, and per A2 a model regression never blocks a merge: it is reported
   # as an alert and gates nothing.
   model:
-    name: 3 - the model (live, live) on ${{ matrix.engine }}
+    name: 3 - the model (live, live) on ${{ inputs.engine }}
     needs: [resolve, judge]
-    strategy:
-      # ONE LEG PER ENGINE, AND ONE AT A TIME. A provider's legs share its
-      # quota exactly as priority bands do, which is the reasoning
-      # `testing-standards.md` section 2 gives for serialising within a run.
-      # Design `consumer_ci.md` section 4.17.
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        engine: [gemini, openai, claude]
     concurrency:
-      group: evaluate-live-${{ matrix.engine }}-${{ github.ref }}
+      group: evaluate-live-${{ inputs.engine }}-${{ github.ref }}
       cancel-in-progress: false
     runs-on: ubuntu-24.04
     environment: live
@@ -332,7 +303,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           pytest -m "evaluator or tool or sec" \
-            --engine ${{ matrix.engine }} \
+            --engine ${{ inputs.engine }} \
             --mode live \
             --junitxml=reports/junit_live_live.xml \
             --alluredir=reports/allure-results
@@ -340,7 +311,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: mqc-reports-cases-${{ matrix.engine }}-live-live
+          name: mqc-reports-cases-${{ inputs.engine }}-live-live
           path: reports/
           retention-days: 90
 

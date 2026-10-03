@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# The weekly attribution ladder for openai.
+#
+# ONE WORKFLOW PER ENGINE, so this engine has its own status, its own run
+# history and its own artifacts. A combined weekly result would average over
+# three vendors' products, which nobody ships against and nobody files.
+# Design `consumer_ci.md` section 4.18.
+#
+# NO SCHEDULE YET, AND THE SLOT IS RESERVED RATHER THAN USED. When the cron
+# returns this engine fires at 10:00 UTC on Monday, eight hours from its
+# neighbours, so the three never overlap: the stagger is the serialisation and
+# there is no cross-engine group to cancel one of them. Section 4.18.2.
+#
+# WHY IT IS STILL WITHHELD. A live ladder spends real money on every firing,
+# and until the system is running end to end a weekly firing buys a result
+# nobody is reading yet. Two things have to exist first, and section 4.18.3
+# carries both: the findings already known have to be triaged, so a red means
+# something new, and the run has to decline when this engine has already been
+# evaluated since its model last changed. **A weekly run and an
+# update-triggered run are the same measurement**, and paying for it twice is
+# the cost this withholding avoids.
+name: evaluate-openai-weekly
+
+on:
+  workflow_dispatch:
+
+# NOT cancel-in-progress. A cancelled live run yields partial artifacts, which
+# A6 forbids presenting as complete. Keyed on this engine alone, which is what
+# `testing-standards.md` section 2 endorses concurrency for: preventing overlap
+# between runs of the same thing.
+concurrency:
+  group: evaluate-live-openai
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  ladder:
+    name: openai
+    uses: ./.github/workflows/evaluate-engine.yml
+    with:
+      engine: openai
+    secrets: inherit
