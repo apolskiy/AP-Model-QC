@@ -806,6 +806,35 @@ mixed corpus, which is the same condition `mixed_model_engines` reports from
 observations, and `reconcile` treats an empty model as the window alone
 applying rather than guessing between them.
 
+### 4.16 A live run on both sides is required before the work is called complete
+
+Recorded 2026-10-02 at the project owner's instruction.
+
+The ladder's third rung, `live, live`, is **mandatory before this project is
+presented as finished**, for two things a replay cannot give:
+
+| | |
+|---|---|
+| **Cost** | What a full evaluation of one engine actually costs, measured rather than scoped. The scoping arithmetic exists and has been within a factor of three of the outcome; an estimate is not a figure |
+| **Real findings** | A replay reports what the recorded models did. A finding filed with a provider has to be about the model they are serving now |
+
+**It runs last, and the order is not a preference.** A live run that produced
+artifacts which cannot say which engine answered would spend money to buy an
+unattributable record, which is the state the artifacts were in until the
+emission hook of harness `cmn_verdict_and_cli.md` section 5. So the order is:
+the emission hook, then per-engine jobs, then the live run.
+
+| Precondition | Why it has to come first |
+|---|---|
+| The emission hook | Otherwise a finding cannot be attributed to an engine from the artifact, and the run has to be watched rather than read |
+| The reproduction attachment, section 5.3 | A ticket is filed from the artifact; without it the call has to be reconstructed by hand, per finding |
+| **A spend ceiling that accumulates** | `--max-spend` reset every observation until section 4.15, so a live run had no working budget guard at all |
+| Per-engine jobs | A finding is filed with one provider, so the run that produced it has to be one engine's run |
+
+**Each engine is run and reported separately**, because each finding is filed
+separately with the provider that owns it. That is the reason the jobs separate
+rather than a preference about CI layout.
+
 ## 5. Governance Parity With The Harness
 
 **One project spans two repositories.** The same authors write cases here and

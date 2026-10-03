@@ -61,17 +61,17 @@ _REPLAYABLE_CASE = "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_r
 # identifier, a category and a behaviour; the graded tables carry a priority and
 # a condition between them. A row matching neither is a citation.
 _PRECONDITION_ROW: Final[re.Pattern] = re.compile(
-    r"^\|\s*`(\d{5})`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
+    r"^\|\s*`(\d{5,6})`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
 )
 _GRADED_ROW: Final[re.Pattern] = re.compile(
-    r"^\|\s*`(\d{5})`\s*\|\s*P\d\s*\|\s*`[A-Z0-9_]+`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
+    r"^\|\s*`(\d{5,6})`\s*\|\s*P\d\s*\|\s*`[A-Z0-9_]+`\s*\|\s*[PNB]\s*\|\s*`[a-z0-9_]+`"
 )
 
 
 # A security inventory row, whose fourth cell names the cases it presupposes.
 _INVENTORY_ROW: Final[re.Pattern] = re.compile(r"^\|\s*`(5\d{4})`\s*\|")
-_BACKTICKED_ID: Final[re.Pattern] = re.compile(r"`(\d{5})`")
-_CASE_NUMBER: Final[re.Pattern] = re.compile(r"_(\d{5})_")
+_BACKTICKED_ID: Final[re.Pattern] = re.compile(r"`(\d{5,6})`")
+_CASE_NUMBER: Final[re.Pattern] = re.compile(r"_(\d{5,6})_")
 
 
 

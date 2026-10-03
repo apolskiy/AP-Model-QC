@@ -575,7 +575,7 @@ def _inventoried_case_ids() -> frozenset[str]:
     found: set[str] = set()
     for source in (_root() / "tests").rglob("mqc_*.py"):
         text = source.read_text(encoding="utf-8")
-        found.update(re.findall(r"def MQC_[A-Z]+_[A-Z]+_(\d{5})_", text))
+        found.update(re.findall(r"def MQC_[A-Z]+_[A-Z]+_(\d{5,6})_", text))
     return frozenset(found)
 
 
