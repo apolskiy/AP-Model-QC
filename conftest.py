@@ -29,6 +29,12 @@ from pathlib import Path
 import pytest
 
 from cmn.config import load_env_file, warn_orphan_credentials
+from cmn.selection import (
+    select_priority_bands,
+    report_unresolved_selection,
+    select_named_tests,
+    select_traced_cases,
+)
 from cmn.pytest_support import (
     arrange_dependencies,
     enforce_dependencies,
@@ -36,7 +42,6 @@ from cmn.pytest_support import (
     add_mqc_options,
     configure_invocation,
     label_priority_severity,
-    select_priority_bands,
     adopt_prerequisites,
     publish_prerequisites,
 )
@@ -84,11 +89,13 @@ def pytest_configure(config: Any) -> None:
 
 
 def pytest_collection_modifyitems(
-    config: pytest.Config, items: list[pytest.Item]
+    session: pytest.Session, config: pytest.Config, items: list[pytest.Item]
 ) -> None:
     """Label severity, select the requested bands, then order the cascade.
 
     Args:
+        session (pytest.Session): The run, which an unresolved selection
+            placeholder hangs from.
         config (pytest.Config): The active pytest configuration, read for
             ``--priority``.
         items (list): The collected test items.
@@ -101,6 +108,14 @@ def pytest_collection_modifyitems(
     # dependencies name no collected base, and a band that had dropped its
     # foundations would be exactly that suite.
     select_priority_bands(config, items)
+    # THE BEHAVIOUR SELECTORS AFTER THE BAND, so the two intersect rather than
+    # one overriding the other, and both before `arrange_dependencies` for the
+    # reason above. Design sections 7.7 and 7.8.
+    select_traced_cases(config, items)
+    select_named_tests(config, items)
+    # AFTER THE SELECTION, so nothing deselects the placeholders. A file entry
+    # that matched no test is a reported skip rather than a refused run.
+    report_unresolved_selection(session, items)
     # ORDERED HERE, NOT HOPED FOR. `pytest-randomly` is pinned to shuffle
     # collection, and the cascade is the one mechanism that legitimately needs
     # an order. Design section 10.28.6.

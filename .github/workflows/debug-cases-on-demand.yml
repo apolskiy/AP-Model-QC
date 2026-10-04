@@ -23,7 +23,7 @@ on:
   workflow_dispatch:
     inputs:
       tests:
-        description: "Test identifiers or nodeids, one per line or comma separated"
+        description: "Test identifiers or full test names, one per line. Not nodeids"
         required: true
         type: string
       case_ref:
@@ -140,57 +140,40 @@ jobs:
             "ap-harness-qc[dev] @ git+https://github.com/${{ steps.pin.outputs.harness_repository }}@${{ steps.pin.outputs.harness_sha }}"
           python -m pip install --quiet --no-deps --editable "."
 
-      # A MISTYPED IDENTIFIER SELECTS NOTHING and pytest exits cleanly having
-      # run zero tests, which reads exactly like a run where everything passed.
-      - name: Resolve and validate the requested tests
+      # ONE ENTRY PER LINE, written to a file the harness reads. This step
+      # used to validate the identifiers against `pytest --collect-only` with a
+      # substring match and build a `-k` expression from them, which had three
+      # faults the harness now fixes: a substring match selects a case nobody
+      # asked for, because `134205` is a substring of `130015`; `-k` is applied
+      # before `pytest_collection_modifyitems`, so it strips the foundations a
+      # selected case rests on and no closure computed later can bring them
+      # back; and a mistyped entry voided the whole run.
+      #
+      # `--tests-file` reports a mistyped entry as a skipped row carrying
+      # QC_HARNESS_SELECTION_UNRESOLVED and runs the rest. Harness design
+      # cmn_verdict_and_cli.md sections 7.8.1 and 7.8.3.
+      - name: Write the requested tests, one per line
         id: resolve
         shell: bash
         env:
           REQUESTED: ${{ inputs.tests }}
         run: |
-          python - <<'PYTHON' >> "$GITHUB_OUTPUT"
-          import os
-          import re
-          import subprocess
-          import sys
-
-          requested = [
-              entry.strip()
-              for entry in re.split(r"[,\n]", os.environ["REQUESTED"])
-              if entry.strip()
-          ]
-          if not requested:
-              print("::error::no test identifiers were supplied")
-              sys.exit(1)
-
-          collected = subprocess.run(
-              [sys.executable, "-m", "pytest", "--collect-only", "-q"],
-              capture_output=True, text=True, check=False, shell=False,
-          ).stdout
-
-          unmatched = [name for name in requested if name not in collected]
-          if unmatched:
-              print("::error::these identifiers matched no collected test: "
-                    + ", ".join(unmatched))
-              sys.exit(1)
-
-          print("expression=" + " or ".join(requested))
-          print(f"count={len(requested)}")
-          PYTHON
+          python "${GITHUB_WORKSPACE}/tools/write_test_list.py" \
+            --out reports/requested-tests.txt >> "$GITHUB_OUTPUT"
 
       - name: Run the selected cases, judging failures
         id: run
         continue-on-error: true
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # THROUGH THE ENVIRONMENT, as the resolver step above explains. A `-k`
-          # expression is free text somebody types, and the engine and mode are
-          # choices from a list this workflow does not enforce in the shell.
-          SELECTION: ${{ steps.resolve.outputs.expression }}
+          # THROUGH THE ENVIRONMENT. The engine and mode are choices from a
+          # list this workflow does not enforce in the shell, and the list is a
+          # path rather than free text somebody types.
+          SELECTION: reports/requested-tests.txt
           ENGINE: ${{ inputs.engine }}
           RUN_MODE: ${{ inputs.mode }}
         run: |
-          pytest -k "${SELECTION}" \
+          pytest --tests-file "${SELECTION}" \
             --engine "${ENGINE}" \
             --mode "${RUN_MODE}" \
             --judge-on-failure \

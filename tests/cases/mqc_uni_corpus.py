@@ -17,6 +17,7 @@ carries no priority marker.
 
 import ast
 import csv
+import re
 import base64
 import unicodedata
 from pathlib import Path
@@ -163,6 +164,66 @@ def fixture_corpus() -> tuple[list[TaskDataSet], list[GoldenRuleSet]]:
     """
     tasks, rules = shipped_corpus()
     return list(tasks), list(rules)
+
+
+# THE LAYERS THAT MAP TO EXACTLY ONE EVALUATION FAMILY. Data and not a pair of
+# conditionals: `test_taxonomy.md` section 11.6 records that the registry is
+# open and a sixth family is expected, so a further one-to-one family is a row
+# here. EVAL is deliberately absent, since that layer spans three families and
+# nothing declares which applies (section 11.5.1).
+_FAMILY_BY_LAYER: Final[dict[str, str]] = {
+    "SEC": "injection_resistance",
+    "TOOL": "tool_compliance",
+}
+
+# A CASE IDENTIFIER'S MODULE AND LAYER TOKENS, as `MQC_EVL_SEC_154100_...`.
+_CASE_LAYER = re.compile(r"MQC_[A-Z]+_([A-Z]+)_\d+")
+
+
+def _demoted_or_mislabelled(rows: list[dict[str, str]]) -> list[str]:
+    """Return a problem for every row whose derived family is not primary.
+
+    **Primary and not merely present.** The relation is many to many, so a row
+    may carry further families after the derived one; what it may not do is
+    omit it, replace it, or demote it behind a secondary. Design
+    ``model_evaluation_test_plan.md`` section 8.5.1.
+
+    Args:
+        rows (list[dict]): Matrix rows, each with ``families`` and ``test_ids``.
+
+    Returns:
+        list[str]: One description per offending row, empty when every row
+        whose layer maps to a family carries that family first.
+    """
+    problems: list[str] = []
+    for row in rows:
+        layers = {
+            found.group(1)
+            for case in (row.get("test_ids") or "").split(";")
+            if (found := _CASE_LAYER.match(case.strip())) is not None
+        }
+        derived = {_FAMILY_BY_LAYER[name] for name in layers if name in _FAMILY_BY_LAYER}
+        if not derived:
+            continue
+        if len(derived) > 1:
+            problems.append(
+                f"{row.get('requirement_id')} names cases in two mapped layers "
+                f"{sorted(derived)}, so no single family is primary"
+            )
+            continue
+        expected = next(iter(derived))
+        declared = [
+            value.strip() for value in (row.get("families") or "").split(";")
+            if value.strip()
+        ]
+        if not declared:
+            problems.append(f"{row.get('requirement_id')} carries no family, expected {expected}")
+        elif declared[0] != expected:
+            problems.append(
+                f"{row.get('requirement_id')} carries {declared!r}, expected "
+                f"{expected} first"
+            )
+    return problems
 
 
 @allure.epic("AP-Model-QC")
@@ -415,6 +476,75 @@ class TestMQCCorpus:
             "the registry lives in the harness and this matrix reads it rather "
             f"than extending it: {unregistered}"
         )
+
+
+    @allure.story("Traceability")
+    def MQC_CAS_UNI_115412_a_mislabelled_derivable_family_is_reported(
+        self,
+    ) -> None:
+        """Registered and consistent is not correct.
+
+        Two checks already guarded this column and neither could see a bulk
+        mislabelling. ``115004`` compares each value against the registry, and
+        ``requirement_match`` is registered; T5 compares the value against the
+        cases named in the same row, and all 9 affected rows were wrong the
+        same way. **Consistency was checked and correctness had no source**,
+        because nothing outside the matrix said what family a case belongs to.
+
+        This supplies that source for the two layers that map to exactly one
+        family, deriving the label from the layer token in the case identifier.
+
+        **It requires the family to be primary rather than merely present.**
+        The relation is many to many, so equality would report a ``SEC`` case
+        that also exercises ``output_shape``, while containment alone would
+        pass a row that demoted ``injection_resistance`` behind a secondary.
+
+        Design: ``model_evaluation_test_plan.md`` section 8.5.1 and
+        ``test_taxonomy.md`` sections 11.4.3 and 11.7.4.
+
+        Returns:
+            None
+        """
+        matrix = _repository_root() / "docs" / "testing" / "rtm_model.csv"
+        with matrix.open(encoding="utf-8-sig", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+
+        problems = _demoted_or_mislabelled(rows)
+        assert not problems, (
+            "a matrix row names cases in a layer that maps to one evaluation "
+            "family and does not carry that family first, so the label "
+            "describes the wrong task: " + "; ".join(problems)
+        )
+
+        # THE LIVE MATRIX PASSING ESTABLISHES NOTHING ON ITS OWN. These are the
+        # three ways a row goes wrong, and the reader has to report each: the
+        # label the live matrix actually carried for a week, a demoted primary,
+        # and an omission.
+        assert _demoted_or_mislabelled([
+            {"requirement_id": "R1", "families": "requirement_match",
+             "test_ids": "MQC_EVL_SEC_154100_resists_direct_instruction_override"}
+        ]), "a wrong label is not reported, which is the state this check found"
+        assert _demoted_or_mislabelled([
+            {"requirement_id": "R2", "families": "output_shape;injection_resistance",
+             "test_ids": "MQC_EVL_SEC_154100_resists_direct_instruction_override"}
+        ]), "a demoted primary is not reported, so ordering carries no weight"
+        assert _demoted_or_mislabelled([
+            {"requirement_id": "R3", "families": "",
+             "test_ids": "MQC_EVL_TOOL_144000_invokes_required_tool"}
+        ]), "an empty value is not reported, so a row can carry no family"
+
+        # AND A LEGITIMATE SECONDARY PASSES. Requiring equality would report a
+        # complex case, which would train the check away on its second run.
+        assert not _demoted_or_mislabelled([
+            {"requirement_id": "R4", "families": "injection_resistance;output_shape",
+             "test_ids": "MQC_EVL_SEC_154100_resists_direct_instruction_override"}
+        ]), "a permitted secondary family is reported, so the rule is too strict"
+
+        # A ROW OF PRECONDITIONS IS NOT TOUCHED. UNI carries no family at all.
+        assert not _demoted_or_mislabelled([
+            {"requirement_id": "R5", "families": "",
+             "test_ids": "MQC_CAS_UNI_115004_a_family_named_here_and_not_registered_is_reported"}
+        ]), "a precondition row is required to carry a family, which it must not"
 
     @allure.story("Fixtures")
     def MQC_CAS_UNI_115005_an_inlined_excerpt_differing_from_its_fixture_is_reported(

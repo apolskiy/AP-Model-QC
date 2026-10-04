@@ -116,6 +116,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_COR_0010` | The connector cases hold the candidate fixed and vary only the connector, so reading a disjunction as a conjunction is observable |
 | `MQC_REQ_CAS_COR_0011` | The experience cases distinguish a stated figure from a derived one, so a numeric fabrication check is directional rather than exact |
 | `MQC_REQ_CAS_COR_0012` | Every evaluation family this repository's matrix names is registered in the harness, so a value reaching the durable record is resolvable |
+| `MQC_REQ_CAS_COR_0023` | Every matrix row whose cases sit in a layer that maps to one evaluation family carries that family first, so a label can be wrong or demoted rather than only unregistered or inconsistent |
 | `MQC_REQ_CAS_COR_0013` | Every code excerpt inlined into a task is byte-identical to the guarded fixture it names, so the dispatched copy is the copy under guard |
 | `MQC_REQ_CAS_COR_0014` | The code comprehension corpus supplies nine tasks formulating three grounding requirements in the code domain |
 | `MQC_REQ_CAS_COR_0015` | The settlement excerpt guard executes all three money outcomes, including the silent zero settlement |
@@ -580,8 +581,9 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115207` | P | `a_single_disagreement_dispatches_two_more` |
 | `115208` | P | `max_spend_reaches_the_session_ceiling` |
 | `115405` | N | `an_inventory_row_without_an_implementation_is_reported` |
+| `115412` | N | `a_mislabelled_derivable_family_is_reported` |
 
-**Inventory: 29 cases, 21 negative, 8 positive, 0 boundary.**
+**Inventory: 30 cases, 22 negative, 8 positive, 0 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set
@@ -1074,6 +1076,42 @@ passes and reaches the durable record with nothing able to interpret it.
 **The registry stays in the harness**, per `framework-rules.md` section 4.1.
 This reads it through `registered_evaluation_families()` rather than restating
 it, exactly as `115003` reads `registered_codes()`.
+
+#### 8.5.1 Registered and consistent is not correct
+
+Added 2026-10-03, after 9 rows covering 29 case entries were found carrying the wrong family for a week.
+
+**Two checks already guarded this column and neither could see it.**
+
+| Check | What it compares | Why the mislabelling passed |
+|---|---|---|
+| `115004`, `MQC_REQ_CAS_COR_0012` | The value against `registered_evaluation_families()` | `requirement_match` is registered. Registration says a value is resolvable, not that it is true |
+| T5 | The value against the cases named in the same row | **It never ran on this matrix.** It takes a per-case family mapping, nothing can build one, and it abstains silently when handed none. Nothing in this repository calls `check_matrix_integrity` at all |
+
+Section 8.5 already said T5 is "a consistency check between two fields of one row". **The missing word is that neither field is the case's own nature.** A label that is registered and applied consistently would satisfy it while describing the wrong task, and consistency is exactly what a bulk mislabelling produces.
+
+**And T5 was not even reached.** Established 2026-10-03: it takes `case_families`, a mapping from test name to family, and is written so that an absent mapping means nothing to check rather than nothing to check with. Only two cases supply one, both with synthetic rows. **This repository never calls `check_matrix_integrity`**, so the check written for this column has never been run against the matrix that has it. Harness `test_taxonomy.md` section 11.4.2 carries the full record.
+
+**Closing that needs the per-case declaration**, which is the gap in harness `test_taxonomy.md` section 11.5.1: the declaration is the mapping T5 has been missing. `115412` is the part that can be built without it, because a layer mapping one to one with a family is a source that already exists.
+
+**So the gap was a third source, not a third check.** Nothing outside the matrix said what family a case belongs to, which is the shape this project keeps finding: the subject supplied the evidence.
+
+**`115412` supplies that source for the two families where one exists.** `SEC` and `TOOL` are one to one with a family, so the layer token in a case identifier derives the label independently of the column:
+
+| Layer in the case identifier | Required primary family |
+|---|---|
+| `SEC` | `injection_resistance` |
+| `TOOL` | `tool_compliance` |
+
+**The derived family must be the primary one, not merely present.** The relation is many to many and `test_taxonomy.md` section 11.7.4 settles which rule applies: a `SEC` case may also exercise `output_shape`, so equality would report a legitimate case, while containment alone would pass a row that demoted `injection_resistance` behind a secondary. The task that put the case in the layer is the task it is primarily about, so primacy is the strongest claim that stays true.
+
+**So it catches an omission, a wrong label and a demoted primary.** A surplus secondary family is not reported, for the reason `test_taxonomy.md` section 11.5.1 gives: nothing outside the matrix declares a case's families.
+
+**It is a table and not a pair of conditionals.** `test_taxonomy.md` section 11.6 records that the registry is open and a sixth family is expected; a one-to-one family added later is a row here and no change to the logic.
+
+**`EVAL` is deliberately absent and that is not an oversight.** That layer spans three families and nothing in a task or a rule declares which, so there is no independent source to check against and a guess would be worse than the gap. `test_taxonomy.md` section 11.5.1 carries it, with what closing it needs.
+
+**The check runs over the matrix this repository owns**, per section 8.5: the values live in `rtm_model.csv` and a harness check reading it would be the boundary violation the split exists to prevent.
 
 ### 8.6 Corpus file is not evaluation family
 

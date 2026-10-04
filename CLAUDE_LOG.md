@@ -2314,3 +2314,93 @@ every other target.
 ### State
 
 77 preconditions passing, pylint 10.00/10 exit 0.
+
+## 2026-10-03: The family column was consistent, registered and wrong
+
+Relabelled 9 matrix rows covering 29 case entries, and added the check whose
+absence let them sit wrong for a week.
+
+### What the two existing checks could not see
+
+`MQC_CAS_UNI_115004` compares each `families` value against the harness
+registry, and `requirement_match` is registered. T5 compares the value against
+the cases named in the same row, and all 9 rows were wrong the same way.
+
+**Consistency was checked and correctness had no source**, because nothing
+outside the matrix said what family a case belongs to. A bulk mislabelling is
+consistent by construction, which is why applying a wrong label everywhere
+passed a check designed to catch applying it unevenly.
+
+Section 8.5 already said T5 is "a consistency check between two fields of one
+row". **The missing word was that neither field is the case's own nature.**
+
+### 115412 derives the label from the layer
+
+`SEC` maps to `injection_resistance` and `TOOL` to `tool_compliance`, read from
+the layer token in the case identifier rather than from the column under test.
+
+| Property | Why |
+|---|---|
+| A derivation table, not conditionals | `test_taxonomy.md` section 11.6: the registry is open and a sixth one-to-one family is a row here |
+| Primary, not merely present | The relation is many to many, so equality would report a `SEC` case that also exercises `output_shape`, while containment alone would pass a row that demoted the derived family behind a secondary |
+| `EVAL` deliberately absent | That layer spans three families and nothing declares which applies, so there is no independent source and a guess would be worse than the gap |
+
+Four probes, because a live matrix passing establishes nothing on its own: the
+label the matrix actually carried, a demoted primary, an omission, and a
+permitted secondary that must **not** report.
+
+### What the relabelling revealed
+
+`MQC_REQ_MDL_TUL_0004` is a *tool* requirement whose four cases sit in the `SEC`
+layer: "does not invoke a forbidden tool when injected content instructs it to".
+Its primary family is `injection_resistance`.
+
+**A label derived from the requirement prefix would have been wrong on exactly
+those four cases.** Derived from the layer it is right, because a requirement
+names a behaviour and a family names the task the behaviour was demanded in.
+`DESIGN.md` section 7.4.6 in the harness carries it.
+
+### State
+
+78 preconditions passing, pylint 10.00/10 exit 0. The 2 remaining graded
+failures are the known gemini replay findings under triage, unchanged by this.
+
+## 2026-10-03: The debug workflow stopped building a `-k` expression
+
+`--tests-file` replaced 35 lines of inline Python that validated identifiers
+against `pytest --collect-only` and joined them into a `-k` expression.
+
+### What the workflow was doing wrong, in three ways
+
+| Fault | Consequence |
+|---|---|
+| A substring match against collected output | `134205` is a substring of `130015`, so a validated entry could select a case nobody asked for |
+| `-k` | Applied before `pytest_collection_modifyitems`, so it strips the foundations a selected case rests on and no closure computed later can restore them. The harness's own band selector warns about exactly this |
+| A mistyped entry failed the step | The whole run was voided for one bad line, which is the behaviour the project owner corrected |
+
+The harness now resolves by identifier inside collection, carries the
+dependency closure, and reports a mistyped entry as a skipped row carrying
+`QC_HARNESS_SELECTION_UNRESOLVED` while the rest of the run proceeds.
+
+**`tools/write_test_list.py` is what remains**: it turns the dispatch input into
+a file with one entry per line and validates nothing, deliberately. Validating
+here would restore the behaviour the harness design removed.
+
+### The input description was wrong about nodeids
+
+It read "Test identifiers or nodeids". A nodeid carries a path, a class and
+colons, and the file format refuses all three: a nodeid names a case by where it
+currently lives, so renaming a file would stale every list naming one. The
+description now says identifiers or full test names.
+
+### `--rtm` is set in `pytest.ini`
+
+`--family` and `--requirement` resolve through this repository's matrix, and the
+harness owns no case matrix so it has no default to fall back to. The path is
+named once here rather than on every invocation. It is not a selector and does
+not make a run manual.
+
+### State
+
+78 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures are the
+known gemini replay findings, unchanged by this.
