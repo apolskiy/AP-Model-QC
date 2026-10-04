@@ -24,6 +24,12 @@ name: evaluate-openai-weekly
 
 on:
   workflow_dispatch:
+    inputs:
+      max_spend:
+        description: "USD ceiling for this run. The monthly cap is $20 per provider"
+        required: false
+        default: "2.00"
+        type: string
 
 # NOT cancel-in-progress. A cancelled live run yields partial artifacts, which
 # A6 forbids presenting as complete. Keyed on this engine alone, which is what
@@ -42,5 +48,6 @@ jobs:
     name: openai
     uses: ./.github/workflows/evaluate-engine.yml
     with:
+      max_spend: ${{ inputs.max_spend || '2.00' }}
       engine: openai
     secrets: inherit

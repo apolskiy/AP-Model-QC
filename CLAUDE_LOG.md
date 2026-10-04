@@ -2600,3 +2600,30 @@ compares is a stale file, and this one decides what a selection returns.
 83 preconditions passing, pylint 10.00/10 exit 0, index current across repeated
 runs. The 2 graded failures against the default engine are the known gemini
 findings.
+
+## 2026-10-04: A ceiling on every leg that can spend
+
+Three provider keys now sit in this repository's `live` environment, so its live
+and judged legs can reach a real account for the first time. Every one of them
+now carries `--max-spend`.
+
+| Leg | Spends on |
+|---|---|
+| Calibration | The judge |
+| Graded layers, stored responses judged live | The judge. **Replay does not make judging free**: the judge is never replayed |
+| Graded layers, live throughout | The candidate and the judge |
+| `debug-cases-on-demand` | Whatever it is asked to judge |
+
+**$2.00 per run by default**, offered as a dispatch input so a run can be
+tightened. Measured cost for the `SEC` family was six cents, and the account's
+limit is $20 per provider per month.
+
+**`MQC_CAS_UNI_115418` reports a step that can dispatch live and names no
+ceiling**, using the harness's checker with this repository's root. This is
+where the credentials and the spending are, so this is where an unbounded run
+would have reached a real account.
+
+### State
+
+84 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures against
+the default engine are the known gemini findings.

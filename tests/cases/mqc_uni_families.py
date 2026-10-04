@@ -22,6 +22,7 @@ from pathlib import Path
 import allure
 import pytest
 
+from cmn.code_standards import uncapped_spending_steps
 from cmn.registries import registered_evaluation_families
 from cmn.traceability import MatrixRow, check_matrix_integrity
 from tests.cases.graded_support import (
@@ -213,6 +214,31 @@ class TestMQCDeclaredFamilies:
             "the index and the suite disagree about which cases exist; "
             f"dispatched only: {sorted(dispatched - indexed)}, indexed only: "
             f"{sorted(indexed - dispatched)}"
+        )
+
+
+    @allure.story("Governance")
+    def MQC_CAS_UNI_115418_a_live_step_without_a_spend_ceiling_is_reported(
+        self,
+    ) -> None:
+        """This repository's spending workflows carry a ceiling.
+
+        The check is the harness's, called with this repository's root: one
+        implementation, two callers, as the encoding and header rules use.
+
+        **This repository is where the spending happens.** Its live and judged
+        legs name the `live` environment and hold three provider keys, so an
+        unbounded run here is the one that reaches a real account.
+
+        Design: harness ``ci_pipeline.md`` section 8.2.
+
+        Returns:
+            None
+        """
+        uncapped = uncapped_spending_steps(_repository_root())
+        assert not uncapped, (
+            "a workflow step can dispatch live with no ceiling, against a "
+            "monthly limit of $20 per provider: " + "; ".join(uncapped)
         )
 
 @allure.epic("AP-Model-QC")

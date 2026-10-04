@@ -99,6 +99,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0027` | Every identifier this repository collects carries six digits whose layer and module positions agree with its tokens, so a case cannot sit in a block it was not allocated | consumer_ci.md section 5 |
 | `MQC_REQ_CAS_CI_0028` | Every graded job names the engine it measured, and the artifacts it carries and publishes are keyed by that engine, so a failure is attributable to one model without reading a log and two engines cannot overwrite one another's outcomes | consumer_ci.md section 4.17 |
 | `MQC_REQ_CAS_CI_0029` | Every model finding is recorded with the model it was observed against, what was expected, what happened and how to reproduce it; a finding is retired only by a live run that no longer reproduces it, and never by a replay of our own recording |
+| `MQC_REQ_CAS_CI_0030` | Every workflow step in this repository that can dispatch to a provider names a spend ceiling, this being where the credentials and the spending are |
 
 
 ### 2.5.2 `COR`, The corpus: what the shipped data must satisfy
@@ -592,8 +593,9 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115415` | N | `a_matrix_family_disagreeing_with_the_corpus_is_reported` |
 | `115416` | P | `the_register_records_a_finding_and_refuses_a_vacuous_run` |
 | `115417` | N | `a_case_index_disagreeing_with_the_corpus_is_reported` |
+| `115418` | N | `a_live_step_without_a_spend_ceiling_is_reported` |
 
-**Inventory: 35 cases, 26 negative, 9 positive, 0 boundary.**
+**Inventory: 36 cases, 27 negative, 9 positive, 0 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set

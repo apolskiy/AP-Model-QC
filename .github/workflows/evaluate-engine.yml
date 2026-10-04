@@ -23,6 +23,11 @@ name: evaluate-engine
 on:
   workflow_call:
     inputs:
+      max_spend:
+        description: "Abort before a request would take the run past this many USD"
+        required: false
+        default: "2.00"
+        type: string
       engine:
         description: "Which engine the ladder evaluates"
         required: true
@@ -206,6 +211,7 @@ jobs:
             --mode replay \
             --judge-mode live \
             -k calibration \
+            --max-spend "${{ inputs.max_spend }}" \
             --junitxml=reports/junit_calibration.xml \
             --alluredir=reports/allure-results
 
@@ -218,6 +224,7 @@ jobs:
             --engine ${{ inputs.engine }} \
             --mode replay \
             --judge-mode live \
+            --max-spend "${{ inputs.max_spend }}" \
             --junitxml=reports/junit_replay_live.xml \
             --alluredir=reports/allure-results
 
@@ -305,6 +312,7 @@ jobs:
           pytest -m "evaluator or tool or sec" \
             --engine ${{ inputs.engine }} \
             --mode live \
+            --max-spend "${{ inputs.max_spend }}" \
             --junitxml=reports/junit_live_live.xml \
             --alluredir=reports/allure-results
 
