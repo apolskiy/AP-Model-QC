@@ -2404,3 +2404,199 @@ not make a run manual.
 
 78 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures are the
 known gemini replay findings, unchanged by this.
+
+## 2026-10-03: observe records what it measured, so the artifact can carry it
+
+The harness emission hook needs the measured half, and `observe` is where it
+exists. Every observation is now recorded as a run takes it, passing or failing:
+the passing observations of a failing case are exactly what a provider ticket
+needs, so the condition is on the attachment rather than on the record.
+
+### The layer is derived from the rule identifier
+
+`observe` holds no pytest item, so it cannot read a marker, and the layer is a
+property of the test. It is derived from the rule identifier's third token
+instead: one rule file per layer, which the marker registry and the
+one-layer-per-file rule already require.
+
+| Rule prefix | Layer |
+|---|---|
+| `sec` | `SEC` |
+| `tul` | `TOOL` |
+| `amb`, `cod`, `gnd`, `ins`, `mat` | `EVAL` |
+
+### The family is published where it is derivable, and omitted where it is not
+
+`SEC` maps to `injection_resistance` and `TOOL` to `tool_compliance`, so those
+cases publish their family. **`EVAL` publishes none**, which is honest rather
+than a hole: that layer spans three families, nothing in a task, a rule or a
+case declares which, and section 8.6 of the test plan exists because the corpus
+file is not the family. Guessing would publish a wrong label rather than none.
+
+Read off a real run: a `SEC` case carries `families='injection_resistance'` and
+`primary_family='injection_resistance'`; the failing `EVAL` case `134205`
+carries neither, and carries its taxonomy code, its population and its
+reproduction.
+
+### State
+
+78 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures are the
+known gemini replay findings, unchanged in substance and now carrying a
+`vendor-report` attachment with all three calls.
+
+## 2026-10-04: This repository has its own register
+
+Seven tracked documents, named with what each holds, checked against the
+repository in both directions by `MQC_CAS_UNI_115413`. The check is the
+harness's, called with this repository's root: one implementation, two callers,
+as the encoding and header rules already use.
+
+**Separate registers rather than one**, because each repository's documents are
+its own and a shared list would have to be maintained from both sides. This one
+names the harness documents it cites so a reader following a citation knows
+where it points, and the check does not require those to be present here.
+
+`CLAUDE.md` now opens with the register, before what the repository owns.
+
+### State
+
+79 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures are the
+known gemini replay findings.
+
+## 2026-10-04: Every rule set declares what it grades
+
+69 rule sets across 7 corpora now declare their evaluation family, primary
+first. Two of the families were registered today and one corpus turned out to
+need no new family at all.
+
+| Corpus | Rules | Family |
+|---|---|---|
+| `security` | 21 | `injection_resistance` |
+| `code_comprehension` | 12 | `code_comprehension` |
+| `requirement_match` | 10 | `requirement_match` |
+| `instruction_following` | 9 | `output_shape` |
+| `tool_compliance` | 8 | `tool_compliance` |
+| `grounding` | 6 | `source_fidelity` |
+| `ambiguity` | 3 | `ambiguity_discrimination` |
+
+### The declaration replaced a derivation that could not have worked
+
+`observe` derived the family from the rule identifier's layer token, which
+answers for `SEC` and `TOOL` because each maps to one family. **`EVAL` spans
+four**, so an `EVAL` case published no family at all. The layer is still derived
+that way, because a layer is a property of the test and `observe` holds no
+pytest item; the family is now read from the rule set.
+
+### T5 ran against this matrix for the first time
+
+`MQC_CAS_UNI_115415` builds the test-to-family mapping the check has always
+taken as an argument, by reading each case's dispatch call for its rule
+identifier and the corpus for that rule's family, then runs every matrix check.
+
+Its first run reported **10 rows mislabelled** beyond the 9 that a layer-derived
+check had corrected, and 5 precondition rows carrying a family when a
+precondition belongs to none. The `families` column is now generated from the
+corpus rather than authored.
+
+### State
+
+81 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures against
+the default engine are the known gemini findings; per-engine replay stands at
+gemini 2, openai 8, claude 10, all `QC_LLM_*`.
+
+## 2026-10-04: The findings register, and a tool that dropped a finding in silence
+
+**20 findings stand against three engines**: gemini 2, openai 8, claude 10,
+every one a `QC_LLM_*` or `QC_SEC_*` event about a third party. The gates are
+red because the models fail, which is the project working.
+
+**Nothing is filed until the implementation is complete**, at the project
+owner's instruction, and that is exactly why the register exists: a finding
+fixed upstream in the interval would otherwise arrive as a gate quietly turning
+green, which is indistinguishable from a case that stopped testing anything.
+
+### What an entry holds
+
+`config/findings/<engine>.yaml`, one file per engine because a finding is a
+claim about one model. Generated by `tools/findings.py`, never authored: twenty
+reproductions written by hand drift from the first re-run.
+
+| Field | Source |
+|---|---|
+| `expected` | The requirement text the case traces to, from the matrix |
+| `actual` | The run's own words, trimmed of our traceback |
+| `observed_model` | **Read per case from the published Allure parameter**, so it is the model that actually served it |
+| `observations` | The population, where the run stated one, and empty where it did not |
+| `reproduce` | The exact command |
+| `ticket` | The one field a person fills in |
+
+### It is not quarantine
+
+Quarantine decides whether a failure exempts a gate and expires on a model
+change; this records and decides nothing. **A P0 or P1 cannot be exempted at
+all**, because V1 reads the graded population unconditionally, so a register
+that could turn a gate green would be a quarantine with a different name.
+
+### Only a live run can retire a finding
+
+**Replay replays our own recorded responses**, so a recorded finding reproduces
+from replay whatever the vendor does. `--resolve-from-live` is refused unless
+the run was live, and a finding that stops reproducing takes
+`status: resolved_upstream` with the date and the model rather than being
+deleted: the claim was about one model, and a later model behaving differently
+is the finding's outcome rather than its absence.
+
+### Two defects in the tool, both found by running it
+
+**It scraped terminal text and silently dropped one of claude's ten findings.**
+Two cases whose identifiers differ by one digit produced failure headers it
+associated with the wrong one, so `154109` went unrecorded while 9 of 10 were
+captured. **A tool that loses a finding without saying so is worse than one
+that refuses.** It now reads the JUnit XML, where each failure message is
+attached to its own test element, and a failure it cannot classify is **named
+on stderr rather than skipped**.
+
+**It wrote an empty register for every engine and reported success.** The cause
+is the rootdir trap the harness log records; what matters here is that the tool
+treated "collected nothing" as "this engine has no findings", and the two are
+indistinguishable from the register alone. It now refuses a run that collected
+no case, because an empty register and an engine that passed everything read
+the same.
+
+### State
+
+82 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures against
+the default engine are the known gemini findings.
+
+## 2026-10-04: The generated case index, and a column that differed from itself
+
+`tools/case_index.py` writes `docs/testing/case_index.csv`: one row per case
+with its evaluation families and its task's tags. 69 cases, 7 families, 79 tags.
+
+**It is the grain a selector needs.** The matrix is keyed by requirement, so
+resolving a family through it returned the whole row: `--family source_fidelity`
+selected 15 cases of which 6 graded it, because the grounding requirements are
+formulated across two corpora deliberately.
+
+**It is also the tag vocabulary**, which is what closed `--tag` in the harness.
+A tag lives on a task and nothing else could refuse a tag no task carries.
+
+### The column that differed from itself between runs
+
+`TaskDataSet.tags` is a **frozenset**, so iteration order varies per process.
+The first index written had `ambiguity;clarification;control` and the next had
+`ambiguity;control;clarification`, and `MQC_CAS_UNI_115417` reported it stale
+against a corpus that had not changed.
+
+**A generated file that differs from itself can never be current**, so the tag
+column is sorted. The families column keeps its declared order, because there
+the first value is the primary family and sorting would destroy it.
+
+**The check is the reason this was caught in minutes.** A generated file nothing
+compares is a stale file, and this one decides what a selection returns.
+
+### State
+
+83 preconditions passing, pylint 10.00/10 exit 0, index current across repeated
+runs. The 2 graded failures against the default engine are the known gemini
+findings.

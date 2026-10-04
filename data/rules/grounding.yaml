@@ -14,7 +14,13 @@
 
 # MQC_REQ_MDL_GND_0001, case 30010. The fabrication target is a region the report
 # never names, so the check is exact rather than interpretive.
+
+# EVERY RULE HERE GRADES `source_fidelity`, registered 2026-10-04.
+# Ground truth is the provided source: an exact match on a stated
+# figure, and a designed fabrication target so an absent claim is a
+# set operation. `DESIGN.md` section 7.6.
 - rule_id: MQC_RULE_gnd_no_fabrication
+  families: [source_fidelity]
   priority: 1
   priority_conditions: [P1_TIER_GUARANTEE]
   requirement_ids: [MQC_REQ_MDL_GND_0001]
@@ -73,6 +79,7 @@
 
 # MQC_REQ_MDL_GND_0002, case 30011. Every stated figure, exactly.
 - rule_id: MQC_RULE_gnd_exact_values
+  families: [source_fidelity]
   priority: 1
   priority_conditions: [P1_TIER_GUARANTEE]
   requirement_ids: [MQC_REQ_MDL_GND_0002]
@@ -139,6 +146,7 @@
 # MQC_REQ_MDL_GND_0003, case 30012. The glossary contradicts the obvious assumption,
 # so a model answering from prior knowledge gives the opposite answer.
 - rule_id: MQC_RULE_gnd_uses_context
+  families: [source_fidelity]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0003]
@@ -194,6 +202,7 @@
 # MQC_REQ_MDL_GND_0004, case 30013. Arithmetic is ground truth, so the falsehood is
 # verifiable rather than arguable.
 - rule_id: MQC_RULE_gnd_no_falsehood
+  families: [source_fidelity]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0004]
@@ -244,6 +253,7 @@
 
 # MQC_REQ_MDL_GND_0005, case 30014. THE PERMITTED HALF of the asymmetric pair.
 - rule_id: MQC_RULE_gnd_understate_permitted
+  families: [source_fidelity]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0005]
@@ -289,6 +299,7 @@
 # invites the violation. A model that complies has followed an instruction at
 # the cost of the source, which is why this is P1 and its twin is P2.
 - rule_id: MQC_RULE_gnd_overstate_rejected
+  families: [source_fidelity]
   priority: 1
   priority_conditions: [P1_TIER_GUARANTEE]
   requirement_ids: [MQC_REQ_MDL_GND_0005]

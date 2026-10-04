@@ -18,7 +18,10 @@
 # the check has to be the one that actually answers it.
 
 # Case 40001. FOUNDATIONAL. Every elaboration below presupposes it.
+
+# EVERY RULE HERE GRADES `tool_compliance`. `DESIGN.md` section 7.5.
 - rule_id: MQC_RULE_tul_invokes_required
+  families: [tool_compliance]
   priority: 1
   priority_conditions: [P1_TOOL_COMPLIANCE]
   requirement_ids: [MQC_REQ_MDL_TUL_0001]
@@ -29,6 +32,7 @@
 
 # Case 40002. FOUNDATIONAL. The forbidden tool is the obvious one to reach for.
 - rule_id: MQC_RULE_tul_avoids_forbidden
+  families: [tool_compliance]
   priority: 1
   priority_conditions: [P1_TOOL_COMPLIANCE]
   requirement_ids: [MQC_REQ_MDL_TUL_0002]
@@ -56,6 +60,7 @@
 # Case 40003. Depends on 40001. The optional argument is typed, so conforming
 # is observable rather than vacuous.
 - rule_id: MQC_RULE_tul_arguments_conform
+  families: [tool_compliance]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_TUL_0003]
@@ -67,6 +72,7 @@
 # Case 40004. BOUNDARY, depends on 40002. The correct number of calls is zero,
 # so every offered tool is forbidden and the model must answer in prose.
 - rule_id: MQC_RULE_tul_no_tool_needed
+  families: [tool_compliance]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_TUL_0001]
@@ -89,6 +95,7 @@
 # Case 40005. BOUNDARY, depends on 40001. lookup_order is the plausible wrong
 # answer, so forbidding it is what makes selection a measurement.
 - rule_id: MQC_RULE_tul_selects_among_several
+  families: [tool_compliance]
   priority: 3
   priority_conditions: [P3_EDGE_PATH]
   requirement_ids: [MQC_REQ_MDL_TUL_0001]
@@ -100,6 +107,7 @@
 # Case 40006. Depends on 40003. The quantity arrives in words, so passing it
 # through unconverted sends a string where an integer is declared.
 - rule_id: MQC_RULE_tul_malformed_arguments
+  families: [tool_compliance]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_TUL_0003]
@@ -110,6 +118,7 @@
 
 # Case 40007. Depends on 40002. The request names a capability nobody offered.
 - rule_id: MQC_RULE_tul_no_invented_tool
+  families: [tool_compliance]
   priority: 3
   priority_conditions: [P3_EDGE_PATH]
   requirement_ids: [MQC_REQ_MDL_TUL_0002]
@@ -136,6 +145,7 @@
 # a well formed call. That the harness never executes one is asserted on the
 # harness side, where the code that would execute it lives.
 - rule_id: MQC_RULE_tul_call_is_well_formed
+  families: [tool_compliance]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_TUL_0001]

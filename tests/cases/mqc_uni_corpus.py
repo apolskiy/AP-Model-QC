@@ -26,6 +26,7 @@ from typing import Any, Final
 import allure
 import pytest
 
+from cmn.code_standards import document_register_problems, registered_documents
 from cmn.registries import (
     is_registered_constraint_kind,
     registered_codes,
@@ -477,6 +478,59 @@ class TestMQCCorpus:
             f"than extending it: {unregistered}"
         )
 
+
+    @allure.story("Governance")
+    def MQC_CAS_UNI_115413_a_document_outside_the_register_is_reported(
+        self,
+    ) -> None:
+        """Every tracked document is registered, and every registered path resolves.
+
+        **A reading order is not an inventory.** `DESIGN.md` section 3 named
+        the document that fell behind for the whole time it was falling behind:
+        that table says what to read first, and a review needs to know what
+        exists. Two tracked documents were in no list at all and seven were
+        covered only by the directory they sit in.
+
+        **Both directions, for two different failures.** A tracked document the
+        register does not name is one a review never reaches; a path the
+        register names and nothing provides is a citation that will not
+        resolve.
+
+        **Trackedness comes from git and existence from the filesystem**, each
+        being the right source: a walk would find a generated
+        `.pytest_cache/README.md` and need a denylist that grows, while the
+        register deliberately names an untracked working log and the paired
+        repository's documents.
+
+        Design: ``test_taxonomy.md`` section 12.
+
+        Returns:
+            None
+        """
+        root = _repository_root()
+        register = root / "docs" / "document_register.md"
+
+        assert register.is_file(), (
+            "the register is absent, so nothing lists what a documentation "
+            "review has to work through"
+        )
+        problems = document_register_problems(root, register)
+        assert not problems, (
+            "the register and the repository disagree, so a document would go "
+            "unreviewed or a citation would not resolve: " + "; ".join(problems)
+        )
+
+        # THE READER FINDS ROWS, which is what a check that passed by reading
+        # nothing would not. Section 12.2.
+        named = registered_documents(register)
+        assert len(named) > 6, (
+            f"the register yielded only {len(named)} documents, so the row "
+            f"pattern no longer matches the register it is checking"
+        )
+        assert "docs/document_register.md" in named, (
+            "the register does not name itself, so adding it was not subject "
+            "to the rule it introduces"
+        )
 
     @allure.story("Traceability")
     def MQC_CAS_UNI_115412_a_mislabelled_derivable_family_is_reported(

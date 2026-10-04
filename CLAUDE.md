@@ -45,6 +45,12 @@ defect that ships.
 
 `docs/design/consumer_ci.md` section 5 states the parity mechanism in full.
 
+## Read The Register First
+
+**`docs/document_register.md` names every tracked document in this repository and what each holds.** Read it before any documentation work and work through it on any review: it is the only complete list, and `MQC_CAS_UNI_115413` checks it against the repository in both directions.
+
+**The harness has its own**, and the two are separate because each repository's documents are its own. Harness `test_taxonomy.md` section 12 records why a reading order was not enough: a design document fell behind while being named in one the whole time.
+
 ## What This Repository Owns
 
 * **`docs/design/consumer_ci.md`**: which harness this case set runs against,

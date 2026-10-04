@@ -98,6 +98,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0026` | The dispatch session records every model a response reported, so a caller can say what a run ran against without re-deriving it from observations | consumer_ci.md section 4.15.1 |
 | `MQC_REQ_CAS_CI_0027` | Every identifier this repository collects carries six digits whose layer and module positions agree with its tokens, so a case cannot sit in a block it was not allocated | consumer_ci.md section 5 |
 | `MQC_REQ_CAS_CI_0028` | Every graded job names the engine it measured, and the artifacts it carries and publishes are keyed by that engine, so a failure is attributable to one model without reading a log and two engines cannot overwrite one another's outcomes | consumer_ci.md section 4.17 |
+| `MQC_REQ_CAS_CI_0029` | Every model finding is recorded with the model it was observed against, what was expected, what happened and how to reproduce it; a finding is retired only by a live run that no longer reproduces it, and never by a replay of our own recording |
 
 
 ### 2.5.2 `COR`, The corpus: what the shipped data must satisfy
@@ -117,6 +118,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_COR_0011` | The experience cases distinguish a stated figure from a derived one, so a numeric fabrication check is directional rather than exact |
 | `MQC_REQ_CAS_COR_0012` | Every evaluation family this repository's matrix names is registered in the harness, so a value reaching the durable record is resolvable |
 | `MQC_REQ_CAS_COR_0023` | Every matrix row whose cases sit in a layer that maps to one evaluation family carries that family first, so a label can be wrong or demoted rather than only unregistered or inconsistent |
+| `MQC_REQ_CAS_COR_0024` | Every shipped rule set declares the evaluation families it grades, primary first, each registered in the harness and none repeated, so a graded result is attributable to a task |
+| `MQC_REQ_CAS_COR_0025` | The families this repository's matrix states agree with the families its corpus declares, verified by running every matrix integrity check against the real matrix with the per-case mapping |
 | `MQC_REQ_CAS_COR_0013` | Every code excerpt inlined into a task is byte-identical to the guarded fixture it names, so the dispatched copy is the copy under guard |
 | `MQC_REQ_CAS_COR_0014` | The code comprehension corpus supplies nine tasks formulating three grounding requirements in the code domain |
 | `MQC_REQ_CAS_COR_0015` | The settlement excerpt guard executes all three money outcomes, including the silent zero settlement |
@@ -126,6 +129,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_PRE_0007` | Every inventory row in this repository's design and test plan names a case the suite implements, reported so an unbuilt design is visible rather than forgotten | model_evaluation_test_plan.md section 8.1.1 |
 | `MQC_REQ_CAS_PRE_0008` | The judge engine a run names on the command line is the engine that grades it, so the judge recorded in result metadata is the instrument that produced the scores | consumer_ci.md section 4.13 |
 | `MQC_REQ_CAS_PRE_0009` | The observation count a run names on the command line is the count dispatched, so a run that measured a different population is distinguishable from one that did not | consumer_ci.md section 4.13.1 |
+| `MQC_REQ_CAS_PRE_0010` | Every tracked document in this repository is named in its document register and every path the register names resolves, so a documentation review reaches every document | test_taxonomy.md section 12 |
+| `MQC_REQ_CAS_PRE_0011` | The generated per-case index agrees with the corpus and covers every case the suite dispatches, so a family or tag selection resolving through it is exact rather than stale | cmn_verdict_and_cli.md section 7.7.6.2 |
 | `MQC_REQ_CAS_COR_0022` | Every security case declares every vector its payload carries and names the one it is about, so an incidental match cannot stand in for coverage |
 | `MQC_REQ_CAS_COR_0021` | Every graded case's declared foundations are exactly the ones its design inventory states, so a dependency cannot be added in code without a document approving it |
 | `MQC_REQ_CAS_COR_0020` | A recorded response that withheld content states the provider's own reason for withholding it, so a refusal is not read as a model failure |
@@ -582,8 +587,13 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115208` | P | `max_spend_reaches_the_session_ceiling` |
 | `115405` | N | `an_inventory_row_without_an_implementation_is_reported` |
 | `115412` | N | `a_mislabelled_derivable_family_is_reported` |
+| `115413` | N | `a_document_outside_the_register_is_reported` |
+| `115414` | N | `a_rule_set_declaring_no_registered_family_is_reported` |
+| `115415` | N | `a_matrix_family_disagreeing_with_the_corpus_is_reported` |
+| `115416` | P | `the_register_records_a_finding_and_refuses_a_vacuous_run` |
+| `115417` | N | `a_case_index_disagreeing_with_the_corpus_is_reported` |
 
-**Inventory: 30 cases, 22 negative, 8 positive, 0 boundary.**
+**Inventory: 35 cases, 26 negative, 9 positive, 0 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set

@@ -11,7 +11,10 @@
 # the settlement returns -10.0 where 50.0 is correct.
 
 # MQC_REQ_MDL_GND_0001, case 30029.
+
+# EVERY RULE HERE GRADES `code_comprehension`. `DESIGN.md` section 7.3.
 - rule_id: MQC_RULE_cod_no_invented_api
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0001]
@@ -64,6 +67,7 @@
 
 # MQC_REQ_MDL_GND_0001, case 30030. THE NAME INVITES THE FABRICATION.
 - rule_id: MQC_RULE_cod_behaviour_not_intent
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0001]
@@ -128,6 +132,7 @@
 
 # MQC_REQ_MDL_GND_0001, case 30031. The table carries four regions and no fifth.
 - rule_id: MQC_RULE_cod_no_added_row
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0001]
@@ -173,6 +178,7 @@
 
 # MQC_REQ_MDL_GND_0002, case 30032. Correct the syntax, change nothing else.
 - rule_id: MQC_RULE_cod_preserves_literals
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0002]
@@ -234,6 +240,7 @@
 
 # MQC_REQ_MDL_GND_0002, case 30033. The tiers are 20 and 30 and must survive.
 - rule_id: MQC_RULE_cod_preserves_discount_tiers
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0002]
@@ -312,6 +319,7 @@
 
 # MQC_REQ_MDL_GND_0002, case 30034. The threshold is 82 percent.
 - rule_id: MQC_RULE_cod_preserves_threshold
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0002]
@@ -360,6 +368,7 @@
 
 # MQC_REQ_MDL_GND_0004, case 30035. Line 2, and nowhere else.
 - rule_id: MQC_RULE_cod_syntax_location
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0004]
@@ -437,6 +446,7 @@
 # whatever the judge concludes. The rubric is where the judge can still report
 # problems the assertions do not reach, which is what it is for.
 - rule_id: MQC_RULE_cod_settlement_defects
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0004]
@@ -583,6 +593,7 @@
 # MQC_REQ_MDL_GND_0004, case 30037. 120 + 80 + 35 + 20 = 255 orders.
 # 41200 + 28700 + 11400 + 6100 = 87400 revenue.
 - rule_id: MQC_RULE_cod_aggregate_from_table
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0004]
@@ -649,6 +660,7 @@
 
 # Case 30038. THE CAUSES, and there are two independent ones.
 - rule_id: MQC_RULE_cod_settlement_causes
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_DEF_0001, MQC_REQ_MDL_DEF_0002]
@@ -734,6 +746,7 @@
 # is not in the lookup means no saving, and a settlement engine that raises on
 # one has turned a data condition into an outage.
 - rule_id: MQC_RULE_cod_settlement_remedy
+  families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_DEF_0002]
@@ -784,6 +797,7 @@
 # Case 30040. P4, INFORMATIONAL. A recommendation rather than a defect: the
 # module is not wrong to omit an expiry, it is weaker for it.
 - rule_id: MQC_RULE_cod_coupon_lifetime
+  families: [code_comprehension]
   priority: 4
   priority_conditions: [P4_INFORMATIONAL]
   requirement_ids: [MQC_REQ_MDL_DEF_0003]

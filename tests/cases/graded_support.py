@@ -17,10 +17,11 @@ spacing in ``config/engines.yaml``. Neither is chosen here: the invocation
 decides, and a case cannot quietly spend quota.
 """
 
-from functools import lru_cache
+import ast
 from datetime import date
+from functools import lru_cache
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Final, Optional
 
 import pytest
 
@@ -31,6 +32,8 @@ from cmn.config import (
     packaged_config_root,
     packaged_roster_path,
 )
+from cmn.emission import record_observation
+from cmn.observations import assemble_observation
 from cmn.options import resolve_judge_mode
 from cmn.pricing import load_price_table
 from evaluation.isolation import UnauthoredMaterial
@@ -368,6 +371,66 @@ def judge_binding(config: Any, candidate_engine: str) -> Any:
         candidate_engine=candidate_engine,
     )
 
+
+# THE LAYER A RULE BELONGS TO, from its identifier's third token. The layer is
+# a property of the test and `observe` has no item, so it is derived from the
+# corpus the case comes from: one rule file per layer, which `pytest.ini`'s
+# marker registry and the design's one-layer-per-file rule already require.
+_LAYER_BY_RULE: Final[dict[str, str]] = {
+    "amb": "EVAL", "cod": "EVAL", "gnd": "EVAL", "ins": "EVAL", "mat": "EVAL",
+    "sec": "SEC", "tul": "TOOL",
+}
+
+def _measured_fields(case: Any, outcome: Any, result: Any, index: int) -> dict[str, Any]:
+    """Return the observation this case produced, ready to record.
+
+    **The two halves the harness design names** (`cmn_verdict_and_cli.md`
+    section 5.4.1): what dispatch measured, and the grading metadata the rule
+    set declares, which since 2026-10-04 includes the evaluation families. The
+    layer is still derived from the rule identifier, because ``observe`` holds
+    no pytest item and the layer is a property of the test.
+
+    Args:
+        case (Any): The joined task and rule set.
+        outcome (Any): The dispatch outcome.
+        result (Any): What evaluation produced.
+        index (int): Which observation this is.
+
+    Returns:
+        dict: Fields an :class:`Observation` accepts.
+    """
+    rules = case.golden_rules
+    layer = _LAYER_BY_RULE.get(str(rules.rule_id).split("_")[2], "EVAL")
+    response = getattr(outcome, "response", None)
+    codes = list(getattr(result, "taxonomy_codes", ()) or ())
+
+    return {
+        "case_id": case.case_id,
+        "layer": layer,
+        "observation_index": index,
+        "outcome": "pass" if result.passed else "fail",
+        "priority": rules.priority,
+        "priority_conditions": list(rules.priority_conditions),
+        "requirement_ids": list(rules.requirement_ids),
+        # DECLARED BY THE RULE SET, not derived from the layer. The layer
+        # answers for SEC and TOOL because each maps to one family and could
+        # never have answered for EVAL, which spans four. Harness
+        # `test_taxonomy.md` section 11.8.3.
+        "families": tuple(rules.families),
+        # THE FIRST CODE, because a record carries one root-cause class and the
+        # pipeline reports them in the order it found them. The rest reach the
+        # attachment with the assertions that produced them.
+        "taxonomy_code": codes[0] if codes else None,
+        "engine": str(getattr(outcome, "engine", "") or ""),
+        "mode": str(getattr(outcome, "mode", "") or ""),
+        "requested_model": str(getattr(response, "requested_model", "") or ""),
+        "resolved_model": str(getattr(response, "resolved_model", "") or ""),
+        "duration": int(getattr(outcome, "duration_ms", 0) or 0),
+        "duration_kind": str(getattr(outcome, "duration_kind", "measured") or "measured"),
+        "score": getattr(result, "score", None),
+    }
+
+
 def observe(
     config: Any,
     task_id: str,
@@ -443,7 +506,18 @@ def observe(
     if judge is None and case.golden_rules.rubric is not None:
         judge = judge_binding(config, config.getoption("--engine"))
 
-    return evaluate_observation(context, judge)
+    result = evaluate_observation(context, judge)
+
+    # RECORDED FOR THE REPORTING HOOK, which is the only place that knows the
+    # case's verdict and so whether to attach the reproduction. Every
+    # observation is recorded, passing or failing: the passing ones of a
+    # failing case are exactly what a provider ticket needs. Harness design
+    # cmn_verdict_and_cli.md sections 5.3 and 5.4.1.
+    record_observation(
+        assemble_observation(_measured_fields(case, outcome, result, observation_index), {}),
+        outcome,
+    )
+    return result
 
 
 
@@ -661,3 +735,87 @@ def redacted_detail(result: Any, lead: str) -> str:
             f"judged={result.judged}, skipped={result.judge_skipped_reason}"
         )
     return f"{lead}: " + "; ".join(failures)
+
+
+# A CASE'S DISPATCH CALL, whose second and third string arguments name the task
+# and the rule set it observes. Parsed rather than matched, because a regex over
+# source lines also matches a docstring quoting the call.
+_OBSERVERS: Final[frozenset[str]] = frozenset({"observe", "observe_repeatedly"})
+
+
+def case_rules_from_suite(root: Path) -> dict[str, tuple[str, str]]:
+    """Return the task and rule set each graded case dispatches.
+
+    **The link nothing declared.** A case names its task and rule in the
+    dispatch call it makes, and that is the only place the pairing exists; the
+    matrix knows requirements and the corpus knows families, and neither knows
+    which case observes which pair.
+
+    Parsed rather than matched, because a regex over source lines also matches
+    a docstring quoting the call.
+
+    Args:
+        root (Path): This repository's root.
+
+    Returns:
+        dict[str, tuple[str, str]]: Case name to its task and rule identifier.
+        **A case that dispatches nothing is absent** rather than defaulted: a
+        precondition performs no task.
+    """
+    tasks, rules = shipped_corpus()
+    known_tasks = {entry.task_id for entry in tasks}
+    known_rules = {entry.rule_id for entry in rules}
+
+    pairs: dict[str, tuple[str, str]] = {}
+    for source in sorted((root / "tests" / "cases").glob("*.py")):
+        tree = ast.parse(source.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.FunctionDef):
+                continue
+            task_id = rule_id = ""
+            for inner in ast.walk(node):
+                if not isinstance(inner, ast.Call):
+                    continue
+                called = inner.func
+                name = getattr(called, "id", None) or getattr(called, "attr", None)
+                if name not in _OBSERVERS:
+                    continue
+                for entry in inner.args:
+                    if not isinstance(entry, ast.Constant) or not isinstance(
+                        entry.value, str
+                    ):
+                        continue
+                    if entry.value in known_tasks:
+                        task_id = entry.value
+                    elif entry.value in known_rules:
+                        rule_id = entry.value
+            if task_id and rule_id:
+                pairs[node.name] = (task_id, rule_id)
+    return pairs
+
+
+def case_families_from_suite(root: Path) -> dict[str, str]:
+    """Return each graded case's primary evaluation family.
+
+    **The link a matrix check has been missing.** T5 compares a matrix row's
+    ``families`` against the families of the cases the row names, and it takes
+    that mapping as an argument; nothing could build one until a rule set
+    declared its families on 2026-10-04. Harness ``test_taxonomy.md`` sections
+    11.4.2 and 11.8.3.
+
+    Args:
+        root (Path): This repository's root.
+
+    Returns:
+        dict[str, str]: Case name to its primary family, omitting a case whose
+        rule set declares none.
+    """
+    family_by_rule = {
+        rules.rule_id: rules.families[0]
+        for rules in shipped_corpus()[1] if rules.families
+    }
+    return {
+        case: family_by_rule[rule_id]
+        for case, (_, rule_id) in case_rules_from_suite(root).items()
+        if rule_id in family_by_rule
+    }

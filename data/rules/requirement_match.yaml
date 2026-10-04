@@ -10,7 +10,10 @@
 # Every gate case therefore asserts the figure and rubrics the explanation.
 
 # MQC_REQ_MDL_MAT_0001, case 30019. A disjunction with one slot filled is 100%.
+
+# EVERY RULE HERE GRADES `requirement_match`. `DESIGN.md` section 7.1.
 - rule_id: MQC_RULE_mat_closed_or
+  families: [requirement_match]
   priority: 3
   priority_conditions: [P3_EDGE_PATH]
   requirement_ids: [MQC_REQ_MDL_MAT_0001]
@@ -68,6 +71,7 @@
 
 # MQC_REQ_MDL_MAT_0001, case 30020. A conjunction with one of two held is 50%.
 - rule_id: MQC_RULE_mat_closed_and
+  families: [requirement_match]
   priority: 3
   priority_conditions: [P3_EDGE_PATH]
   requirement_ids: [MQC_REQ_MDL_MAT_0001]
@@ -118,6 +122,7 @@
 # MQC_REQ_MDL_MAT_0001, case 30021. THE JUDGED PATH. No named item matches, so the
 # third slot engages and the match must be reported as judged rather than named.
 - rule_id: MQC_RULE_mat_open_enumeration
+  families: [requirement_match]
   priority: 3
   priority_conditions: [P3_EDGE_PATH]
   requirement_ids: [MQC_REQ_MDL_MAT_0001]
@@ -173,6 +178,7 @@
 
 # MQC_REQ_MDL_MAT_0002, case 30022. 70.0% mandatory, below the 78 floor.
 - rule_id: MQC_RULE_mat_below_floor
+  families: [requirement_match]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_MAT_0002]
@@ -247,6 +253,7 @@
 
 # MQC_REQ_MDL_MAT_0002, case 30023. 78.0% exactly, combined 85.3%, proceed.
 - rule_id: MQC_RULE_mat_at_floor
+  families: [requirement_match]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_MAT_0002]
@@ -299,6 +306,7 @@
 
 # MQC_REQ_MDL_MAT_0002, case 30024. 90.0% mandatory, nice-to-have irrelevant.
 - rule_id: MQC_RULE_mat_above_ceiling
+  families: [requirement_match]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_MAT_0002]
@@ -340,6 +348,7 @@
 # MQC_REQ_MDL_MAT_0003, case 30025. The candidate disclosed; the tool does not
 # second-guess a disclosure decision the candidate already made.
 - rule_id: MQC_RULE_mat_experience_stated
+  families: [requirement_match]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_MAT_0003]
@@ -390,6 +399,7 @@
 # MQC_REQ_MDL_MAT_0003, case 30026. THE TOOL DERIVES, so it discloses the floor.
 # 2011 to present is about fifteen years; the output states 8+.
 - rule_id: MQC_RULE_mat_experience_derived
+  families: [requirement_match]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_MAT_0003]
@@ -442,6 +452,7 @@
 # MQC_REQ_MDL_MAT_0003, case 30027. Neither stated nor calculable: prompt, and name
 # the 30 point penalty.
 - rule_id: MQC_RULE_mat_experience_incalculable
+  families: [requirement_match]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_MAT_0003]
@@ -546,6 +557,7 @@
 # MQC_REQ_MDL_MAT_0004, case 30028. Neither header uses the words mandatory or
 # optional, so the classification comes from the wording alone.
 - rule_id: MQC_RULE_mat_unfamiliar_header
+  families: [requirement_match]
   priority: 3
   priority_conditions: [P3_EDGE_PATH]
   requirement_ids: [MQC_REQ_MDL_MAT_0004]

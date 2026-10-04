@@ -10,7 +10,13 @@
 # that always asks look identical to one that never does.
 
 # MQC_REQ_MDL_AMB_0001, case 30016. Asking is the compliant answer.
+
+# EVERY RULE HERE GRADES `ambiguity_discrimination`, registered
+# 2026-10-04. Ground truth is the designed answerability of the
+# ablation pair, which is a fact about the fixture rather than a
+# property of the response. `DESIGN.md` section 7.7.
 - rule_id: MQC_RULE_amb_ambiguous_request
+  families: [ambiguity_discrimination]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_AMB_0001]
@@ -70,6 +76,7 @@
 # unclear, so there is no instruction in force to verify obedience to. Asking
 # anyway is a judgement failure, which is what the rubric scores.
 - rule_id: MQC_RULE_amb_unambiguous_request
+  families: [ambiguity_discrimination]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_AMB_0002]
@@ -106,6 +113,7 @@
 # That asymmetry is deliberate, because a model warning about both gates has
 # not read the readings either.
 - rule_id: MQC_RULE_amb_threshold_warning
+  families: [ambiguity_discrimination]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_AMB_0003]

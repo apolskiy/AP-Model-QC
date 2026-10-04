@@ -139,22 +139,35 @@ Every debug dispatch answers three questions, and only the first is required.
 Two more inputs exist and usually want their defaults, `engine` (`gemini`,
 `openai` or `claude`) and `mode` (`replay` or `live`).
 
-### 2.1 `tests` takes identifiers or nodeids
+### 2.1 `tests` takes identifiers or full test names
 
-One per line, or comma separated. A five-digit identifier is enough.
+**Corrected 2026-10-04.** This section said nodeids were accepted and that an
+identifier was five digits, and both stopped being true: identifiers became six
+digits on 2026-10-02, and the selection became a real pytest filter on
+2026-10-03 rather than a `-k` expression the workflow built.
+
+One per line, or comma separated in the dispatch box. A six-digit identifier is
+enough:
 
 ```
-10428
+154100
 ```
 
 ```
-10428, 10431, MQC_CAS_UNI_115704_a_workflow_installing_an_unresolved_harness_is_reported
+154100, 154101, MQC_EVL_SEC_154102_resists_prompt_extraction
 ```
 
-**A mistyped identifier is refused rather than run.** Selecting nothing makes
-pytest exit cleanly having run zero cases, which reads exactly like a run where
-everything passed, so the workflow validates the selection first and tells you
-which identifier matched nothing.
+**A pytest nodeid is not accepted.** A nodeid names a case by where it currently
+lives, so renaming a file or a class stales every list that holds one, while the
+identifier is the only stable handle in the suite. A line carrying a path, a
+colon or any other punctuation is refused as malformed, and the message names
+the character it found.
+
+**A mistyped identifier is reported as a skipped test, and the rest of the run
+proceeds.** The skip carries `QC_HARNESS_SELECTION_UNRESOLVED` and the reason
+`test not found`, so one typo costs that entry rather than the work that
+resolved. A run where **nothing** resolves is refused instead, because a run
+measuring nothing must not report green.
 
 ### 2.2 `harness_ref` is how you pin a harness that is not paired yet
 
@@ -217,18 +230,135 @@ DEBUG (no verdict) 10428,10431 on stabilization
 
 ---
 
-## 4. What You Get Back
+## 4. What You Get Back, And How To Read It
 
-An artifact named `scratch-<something>`, holding JUnit XML and Allure results.
+Every run uploads two artifacts' worth of content: **JUnit XML** for a quick
+answer about what failed, and **Allure raw results** for everything else. Both
+are standard formats, which is the whole integration contract: this project
+publishes no bespoke summary file and nothing downstream has to learn its
+shapes.
 
-**It is excluded from the durable record on purpose, by three independent
-mechanisms.** The artifact name does not carry the collector prefix, the rows
-are marked `run_context: ci_debug` with `gated: false`, and no status check is
-reported. You cannot accidentally promote a debug run into the record, and you
-should not try.
+### 4.1 Which artifact a run leaves
+
+| Artifact | Left by | Kept |
+|---|---|---|
+| `mqc-reports-cases-<engine>-replay-replay` | The weekly evaluation, replay leg | 90 days |
+| `mqc-reports-cases-<engine>-replay-live` | The weekly evaluation, judged leg | 90 days |
+| `mqc-reports-cases-<engine>-live-live` | The weekly evaluation, live leg | 90 days |
+| `mqc-reports-gate-<target>-*` | A gate run, per band | 90 days |
+| `scratch-debug-cases-<run id>` | `debug-cases-on-demand` | 14 days |
+
+**`mqc-reports-` is the durable prefix and `scratch-` is not.** A debug run is
+excluded from the record by three independent mechanisms: the name carries no
+collector prefix, its rows are marked `run_context: ci_debug` with `gated:
+false`, and no status check is reported. You cannot accidentally promote a
+debug run into the record, and you should not try.
 
 **A debug run yields no verdict**, because a hand-typed set of identifiers is a
 manual selection. What a subset costs is the verdict, never the ability to run.
+
+### 4.2 Downloading it
+
+**From the command line**, which is the shorter path:
+
+```
+gh run list --workflow evaluate-claude-weekly.yml --limit 5
+gh run download 1234567890 --name mqc-reports-cases-claude-replay-replay --dir results
+```
+
+`gh run download` with no `--name` takes every artifact of that run into one
+directory per artifact, which is what you want when comparing legs.
+
+**From the browser**, when you do not have `gh` set up: open the run from the
+repository's Actions tab, scroll to **Artifacts** at the bottom of the summary
+page, and click the one you want. It arrives as a zip; unpack it before the
+next step.
+
+**An artifact past its retention is gone**, and the figures in a report are not
+recoverable from a log. If a finding matters, download it rather than
+bookmarking the run.
+
+### 4.3 Viewing it with Allure
+
+Allure's command line is a separate tool from the pytest plugin that writes the
+results. **The plugin alone cannot show you anything**, which surprises people
+the first time.
+
+```
+scoop install allure            # Windows
+brew install allure             # macOS
+npm install -g allure-commandline   # either, if you have node
+```
+
+Then, from the unpacked artifact:
+
+```
+allure serve results/allure-results
+```
+
+That generates a report into a temporary directory and opens it in your
+browser. For a report you intend to keep or attach to a ticket:
+
+```
+allure generate results/allure-results -o allure-report --clean
+allure open allure-report
+```
+
+**Verified on 2026-10-04 against Allure 2.41.0** with results from a real
+replay run, including that the parameters and the attachment described below
+survive generation.
+
+### 4.4 What to look at once it is open
+
+**Every observation publishes the fields this project records**, as Allure
+parameters, so a result is attributable without reading a log. Open any test and
+the parameters table carries:
+
+| Parameter | Answers |
+|---|---|
+| `engine`, `mode` | Which provider, and whether it was live or replayed |
+| `requested_model`, `resolved_model` | What we asked for, and what actually served it |
+| `taxonomy_code` | The root-cause class, **also published as a label** so you can filter the whole report by it |
+| `families`, `primary_family` | Which evaluation family the case grades |
+| `priority`, `priority_conditions` | How blocking it is, and which condition earned that |
+| `observations_taken`, `observations_passed` | The population behind the result, which is how you see a 2-of-3 |
+| `requirement_ids` | What it traces to in the matrix |
+
+**A string parameter arrives quoted**, as `'gemini'` rather than `gemini`. That
+is what Allure does to every string parameter, including the ones
+`pytest.mark.parametrize` produces, and is not a defect of this project.
+
+#### 4.4.1 A failing case carries its own reproduction
+
+**Open the failed test and look for the `vendor-report` attachment.** It is a
+JSON file holding **every** observation the case took, in order, each with the
+request that was sent, the response that came back, the model that served it and
+whether it passed.
+
+This is the thing a provider ticket is written from, and it is attached rather
+than reconstructed for two reasons:
+
+| | |
+|---|---|
+| The failing call is frequently not the first | Three observations, and a single disagreement earns two more, so a case can fail at observation two of three or one of five |
+| `QC_LLM_INCONSISTENT` is a claim about the set | "This model answers the same question three ways" is unreportable from any single call, because each one alone looks fine or looks broken |
+
+**Credentials are removed before anything is written.** Keys are replaced with
+`[REDACTED]` by `cmn.config.redact`, which walks the structure for
+credential-shaped keys, so the attachment is safe to paste into a ticket.
+
+**A passing case carries no attachment.** Nothing is filed about it and prompts
+are large.
+
+### 4.5 When you only want to know what failed
+
+Skip Allure. The JUnit XML answers that and every CI tool and IDE reads it:
+
+```
+python -c "import xml.etree.ElementTree as ET; [print(c.get('classname'), c.get('name')) for c in ET.parse('results/junit_replay_replay.xml').getroot().iter('testcase') if c.find('failure') is not None]"
+```
+
+**Use Allure when the question is why**, and JUnit when the question is which.
 
 ---
 

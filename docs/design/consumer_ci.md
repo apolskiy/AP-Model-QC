@@ -1609,3 +1609,104 @@ graded cases.
 second copy is what drifted. Case counts come from the design inventories,
 requirements from the matrix's rows, graded cases from the parsed test modules,
 and corpora and tasks from the data files themselves.
+
+---
+
+## 9. The Findings Register
+
+Added 2026-10-04 at the project owner's instruction. **The gates are red because
+the models fail, and that is the project working**: per-engine replay stands at
+gemini 2, openai 8 and claude 10, every one a `QC_LLM_*` or `QC_SEC_*` finding
+about a third party.
+
+**Nothing is filed with a vendor until the implementation is complete.** What
+this register exists for is the interval: a finding observed today may be fixed
+upstream before anything is filed, and without a record that fix is invisible.
+It would arrive as a gate quietly turning green, which is indistinguishable from
+a case that stopped testing anything.
+
+### 9.1 What belongs in it, and what does not
+
+| Outcome | In the register |
+|---|---|
+| `QC_LLM_*` on a graded case | **Yes.** A finding about the model under test |
+| `QC_SEC_*` on a graded case | **Yes**, and these are the blocking ones |
+| `QC_HARNESS_*` | **Never.** Our code or infrastructure broke, which is a defect to fix rather than a finding to file |
+| A precondition failure | Never. It tests the harness, so a failure is ours |
+
+**The taxonomy already draws this line** and the register reads it rather than
+restating it: `framework-rules.md` section 4 assigns each family to what it
+asserts about, and filing our own defect with a vendor is the error that line
+exists to prevent.
+
+### 9.2 It is not quarantine, and the difference is what each one decides
+
+| | Quarantine | The findings register |
+|---|---|---|
+| Decides | Whether a case's failure exempts the gate | Nothing. It records |
+| Can hold a P0 or P1 | **No.** V1 reads the graded population unconditionally, so a blocking finding cannot be exempted | Yes, and those are most of what it holds |
+| Expires | On a model change, or after 21 days | Never. A finding is a dated observation, and history is not a backlog |
+| Answers | "May this run be green" | "What did we observe, against which model, and does it still happen" |
+
+**A finding in the register has no effect on any verdict.** That is deliberate:
+a record that could turn a gate green would be a quarantine with a different
+name, and the project owner's requirement is tracking rather than exemption.
+
+### 9.3 It is generated, never authored
+
+**Twenty reproductions written by hand would drift from the first re-run.** The
+register is produced from a run by `tools/findings.py`, on the same principle
+that makes the matrix `families` column derived: a fact restated by hand is a
+fact that rots.
+
+Each entry carries what a ticket needs and nothing a reader would have to
+recompute:
+
+| Field | Holds |
+|---|---|
+| `case` | The full case identifier, which is the stable handle |
+| `taxonomy_code` | The root-cause class |
+| `priority` | How blocking it is, from the rule set |
+| `observed_model` | **The model that actually served it**, not the one requested |
+| `first_observed`, `last_observed` | Dates, so an interval is readable |
+| `observations` | How many of how many passed, which is what makes an inconsistency claim checkable |
+| `expected`, `actual` | The two sentences a ticket opens with |
+| `reproduce` | The exact command |
+| `status` | `open`, `reported`, or `resolved_upstream` |
+| `ticket` | The vendor's reference, added by hand when one is filed |
+
+### 9.4 Only a live run can detect an upstream fix
+
+**This is the part that is easy to get wrong.** Replay replays our own recorded
+responses, so a finding will reproduce from replay forever, whatever the vendor
+does. A replay run therefore **confirms the record** and says nothing about the
+current model.
+
+| Mode | What re-running answers |
+|---|---|
+| `replay` | Whether the recorded finding still reads as a finding, which catches our own corpus or harness drift |
+| **`live`** | Whether the model **still** does this, which is the only thing that can retire a finding |
+
+**A finding that stops reproducing live is not deleted.** It takes
+`status: resolved_upstream`, the date, and the model it resolved against,
+because the claim was always about one model and a later model behaving
+differently is the finding's outcome rather than its absence.
+
+**A model change alone does not resolve anything.** Quarantine expires on a
+model change because an exemption should not outlive the model it was granted
+for; a finding is an observation about a model that was true when it was made,
+so it keeps its `observed_model` and gains a second observation rather than
+losing the first.
+
+### 9.5 What the register does not try to be
+
+| Not this | Why |
+|---|---|
+| A bug tracker | It holds no assignee, no severity of its own and no workflow. `priority` comes from the rule set and the vendor's tracker owns the rest |
+| A history of every run | One entry per finding, updated. The run-by-run record is the artifacts, which carry 90 days |
+| The reproduction itself | The `vendor-report` attachment on a failing case holds every call with its request and response. The register names the command and the artifact rather than copying the payloads, which would put prompts and responses into a tracked file |
+
+**The last row is the one worth stating twice.** A finding's full reproduction is
+large, it is already published in the artifact, and copying it into a tracked
+YAML file would make a diff unreadable and put model output into version
+control.

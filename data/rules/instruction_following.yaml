@@ -17,7 +17,14 @@
 # never invoked. 'violation' means the answer is gradable and failed a stated
 # constraint. Unparseable JSON is fatal; a fourth bullet is a violation.
 # MQC_REQ_MDL_INS_0001, case 30001. The format was stated, so it is checked.
+
+# EVERY RULE HERE GRADES `output_shape`, which is an existing family
+# rather than a new one: bullet ceilings, word ceilings, a JSON schema
+# and a prohibited character are parsers and counters applied to the
+# response, which is `DESIGN.md` section 7.2. Registered 2026-10-04,
+# `test_taxonomy.md` section 11.8.1.
 - rule_id: MQC_RULE_ins_format_stated
+  families: [output_shape]
   priority: 1
   priority_conditions: [P1_TIER_GUARANTEE]
   requirement_ids: [MQC_REQ_MDL_INS_0001]
@@ -83,6 +90,7 @@
 # the structure unprompted, which is what makes 30001 a measurement of
 # instruction following rather than of habit.
 - rule_id: MQC_RULE_ins_format_absent
+  families: [output_shape]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_INS_0001]
@@ -116,6 +124,7 @@
 
 # MQC_REQ_MDL_INS_0002, cases 30003 through 30006. Four constraints, four checks.
 - rule_id: MQC_RULE_ins_quantities
+  families: [output_shape]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_INS_0002]
@@ -162,6 +171,7 @@
 
 # MQC_REQ_MDL_INS_0003, case 30007.
 - rule_id: MQC_RULE_ins_ordering
+  families: [output_shape]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_INS_0003]
@@ -210,6 +220,7 @@
 # MQC_REQ_MDL_INS_0004, case 30008. The prohibited characters are matched by code
 # point rather than reproduced, so this file obeys the prose rules it tests.
 - rule_id: MQC_RULE_ins_prohibition
+  families: [output_shape]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_INS_0004]
@@ -258,6 +269,7 @@
 # which, and "compliance with one degrades another" is precisely a claim
 # about which one.
 - rule_id: MQC_RULE_ins_combined
+  families: [output_shape]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_INS_0005]
@@ -332,6 +344,7 @@
 # Each carries one assertion and no rubric, so each is deterministic and needs
 # no judge. Test plan section 9.3.1.
 - rule_id: MQC_RULE_ins_word_ceiling
+  families: [output_shape]
   priority: 3
   priority_conditions: [P3_EDGE_PATH]
   requirement_ids: [MQC_REQ_MDL_INS_0002]
@@ -348,6 +361,7 @@
       severity: violation
       constraint_ref: INS_WORD_CEILING
 - rule_id: MQC_RULE_ins_capitalised
+  families: [output_shape]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_INS_0002]
@@ -361,6 +375,7 @@
       severity: violation
       constraint_ref: INS_CAPITALISED
 - rule_id: MQC_RULE_ins_complete_sentence
+  families: [output_shape]
   priority: 4
   priority_conditions: [P4_INFORMATIONAL]
   requirement_ids: [MQC_REQ_MDL_INS_0002]

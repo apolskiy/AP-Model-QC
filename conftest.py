@@ -29,7 +29,9 @@ from pathlib import Path
 import pytest
 
 from cmn.config import load_env_file, warn_orphan_credentials
+from cmn.emission import begin_case, publish_result
 from cmn.selection import (
+    select_modules,
     select_priority_bands,
     report_unresolved_selection,
     select_named_tests,
@@ -111,6 +113,7 @@ def pytest_collection_modifyitems(
     # THE BEHAVIOUR SELECTORS AFTER THE BAND, so the two intersect rather than
     # one overriding the other, and both before `arrange_dependencies` for the
     # reason above. Design sections 7.7 and 7.8.
+    select_modules(config, items)
     select_traced_cases(config, items)
     select_named_tests(config, items)
     # AFTER THE SELECTION, so nothing deselects the placeholders. A file entry
@@ -131,6 +134,10 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
     Returns:
         None
     """
+    # CLEARED HERE, so a case that records nothing publishes nothing
+    # rather than republishing its predecessor's measurements. Harness
+    # design cmn_verdict_and_cli.md section 5.4.1.
+    begin_case()
     enforce_dependencies(item)
 
 
@@ -151,6 +158,11 @@ def pytest_runtest_makereport(item: pytest.Item, call: Any) -> Any:
     # reports from setup, and recording only the call phase left the next link
     # with no entry to read. Design section 10.28.5.
     record_from_report(item, outcome.get_result())
+    # AND THE RECORD REACHES THE ARTIFACT. Everything was built and
+    # nothing published it: a real result carried empty parameters and a
+    # severity label, so a collector could not say which engine produced
+    # it. Design sections 5.2 to 5.4.1.
+    publish_result(item, outcome.get_result())
 
 
 def pytest_sessionstart(session: pytest.Session) -> None:

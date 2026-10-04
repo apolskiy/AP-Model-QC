@@ -17,10 +17,10 @@ paid tier.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 69 graded cases specified |
-| `docs/testing/rtm_model.csv` | 92 requirements, traced |
+| `docs/testing/rtm_model.csv` | 97 requirements, traced |
 | `data/tasks/`, `data/rules/` | **7 corpora, 65 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **78 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **83 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | Three workflows: the gate, the live ladder, and debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **69 written**: 40 evaluator, 21 security, 8 tool |
@@ -72,6 +72,8 @@ is never a pass. `docs/design/consumer_ci.md` holds the design.
 **To start a debug or stabilization run, read `docs/running_jobs.md` instead.**
 It is the whole operating procedure and it requires no design reading: which
 workflow, which inputs, what comes back, and what to do when something refuses.
+
+**To download a run's results and view them**, that document's section 4 has the artifact names, the `gh run download` line, the Allure commands and what the published parameters mean. A failing case carries a `vendor-report` attachment holding every call it made, credential-redacted, which is what a provider ticket is written from.
 
 ## Pinning A Harness Version
 
