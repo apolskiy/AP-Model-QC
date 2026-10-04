@@ -870,8 +870,13 @@ finding would redden a check covering three.
 
 #### 4.17.3 Separate jobs, not matrix legs, and the sequence is `needs:`
 
-Revised 2026-10-03, after the matrix landed. **A matrix is one job with legs**,
-and the job is the unit everything else reads:
+Revised 2026-10-03, after the matrix landed, and **superseded the same day by
+section 4.19**: separate jobs were not enough either, because a workflow run
+has its own conclusion. The reasoning below is why a matrix was wrong and still
+holds; the shape it chose was one step short.
+
+**A matrix is one job with legs**, and the job is the unit everything else
+reads:
 
 | | Matrix legs | A job per engine |
 |---|---|---|
@@ -1073,6 +1078,67 @@ comparing against a stale copy of a reader reports about the copy.
 | `evaluate-<engine>-weekly.yml` | One caller per engine, each with its own concurrency group and no cron |
 | `mqc_uni_engine_jobs.py` | `115709`, and the three helpers that read the topology |
 | `workflow_support.py` | The readers both case modules share |
+
+### 4.19 A gate workflow per target, because a workflow run still aggregates
+
+Added 2026-10-03, superseding the calls section 4.17.3 put inside one gate.
+That change gave each engine its own **job**; the instruction is that each needs
+its own **workflow**, and the reason is the same one that moved the weekly
+ladder: a workflow run has a conclusion, and one red job makes the run red.
+
+| Level | Separates? |
+|---|---|
+| The check in a pull request | Yes, already: `graded on openai` is its own check |
+| **The workflow run** | **No.** Two engines passing and one failing is a red run, and the run is what a reader looks at |
+| Required checks in branch protection | Per job, so this part already worked |
+
+So two models passing and one failing reported a red gate, which is the problem
+one job reported before the calls were split, moved up one level.
+
+#### 4.19.1 The unit is a target, not an engine
+
+The separation axis is **what is under test**, and that is an engine at a model
+version rather than an engine. Two versions of one engine are two subjects:
+asking whether the newer one still passes what the older one passed is a
+backward-compatibility question, and it is answered by comparing two targets
+rather than by one job that measures whichever version the roster names today.
+
+| Target | What it answers |
+|---|---|
+| `gemini` at its rostered model | How that model behaves now |
+| the same engine at the next model | **Whether the next one is compatible** with what the current one passes |
+
+**Naming the workflows per target is what makes that an addition rather than a
+redesign.** A version becomes another caller, exactly as another engine does.
+
+**What it still needs, and this is recorded rather than built.** The roster is
+keyed by the adapter name: `adapter_for` looks an engine up in the adapter
+registry, so `engines.yaml` cannot carry two entries for one adapter today.
+Expressing two targets on one adapter needs an entry that names its adapter
+separately from its key, which is a roster change and an
+`extensibility_standard.md` section 3.4 question. **Until then a target is an
+engine**, and the workflows are named so that changing it is a rename rather
+than a restructure.
+
+#### 4.19.2 Each gate is self-contained, and that is the cost
+
+A per-target gate runs the resolver, the lint gate, the preconditions and its
+own graded bands. **It does not depend on another workflow having passed**,
+because a gate that waits on a different workflow run is not independent, and
+`workflow_run` reporting does not attach to a pull request the way a push does.
+
+| | |
+|---|---|
+| What repeats | The resolver, the lint gate and the preconditions, which measure **our** code and are engine-independent |
+| What that costs | Jobs, not quota: every repeated job is deterministic, needs no credential and runs in about a minute |
+| What it buys | A target's gate answers "is this target's result trustworthy" end to end, with nothing to cross-reference |
+| When the repetition is loud | A genuine precondition failure reports once per target. Three reds stating one true fact is noise, not misdirection |
+
+**The alternative was considered and rejected.** Keeping lint and preconditions
+in a shared workflow and having the per-target gates depend on it reintroduces
+exactly the coupling the split removes: a shared red would stop every target,
+which is correct, but a shared **flake** would too, and the targets would no
+longer be independently re-runnable.
 
 ## 5. Governance Parity With The Harness
 

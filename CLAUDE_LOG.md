@@ -2249,3 +2249,68 @@ would have no evaluation of its own.
 ### State
 
 77 preconditions passing, pylint 10.00/10 exit 0.
+
+## 2026-10-03: a gate workflow per target
+
+### The correction, one level up from the last one
+
+Splitting the graded bands into three engine **jobs** was not enough. A workflow
+run has a conclusion, so two targets passing and one failing still produced a
+red `gate-on-change`, which is the problem a single job had, moved up a level.
+
+| Level | Separated before this? |
+|---|---|
+| The check in a pull request | Yes: `graded on openai` was its own check |
+| **The workflow run** | **No**, and the run is what a reader looks at |
+| Required checks in branch protection | Yes, those are per job |
+
+So each target now has its own workflow: `gate-gemini.yml`, `gate-openai.yml`,
+`gate-claude.yml`, each calling `gate-target.yml` with its engine. Adding a
+target is adding a caller.
+
+### The unit is a target, not an engine
+
+Recorded because the owner raised it: two versions of one engine are two
+subjects, and asking whether the newer one still passes what the older one
+passed is a backward-compatibility question answered by comparing two targets.
+
+**What that still needs is recorded rather than built.** `adapter_for` looks an
+engine up in the adapter registry, so `engines.yaml` is keyed by adapter name
+and cannot carry two entries for one adapter. A second version needs an entry
+naming its adapter separately from its key. Until then a target is an engine,
+and the workflows are named so that changing it is a rename.
+
+### Self-contained, and what that costs
+
+Each gate runs the resolver, the lint gate, the preconditions and its own
+bands. It does not wait on another workflow, because a gate that does is not
+independent and `workflow_run` does not report onto a pull request the way a
+push does.
+
+| | |
+|---|---|
+| What repeats | The resolver, lint and preconditions, which measure **our** code |
+| What it costs | **33 jobs per push**, all deterministic, all credential-free, about a minute each |
+| What it buys | A target's gate answers "is this result trustworthy" end to end |
+| The honest downside | A genuine precondition failure reports three times. Three reds stating one true fact is noise, not misdirection |
+
+### The suite caught a defect the split introduced
+
+`graded-p1` ended up reading `needs.resolve.outputs.harness_sha` without
+needing `resolve`, so the expression would have expanded to empty and pip would
+have installed whatever the branch head was. **`MQC_CAS_UNI_115704` reported it
+before CI ever saw it**, which is the case earning its place: it was written
+for a workflow that installed the harness without resolving it, and it caught
+the same class of mistake in a topology it predates.
+
+### What `115709` now guards
+
+The per-target gate takes its engine from an input; every rostered target has a
+gate caller **and** a weekly caller; each caller names its target and keys its
+own concurrency group; graded artifacts are keyed by the engine. Injections
+caught: a missing gate workflow, and a caller sharing a concurrency group with
+every other target.
+
+### State
+
+77 preconditions passing, pylint 10.00/10 exit 0.

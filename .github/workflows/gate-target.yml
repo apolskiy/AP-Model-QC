@@ -1,0 +1,410 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+#
+# THE WHOLE GATE FOR ONE TARGET. A target is an engine at a model version, and
+# each has its own caller: `gate-<target>.yml`. Design `consumer_ci.md`
+# section 4.19.
+#
+# WHY A WORKFLOW AND NOT A JOB. A workflow run has a conclusion, so three
+# engine jobs in one gate still produced a red run when two of three passed,
+# and the run is what a reader looks at. Section 4.19.
+#
+# SELF-CONTAINED, AND THAT IS THE COST. The resolver, the lint gate and the
+# preconditions measure OUR code and repeat per target. They cost jobs rather
+# than quota, and they buy a gate that answers "is this target's result
+# trustworthy" end to end with nothing to cross-reference. A gate waiting on
+# another workflow run is not independent. Section 4.19.2.
+name: gate-target
+
+on:
+  workflow_call:
+    inputs:
+      engine:
+        description: "Which engine this target evaluates"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  # GATE 0. It precedes static analysis because it decides what static analysis
+  # would even be run against. Nothing below installs the harness by branch
+  # name: every job takes the SHA this job resolved.
+  resolve:
+    name: resolve the paired harness
+    runs-on: ubuntu-24.04
+    outputs:
+      harness_repository: ${{ steps.pin.outputs.harness_repository }}
+      harness_ref: ${{ steps.pin.outputs.harness_ref }}
+      harness_sha: ${{ steps.pin.outputs.harness_sha }}
+      green: ${{ steps.pin.outputs.green }}
+      gated: ${{ steps.pin.outputs.gated }}
+      reason: ${{ steps.pin.outputs.reason }}
+      matched_entry: ${{ steps.pin.outputs.matched_entry }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # PYYAML, AND NOTHING ELSE, BECAUSE THE HARNESS MUST NOT BE HERE. The
+      # resolver decides whether the paired harness is verified, and installing
+      # that harness to make the decision would ask an unverified ref to vouch
+      # for itself. `tools/harness_pin.py` therefore imports no harness module
+      # and reads only the pin file, which needs a YAML parser.
+      #
+      # The version matches the `pyyaml` pin in `pyproject.toml`; it is repeated
+      # here because a workflow cannot read that file before Python is installed.
+      - name: Install PyYAML for the resolver
+        run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
+
+      - name: Resolve the pairing and assess it
+        id: pin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # THROUGH THE ENVIRONMENT, NEVER INTERPOLATED INTO THE SCRIPT. A pull
+          # request's branch name is chosen by whoever opened it, including from
+          # a fork, so a name carrying a command substitution would run with this
+          # job's token in scope. As an environment variable it is a value the
+          # shell reads, not text the shell parses.
+          CASE_BRANCH: ${{ github.head_ref || github.ref_name }}
+          BASE_BRANCH: ${{ github.base_ref }}
+        run: |
+          python -m tools.harness_pin \
+            --case-branch "${CASE_BRANCH}" \
+            --base-branch "${BASE_BRANCH}"
+
+      - name: Say what this run is running against
+        if: always()
+        shell: bash
+        env:
+          # THE SAME REASON AS THE STEP ABOVE. A summary line is still a shell
+          # command, and the branch name is still chosen by a stranger.
+          CASE_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          {
+            echo "## Harness pairing"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Case branch | ${CASE_BRANCH} |"
+            echo "| Matched entry | ${{ steps.pin.outputs.matched_entry }} |"
+            echo "| Harness ref | ${{ steps.pin.outputs.harness_ref }} |"
+            echo "| Harness commit | ${{ steps.pin.outputs.harness_sha }} |"
+            echo "| Gate green | ${{ steps.pin.outputs.green }} |"
+            echo ""
+            echo "${{ steps.pin.outputs.reason }}"
+            if [ "${{ steps.pin.outputs.green }}" != "true" ]; then
+              echo ""
+              echo "### This run is UNGATED and yields no verdict"
+              echo ""
+              echo "The instrument was never established, so what it measures"
+              echo "cannot be counted. This is the same object a manual"
+              echo "selection produces, and it is a QC_HARNESS_* event rather"
+              echo "than a finding about any model."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Gate 1. Identical configuration to the harness, deliberately: one project
+  # across two repositories, and a naming rule enforced on one side only is a
+  # rule that holds until somebody moves a file.
+  lint:
+    name: lint (${{ matrix.os }})
+    needs: resolve
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # BY COMMIT, NEVER BY BRANCH. The branch may have moved since resolve ran,
+      # and installing the branch would install something no gate has seen.
+
+      # THE TEST TOOLING ARRIVES WITH THE HARNESS `[dev]` EXTRA: pytest,
+      # allure-pytest, pylint and pytest-randomly, all pinned there once. Its
+      # absence was why every gate here reported a missing test runner, exit 127.
+      #
+      # `--no-deps` on this repository is deliberate and is why the extra is
+      # needed. It stops this repository's own harness pin replacing the
+      # candidate resolved above, and it discards extras too, so asking for
+      # `.[dev]` asked pip for tooling it was told not to fetch.
+      #
+      # THIS NOTE SITS ABOVE THE STEP RATHER THAN INSIDE THE `run:` BODY. A
+      # comment inside a run body is part of the shell script, and
+      # `MQC_CAS_UNI_115702` reads run bodies looking for a graded invocation: an
+      # earlier version of this note said "toolchain" beside the word for the
+      # test runner, and `tool` matched inside it.
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+
+      - name: Gate 1, static analysis and naming
+        run: python -m pylint tests/ tools/ conftest.py --rcfile=.pylintrc
+
+      - name: Lint workflow definitions
+        if: runner.os == 'Linux'
+        uses: raven-actions/actionlint@v2
+
+  # Gates 2 and 3. Deterministic, no credentials, both platforms.
+  # GATE 2 ONLY, AND THAT IS THE POINT. This job ran the graded layers too, so
+  # a red here meant either "our harness or corpus is broken and nothing was
+  # measured" or "the model underperformed". Those are the two categories
+  # `framework-rules.md` section 3.1 exists to separate and that the verdict
+  # keeps apart as exit 3 against exit 1, and one job name collapsed them.
+  preconditions:
+    name: preconditions, our defect (${{ matrix.os }})
+    needs: [resolve, lint]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      - name: Gate 2, unit preconditions
+        run: pytest -m unit --junitxml=reports/junit_mqc_unit.xml --alluredir=reports/allure-results
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ needs.resolve.outputs.gated == 'true'
+                && format('mqc-reports-cases-preconditions-{0}', matrix.os)
+                || format('scratch-ungated-cases-pre-{0}-{1}', matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90
+
+  # GATE 3 IS NOT HERE, AND THAT IS THE BOUNDARY RATHER THAN AN OMISSION. It ran
+  # `pytest -m system`, which collects nothing in this repository: every case
+  # here is either a `UNI` precondition over the shipped corpus or a graded case
+  # in a band below. A marker matching zero tests exits 5, so the step failed the
+  # job it was meant to complete, every run. Wiring is the harness's subject and
+  # `MQC_CMN_SYS_122000` to `122002` cover it there.
+
+  # THE BANDS. One job each, because the job name is the diagnosis: a red at P0
+  # or P1 is a release blocker, and a red at P2-P4 is a bug to open and quarantine
+  # while review sets the date. Design section 3.12.
+  #
+  # CHAINED, AND A FAILURE DOES NOT HIDE THE NEXT. Each needs the band before it,
+  # which orders them and carries the outcome record; each runs unless the
+  # preconditions failed, so one band going red still leaves the others
+  # reporting. A chain stopping at the first red would be the single job again.
+  graded-p0:
+    name: graded P0, release blocking (${{ inputs.engine }}, ${{ matrix.os }})
+    needs: [resolve, lint, preconditions]
+    # NAMING THE PRECONDITIONS RESULT replaces the default needs-success
+    # gating, so a failed band before this one does not hide it while a
+    # refusal upstream still skips it.
+    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
+    strategy:
+      # ONE JOB PER ENGINE, so a red names the model it is about rather than
+      # leaving somebody to read a log for it. Replay contacts no provider and
+      # fixtures exist for all three, so this costs jobs and not quota.
+      # Design `consumer_ci.md` section 4.17.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      # THE PROVENANCE GUARD COMPARES BOTH REFS, because a commit is a property
+      # of the checkout rather than of the invocation. Harness
+      # `cmn_verdict_and_cli.md` section 7.6.1.
+      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      - name: Band P0, both sides replayed
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine ${{ inputs.engine }} \
+            --mode replay \
+            --priority 0 \
+            --carry-outcomes reports/carry.json \
+            --junitxml=reports/junit_mqc_p0.xml \
+            --alluredir=reports/allure-results
+
+      - name: Carry the outcomes to P1
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: carry-after-p0-${{ inputs.engine }}-${{ matrix.os }}
+          path: reports/carry.json
+          retention-days: 1
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ needs.resolve.outputs.gated == 'true'
+                && format('mqc-reports-cases-p0-replay-{0}-{1}', inputs.engine, matrix.os)
+                || format('scratch-ungated-cases-p0-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90
+
+  graded-p1:
+    name: graded P1, release blocking (${{ inputs.engine }}, ${{ matrix.os }})
+    needs: [resolve, lint, preconditions, graded-p0]
+    # NAMING THE PRECONDITIONS RESULT replaces the default needs-success
+    # gating, so a failed band before this one does not hide it while a
+    # refusal upstream still skips it.
+    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
+    strategy:
+      # ONE JOB PER ENGINE, so a red names the model it is about rather than
+      # leaving somebody to read a log for it. Replay contacts no provider and
+      # fixtures exist for all three, so this costs jobs and not quota.
+      # Design `consumer_ci.md` section 4.17.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      # WHAT P0 ESTABLISHED, NOT WHAT P0 RAN. A P1 case resting on a P0
+      # foundation is resolvable from the record, so the foundation is not
+      # dispatched again and a P0 failure skips its dependents here rather than
+      # failing them.
+      - name: Take the outcomes P0 established
+        uses: actions/download-artifact@v6
+        with:
+          name: carry-after-p0-${{ inputs.engine }}-${{ matrix.os }}
+          path: reports/
+
+      - name: Band P1, both sides replayed
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine ${{ inputs.engine }} \
+            --mode replay \
+            --priority 1 \
+            --carry-outcomes reports/carry.json \
+            --junitxml=reports/junit_mqc_p1.xml \
+            --alluredir=reports/allure-results
+
+      - name: Carry the outcomes to P2-P4
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: carry-after-p1-${{ inputs.engine }}-${{ matrix.os }}
+          path: reports/carry.json
+          retention-days: 1
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ needs.resolve.outputs.gated == 'true'
+                && format('mqc-reports-cases-p1-replay-{0}-{1}', inputs.engine, matrix.os)
+                || format('scratch-ungated-cases-p1-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90
+
+  graded-lower:
+    name: graded P2-P4, pass floor (${{ inputs.engine }}, ${{ matrix.os }})
+    needs: [resolve, lint, preconditions, graded-p1]
+    # NAMING THE PRECONDITIONS RESULT replaces the default needs-success
+    # gating, so a failed band before this one does not hide it while a
+    # refusal upstream still skips it.
+    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
+    strategy:
+      # ONE JOB PER ENGINE, so a red names the model it is about rather than
+      # leaving somebody to read a log for it. Replay contacts no provider and
+      # fixtures exist for all three, so this costs jobs and not quota.
+      # Design `consumer_ci.md` section 4.17.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      - name: Take the outcomes P0 and P1 established
+        uses: actions/download-artifact@v6
+        with:
+          name: carry-after-p1-${{ inputs.engine }}-${{ matrix.os }}
+          path: reports/
+
+      # THE STEP DOES NOT GATE, THE FLOOR DOES. This is the only band where a
+      # failure is not automatically fatal, so pytest reports and the next step
+      # decides. Design section 3.12.2.
+      - name: Band P2-P4, both sides replayed
+        continue-on-error: true
+        shell: bash
+        run: |
+          pytest -m "evaluator or tool or sec" \
+            --engine ${{ inputs.engine }} \
+            --mode replay \
+            --priority 2,3,4 \
+            --carry-outcomes reports/carry.json \
+            --junitxml=reports/junit_mqc_p2_p4.xml \
+            --alluredir=reports/allure-results
+
+      # REFUSES ON AN ERROR RATHER THAN AVERAGING IT. An error is our defect and
+      # a floor is a statement about the model, so a band carrying one exits 4
+      # instead of being scored.
+      - name: Compare the band against its pass floor
+        run: python tools/band_floor.py reports/junit_mqc_p2_p4.xml
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: >-
+            ${{ needs.resolve.outputs.gated == 'true'
+                && format('mqc-reports-cases-p2p4-replay-{0}-{1}', inputs.engine, matrix.os)
+                || format('scratch-ungated-cases-p2p4-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
+          path: reports/
+          retention-days: 90

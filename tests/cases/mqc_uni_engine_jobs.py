@@ -25,13 +25,13 @@ from tests.cases.workflow_support import (
     graded_invocations,
     jobs,
     load,
-    needs,
 )
 
 pytestmark = pytest.mark.unit
 
-_GATE = "gate-on-change.yml"
-_GRADED_ENGINE = "graded-engine.yml"
+# THE GATE FOR ONE TARGET, and the caller each target carries.
+_GATE = "gate-target.yml"
+_GATE_CALLER = "gate-{engine}.yml"
 _LIVE = "evaluate-engine.yml"
 _WEEKLY_CALLER = "evaluate-{engine}-weekly.yml"
 
@@ -39,64 +39,75 @@ _WEEKLY_CALLER = "evaluate-{engine}-weekly.yml"
 # sequence rather than a set, because the chain is what orders them.
 _ROSTERED_ENGINES = ("gemini", "openai", "claude")
 
-def _weekly_problems() -> list[str]:
-    """Report a weekly ladder that is not one workflow per engine.
+def _target_problems(kind: str, pattern: str, called: str) -> list[str]:
+    """Report a target that is not a workflow of its own.
 
-    Each engine has its own caller, so it has its own status, its own run
-    history and its own artifacts: a combined weekly result would average over
-    three vendors' products. Each caller also guards against overlapping
-    **itself**, which is the use `testing-standards.md` section 2 endorses
-    concurrency for.
-
-    **No cron yet, deliberately.** A live firing spends real money and section
-    4.18.3 names what has to exist first, so a schedule appearing here before
-    then is reported rather than welcomed.
-
-    Design: ``consumer_ci.md`` section 4.18.
+    Args:
+        kind (str): ``gate`` or ``weekly``, for the message.
+        pattern (str): The caller filename, with an ``{engine}`` placeholder.
+        called (str): The workflow a caller is expected to invoke.
 
     Returns:
         list[str]: One entry per problem.
     """
     problems: list[str] = []
     for engine in _ROSTERED_ENGINES:
-        name = _WEEKLY_CALLER.format(engine=engine)
-        path = WORKFLOWS / name
-        if not path.is_file():
+        name = pattern.format(engine=engine)
+        if not (WORKFLOWS / name).is_file():
             problems.append(
-                f"{name} is absent, so {engine} has no weekly evaluation of "
-                f"its own and its result would be aggregated with another's"
+                f"{name} is absent, so {engine} has no {kind} of its own and "
+                f"its conclusion would be another target's too"
             )
             continue
         loaded = load(name)
         calls = [
             job for job in jobs(loaded).values()
-            if _LIVE in str(job.get("uses") or "")
+            if called in str(job.get("uses") or "")
         ]
         if not calls:
-            problems.append(f"{name} does not call {_LIVE}")
+            problems.append(f"{name} does not call {called}")
         for job in calls:
             if str(((job.get("with") or {}).get("engine")) or "") != engine:
-                problems.append(f"{name} calls the ladder for another engine")
+                problems.append(f"{name} calls {called} for another target")
         group = str(((loaded.get("concurrency") or {}).get("group")) or "")
         if engine not in group:
             problems.append(
-                f"{name} has no concurrency group of its own, so two runs of "
-                f"{engine} could overlap, or three engines could contend"
+                f"{name} has no concurrency group of its own, so one target's "
+                f"run could supersede another's"
             )
-        triggers = loaded.get("on") or loaded.get(True) or {}
+    return problems
+
+
+def _weekly_problems() -> list[str]:
+    """Report a weekly caller carrying a schedule the design withholds.
+
+    A live firing spends real money, and `consumer_ci.md` section 4.18.3 names
+    what has to exist first: the known findings triaged, and a run that
+    declines when this target was already evaluated in the window.
+
+    Returns:
+        list[str]: One entry per premature schedule.
+    """
+    problems: list[str] = []
+    for engine in _ROSTERED_ENGINES:
+        name = _WEEKLY_CALLER.format(engine=engine)
+        if not (WORKFLOWS / name).is_file():
+            continue
+        triggers = load(name).get("on") or load(name).get(True) or {}
         if isinstance(triggers, dict) and "schedule" in triggers:
             problems.append(
                 f"{name} carries a schedule, and section 4.18.3 withholds one "
                 f"until the known findings are triaged and a run declines when "
-                f"this engine was already evaluated in the window"
+                f"this target was already evaluated in the window"
             )
     return problems
+
 
 def _band_problems(graded: dict[str, Any]) -> list[str]:
     """Report bands naming their engine literally or sharing an artifact name.
 
     Args:
-        graded (dict): The loaded graded-engine workflow.
+        graded (dict): The loaded per-target gate.
 
     Returns:
         list[str]: One entry per problem.
@@ -106,118 +117,68 @@ def _band_problems(graded: dict[str, Any]) -> list[str]:
         for body in graded_invocations(job):
             if "inputs.engine" not in body:
                 problems.append(
-                    f"{_GRADED_ENGINE}:{job_name} names its engine literally "
-                    f"rather than taking it from the call"
+                    f"{_GATE}:{job_name} names its engine literally rather "
+                    f"than taking it from the call"
                 )
         for step in job.get("steps") or []:
             if "upload-artifact" not in str(step.get("uses") or ""):
                 continue
             name = str(((step.get("with") or {}).get("name")) or "")
-            if name and "inputs.engine" not in name:
+            if name and "inputs.engine" not in name and graded_invocations(job):
                 problems.append(
-                    f"{_GRADED_ENGINE}:{job_name} uploads {name!r}, which is "
-                    f"not keyed by the engine, so two engines share a name"
+                    f"{_GATE}:{job_name} uploads {name!r}, which is not keyed "
+                    f"by the engine, so two targets share a name"
                 )
     return problems
 
-def _engine_callers(gate: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    """Return the gate jobs that call the graded workflow, keyed by engine.
-
-    Args:
-        gate (dict): The loaded gate workflow.
-
-    Returns:
-        dict: Engine name to the job that measures it.
-    """
-    callers: dict[str, dict[str, Any]] = {}
-    for name, job in jobs(gate).items():
-        if _GRADED_ENGINE not in str(job.get("uses") or ""):
-            continue
-        engine = str(((job.get("with") or {}).get("engine")) or "")
-        callers[engine] = {**job, "job_name": name}
-    return callers
 
 @allure.epic("AP-Model-QC")
 @allure.feature("Consumer CI")
 class TestMQCEngineAttribution:
-    """A graded red has to say which model it is about."""
+    """A target's result is its own, down to the workflow that produced it."""
 
-    @allure.story("Every graded job names its engine")
+    @allure.story("Every target is its own workflow")
     def MQC_CAS_UNI_115709_a_graded_job_not_naming_its_engine_is_reported(
         self,
     ) -> None:
-        """Each engine is a separate job, named, chained and independently red.
+        """Each target is its own workflow, named, and nothing aggregates.
 
-        A graded failure is a finding about one model. A matrix would make the
-        engines legs of one job whose status aggregates, so one engine's
-        finding would redden a check covering three; separate calls give each
-        its own status, its own re-run and its own diagnosis.
+        A target is an engine at a model version, and a graded failure is a
+        finding about one of them. **A workflow run has a conclusion**, so
+        three targets inside one gate produced a red run when two passed; the
+        separation has to be at the workflow level, not the job level.
 
-        Four properties, each of which has already gone wrong somewhere:
+        Four properties:
 
-        * the graded bands take their engine from an input, never a literal,
-        * every rostered engine has a call, so none is measured by nothing,
-        * each caller's job name carries its engine, so a red is attributable
-          in a listing,
-        * the calls are chained **and** each carries a status function, because
-          `needs:` alone would skip the next engine when one goes red, which is
-          the coupling the separation removes.
+        * the per-target gate takes its engine from an input, never a literal,
+        * every rostered target has a gate caller **and** a weekly caller,
+        * each caller names its target and keys its own concurrency group,
+        * the artifacts a graded job uploads are keyed by the engine, because
+          two targets sharing an artifact name is one name and the later
+          upload wins.
 
-        **The artifacts are keyed by the engine too.** Two engines sharing an
-        artifact name is one name, and the later upload wins: the defect
-        ``JudgementKey`` had before it carried the candidate engine.
-
-        Design: ``consumer_ci.md`` sections 4.17 and 4.17.3.
+        Design: ``consumer_ci.md`` sections 4.18 and 4.19.
 
         Returns:
             None
         """
-        problems: list[str] = []
         gate = load(_GATE)
-        graded = load(_GRADED_ENGINE)
 
-        # THE BANDS TAKE THEIR ENGINE FROM AN INPUT.
-        assert "engine" in (
-            ((graded.get("on") or graded.get(True) or {}).get("workflow_call") or {})
+        declared = (
+            ((gate.get("on") or gate.get(True) or {}).get("workflow_call") or {})
             .get("inputs") or {}
-        ), f"{_GRADED_ENGINE} declares no engine input, so it cannot be per engine"
-
-        assert jobs(graded), f"{_GRADED_ENGINE} declares no jobs"
-        problems.extend(_band_problems(graded))
-
-        # EVERY ROSTERED ENGINE HAS A CALL, AND THE CALLS ARE CHAINED.
-        callers = _engine_callers(gate)
-        missing = sorted(set(_ROSTERED_ENGINES) - set(callers))
-        assert not missing, (
-            f"{_GATE} calls {_GRADED_ENGINE} for {sorted(callers)} and not for "
-            f"{missing}, so those engines are measured by nothing"
         )
+        assert "engine" in declared, (
+            f"{_GATE} declares no engine input, so it cannot be per target"
+        )
+        assert jobs(gate), f"{_GATE} declares no jobs"
 
-        for position, engine in enumerate(_ROSTERED_ENGINES):
-            job = callers[engine]
-            name = job["job_name"]
-            if engine not in str(job.get("name") or ""):
-                problems.append(
-                    f"{_GATE}:{name} does not name its engine, so a red names "
-                    f"no model"
-                )
-            condition = str(job.get("if") or "")
-            if "cancelled()" not in condition and "always()" not in condition:
-                problems.append(
-                    f"{_GATE}:{name} carries no status function, so an engine "
-                    f"before it going red would skip it entirely"
-                )
-            if position:
-                previous = callers[_ROSTERED_ENGINES[position - 1]]["job_name"]
-                if previous not in needs(job):
-                    problems.append(
-                        f"{_GATE}:{name} does not need {previous}, so the "
-                        f"engines are not sequenced"
-                    )
-
+        problems = _band_problems(gate)
+        problems.extend(_target_problems("gate", _GATE_CALLER, _GATE))
+        problems.extend(_target_problems("weekly", _WEEKLY_CALLER, _LIVE))
         problems.extend(_weekly_problems())
 
         assert not problems, (
-            "graded jobs do not attribute their results to one engine: "
+            "targets do not each have a workflow of their own: "
             + "; ".join(problems)
         )

@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+#
+# THE GATE FOR ONE TARGET: gemini. Its own workflow, so its conclusion is
+# about this target alone: two targets passing and one failing are three
+# results, not one red. Design `consumer_ci.md` section 4.19.
+#
+# ANOTHER TARGET IS ANOTHER CALLER, whether that is a new engine or a second
+# version of this one. Section 4.19.1 records what a second version still needs
+# from the roster.
+name: gate-gemini
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+# PER TARGET, so a push supersedes only this target's in-flight run. Keyed on
+# the ref as well, which is what lets two branches gate the same target at once.
+concurrency:
+  group: gate-gemini-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  gate:
+    name: gemini
+    uses: ./.github/workflows/gate-target.yml
+    with:
+      engine: gemini
+    secrets: inherit
