@@ -3014,3 +3014,58 @@ invocations, and a reader cannot tell a checker from a suite by its name alone.
 152 passing, pylint exit 0. The two reds are `134107` and `134205`, both
 catalogued. The rule is the harness's `test_taxonomy.md` section 13; this
 repository carries its own registry and its own case.
+
+## 2026-10-05: The resolve wait stays at ten minutes, and ordering is the remedy
+
+Three model gates refused on a simultaneous push of both repositories:
+
+```
+QC_HARNESS_UPSTREAM_UNVERIFIED: gate-on-change.yml on ca05aa498bd5 is queued,
+so nothing has been established yet. Waited 600s and it has not concluded,
+so nothing is established
+```
+
+Everything downstream skipped. No credential read, no quota spent, no result.
+
+### The refusal was right and the question was only the budget
+
+**`WaitPolicy.timeout_sec` is a default with no CLI flag and no workflow
+input.** In this project that shape is normally a defect — a value that exists
+and cannot be reached — and the obvious move was to add `--wait-sec` and raise
+it.
+
+**The project owner declined, and the reasoning is better than the fix.**
+Pushing or merging the harness is a deliberate act; if this repository runs
+against the harness on `main`, that commit has to be green before a run against
+it means anything. A run that cannot establish its instrument is a non-starter
+rather than a scheduling inconvenience.
+
+| | |
+|---|---|
+| Operating rule | Push the harness, wait for its gate, then push here |
+| What the wait absorbs | The seconds-to-minutes lag of a near-simultaneous push (section 3.11.1) |
+| What it is not | A substitute for the harness having passed |
+
+### Why a longer wait would cost something
+
+**A budget long enough to cover any harness gate is long enough to hide that the
+harness gate failed.** The run would sit for twenty minutes and then refuse for
+the real reason, having spent the time to learn what the ordering would have
+told it at once. Waiting is not free when what it waits for might be red.
+
+So the hardcoded budget is the intended shape here, and section 3.11.2 says so
+explicitly — otherwise it reads as the defect class this project catalogues and
+somebody later "fixes" it.
+
+### An accidental control in the same push
+
+`gate-claude` queued behind the other three and started after the harness gate
+concluded. Same model commit, same harness commit, resolved cleanly. The
+variable was arrival time and nothing else, which is what made the diagnosis
+certain rather than plausible.
+
+### State
+
+152 passing, pylint exit 0. Harness `gate-on-change` green on `ca05aa49`;
+`regress-consumers-on-merge` running, which is the other direction — the new
+harness measured against this repository.

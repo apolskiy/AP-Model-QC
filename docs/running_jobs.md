@@ -124,6 +124,26 @@ so nobody is tempted to.
 **The first two are the ones this page is really about.** They are manual, they
 yield no verdict, and nothing they do can colour a gate run on the same commit.
 
+### Pushing a change that spans both repositories
+
+**Push the harness first and wait for its gate to go green. Then push here.**
+
+A gate here resolves the harness commit and requires a green
+`gate-on-change.yml` run on it. It waits up to ten minutes for an unfinished
+one, which covers a near-simultaneous push, and refuses after that with
+`QC_HARNESS_UPSTREAM_UNVERIFIED` and exit 4.
+
+| | |
+|---|---|
+| What a refusal costs | **Nothing.** Every graded job skips, no credential is read, no quota is spent |
+| What it protects | A result measured with an instrument nothing has established |
+| What to do | Wait for the harness gate, then re-run the gates here |
+
+**The ordering is not a workaround.** `consumer_ci.md` section 3.11.2 records
+why the wait is deliberately not longer: a budget generous enough to cover any
+harness gate is generous enough to spend twenty minutes discovering the harness
+gate was red.
+
 **`<engine>` is one of the rostered targets, and the roster is the list.** There
 are four as this is written — `gemini`, `openai`, `claude`, `grok` — each with
 a gate caller and a weekly caller of its own, because a workflow run has one

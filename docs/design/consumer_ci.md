@@ -388,6 +388,48 @@ concludes it.
 | **No run recorded yet** | **Waits**, on the same budget |
 | A wait that runs out | Refuses. An unfinished gate established nothing |
 
+#### 3.11.2 The wait is a tolerance, and the remedy for exceeding it is ordering
+
+**Decided 2026-10-05 by the project owner**, after three gates refused on a
+simultaneous push of both repositories:
+
+```
+QC_HARNESS_UPSTREAM_UNVERIFIED: gate-on-change.yml on ca05aa498bd5 is queued,
+so nothing has been established yet. Waited 600s and it has not concluded,
+so nothing is established
+```
+
+**The refusal was correct and the ten minutes were not the problem.** The owner's
+position: pushing or merging the harness is a deliberate act, and if this
+repository runs against the harness on `main`, that commit has to be green
+before a run against it means anything. A run that cannot establish its
+instrument is a non-starter, not a scheduling inconvenience.
+
+| | |
+|---|---|
+| The operating rule | **Push the harness, wait for its gate, then push here** |
+| What the wait is for | Absorbing the seconds-to-minutes lag of a near-simultaneous push, per section 3.11.1 |
+| What the wait is not | A substitute for the harness having passed |
+
+**So the budget is deliberately not configurable, and that is worth stating
+because the alternative was available.** `WaitPolicy.timeout_sec` is a default
+with no CLI flag and no workflow input, which in this project is normally a
+defect: a value that exists and cannot be reached. Here it is the intended
+shape. A longer budget buys nothing a correctly ordered push does not already
+have, and it costs the thing the refusal protects:
+
+**A wait long enough to cover any harness gate is a wait long enough to hide
+that the harness gate failed.** The run would sit for twenty minutes and then
+refuse for the real reason, having spent the time to learn what the ordering
+would have told it immediately. **Waiting is not free when what it waits for
+might be red.**
+
+**This does not relax section 3.9.** A refusal still stops the run, development
+branches are still exempt with `require_green: false`, and the exemption is
+still what lets stabilization work proceed against a harness in flight. The
+rule here is about `main`, where `require_green: true` already says the harness
+must have passed.
+
 #### 3.11.1 A run not yet registered is pending, not absent
 
 Corrected 2026-09-29, on the first paired push after section 3.11 was written.
