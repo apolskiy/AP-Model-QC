@@ -3069,3 +3069,84 @@ certain rather than plausible.
 152 passing, pylint exit 0. Harness `gate-on-change` green on `ca05aa49`;
 `regress-consumers-on-merge` running, which is the other direction — the new
 harness measured against this repository.
+
+## 2026-10-05: Seven unbounded subprocesses, and the hang that reported nothing
+
+Chasing the one flakiness signal in the session: a harness gate that reported
+`failure` with **no failing job**. `unit (windows-latest)` had been **cancelled**
+22 minutes into the run. Lint passed on both platforms, Ubuntu unit passed, and
+the cancelled job produced no log, because a cancelled job has none.
+
+### What was actually wrong
+
+**Seven `subprocess.run` calls existed across both repositories and not one
+passed a `timeout`.**
+
+| Where | What it runs |
+|---|---|
+| `mqc_uni_dependency.py` x3, `mqc_uni_emission.py`, `mqc_uni_selection.py` | A nested pytest, to observe what the parent cannot see about itself |
+| `cmn/code_standards.py` | `git ls-files` |
+| `tools/harness_pin.py` | **`git ls-remote` over HTTPS, in the resolve job of every gate** |
+
+**The seventh is the one that mattered most** and was found only because the
+check scanned both repositories: a network read with no bound, in the job every
+model gate starts with. A stalled fetch there hangs resolve until the runner
+gives up.
+
+### Why no amount of local testing would have found it
+
+Those cases take **0.6s to 3.4s** locally; the whole suite is under 18 seconds.
+`--durations` shows nothing remarkable. **The defect was never that something
+hung — it was that nothing bounded how long it could.** An absent argument has
+no runtime signature until the day it matters.
+
+### A hang is the worst failure shape available
+
+**A crash names itself and a hang names nothing.** Every other failure here
+arrives as an assertion with a taxonomy code, a diff or a count. A hang arrives
+as an absence, after the longest possible delay, carrying zero information.
+
+**And it reads as the wrong defect.** A cancelled Windows job beside a green
+Ubuntu one invites "flaky CI" or "a Windows thing", and both send the reader to
+the runner rather than to the missing keyword. That is a harness defect
+presenting as an environmental one, which the failure taxonomy exists to keep
+apart.
+
+### The fix, and the bound being deliberately generous
+
+`tests/cmn/subprocess_support.py` carries `run_bounded`, which closes stdin,
+takes a 300s budget and fails with `QC_HARNESS_SUBPROCESS_TIMEOUT` naming the
+command and the bound. The two git calls take 60s inline.
+
+**300s is two orders of magnitude above the worst observed case and two below
+the hang.** A bound tuned close to the observed duration converts a slow runner
+into a red, which relocates flakiness rather than removing it. The point is to
+make an unbounded wait bounded, not to police performance.
+
+### Enforced, and reachable
+
+`unbounded_subprocess_calls` reads the AST, so a call spelled across several
+lines is still seen and a mention in a string literal is not.
+`MQC_CMN_UNI_112329` and `MQC_CAS_UNI_115712` assert it per repository.
+
+**It checks the keyword, not the value.** Whether 300s is right is a judgement;
+whether a bound exists is not, and only the second is mechanical.
+
+Verified by injecting an unbounded call into a scratch module: reported by file
+and line. Both repositories now report zero.
+
+### What this did not find
+
+**The model-side run has no flakiness at all.** Five random seeds against
+`claude` and `openai` produced identical counts and an identical failure-set
+hash, which is what replay determinism should mean. And every skip in every
+band on every engine is `QC_HARNESS_DEPENDENCY_UNMET` — downstream of a failed
+foundational case, which is a model result rather than an environmental one.
+
+**24 failures, 24 catalogued findings, exact match**: gemini 2, openai 8,
+claude 10, grok 4. Nothing unregistered, nothing ours.
+
+### State
+
+153 passing, pylint exit 0. The two reds are `134107` and `134205`,
+both catalogued.

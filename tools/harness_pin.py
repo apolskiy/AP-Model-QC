@@ -272,10 +272,22 @@ def head_commit(repository: str, ref: str) -> str:
             usually means the harness does not carry it yet.
     """
     url = f"https://github.com/{repository}.git"
-    completed = subprocess.run(
-        ["git", "ls-remote", url, f"refs/heads/{ref}", f"refs/tags/{ref}"],
-        capture_output=True, text=True, check=False, shell=False,
-    )
+    # BOUNDED, per the harness `test_taxonomy.md` section 14, and this is the
+    # call that most needed it: a network read over HTTPS, in the resolve job
+    # of every gate here. Unbounded, a stalled fetch hangs resolve until the
+    # runner cancels the job, which reports `failure` with no failing step.
+    try:
+        completed = subprocess.run(
+            ["git", "ls-remote", url, f"refs/heads/{ref}", f"refs/tags/{ref}"],
+            capture_output=True, text=True, check=False, shell=False,
+            stdin=subprocess.DEVNULL, timeout=60.0,
+        )
+    except subprocess.TimeoutExpired as expired:
+        raise RuntimeError(
+            f"{_UNMET_CODE}: listing refs of {repository} did not answer "
+            f"within 60s, so the pairing cannot be resolved. This is our "
+            f"configuration or the network, never a finding about a model"
+        ) from expired
     for line in completed.stdout.splitlines():
         parts = line.split()
         if len(parts) == 2:

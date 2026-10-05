@@ -24,7 +24,10 @@ from pathlib import Path
 import allure
 import pytest
 
-from cmn.case_module_standards import extraction_problems
+from cmn.case_module_standards import (
+    extraction_problems,
+    unbounded_subprocess_calls,
+)
 from cmn.code_standards import (
     identifier_block_problems,
     annotation_gaps,
@@ -300,5 +303,50 @@ class TestMQCCaseModuleContents:
         assert not problems, (
             f"{len(problems)} case module(s) hold support code that belongs in "
             f"a sibling module, or carry a lapsed declaration: "
+            + "; ".join(problems)
+        )
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Suite governance")
+class TestMQCBoundedSubprocesses:
+    """What this repository is allowed to wait for, and for how long."""
+
+    @allure.story("A bound turns a hang into a failure")
+    def MQC_CAS_UNI_115712_a_subprocess_without_a_timeout_is_reported(
+        self,
+    ) -> None:
+        """No subprocess invocation here waits without a bound.
+
+        **A hang is the worst failure shape available.** A crash names itself;
+        a hang names nothing, arrives after the longest possible delay, and
+        presents as an environmental fault on whichever platform stalled. One
+        cancelled a Windows job 22 minutes into a run that reported `failure`
+        with no failing job and no log, while Ubuntu passed.
+
+        **Six calls existed and none carried a timeout.** Five spawned a nested
+        pytest; the sixth asked git. The case repository had a seventh, and it
+        was the one that mattered most: `git ls-remote` over HTTPS, in the
+        resolve job of every gate there.
+
+        **No local run could have found this.** Those cases take 0.6s to 3.4s
+        here. The defect was never that something hung; it was that nothing
+        bounded how long it could.
+
+        **The keyword is checked, not the value.** Whether 300s is right is a
+        judgement; whether a bound exists is not, and only the second is
+        mechanical.
+
+        Design: ``test_taxonomy.md`` section 14.
+
+        Returns:
+            None
+        """
+        problems = unbounded_subprocess_calls(
+            Path(__file__).resolve().parents[2]
+        )
+        assert not problems, (
+            f"{len(problems)} subprocess invocation(s) carry no timeout, so a "
+            f"child that stalls blocks until a runner cancels the job: "
             + "; ".join(problems)
         )

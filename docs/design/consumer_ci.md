@@ -583,7 +583,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 49 cases, 33 negative, 11 positive, 5 boundary.** Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 50 cases, 34 negative, 11 positive, 5 boundary.** Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 ### 4A. The harness is a dependency, not the directory next door
 
