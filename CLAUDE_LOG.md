@@ -2920,3 +2920,97 @@ and `134205`, both catalogued.
 with five lines of headroom. The next addition to it has to be a split, and the
 natural seam is the one just created: the README-figure machinery is a separate
 subject from the harness pin.
+
+## 2026-10-05: A test module holds cases, and a support module holds everything else
+
+**The project owner's rule**, prompted by a case module failing the lint gate
+for carrying a tenth bespoke computation: extended functions and classes are
+the job of an interface, not of a case file.
+
+### The boundary already existed and nothing had been written about it
+
+```ini
+python_files = mqc_*.py
+```
+
+**A module outside that glob is support by construction**, which is why
+`graded_support.py`, `provider_doubles.py`, `verdict_support.py`,
+`selection_support.py` and `judge_doubles.py` already worked. The convention was
+followed only when a ceiling forced it, so it held in five places and not in
+fifty.
+
+### What the unwritten convention had already cost
+
+**`repository_root` existed four times, byte-identical**: once public in
+`graded_support.py`, and once privately in each of three case modules as
+`_root`, `_repository_root` and `_repository_root`.
+
+**That is the real cost, not the line counts.** Each case module had become a
+private namespace nothing else could draw on, so every module re-derived what
+it needed. A helper nobody owned was cheaper to rewrite than to find.
+
+**And two modules were one edit from blocking unrelated work**, at 998 and 995
+lines against the thousand-line ceiling. A ceiling that fires on a prose edit is
+not a ceiling anybody can plan around.
+
+### Five converted
+
+| Module | Before | After |
+|---|---|---|
+| `mqc_uni_metadata.py` | 998 | 967 |
+| `mqc_uni_cli.py` | 965 | 835 |
+| `mqc_uni_harness_pin.py` | 995 | **733** |
+| `mqc_uni_corpus.py` | 969 | 785 |
+| `mqc_uni_instrument.py` | 939 | 707 |
+
+New support modules: `metadata_support.py`, `cli_doubles.py`, `pin_support.py`,
+`corpus_support.py`, `instrument_support.py`.
+
+**Everything moved lost its leading underscore.** A support module is an
+interface, and `_graded` imported by another module says the opposite of what is
+true. The rename is what makes this an interface rather than a file move.
+
+**Fixtures stayed.** A `@pytest.fixture` is wiring for one module's cases, bound
+to them by name; moving it would make the cases harder to read for a tidier line
+count. The rule is about apparatus, not about every `def`.
+
+### Enforced, with the backlog declared rather than exempted
+
+`cmn/case_module_standards.py` is one implementation called with each root, and
+reports any collected module defining module-level support.
+`MQC_CMN_UNI_112328` asserts it here, `MQC_CAS_UNI_115711` in the case
+repository.
+
+**36 modules predate the rule** — 25 harness, 11 cases — each declared in
+`config/support_extraction.yaml` with a reason and an expiry, the same idiom as
+`flag_coverage.yaml` and `not_rostered`. **The list shrinks and never grows**,
+because anything undeclared fails on the day it is written. Removing the last
+entry deletes the file.
+
+### Four directions, all verified by watching each one fail
+
+| Injected | Reported |
+|---|---|
+| A helper in an undeclared module | Names the module, the count and the definition |
+| An expiry in the past | Names the module and its reason |
+| A declaration whose module is now clean | "the entry outlived the work. Remove it" |
+| A declaration for a path that does not exist | "asserts something about a path that does not exist" |
+
+**The first attempt at that proof was itself vacuous.** The helper was injected
+into `mqc_uni_standards.py`, which is a declared gap, so the check correctly
+absorbed it and the run went green — and for a moment that read as the check
+failing to work. Proving a check fires means injecting where it is supposed to
+fire, which is the distinction this project has spent a fortnight on.
+
+### The new module's own name was rejected, correctly
+
+It was `cmn/test_module_standards.py` first, and `.pylintrc` refuses a module
+name beginning with `test_`: pytest would try to collect it from some
+invocations, and a reader cannot tell a checker from a suite by its name alone.
+`case_module_standards.py` is what the rule allowed, and the rule was right.
+
+### State
+
+152 passing, pylint exit 0. The two reds are `134107` and `134205`, both
+catalogued. The rule is the harness's `test_taxonomy.md` section 13; this
+repository carries its own registry and its own case.

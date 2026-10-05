@@ -18,11 +18,13 @@ less often.
 A failure here is our defect, so the module carries no priority marker.
 """
 
+from datetime import date
 from pathlib import Path
 
 import allure
 import pytest
 
+from cmn.case_module_standards import extraction_problems
 from cmn.code_standards import (
     identifier_block_problems,
     annotation_gaps,
@@ -252,4 +254,51 @@ class TestMQCEncodingDeclared:
         assert not problems, (
             "identifiers carry digits their tokens contradict, so a module "
             "occupies a block it was not allocated: " + "; ".join(problems)
+        )
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Suite governance")
+class TestMQCCaseModuleContents:
+    """What a collected case module is allowed to define."""
+
+    @allure.story("Cases here, apparatus next door")
+    def MQC_CAS_UNI_115711_a_case_module_holding_support_code_is_reported(
+        self,
+    ) -> None:
+        """A collected test module holds cases, not the library supporting them.
+
+        **The convention existed and was unwritten**, which is what it cost:
+        ``repository_root`` stood four times, byte-identical, once public in
+        ``graded_support`` and once privately in each of three case modules. A
+        helper nobody owned was cheaper to rewrite than to find.
+
+        **``pytest.ini`` already draws the boundary** with
+        ``python_files = mqc_*.py``, so a module outside that glob is support by
+        construction. This asserts the other half: that a module inside it holds
+        no support.
+
+        **Fixtures are not support.** A ``@pytest.fixture`` is wiring for one
+        module's cases, bound to them by name, and moving it would make the
+        cases harder to read for a tidier line count.
+
+        **The backlog is declared, not exempted.** Modules predating the rule
+        are named in ``config/support_extraction.yaml`` with a reason and an
+        expiry, and an expired entry fails this. The list shrinks and never
+        grows, because anything undeclared fails here on the day it is written.
+
+        Design: ``test_taxonomy.md`` section 13.
+
+        Returns:
+            None
+        """
+        root = Path(__file__).resolve().parents[2]
+        problems = extraction_problems(
+            root / "tests", root, root / "config" / "support_extraction.yaml",
+            date.today(),
+        )
+        assert not problems, (
+            f"{len(problems)} case module(s) hold support code that belongs in "
+            f"a sibling module, or carry a lapsed declaration: "
+            + "; ".join(problems)
         )

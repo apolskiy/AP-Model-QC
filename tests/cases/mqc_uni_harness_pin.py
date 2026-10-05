@@ -16,17 +16,13 @@ harness ``framework-rules.md`` section 3.3.
 """
 
 import ast
-import csv
 import re
 from pathlib import Path
-from typing import Any
 
 import allure
 import pytest
 
-from ingestion.loaders import load_tasks_from_yaml
 from cmn.branch_policy import BRANCH_KINDS, referent_problems
-from tools import harness_pin
 from tools.harness_pin import (
     Pairing,
     apply_target_strictness,
@@ -37,44 +33,20 @@ from tools.harness_pin import (
 from tools.harness_pin import main as harness_pin_main
 
 
+from tests.cases.graded_support import repository_root
+from tests.cases.pin_support import (
+    OTHER_SHA,
+    SHA,
+    WORKFLOW,
+    concluded_runs,
+    drive_wait,
+    inventoried_case_ids,
+    readme_figures,
+    unconcluded_runs,
+    workflow_run,
+)
+
 pytestmark = pytest.mark.unit
-
-# A HARNESS COMMIT, as the API spells one. The value is arbitrary and the
-# width is not: the resolver truncates it for its messages.
-_PINNED_SHA = "d793908f3325e109da63fc05e1ddd1f2329c3f0f"
-_REQUIRED_WORKFLOW = "gate-on-change.yml"
-
-_WORKFLOW = "gate-on-change.yml"
-_SHA = "a" * 40
-_OTHER_SHA = "b" * 40
-
-
-def _run(
-    sha: str = _SHA,
-    workflow: str = _WORKFLOW,
-    status: str = "completed",
-    conclusion: str = "success",
-    run_number: int = 1,
-) -> dict[str, object]:
-    """Build one workflow run as the GitHub API returns it.
-
-    Args:
-        sha (str): The commit the run executed on.
-        workflow (str): The workflow filename.
-        status (str): ``queued``, ``in_progress`` or ``completed``.
-        conclusion (str): The concluded result.
-        run_number (int): Which attempt this was.
-
-    Returns:
-        dict: The run record.
-    """
-    return {
-        "head_sha": sha,
-        "path": f".github/workflows/{workflow}",
-        "status": status,
-        "conclusion": conclusion,
-        "run_number": run_number,
-    }
 
 
 @pytest.fixture(name="mapping")
@@ -86,86 +58,6 @@ def fixture_mapping() -> dict[str, object]:
     """
     root = Path(__file__).resolve().parents[2]
     return load_mapping(root / "config" / "harness_pin.yaml")
-
-
-
-def _running() -> list[dict[str, Any]]:
-    """Return the API shape of a run that has not concluded.
-
-    Returns:
-        list[dict]: One in-progress run for the pinned commit.
-    """
-    return [
-        {
-            "head_sha": _PINNED_SHA,
-            "path": f".github/workflows/{_REQUIRED_WORKFLOW}",
-            "run_number": 1,
-            "status": "in_progress",
-            "conclusion": None,
-        }
-    ]
-
-
-def _concluded(conclusion: str) -> list[dict[str, Any]]:
-    """Return the API shape of a run that has finished.
-
-    Args:
-        conclusion (str): What it concluded.
-
-    Returns:
-        list[dict]: One completed run for the pinned commit.
-    """
-    return [
-        {
-            "head_sha": _PINNED_SHA,
-            "path": f".github/workflows/{_REQUIRED_WORKFLOW}",
-            "run_number": 1,
-            "status": "completed",
-            "conclusion": conclusion,
-        }
-    ]
-
-
-def _drive(
-    sequence: list[list[dict[str, Any]]], timeout: float = 600.0
-) -> tuple[Any, int, float]:
-    """Run the wait against scripted answers, spending no wall clock.
-
-    **The clock and the sleep are injected**, so a case that exercises a ten
-    minute timeout finishes instantly and asserts the interval rather than
-    enduring it.
-
-    Args:
-        sequence (list): One list of runs per poll, the last repeated.
-        timeout (float): The wait budget.
-
-    Returns:
-        tuple: The verdict, how many times the API was polled, and how long the
-        wait believed it had spent.
-    """
-    remaining = list(sequence)
-    polls = 0
-    now = [0.0]
-
-    def fetch(_repository: str, _commit: str, _token: Any) -> list[dict[str, Any]]:
-        nonlocal polls
-        polls += 1
-        return remaining.pop(0) if len(remaining) > 1 else remaining[0]
-
-    original = harness_pin.fetch_runs
-    harness_pin.fetch_runs = fetch
-    try:
-        verdict = harness_pin.await_verdict(
-            "apolskiy/AP-Harness-QC", _PINNED_SHA, None, _REQUIRED_WORKFLOW,
-            harness_pin.WaitPolicy(
-                timeout_sec=timeout, interval_sec=15.0,
-                monotonic=lambda: now[0],
-                delay=lambda seconds: now.__setitem__(0, now[0] + seconds),
-            ),
-        )
-    finally:
-        harness_pin.fetch_runs = original
-    return verdict, polls, now[0]
 
 
 @allure.epic("AP-Model-QC")
@@ -328,7 +220,7 @@ class TestMQCGreenness:
         Returns:
             None
         """
-        verdict = assess_greenness([_run()], _WORKFLOW, _SHA)
+        verdict = assess_greenness([workflow_run()], WORKFLOW, SHA)
 
         assert verdict.green is True
         assert verdict.conclusion == "success"
@@ -340,7 +232,7 @@ class TestMQCGreenness:
         Returns:
             None
         """
-        verdict = assess_greenness([_run(conclusion="failure")], _WORKFLOW, _SHA)
+        verdict = assess_greenness([workflow_run(conclusion="failure")], WORKFLOW, SHA)
 
         assert verdict.green is False
         assert verdict.conclusion == "failure"
@@ -357,7 +249,7 @@ class TestMQCGreenness:
         Returns:
             None
         """
-        verdict = assess_greenness([], _WORKFLOW, _SHA)
+        verdict = assess_greenness([], WORKFLOW, SHA)
 
         assert verdict.green is False
         # Absent is distinct from failed. Both are not-green, and only one of
@@ -373,7 +265,7 @@ class TestMQCGreenness:
             None
         """
         verdict = assess_greenness(
-            [_run(status="in_progress", conclusion=None)], _WORKFLOW, _SHA
+            [workflow_run(status="in_progress", conclusion=None)], WORKFLOW, SHA
         )
 
         assert verdict.green is False
@@ -393,7 +285,7 @@ class TestMQCGreenness:
         Returns:
             None
         """
-        verdict = assess_greenness([_run(sha=_OTHER_SHA)], _WORKFLOW, _SHA)
+        verdict = assess_greenness([workflow_run(sha=OTHER_SHA)], WORKFLOW, SHA)
 
         assert verdict.green is False
         assert verdict.conclusion is None
@@ -411,7 +303,7 @@ class TestMQCGreenness:
             None
         """
         verdict = assess_greenness(
-            [_run(workflow="probe-model-version-nightly.yml")], _WORKFLOW, _SHA
+            [workflow_run(workflow="probe-model-version-nightly.yml")], WORKFLOW, SHA
         )
 
         assert verdict.green is False
@@ -431,14 +323,14 @@ class TestMQCGreenness:
             None
         """
         recovered = assess_greenness(
-            [_run(conclusion="failure", run_number=1), _run(run_number=2)],
-            _WORKFLOW,
-            _SHA,
+            [workflow_run(conclusion="failure", run_number=1), workflow_run(run_number=2)],
+            WORKFLOW,
+            SHA,
         )
         regressed = assess_greenness(
-            [_run(run_number=1), _run(conclusion="failure", run_number=2)],
-            _WORKFLOW,
-            _SHA,
+            [workflow_run(run_number=1), workflow_run(conclusion="failure", run_number=2)],
+            WORKFLOW,
+            SHA,
         )
 
         assert recovered.green is True
@@ -554,31 +446,6 @@ class TestMQCResolverIndependence:
         assert Pairing(harness_ref="main", require_green=True, matched="main")
 
 
-def _root() -> Path:
-    """Return this repository's root.
-
-    Returns:
-        Path: The directory holding ``pyproject.toml``.
-    """
-    return Path(__file__).resolve().parents[2]
-
-
-def _inventoried_case_ids() -> frozenset[str]:
-    """Return every case identifier this repository inventories.
-
-    Returns:
-        frozenset[str]: The five-digit identifiers named by collected case
-        callables. **Read from the tests rather than from a design table**,
-        because a referent points at a case that exists, and the inventory
-        tables are already checked against the tests elsewhere.
-    """
-    found: set[str] = set()
-    for source in (_root() / "tests").rglob("mqc_*.py"):
-        text = source.read_text(encoding="utf-8")
-        found.update(re.findall(r"def MQC_[A-Z]+_[A-Z]+_(\d{6})_", text))
-    return frozenset(found)
-
-
 @allure.epic("AP-Model-QC")
 @allure.feature("Consumer CI")
 class TestMQCBranchPolicyHere:
@@ -604,7 +471,7 @@ class TestMQCBranchPolicyHere:
         Returns:
             None
         """
-        known = _inventoried_case_ids()
+        known = inventoried_case_ids()
         assert known, (
             "no case identifiers were found, so this check would pass for any "
             "referent and establish nothing"
@@ -637,7 +504,7 @@ class TestMQCBranchPolicyHere:
         Returns:
             None
         """
-        mapping = load_mapping(_root() / "config" / "harness_pin.yaml")
+        mapping = load_mapping(repository_root() / "config" / "harness_pin.yaml")
         declared = {
             str(entry.get("match", ""))
             for entry in (mapping.get("branches") or [])
@@ -664,140 +531,6 @@ class TestMQCBranchPolicyHere:
 
 
 @allure.epic("AP-Model-QC")
-def _readme_figures(root: Path) -> list[tuple[str, str, int]]:
-    """Return every README figure with the pattern stating it and its real value.
-
-    **Recomputed, never stored.** A second copy of a number is what drifted in
-    the first place, which is the defect this whole check exists for.
-
-    **Extracted from the case on 2026-10-05**, when a tenth figure took it past
-    the local-variable ceiling. The ceiling was right: the case was accumulating
-    one bespoke computation per figure, and the list is the thing that grows.
-
-    Args:
-        root (Path): The repository root.
-
-    Returns:
-        list[tuple]: Label, a regex whose first group is the stated number, and
-        the actual count.
-    """
-    findings = sorted((root / "config" / "findings").glob("*.yaml"))
-    corpora = sorted((root / "data" / "tasks").glob("*.yaml"))
-    replay = root / "tests" / "fixtures" / "replay"
-    graded = _graded_case_count(root)
-
-    with (root / "docs" / "testing" / "rtm_model.csv").open(
-        encoding="utf-8-sig", newline=""
-    ) as handle:
-        traced = len(list(csv.DictReader(handle)))
-
-    return [
-        (
-            "preconditions",
-            r"\*\*(\d+) cases, all passing\*\*",
-            _inventoried_precondition_count(root),
-        ),
-        ("requirements", r"\| (\d+) requirements, traced \|", traced),
-        ("graded cases", r"\*\*(\d+) written\*\*", graded),
-        # THE SAME COUNT, A DIFFERENT CLAIM, and the one a reader of the front
-        # page is actually asking about: how many cases each model faces.
-        ("cases per model", r"\*\*(\d+) graded cases against each model\*\*", graded),
-        (
-            "recorded engines",
-            r"\*\*(\d+) engines recorded\*\*",
-            sum(
-                1 for engine in sorted(replay.glob("*"))
-                if engine.is_dir() and engine.name != "judgements"
-            ),
-        ),
-        (
-            "candidate responses",
-            r"\*\*(\d+) candidate responses\*\*",
-            sum(
-                1
-                for engine in sorted(replay.glob("*"))
-                if engine.is_dir() and engine.name != "judgements"
-                for recorded in engine.rglob("*")
-                if recorded.is_file()
-            ),
-        ),
-        (
-            "judgements",
-            r"\*\*(\d+) judgements\*\*",
-            sum(1 for path in (replay / "judgements").rglob("*") if path.is_file()),
-        ),
-        (
-            "model findings",
-            r"\*\*(\d+) findings\*\*",
-            sum(
-                source.read_text(encoding="utf-8").count("- case:")
-                for source in findings
-            ),
-        ),
-        # THE SUBSET THE METHOD EXISTS FOR. Stated at eleven of twenty when the
-        # README was written against three engines, and grok's recording made it
-        # fourteen of twenty-four without anybody touching the sentence.
-        (
-            "inconsistency findings",
-            r"\*\*(\d+) inconsistency findings\*\*",
-            sum(
-                source.read_text(encoding="utf-8").count("QC_LLM_INCONSISTENT")
-                for source in findings
-            ),
-        ),
-        ("corpora", r"\*\*(\d+) corpora", len(corpora)),
-        (
-            "tasks",
-            r"\*\*\d+ corpora, (\d+) tasks\*\*",
-            sum(len(load_tasks_from_yaml(source)) for source in corpora),
-        ),
-    ]
-
-
-def _inventoried_precondition_count(root: Path) -> int:
-    """Return the precondition total the design documents inventory.
-
-    Args:
-        root (Path): The repository root.
-
-    Returns:
-        int: The sum of every stated inventory.
-    """
-    total = 0
-    for document in sorted((root / "docs").rglob("*.md")):
-        stated = re.search(
-            r"^\*\*Inventory:\s*(\d+)\s+cases",
-            document.read_text(encoding="utf-8"),
-            re.M,
-        )
-        if stated is not None:
-            total += int(stated.group(1))
-    return total
-
-
-def _graded_case_count(root: Path) -> int:
-    """Return the number of graded cases this repository defines.
-
-    **Parsed rather than matched**, so a name inside a string literal is data.
-
-    Args:
-        root (Path): The repository root.
-
-    Returns:
-        int: The count of graded case callables.
-    """
-    graded = 0
-    for source in sorted((root / "tests" / "cases").glob("*.py")):
-        if source.stem.startswith("mqc_uni_") or source.stem == "graded_support":
-            continue
-        tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
-        graded += sum(
-            1
-            for node in ast.walk(tree)
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-            and node.name.startswith("MQC_")
-        )
-    return graded
 
 
 @allure.feature("Consumer CI")
@@ -919,12 +652,17 @@ class TestMQCTargetStrictness:
             None
         """
         for name, sequence, expect_green, expect_waited in (
-            ("pending then green", [_running()] * 3 + [_concluded("success")], True, True),
-            ("pending then red", [_running(), _concluded("failure")], False, True),
-            ("red at once", [_concluded("failure")], False, False),
-            ("unregistered then green", [[], []] + [_concluded("success")], True, True),
+            (
+                "pending then green",
+                [unconcluded_runs()] * 3 + [concluded_runs("success")],
+                True,
+                True,
+            ),
+            ("pending then red", [unconcluded_runs(), concluded_runs("failure")], False, True),
+            ("red at once", [concluded_runs("failure")], False, False),
+            ("unregistered then green", [[], []] + [concluded_runs("success")], True, True),
         ):
-            verdict, polls, waited = _drive(sequence)
+            verdict, polls, waited = drive_wait(sequence)
             assert verdict.green is expect_green, f"{name}: green was {verdict.green}"
             assert (waited > 0) is expect_waited, (
                 f"{name}: waited {waited}s, which is the wrong side of zero"
@@ -933,7 +671,7 @@ class TestMQCTargetStrictness:
 
         # A GATE THAT NEVER FINISHES IS STILL REFUSED, and the wait is bounded so
         # a wedged upstream run cannot hold a consumer job indefinitely.
-        stuck, _, waited = _drive([_running()], timeout=60.0)
+        stuck, _, waited = drive_wait([unconcluded_runs()], timeout=60.0)
         assert stuck.green is False
         assert waited == 60.0
         assert "has not concluded" in stuck.reason
@@ -941,7 +679,7 @@ class TestMQCTargetStrictness:
         # AND A COMMIT THAT REALLY HAS NO RUN IS STILL REFUSED. Waiting only
         # postpones the conclusion; it never turns absence into a pass, which
         # is what section 3.2 forbids.
-        never, _, waited = _drive([[]], timeout=60.0)
+        never, _, waited = drive_wait([[]], timeout=60.0)
         assert never.green is False
         assert waited == 60.0
         assert "is not a commit that passed" in never.reason
@@ -963,13 +701,13 @@ class TestMQCTargetStrictness:
 
         **It recomputes rather than storing the numbers again**, because a
         second copy is what drifted in the first place. Eleven figures are
-        recomputed by ``_readme_figures``; a twelfth is a row there rather than
+        recomputed by ``readme_figures``; a twelfth is a row there rather than
         a change here.
 
         Returns:
             None
         """
-        root = _root()
+        root = repository_root()
         # WHITESPACE IS NORMALISED BEFORE MATCHING, because a figure check that
         # fails when prose is rewrapped reports a defect that is not one.
         # `**14 inconsistency findings**` broke across a line on 2026-10-05 and
@@ -980,7 +718,7 @@ class TestMQCTargetStrictness:
         )
 
         wrong: list[str] = []
-        for label, pattern, actual in _readme_figures(root):
+        for label, pattern, actual in readme_figures(root):
             found = re.search(pattern, readme)
             if found is None:
                 wrong.append(f"the README states no {label}")

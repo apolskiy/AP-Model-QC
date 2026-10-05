@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Case modules still holding their own support code.
+#
+# THE RULE IS IN `test_taxonomy.md` SECTION 13: a collected test module
+# holds cases, their fixtures and their constants, and the functions and
+# classes supporting them live in a sibling module collection never reaches.
+#
+# A GAP IS A DECLARED ABSENCE, NOT AN EXEMPTION, exactly as
+# `flag_coverage.yaml` and `not_rostered` are: each entry carries a reason
+# and an expiry, because a list with no expiry is where unconverted modules
+# go to be forgotten and the check stops meaning anything once everything
+# inconvenient has left its denominator. An expired entry fails the run.
+#
+# THE LIST SHRINKS AND NEVER GROWS. A new module is born compliant, because
+# `MQC_CMN_UNI_112328` and `MQC_CAS_UNI_115711` fail for any collected module
+# that holds support and is not named here. Removing the last entry deletes
+# the file, which is the finished state.
+not_yet_extracted:
+  tests/cases/mqc_sec_disclosure.py:
+    reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _explain"
+    expires_on: 2026-12-31
+  tests/cases/mqc_sec_injection.py:
+    reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _explain"
+    expires_on: 2026-12-31
+  tests/cases/mqc_sec_substitution.py:
+    reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _explain"
+    expires_on: 2026-12-31
+  tests/cases/mqc_sec_tool_coercion.py:
+    reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _explain"
+    expires_on: 2026-12-31
+  tests/cases/mqc_uni_engine_jobs.py:
+    reason: "Predates the rule of 2026-10-05. 5 definition(s) to extract: function _rostered_engines, function _target_problems, function _weekly_problems, ..."
+    expires_on: 2026-12-31
+  tests/cases/mqc_uni_excerpts.py:
+    reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _execute_excerpt"
+    expires_on: 2026-12-31
+  tests/cases/mqc_uni_families.py:
+    reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _repository_root"
+    expires_on: 2026-12-31
+  tests/cases/mqc_uni_harness_install.py:
+    reason: "Predates the rule of 2026-10-05. 2 definition(s) to extract: function _root, class _Invocation"
+    expires_on: 2026-12-31
+  tests/cases/mqc_uni_standards.py:
+    reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _root"
+    expires_on: 2026-12-31
+  tests/cases/mqc_uni_traceability.py:
+    reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _root"
+    expires_on: 2026-12-31
+  tests/cases/mqc_uni_workflows.py:
+    reason: "Predates the rule of 2026-10-05. 5 definition(s) to extract: function _steps, function _provider_secrets, function _step_ids, ..."
+    expires_on: 2026-12-31

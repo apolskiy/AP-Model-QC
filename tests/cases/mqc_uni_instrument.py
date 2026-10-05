@@ -28,8 +28,7 @@ import json
 import re
 from datetime import date
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Any, Final
+from typing import Final
 
 import allure
 import pytest
@@ -40,7 +39,6 @@ from cmn.vectors import is_registered_vector, match_vectors
 from evaluation.assertions import run_assertions
 from ingestion.schemas import GoldenRuleSet, TaskDataSet
 from execution.dispatch import DispatchOutcome, DispatchSession
-from execution.normalize import NormalizedResponse
 from tools.quarantine import main as quarantine_tool, parse_as_of
 from tests.cases.graded_support import (
     dispatch_session,
@@ -48,6 +46,20 @@ from tests.cases.graded_support import (
     observation_count,
     shipped_corpus,
 )
+
+from tests.cases.graded_support import repository_root
+from tests.cases.instrument_support import (
+    FakeDispatchConfig,
+    FakeGradedConfig,
+    declared_foundations,
+    designed_foundations,
+    dispatch_outcome,
+    named_pairs_in,
+    recorded_text,
+    stripped,
+)
+
+from tests.cases.instrument_support import CASE_NUMBER
 
 pytestmark = pytest.mark.unit
 
@@ -68,82 +80,6 @@ _GRADED_ROW: Final[re.Pattern] = re.compile(
 )
 
 
-# A security inventory row, whose fourth cell names the cases it presupposes.
-# THE SECURITY BLOCK, which the six-digit scheme moved from 5xxxx to 15xxxx:
-# domain 1, layer 5. This encoded the block prefix rather than a digit count,
-# so the widening sweep did not reach it and the row stopped matching at all.
-_INVENTORY_ROW: Final[re.Pattern] = re.compile(r"^\|\s*`(15\d{4})`\s*\|")
-_BACKTICKED_ID: Final[re.Pattern] = re.compile(r"`(\d{6})`")
-_CASE_NUMBER: Final[re.Pattern] = re.compile(r"_(\d{6})_")
-
-
-
-def _repository_root() -> Path:
-    """Return this repository's root.
-
-    Returns:
-        Path: The directory holding ``data/``.
-    """
-    return Path(__file__).resolve().parents[2]
-
-
-def _designed_foundations(plan: Path) -> dict[str, set[str]]:
-    """Return what each security inventory row says a case presupposes.
-
-    Args:
-        plan (Path): The test plan carrying the inventory table.
-
-    Returns:
-        dict: Case number to the case numbers its row names.
-    """
-    designed: dict[str, set[str]] = {}
-    for line in plan.read_text(encoding="utf-8").splitlines():
-        stripped = line.strip()
-        if _INVENTORY_ROW.match(stripped) is None:
-            continue
-        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
-        if len(cells) < 4:
-            continue
-        number = _BACKTICKED_ID.search(cells[0])
-        if number is None:
-            continue
-        designed[number.group(1)] = {
-            found.group(1) for found in _BACKTICKED_ID.finditer(cells[3])
-        }
-    return designed
-
-
-def _declared_foundations(folder: Path) -> dict[str, set[str]]:
-    """Return what each security case declares through ``depends_on``.
-
-    **From the parsed syntax, never the source text.** A ``depends_on`` inside a
-    docstring is prose, and this repository quotes case identifiers constantly.
-
-    Args:
-        folder (Path): The directory holding the case modules.
-
-    Returns:
-        dict: Case number to the case numbers it rests on.
-    """
-    declared: dict[str, set[str]] = {}
-    for source in sorted(folder.glob("mqc_sec_*.py")):
-        tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
-        for node in ast.walk(tree):
-            if not isinstance(node, ast.FunctionDef):
-                continue
-            found = _CASE_NUMBER.search(node.name)
-            if found is None:
-                continue
-            declared[found.group(1)] = {
-                str(getattr(deco.args[0], "value", ""))
-                for deco in node.decorator_list
-                if isinstance(deco, ast.Call)
-                and getattr(deco.func, "attr", "") == "depends_on"
-                and deco.args
-            }
-    return declared
-
-
 @pytest.fixture(name="corpus")
 def fixture_corpus() -> tuple[list[TaskDataSet], list[GoldenRuleSet]]:
     """Load every shipped task and rule file.
@@ -157,75 +93,6 @@ def fixture_corpus() -> tuple[list[TaskDataSet], list[GoldenRuleSet]]:
     """
     tasks, rules = shipped_corpus()
     return list(tasks), list(rules)
-
-
-def _named_pairs_in(node: ast.FunctionDef) -> list[tuple[int, str, str]]:
-    """Return every task and rule pair one test callable names literally.
-
-    **Scoped to one callable**, where :func:`_named_pairs` reads a whole module.
-    `115400` asks which case bound which pair, so the owning callable has to be
-    known rather than the file.
-
-    Args:
-        node (ast.FunctionDef): The test callable.
-
-    Returns:
-        list: Line number, task id and rule id for each pair found.
-    """
-    found: list[tuple[int, str, str]] = []
-    for inner in ast.walk(node):
-        if not isinstance(inner, ast.Call):
-            continue
-        name = getattr(inner.func, "id", None) or getattr(inner.func, "attr", None)
-        if name not in {"observe", "observe_repeatedly", "case_for"}:
-            continue
-        pair = [
-            argument.value
-            for argument in inner.args
-            if isinstance(argument, ast.Constant)
-            and isinstance(argument.value, str)
-            and argument.value.startswith("MQC_")
-        ]
-        if len(pair) >= 2:
-            found.append((inner.lineno, pair[0], pair[1]))
-    return found
-
-def _stripped(text: str) -> str:
-    """Return the text with trailing whitespace removed from every line.
-
-    Args:
-        text (str): The recorded response.
-
-    Returns:
-        str: The same text, each line right-stripped.
-    """
-    return "\n".join(line.rstrip() for line in text.split("\n"))
-
-def _recorded_text(fixture: Path) -> str:
-    """Return the longest candidate text a recorded fixture carries.
-
-    **The longest rather than the first**, because a provider reply nests text
-    under several keys and only one of them is the answer.
-
-    Args:
-        fixture (Path): The recorded candidate fixture.
-
-    Returns:
-        str: The candidate output, or empty when the fixture carries none.
-    """
-    found: list[str] = []
-    stack: list[Any] = [json.loads(fixture.read_text(encoding="utf-8"))]
-    while stack:
-        payload = stack.pop()
-        if isinstance(payload, dict):
-            for key, value in payload.items():
-                if key == "text" and isinstance(value, str):
-                    found.append(value)
-                else:
-                    stack.append(value)
-        elif isinstance(payload, list):
-            stack.extend(payload)
-    return max(found, key=len) if found else ""
 
 
 @allure.epic("AP-Model-QC")
@@ -256,7 +123,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
         Returns:
             None
         """
-        root = _repository_root()
+        root = repository_root()
         bound: dict[tuple[str, str], list[str]] = {}
         for pattern in ("mqc_eval_*.py", "mqc_tool_*.py", "mqc_sec_*.py"):
             for source in sorted((root / "tests" / "cases").glob(pattern)):
@@ -268,7 +135,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
                         continue
                     if not node.name.startswith("MQC_"):
                         continue
-                    for _, task_id, rule_id in _named_pairs_in(node):
+                    for _, task_id, rule_id in named_pairs_in(node):
                         bound.setdefault((task_id, rule_id), []).append(node.name)
 
         assert bound, "no graded case named a pair, so nothing was read"
@@ -309,7 +176,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
         """
         _, rules = corpus
         by_id = {rule.rule_id: rule for rule in rules}
-        root = _repository_root() / "tests" / "fixtures" / "replay"
+        root = repository_root() / "tests" / "fixtures" / "replay"
 
         moved: list[str] = []
         examined = 0
@@ -320,12 +187,12 @@ class TestMQCCasesMeasureTheirOwnClaim:
             rule = by_id.get(parts[-2])
             if rule is None or not rule.assertions:
                 continue
-            body = _recorded_text(fixture)
-            if not body or body == _stripped(body):
+            body = recorded_text(fixture)
+            if not body or body == stripped(body):
                 continue
             examined += 1
             before = run_assertions(rule.assertions, body)
-            after = run_assertions(rule.assertions, _stripped(body))
+            after = run_assertions(rule.assertions, stripped(body))
             for first, second in zip(before, after):
                 if first.passed != second.passed:
                     moved.append(
@@ -361,7 +228,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
         Returns:
             None
         """
-        root = _repository_root() / "tests" / "fixtures" / "replay"
+        root = repository_root() / "tests" / "fixtures" / "replay"
         mute: list[str] = []
         examined = 0
         for fixture in sorted(root.rglob("*.json")):
@@ -403,11 +270,11 @@ class TestMQCCasesMeasureTheirOwnClaim:
         Returns:
             None
         """
-        root = _repository_root()
-        designed = _designed_foundations(
+        root = repository_root()
+        designed = designed_foundations(
             root / "docs" / "testing" / "model_evaluation_test_plan.md"
         )
-        declared = _declared_foundations(root / "tests" / "cases")
+        declared = declared_foundations(root / "tests" / "cases")
 
         assert designed and declared, "one of the two artefacts was not read"
 
@@ -533,7 +400,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
         Returns:
             None
         """
-        root = _repository_root()
+        root = repository_root()
 
         built: set[str] = set()
         for source in sorted((root / "tests").rglob("*.py")):
@@ -541,16 +408,16 @@ class TestMQCCasesMeasureTheirOwnClaim:
             for node in ast.walk(tree):
                 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     continue
-                found = _CASE_NUMBER.search(node.name)
+                found = CASE_NUMBER.search(node.name)
                 if found is not None and node.name.startswith("MQC_"):
                     built.add(found.group(1))
 
         designed: dict[str, str] = {}
         for document in sorted(root.rglob("docs/**/*.md")):
             for line in document.read_text(encoding="utf-8").splitlines():
-                stripped = line.strip()
+                row = line.strip()
                 for pattern in (_PRECONDITION_ROW, _GRADED_ROW):
-                    found = pattern.match(stripped)
+                    found = pattern.match(row)
                     if found is not None:
                         designed.setdefault(found.group(1), document.name)
                         break
@@ -571,49 +438,6 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"implement. Implement it or record the omission with its reason; "
             f"do not remove the row: {unbuilt[:6]}"
         )
-
-
-class _FakeGradedConfig:
-    """Enough of pytest's config for the graded helpers to read a run.
-
-    Built here rather than through a pytest run because the question is what
-    the helpers conclude from a given command line, which needs no session.
-    """
-
-    def __init__(self, judge_engine: str, observations: int = 0) -> None:
-        """Hold the flags these two cases vary, with the rest at their defaults.
-
-        Args:
-            judge_engine (str): What ``--judge-engine`` was given.
-            observations (int): What ``--observations`` was given, zero for
-                unnamed.
-
-        Returns:
-            None
-        """
-        self._values: dict[str, Any] = {
-            "--engine": "gemini",
-            "--mode": "replay",
-            "--judge-mode": "",
-            "--judge-engine": judge_engine,
-            "--observations": observations,
-            "--keep-connection": False,
-            "--fill-gaps": False,
-            "--max-spend": 0.0,
-        }
-        self.option = SimpleNamespace()
-
-    def getoption(self, name: str, default: Any = None) -> Any:
-        """Return a parsed value, as pytest would.
-
-        Args:
-            name (str): The option's flag or destination name.
-            default (Any): What to return when it is unset.
-
-        Returns:
-            Any: The value.
-        """
-        return self._values.get(name, default)
 
 
 @allure.epic("AP-Model-QC")
@@ -639,14 +463,14 @@ class TestMQCNamedInstrument:
         Returns:
             None
         """
-        configured = judge_binding(_FakeGradedConfig(""), "gemini")
+        configured = judge_binding(FakeGradedConfig(""), "gemini")
         assert configured.judge_engine == "gemini", (
             "an unnamed judge did not resolve to the configured one, so this "
             "case cannot tell an override from the default"
         )
 
         for named in ("openai", "claude"):
-            binding = judge_binding(_FakeGradedConfig(named), "gemini")
+            binding = judge_binding(FakeGradedConfig(named), "gemini")
 
             assert binding.judge_engine == named, (
                 f"--judge-engine {named} graded with "
@@ -672,10 +496,10 @@ class TestMQCNamedInstrument:
         Returns:
             None
         """
-        assert observation_count(_FakeGradedConfig("", observations=0)) >= 1
+        assert observation_count(FakeGradedConfig("", observations=0)) >= 1
 
         for named in (1, 2, 5):
-            counted = observation_count(_FakeGradedConfig("", observations=named))
+            counted = observation_count(FakeGradedConfig("", observations=named))
 
             assert counted == named, (
                 f"--observations {named} dispatched {counted}, so the run "
@@ -686,62 +510,6 @@ class TestMQCNamedInstrument:
         # count meaning the same as a configured one.
         assert further_observations([True, False, True]) == 2
         assert further_observations([True, True, True]) == 0
-
-
-def _outcome(model: str, mode: str = "live") -> Any:
-    """Build one dispatch outcome reporting a resolved model.
-
-    Args:
-        model (str): What the response reported serving.
-        mode (str): ``live`` or ``replay``.
-
-    Returns:
-        Any: The :class:`DispatchOutcome`.
-    """
-    return DispatchOutcome(
-        case_id="MQC_TASK_a::MQC_RULE_r", engine="gemini", mode=mode,
-        duration_ms=12, duration_kind="measured", attempts=1,
-        rate_limit_encounters=0,
-        response=NormalizedResponse(
-            case_id="MQC_TASK_a::MQC_RULE_r", engine="gemini", mode=mode,
-            requested_model=model, resolved_model=model, text="answer",
-            output_tokens=7, duration_ms=12, finish_reason="stop",
-            raw_reference="",
-        ),
-    )
-
-class _FakeDispatchConfig:
-    """The flags ``dispatch_session`` reads, with the rest at their defaults."""
-
-    def __init__(self, engine: str = "gemini", ceiling: float = 0.0) -> None:
-        """Hold the two values that define a session.
-
-        Args:
-            engine (str): Which engine paces the run.
-            ceiling (float): The spend ceiling, zero for none.
-
-        Returns:
-            None
-        """
-        self._values: dict[str, Any] = {
-            "--engine": engine,
-            "--mode": "replay",
-            "--max-spend": ceiling,
-            "--keep-connection": False,
-            "--fill-gaps": False,
-        }
-
-    def getoption(self, name: str, default: Any = None) -> Any:
-        """Return a parsed value, as pytest would.
-
-        Args:
-            name (str): The option's flag name.
-            default (Any): What to return when it is unset.
-
-        Returns:
-            Any: The value.
-        """
-        return self._values.get(name, default)
 
 
 @allure.epic("AP-Model-QC")
@@ -767,7 +535,7 @@ class TestMQCRunLevelSession:
         Returns:
             None
         """
-        config = _FakeDispatchConfig(ceiling=5.0)
+        config = FakeDispatchConfig(ceiling=5.0)
         first = dispatch_session(config)
 
         assert dispatch_session(config) is first, (
@@ -785,12 +553,12 @@ class TestMQCRunLevelSession:
 
         # A DIFFERENT CEILING IS A DIFFERENT SESSION, so one run's budget does
         # not silently govern another's.
-        other = dispatch_session(_FakeDispatchConfig(ceiling=1.0))
+        other = dispatch_session(FakeDispatchConfig(ceiling=1.0))
         assert other is not first
         assert other.max_spend == 1.0
 
         # AND SO IS A DIFFERENT ENGINE, which paces on its own roster entry.
-        assert dispatch_session(_FakeDispatchConfig(engine="openai")) is not first
+        assert dispatch_session(FakeDispatchConfig(engine="openai")) is not first
 
     @allure.story("The session reports what it served")
     def MQC_CAS_UNI_115410_the_session_records_the_models_it_served(self) -> None:
@@ -812,20 +580,20 @@ class TestMQCRunLevelSession:
         session = DispatchSession()
         assert not session.served
 
-        session.note_outcome(_outcome("gemini-3.8-flash"))
-        session.note_outcome(_outcome("gemini-3.8-flash"))
+        session.note_outcome(dispatch_outcome("gemini-3.8-flash"))
+        session.note_outcome(dispatch_outcome("gemini-3.8-flash"))
         assert session.served == {"gemini-3.8-flash"}
 
         # A MIXED RUN IS VISIBLE, and an unnamed model is not recorded as one.
-        session.note_outcome(_outcome("gemini-4.0-pro"))
-        session.note_outcome(_outcome(""))
+        session.note_outcome(dispatch_outcome("gemini-4.0-pro"))
+        session.note_outcome(dispatch_outcome(""))
         assert session.served == {"gemini-3.8-flash", "gemini-4.0-pro"}
 
         # A REPLAY IS INCLUDED, NOT EXEMPT, which is the whole defect this
         # guards: recording on the spending hook left a replay reporting no
         # model while the fixture it replayed names one.
         replaying = DispatchSession()
-        replaying.note_outcome(_outcome("gemini-3.8-flash", mode="replay"))
+        replaying.note_outcome(dispatch_outcome("gemini-3.8-flash", mode="replay"))
 
         assert replaying.served == {"gemini-3.8-flash"}, (
             "a replayed outcome reported no model, so the quarantine tool "
