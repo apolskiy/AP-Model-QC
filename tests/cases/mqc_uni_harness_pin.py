@@ -882,6 +882,25 @@ class TestMQCTargetStrictness:
             )
         compare("graded cases", r"\*\*(\d+) written\*\*", graded)
 
+        # ADDED 2026-10-05, AND BOTH HAD JUST GONE STALE. The README said
+        # `EVAL` and `TOOL` were unrecorded when all four engines were recorded,
+        # and described three workflows when there were eleven. A figure with no
+        # source is the defect this check exists for, and these two had none.
+        recorded = [
+            directory
+            for directory in sorted(
+                (root / "tests" / "fixtures" / "replay").glob("*")
+            )
+            if directory.is_dir() and directory.name != "judgements"
+        ]
+        compare("recorded engines", r"\*\*(\d+) engines recorded\*\*", len(recorded))
+
+        findings = sum(
+            source.read_text(encoding="utf-8").count("- case:")
+            for source in sorted((root / "config" / "findings").glob("*.yaml"))
+        )
+        compare("model findings", r"\*\*(\d+) findings\*\*", findings)
+
         corpora = sorted((root / "data" / "tasks").glob("*.yaml"))
         compare("corpora", r"\*\*(\d+) corpora", len(corpora))
         compare(

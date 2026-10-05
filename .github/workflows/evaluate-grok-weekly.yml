@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# The weekly attribution ladder for grok.
+#
+# ONE WORKFLOW PER ENGINE, so this engine has its own status, its own run
+# history and its own artifacts. A combined weekly result would average over
+# four vendors' products, which nobody ships against and nobody files.
+# Design `consumer_ci.md` section 4.18.
+#
+# NO SCHEDULE YET, AND THE SLOT IS RESERVED RATHER THAN USED. When the cron
+# returns this engine fires at 02:00 UTC on TUESDAY, eight hours after its
+# predecessor and on the next day: eight hours into one day holds three
+# engines, and the fourth rolls the day over rather than narrowing the gap,
+# because the gap being far longer than a ladder takes is the property that
+# makes an overrun a finding instead of a collision. Section 4.18.2.
+#
+# WHY IT IS STILL WITHHELD. A live ladder spends real money on every firing,
+# and until the system is running end to end a weekly firing buys a result
+# nobody is reading yet. Two things have to exist first, and section 4.18.3
+# carries both: the findings already known have to be triaged, so a red means
+# something new, and the run has to decline when this engine has already been
+# evaluated since its model last changed. **A weekly run and an
+# update-triggered run are the same measurement**, and paying for it twice is
+# the cost this withholding avoids.
+#
+# THIS ENGINE'S FOUR FINDINGS ARE ALREADY RECORDED in
+# `config/findings/grok.yaml` from its 2026-10-04 recording run, which is the
+# triage half of section 4.18.3 for this target.
+name: evaluate-grok-weekly
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_spend:
+        description: "USD ceiling for this run. The monthly cap is $20 per provider"
+        required: false
+        default: "2.00"
+        type: string
+
+# NOT cancel-in-progress. A cancelled live run yields partial artifacts, which
+# A6 forbids presenting as complete. Keyed on this engine alone, which is what
+# `testing-standards.md` section 2 endorses concurrency for: preventing overlap
+# between runs of the same thing.
+concurrency:
+  group: evaluate-live-grok
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  ladder:
+    name: grok
+    uses: ./.github/workflows/evaluate-engine.yml
+    with:
+      max_spend: ${{ inputs.max_spend || '2.00' }}
+      engine: grok
+    secrets: inherit

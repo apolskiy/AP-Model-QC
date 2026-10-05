@@ -308,6 +308,12 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # ADDED 2026-10-05 WITH grok's CALLERS. The engine was rostered on
+          # 2026-10-04 and this line was not, so a live grok ladder would have
+          # refused at preflight: correct behaviour, reported as our
+          # configuration, and quiet enough to look like a skip nobody ordered.
+          # `MQC_CAS_UNI_115710` now requires a line here per rostered engine.
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: |
           pytest -m "evaluator or tool or sec" \
             --engine ${{ inputs.engine }} \

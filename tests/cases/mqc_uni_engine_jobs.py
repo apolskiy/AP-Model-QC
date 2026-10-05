@@ -20,6 +20,9 @@ from typing import Any
 import allure
 import pytest
 
+from execution.adapters.registry import adapter_for
+
+from tests.cases.graded_support import engine_roster
 from tests.cases.workflow_support import (
     WORKFLOWS,
     graded_invocations,
@@ -35,9 +38,28 @@ _GATE_CALLER = "gate-{engine}.yml"
 _LIVE = "evaluate-engine.yml"
 _WEEKLY_CALLER = "evaluate-{engine}-weekly.yml"
 
-# The engines the roster carries, in the order the gate's calls chain. A
-# sequence rather than a set, because the chain is what orders them.
-_ROSTERED_ENGINES = ("gemini", "openai", "claude")
+
+
+def _rostered_engines() -> tuple[str, ...]:
+    """Return the engines the roster carries, in the order it carries them.
+
+    **Read from the harness, not restated here. Corrected 2026-10-05.** This
+    was a tuple of three names whose comment claimed it was the roster, and it
+    was the roster as it stood when the line was written: grok was rostered on
+    2026-10-04 and nothing in this repository went red, because the check for a
+    target without a workflow walked the hand-maintained copy. It could only
+    fail for an engine somebody had already remembered to add.
+
+    **A sequence rather than a set**, because the roster is ordered and the
+    gate's calls chain in that order.
+
+    Design: ``consumer_ci.md`` section 4.19.3.
+
+    Returns:
+        tuple[str, ...]: The rostered engine names.
+    """
+    return tuple(engine_roster())
+
 
 def _target_problems(kind: str, pattern: str, called: str) -> list[str]:
     """Report a target that is not a workflow of its own.
@@ -51,7 +73,7 @@ def _target_problems(kind: str, pattern: str, called: str) -> list[str]:
         list[str]: One entry per problem.
     """
     problems: list[str] = []
-    for engine in _ROSTERED_ENGINES:
+    for engine in _rostered_engines():
         name = pattern.format(engine=engine)
         if not (WORKFLOWS / name).is_file():
             problems.append(
@@ -89,7 +111,7 @@ def _weekly_problems() -> list[str]:
         list[str]: One entry per premature schedule.
     """
     problems: list[str] = []
-    for engine in _ROSTERED_ENGINES:
+    for engine in _rostered_engines():
         name = _WEEKLY_CALLER.format(engine=engine)
         if not (WORKFLOWS / name).is_file():
             continue
@@ -129,6 +151,47 @@ def _band_problems(graded: dict[str, Any]) -> list[str]:
                     f"{_GATE}:{job_name} uploads {name!r}, which is not keyed "
                     f"by the engine, so two targets share a name"
                 )
+    return problems
+
+
+def _credential_problems() -> list[str]:
+    """Report a rostered engine whose credential the live workflow never offers.
+
+    **A missing offer is quiet, which is why it needs a check.** A live leg
+    whose credential is absent refuses at preflight, and section 4.17.2 is
+    right to make that our configuration rather than a finding about a model.
+    It is also indistinguishable from a skip nobody ordered: the caller exists,
+    the run starts, and no result arrives.
+
+    **The primary variable only.** An adapter may declare `ALSO_READS` for a
+    second name its SDK resolves for itself, and the Gen AI client does; the
+    environment needs one of them set, so requiring every alias would demand
+    offers nothing reads.
+
+    Design: ``consumer_ci.md`` section 4.19.3.
+
+    Returns:
+        list[str]: One entry per rostered engine with no offer.
+    """
+    body = (WORKFLOWS / _LIVE).read_text(encoding="utf-8")
+    problems: list[str] = []
+    for engine in _rostered_engines():
+        variable = getattr(adapter_for(engine), "API_KEY_ENV", "")
+        if not variable:
+            problems.append(
+                f"the {engine} adapter declares no credential variable, so "
+                f"nothing here can establish that one is offered"
+            )
+            continue
+        # THE ASSIGNMENT, NOT A MENTION, for the reason the harness's
+        # `MQC_CMN_UNI_112520` gives: a name in a comment above an env block
+        # reads as present and sets nothing.
+        if f"{variable}:" not in body:
+            problems.append(
+                f"{_LIVE} offers no {variable}, so a live {engine} leg would "
+                f"refuse at preflight and report our configuration rather than "
+                f"a result"
+            )
     return problems
 
 
@@ -181,4 +244,51 @@ class TestMQCEngineAttribution:
         assert not problems, (
             "targets do not each have a workflow of their own: "
             + "; ".join(problems)
+        )
+
+    @allure.story("Rostering an engine is what adds it here")
+    def MQC_CAS_UNI_115710_a_rostered_target_without_a_workflow_or_key_is_reported(
+        self,
+    ) -> None:
+        """The roster is the list, and three things follow from an addition.
+
+        **This exists because the previous check could not fail for the case
+        it was written for.** grok was rostered on 2026-10-04, priced, and
+        recorded; this repository kept gating three targets and stayed green,
+        because the list of targets walked by `MQC_CAS_UNI_115709` was a tuple
+        of three names whose comment claimed it was the roster.
+
+        Asserted here, per rostered engine:
+
+        * the roster read yields something, so a silent empty read cannot pass
+          this vacuously,
+        * each engine has a gate caller and a weekly caller, which
+          `MQC_CAS_UNI_115709` checks over the same roster-derived list,
+        * the live workflow offers the credential variable its adapter
+          declares, which is the one of the three that fails quietly.
+
+        **The secret's value is not this repository's business.** What is
+        checked is that the wiring names it; the value lives in the `live`
+        environment behind a required reviewer, and `credential_standard.md`
+        governs the rest.
+
+        Design: ``consumer_ci.md`` section 4.19.3.
+
+        Returns:
+            None
+        """
+        rostered = _rostered_engines()
+        # A ROSTER THAT LOADED AS NOTHING would make every check above pass by
+        # walking an empty sequence, which is the failure mode section 4.19.3
+        # was written about in its hand-maintained form.
+        assert len(rostered) >= 3, (
+            f"the roster yielded {rostered}, so the installed harness is not "
+            f"being read and every per-target check here would pass by walking "
+            f"an empty list"
+        )
+
+        problems = _credential_problems()
+        assert not problems, (
+            "a rostered engine cannot be evaluated live with what the "
+            "workflows offer: " + "; ".join(problems)
         )

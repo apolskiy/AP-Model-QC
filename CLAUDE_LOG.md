@@ -2655,3 +2655,144 @@ doing exactly what it was registered to do.
 
 84 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures against
 the default engine are the known gemini findings.
+
+## 2026-10-05: The fourth target, and the list that was not the roster
+
+grok was rostered in the harness on 2026-10-04, priced, and recorded against 64
+task directories. **This repository kept gating three targets and stayed
+green.**
+
+### Why nothing went red
+
+`MQC_CAS_UNI_115709` checks that every rostered target has a gate caller and a
+weekly caller of its own. The list it walked:
+
+```python
+# The engines the roster carries, in the order the gate's calls chain.
+_ROSTERED_ENGINES = ("gemini", "openai", "claude")
+```
+
+**The comment claimed it was the roster and it was a copy of the roster**, taken
+when the line was written. So the check for a target with no workflow could only
+fail for an engine somebody had already remembered to add here by hand, which is
+the one circumstance in which it has nothing to report.
+
+**The fix was already in the file next door.** `graded_support.engine_roster()`
+reads the installed harness package, and its docstring states the reason: a
+second copy drifts toward whichever repository was edited last. This module kept
+one anyway. It is `tuple(engine_roster())` now.
+
+**Verified by watching it fail.** With the roster read in place and no grok
+workflows present, the case reports both absences by name. That is the step this
+project keeps finding missing: the mechanism was right, and nothing established
+it was reachable.
+
+### What the addition then turned out to need
+
+| | |
+|---|---|
+| `gate-grok.yml` | Replay only, naming no secret, so the fourth target gates on a push at no cost |
+| `evaluate-grok-weekly.yml` | Schedule withheld per section 4.18.3, slot reserved |
+| `XAI_API_KEY` in `evaluate-engine.yml` | **The one that fails quietly** |
+
+**The third is why `MQC_CAS_UNI_115710` exists.** A live leg whose credential is
+absent refuses at preflight, correctly reported as our configuration rather than
+as a finding about a model. It is also indistinguishable from a skip nobody
+ordered: the caller exists, the run starts, no result arrives. The new case
+requires an offered variable per rostered engine, and removing the line makes it
+fail by name.
+
+**The secret's value is still not this repository's business.** What is checked
+is that the wiring names it. The value lives in the `live` environment behind a
+required reviewer, and adding it there is the one action outstanding.
+
+### What the schedule could not absorb
+
+Eight hours into one day holds three engines. The fourth could narrow the
+spacing to six hours across Monday or continue onto Tuesday, and **narrowing it
+would spend the property the stagger exists for**: that the gap is far longer
+than a ladder takes, so an overrun is a finding rather than a collision. grok
+takes Tuesday 02:00 UTC. The day is the cheap thing to spend.
+
+### Documentation the split had left behind
+
+`running_jobs.md` still named `evaluate-live-weekly` and a single
+`gate-on-change`, neither of which exists here: workflow names from before the
+per-target split, in prose tables rather than in a dispatch command, which is
+why `runbook_problems` did not see them — it validates `gh workflow run` lines
+and these were a row in a table. The page now names the pattern and says the
+roster is the list.
+
+### State
+
+Consumer 151 passing, pylint 10.00/10. The two reds are `134107` and `134205`,
+both tracked findings against the default engine.
+
+## 2026-10-05: The model gates stay red, decided rather than defaulted
+
+**The project owner's decision**, and the reasoning is recorded because the
+alternative was built-ready and declined rather than overlooked.
+
+### What was on the table
+
+Once the harness pin resolves green the graded bands run in CI for the first
+time, and `MQC_EVL_EVAL_134205` fails at P1 on all four engines. P1 is release
+blocking, so every per-target gate goes red.
+
+`config/findings/<engine>.yaml` already carries all 24 findings with
+reproductions, so keying an expected-failure mechanism on that register was a
+small change: gates green, and a red means something new.
+
+### Why it was declined
+
+**The result would stop being visible in the thing that measured it.** A reader
+would see green and have to be told where the findings are. These are being
+filed with four vendors, and the gate that reports them is the evidence.
+
+**An evaluation suite holding 24 defects in somebody else's product has no
+reason to present a green badge.** The owner's framing: the harness works, the
+cases work, the proof of concept works, and the red jobs are the output. The
+portfolio page carries both results side by side and explains each.
+
+| Expected | Why a red there means something different |
+|---|---|
+| Harness CI green | Our instrument. A red is our defect |
+| Preconditions green | Our corpus and wiring. A red is our defect |
+| Four model gates red | A vendor's model. A red is a finding |
+
+**The trigger for revisiting is publication, not a date.** Once the findings are
+filed and the write-up is out, they are public and tracked elsewhere, and the
+gate's job changes from reporting them to detecting the next one. The
+register-keyed quarantine becomes right at that point and is deliberately
+unbuilt until then. Section 4.19.4 carries this so nobody rediscovers it as an
+omission.
+
+### What the decision required building
+
+**Nothing in the pipeline, and two things in the documentation**, because a red
+gate only reads as a finding if something says so before the reader guesses.
+
+* `README.md` gained the section a portfolio reader hits: which workflows are
+  expected green, which are expected red, what each band means, and the replay
+  command that reproduces any finding without a credential.
+* Section 4.19.4 records the declined alternative and its trigger.
+
+### Two README figures that had no source, and had both gone stale
+
+Stating the expected-red story meant stating counts, and the existing figure
+check covered preconditions, requirements, graded cases and tasks — not these:
+
+| What the README said | What was true |
+|---|---|
+| "`EVAL` and `TOOL` unrecorded" | **All four engines recorded**, 64 task directories each for gemini, openai and grok, 57 for claude, 415 judgements |
+| "Three workflows" | Eleven, across three kinds |
+
+**A figure with no source is the defect that check exists for**, so the recorded
+engine count and the findings total are now recomputed and compared like the
+other four. The findings total is the one that would have drifted next: it moves
+every time an engine is recorded.
+
+### State
+
+Consumer 151 passing, pylint 10.00/10. The two reds are `134107` and `134205`,
+both catalogued, and both expected to stay red.

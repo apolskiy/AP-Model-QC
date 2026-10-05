@@ -118,11 +118,22 @@ so nobody is tempted to.
 |---|---|---|---|
 | Run one case or a few, right now | `debug-cases-on-demand` | No | Only if you ask |
 | Stabilize cases against a harness in flight | `debug-cases-on-demand` from `stabilization` | No | Only if you ask |
-| Check a branch before opening a pull request | Push it. `gate-on-change` runs itself | Yes, on the pull request | No |
-| Regression across everything, live | `evaluate-live-weekly` | No | **Yes, all three rungs** |
+| Check a branch before opening a pull request | Push it. One `gate-<engine>` per target runs itself | Yes, on the pull request | No |
+| Regression across one target, live | `evaluate-<engine>-weekly` | No | **Yes, all three rungs** |
 
 **The first two are the ones this page is really about.** They are manual, they
 yield no verdict, and nothing they do can colour a gate run on the same commit.
+
+**`<engine>` is one of the rostered targets, and the roster is the list.** There
+are four as this is written — `gemini`, `openai`, `claude`, `grok` — each with
+a gate caller and a weekly caller of its own, because a workflow run has one
+conclusion and four targets inside it would make three passes and one failure a
+single red. The names are literal: `gate-grok`, `evaluate-grok-weekly`.
+
+**Do not read the count from this page.** `config/engines.yaml` in the harness
+is the roster, `MQC_CAS_UNI_115710` fails this repository if a rostered engine
+has no workflows, and this paragraph was stale for a day when grok was rostered
+and nothing here noticed.
 
 ---
 
@@ -394,7 +405,7 @@ anyway and records what it used.
 | `debug-cases-on-demand`, any branch | **Nothing. It runs** |
 | `gate-on-change` on `stabilization-*`, `expand-*`, `extend-*` | It runs, ungated, no verdict |
 | `gate-on-change` on `main` | **Exit 4. Nothing installs and nothing runs** |
-| `evaluate-live-weekly` | **Exit 4. No rung starts** |
+| `evaluate-<engine>-weekly` | **Exit 4. No rung starts** |
 
 **The last two rows are the point of the refusal.** A regression measures, so
 it needs an established instrument or it measures nothing worth having. A

@@ -100,6 +100,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0028` | Every graded job names the engine it measured, and the artifacts it carries and publishes are keyed by that engine, so a failure is attributable to one model without reading a log and two engines cannot overwrite one another's outcomes | consumer_ci.md section 4.17 |
 | `MQC_REQ_CAS_CI_0029` | Every model finding is recorded with the model it was observed against, what was expected, what happened and how to reproduce it; a finding is retired only by a live run that no longer reproduces it, and never by a replay of our own recording |
 | `MQC_REQ_CAS_CI_0030` | Every workflow step in this repository that can dispatch to a provider names a spend ceiling, this being where the credentials and the spending are |
+| `MQC_REQ_CAS_CI_0031` | The set of evaluated targets is read from the harness engine roster rather than restated here, and every rostered target has a gate caller, a weekly caller and its declared credential offered by the live workflow, so rostering an engine fails this repository until it is evaluated rather than leaving it silently unevaluated | consumer_ci.md section 4.19.3 |
 
 
 ### 2.5.2 `COR`, The corpus: what the shipped data must satisfy

@@ -994,7 +994,7 @@ the gate.
 
 #### 4.18.2 The stagger is the serialisation, and that removes a mechanism
 
-Eight hours apart on the same day, **reserved and not yet active** per
+Eight hours apart in roster order, **reserved and not yet active** per
 section 4.18.3:
 
 | Engine | Fires |
@@ -1002,6 +1002,15 @@ section 4.18.3:
 | `gemini` | Monday 02:00 UTC |
 | `openai` | Monday 10:00 UTC |
 | `claude` | Monday 18:00 UTC |
+| `grok` | **Tuesday** 02:00 UTC |
+
+**The fourth engine rolls the day over rather than narrowing the gap, and that
+choice is the whole argument below.** Eight hours into one day holds three
+engines, so a fourth could either take a 6-hour spacing across Monday or
+continue the sequence onto Tuesday. Narrowing it would trade the property this
+section exists to establish — that the gap is far longer than a ladder takes,
+so an overrun is a finding rather than a collision — for a tidier table.
+**The day is the cheap thing to spend; the invariant is not.**
 
 **Serialisation becomes a property of the clock rather than of a lock.** With
 the three never overlapping by schedule, there is no cross-engine concurrency
@@ -1029,9 +1038,10 @@ something is reading its output. Two conditions gate it, and neither is a
 matter of taste.
 
 **One: the findings already known have to be triaged.** The gate's replay
-reports 2 findings for `gemini`, 8 for `openai` and 10 for `claude`. A weekly
-live run would report at least those, so every firing would be red for reasons
-recorded days earlier. **A cron that is always red communicates nothing**, and
+reports **24 findings across four engines** — 2 for `gemini`, 8 for `openai`,
+10 for `claude` and 4 for `grok`, the last added when that engine was recorded
+on 2026-10-04. A weekly live run would report at least those, so every firing
+would be red for reasons recorded days earlier. **A cron that is always red communicates nothing**, and
 the remedy is the quarantine mechanism of 2026-10-02 rather than a threshold:
 each finding is accepted into its engine's quarantine with a reason and a
 ticket, or it is a defect in our corpus.
@@ -1139,6 +1149,85 @@ in a shared workflow and having the per-target gates depend on it reintroduces
 exactly the coupling the split removes: a shared red would stop every target,
 which is correct, but a shared **flake** would too, and the targets would no
 longer be independently re-runnable.
+
+#### 4.19.3 Adding a target, and the hand-maintained list that made it silent
+
+**grok was rostered on 2026-10-04 and nothing here noticed.** The roster gained
+a fourth engine, it was priced, its recording run completed, and this repository
+continued to gate three targets. No check failed, because the list of targets
+these checks walk was a tuple in the case module:
+
+```python
+_ROSTERED_ENGINES = ("gemini", "openai", "claude")
+```
+
+**Its own comment claimed it was the roster** — "the engines the roster
+carries" — and it was a copy of the roster as it stood when the line was
+written. The sibling helper `engine_roster()` already reads the installed
+harness and its docstring already states why: a second copy drifts toward
+whichever repository was edited last. This module kept one anyway.
+
+**So the check for "every rostered target has its own workflow" could only fail
+for an engine somebody had already remembered to add here.** That is the
+project's recurring shape once more: the mechanism was right and nothing
+established it was reachable for the case it existed to catch.
+
+| | |
+|---|---|
+| What the tuple is now | `tuple(engine_roster())`, read from the installed harness package |
+| Why insertion order is kept | The roster is ordered and the gate's calls chain in that order; a set would lose it |
+| What that changes | Rostering an engine makes this repository red until the engine has a gate caller, a weekly caller and a credential offer |
+
+**Three things, and the third is the one that would have been missed.** A live
+leg whose credential is absent refuses at preflight (section 4.17.2), which is
+correct and is reported as our configuration rather than as a finding. It is
+also quiet: the weekly caller exists, the run starts, and the result is a skip
+nobody asked for. `evaluate-engine.yml` offers every provider's key explicitly,
+so a new engine needs a line there, and `MQC_CAS_UNI_115710` now requires the
+variable each rostered adapter declares to be among them.
+
+**The credential's value is not this repository's business.** The offer is a
+reference to a secret; the secret lives in the `live` environment behind a
+required reviewer, and section 4.17.2 already governs what happens when it is
+absent. What is checked here is that the wiring exists, which is the part a
+roster addition forgets.
+
+#### 4.19.4 A known finding still blocks its gate, and that is the decision
+
+**Decided 2026-10-05 by the project owner.** A P0 or P1 graded failure fails its
+target's gate whether or not the finding is already catalogued. The gates for
+all four engines are therefore expected to be red, and `MQC_EVL_EVAL_134205`
+alone makes every one of them red at P1.
+
+**The alternative was available and was declined.** `config/findings/<engine>.yaml`
+already carries every finding with its reproduction, so an expected-failure
+mechanism keyed on that register was a small change: the gates would turn green
+and a red would mean something new. That is the more conventional pipeline and
+it is the wrong one here.
+
+| | |
+|---|---|
+| What the register would buy | A green badge, and a red that means a regression |
+| What it would cost | **The result stops being visible in the thing that measured it.** A reader would see green and have to be told where the findings are |
+| Why that matters now | The findings are being filed with four vendors, and the gate that reports them is the evidence |
+
+**A red gate is a finding, not an unfinished pipeline**, and that distinction is
+carried by the README rather than inferred: harness CI green, preconditions
+green, model gates red, each with the band that failed and a replay command that
+needs no credential. **An evaluation suite whose job is to find defects in
+somebody else's product has no reason to present a green badge while it is
+holding 24 of them.**
+
+**The trigger for revisiting this is publication, not a date.** Once the
+findings are filed with each vendor and the write-up is out, the register-keyed
+quarantine becomes the right mechanism: at that point the findings are public,
+attributed and tracked elsewhere, so the gate's job changes from reporting them
+to detecting the next one. Until then the quarantine is deliberately unbuilt,
+and this subsection is why — not an omission anybody needs to rediscover.
+
+**This does not relax the schedule condition in section 4.18.3.** A gate is read
+by somebody who just pushed, so a red with a known cause is informative. A cron
+firing weekly into nobody's attention is not, and it stays withheld.
 
 ## 5. Governance Parity With The Harness
 

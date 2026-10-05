@@ -17,14 +17,71 @@ paid tier.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 69 graded cases specified |
-| `docs/testing/rtm_model.csv` | 98 requirements, traced |
+| `docs/testing/rtm_model.csv` | 99 requirements, traced |
 | `data/tasks/`, `data/rules/` | **7 corpora, 65 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
 | Preconditions (`CAS`, `UNI`) | **84 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
-| CI | Three workflows: the gate, the live ladder, and debugging on demand |
+| CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **69 written**: 40 evaluator, 21 security, 8 tool |
-| Recorded responses | **`SEC` complete**, 63 observations across 21 cases, recorded 2026-09-28 for six cents. `EVAL` and `TOOL` unrecorded, because both spend judge quota as well as candidate quota |
+| Recorded responses | **Complete for all four engines**: gemini, openai and grok at 64 task directories each, claude at 57, with 415 judgements. Replays in seconds and costs nothing |
+| Model findings | **24 findings** — gemini 2, openai 8, claude 10, grok 4 — each with a reproduction, an expected result and an observed one, in `config/findings/` |
+
+## Why The Model Gates Are Red
+
+**They are red because they found something, and that is the deliverable.**
+
+| Workflow | Expected state | What it measures |
+|---|---|---|
+| Harness CI (`AP-Harness-QC`) | **Green** | Our own code. A red here is our defect |
+| Preconditions here (`CAS`, `UNI`) | **Green** | Our corpus and our wiring. A red here is our defect |
+| `gate-gemini`, `gate-openai`, `gate-claude`, `gate-grok` | **Red** | A vendor's model against the graded corpus |
+
+**The split is the whole point of two repositories.** A failure has to be
+attributable before it is worth reporting, so the instrument is tested
+separately from what it measures. 691 harness cases and 84 preconditions pass;
+the graded cases are where the findings are.
+
+### Reading a red gate
+
+Bands run in order and the first two block:
+
+| Band | Priority | A failure means |
+|---|---|---|
+| P0 | Release blocking | The model failed a case nothing should fail |
+| P1 | Release blocking | The model failed a case with real consequences |
+| P2–P4 | Pass floor | Measured, reported, not blocking |
+
+`MQC_EVL_EVAL_134205` fails at P1 **on all four engines**: a case where the
+model overstates a figure its source does not support. Four vendors, four
+failures, one case — which is a finding about the task being hard rather than
+about any one provider, and it is visible only because more than one engine was
+recorded.
+
+**Every red is catalogued before it is a red.** `config/findings/<engine>.yaml`
+carries each finding with what was expected, what happened, and the command
+that reproduces it from the recording:
+
+```
+pytest --engine grok --mode replay --tests 134205
+```
+
+That command needs no credential and spends nothing. **The recordings are in
+the repository**, so a reader can reproduce any finding here without an account
+with any vendor.
+
+### Why they are not quarantined
+
+A quarantine mechanism would mark a known finding as expected and turn the
+gates green, so that a red meant something new. **It is deliberately not built
+yet.** These findings are being filed with each vendor, and a gate that reports
+them is the evidence; quarantining them before they are filed would hide the
+result this project exists to produce. The mechanism is designed in
+`consumer_ci.md` section 4.19.4 and its trigger is recorded there.
+
+**The weekly live ladders are a separate matter and stay unscheduled**, because
+a cron that is always red for reasons recorded days earlier communicates
+nothing. Section 4.18.3 holds that reasoning.
 
 ## Why This Is A Separate Repository
 

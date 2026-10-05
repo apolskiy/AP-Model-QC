@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+#
+# THE GATE FOR ONE TARGET: grok. Its own workflow, so its conclusion is about
+# this target alone: three targets passing and one failing are four results,
+# not one red. Design `consumer_ci.md` section 4.19.
+#
+# THE FOURTH TARGET, AND THE ONE THAT PROVED THE PATTERN. grok was rostered on
+# 2026-10-04 and this file did not exist until 2026-10-05, because the check
+# for a target without a gate walked a hand-maintained list of three names
+# rather than the roster. Adding the engine really was two callers and a
+# credential line; what was missing was anything that said so. Section 4.19.3.
+#
+# REPLAY ONLY, LIKE EVERY GATE. This workflow offers no credential and needs
+# none: a gate measures recorded transcripts, so a push costs no quota and a
+# third party running it spends nothing. Live legs are the weekly ladder's,
+# behind the `live` environment and its required reviewer.
+name: gate-grok
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+# PER TARGET, so a push supersedes only this target's in-flight run. Keyed on
+# the ref as well, which is what lets two branches gate the same target at once.
+concurrency:
+  group: gate-grok-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  gate:
+    name: grok
+    uses: ./.github/workflows/gate-target.yml
+    with:
+      engine: grok
+    secrets: inherit
