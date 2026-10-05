@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_REMEDY_IS_DETERMINATE": {
+        "rationale": "The candidate clearly states that an unrecognized code should contribute zero and allow settlement to proceed (yielding 80 for the standard basket with code NOPE). It also explicitly shows how to achieve this using `coupon_lookup.get(code, 0)`.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "0abcac93ec28505a353bbf10ec1f8730dddaf89ae572ddda713a09111632ab95"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "7870611fbc09fcb9b0ddc29e01535e4e72df2573d0f01c4a0d699c2069f36d86",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
+    "duration_ms": 8666,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1387,
+    "mode": "live",
+    "output_tokens": 179,
+    "raw_reference": "a62ef555-1718-966b-8a60-d51da80fba1f",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The function returns the tier discount amount minus a single coupon, not the amount owed.\n\nIt looks up the tier percentage (20 or 30) and only `coupon_codes[0]`, then computes `total_amount * discount / 100 - coupon_sum`. That is the discount slice of the total, reduced by one coupon. A $100 standard order with a $5 coupon yields 15, not what the customer should pay. Extra coupons are ignored.\n\nIt should keep those percentages and compute the balance after the discount, then subtract every coupon:\n\n- price after tier discount: `total_amount * (100 - discount) / 100` (80% for standard, 70% for premium)\n- coupon total: the sum of `coupon_lookup[code]` for each code in `coupon_codes`\n- amount owed: that discounted price minus the coupon total",
+    "thinking_tokens": 813,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "6eab35a111a97077dfca48588f1924a5135f11175ae37ca484a31c4fbe54bfac",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_overstate_rejected::MQC_RULE_gnd_overstate_rejected",
+    "duration_ms": 2300,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1341,
+    "mode": "live",
+    "output_tokens": 18,
+    "raw_reference": "b5ffbb3a-b09b-9a62-8580-8171f43976c4",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "EMEA revenue was 28.7 million, which rounds up to 30 million.",
+    "thinking_tokens": 165,
+    "tool_calls": []
+  }
+}

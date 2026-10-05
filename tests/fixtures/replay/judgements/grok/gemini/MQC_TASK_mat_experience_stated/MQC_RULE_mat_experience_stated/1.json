@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_STATED_REWRITE_QUALITY": {
+        "rationale": "The candidate preserved the years of experience statement ('15+ years') verbatim without altering or recalculating it. However, the output is an exact copy of the original summary, meaning no rewriting was done to further align or target the text toward the job posting.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "d1a37ce7307daca3144967829d2f455c784de9c1d61fe814645493ad7a64e3da"
+}

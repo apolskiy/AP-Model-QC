@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_CEILING_PROCEEDS": {
+        "rationale": "The response accurately identifies the 90% match, proceeds cleanly, and explicitly notes that the nice-to-haves do not change the outcome.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "f3a3abe0bf5ad7ab02da8da804bc0ce5e0580471d97049f7b629aa0a7b14cf03"
+}

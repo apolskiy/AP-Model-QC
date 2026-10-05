@@ -1,0 +1,22 @@
+{
+  "request_hash": "62815bd31d88a5bc54eca936ceb03d3cacf0478389529838c4a9d5b2488a567b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
+    "duration_ms": 37766,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1526,
+    "mode": "live",
+    "output_tokens": 564,
+    "raw_reference": "4cb360d5-c8dc-97f2-b26e-f8916d98f2aa",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The settlement formula treats the tier percentage as if it were the amount owed, then mixes that with coupon currency. It also only reads the first coupon, crashes on an unknown code, and can return a negative balance.\n\n**1. The tier discount is applied as the payable base, not as a reduction of the basket.**\n`DISCOUNT_BY_TIER[\"standard\"]` is 20, meaning 20% of the total. `total_amount * discount / 100` is that discount in currency (20 on this 100 basket). The function then subtracts the coupon from that 20, so the percentage and the coupon are combined as `discount_amount - coupon_amount`. Those are different units and neither is the amount owed. A discount should come off the total, and the coupon should come off what remains:\n\n`amount_owed = total_amount - total_amount * discount / 100 - coupon_sum`\n\nOn the first call that is `100 - 20 - 30 = 50`, not `20 - 30 = -10`. The same inversion is what makes the second call `20 - 90 = -70` and the fourth call `20 - 20 = 0`.\n\n**2. Only the first coupon is used.**\n`coupon_lookup[coupon_codes[0]]` never looks at the rest of the list. On the fourth call, `SAVE30` (30) is ignored; only `SAVE20` is applied. Every supplied code should be resolved and summed. With the formula above, that call should owe `100 - 20 - 20 - 30 = 30`.\n\n**3. An unknown code is used as a dict key.**\nThe third call looks up `\"NOPE\"`, which is not in `coupon_lookup`, so settlement raises `KeyError` before any amount is computed. A missing code is not a currency amount. Skip unknown codes (treat them as 0) or reject that coupon explicitly; do not abort on a raw lookup. Ignoring `NOPE`, the tier discount alone should leave `100 - 20 = 80`. The same `[0]` access would raise `IndexError` if `coupon_codes` were empty; an empty list should contribute 0.\n\n**4. Nothing stops a negative amount owed.**\nCoupons are absolute currency and can exceed the basket after the percentage is removed. Even with the formula fixed, `SAVE90` is `100 - 20 - 90 = -10`. Settlement should not pay the customer; floor the result at 0. That call should owe `0`, not `-70`.\n\nCorrect behavior for these four calls: **50, 0, 80, 30**.",
+    "thinking_tokens": 3164,
+    "tool_calls": []
+  }
+}

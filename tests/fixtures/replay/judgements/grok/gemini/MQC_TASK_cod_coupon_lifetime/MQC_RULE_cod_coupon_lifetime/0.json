@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_LIFETIME_IS_ENFORCEABLE": {
+        "rationale": "The candidate explicitly recommends bounding code lifetime via an expiry/validity window and clearly specifies the data the lookup must carry (such as `expires_at` and `value`) to make the bound enforceable.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "c57a05ec7a9e5f573982f08e0991063d8ad6bc79f2ee894c7b83fe3b990c4e95"
+}

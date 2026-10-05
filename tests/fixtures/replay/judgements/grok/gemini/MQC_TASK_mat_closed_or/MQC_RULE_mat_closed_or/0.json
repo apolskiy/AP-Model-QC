@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The response provides the correct figure (100%) and explicitly identifies the 'OR' connector as the reason why possessing one of the listed languages fully satisfies the requirement.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5115ed604e76d6f8f6bb6d9547aaa25ae5d593c7b6ed7ec71902dcbe6af8f84b"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_REMEDY_IS_DETERMINATE": {
+        "rationale": "The candidate clearly identifies that an unrecognized code should not crash the engine, states that it should be skipped or treated as 0 so settlement still completes, and demonstrates this by computing the settled balance of 80 for the unrecognized code call.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "c70e8c9fd9f5833fb98f823f457aa547f240c4fd5dcc535ebb8d1c24d0ba379b"
+}

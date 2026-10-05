@@ -1,0 +1,22 @@
+{
+  "request_hash": "376d6826af31520c5df895e1f4e60126ea548017ebce6374cee1f6dba91d0ab9",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
+    "duration_ms": 4589,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1309,
+    "mode": "live",
+    "output_tokens": 72,
+    "raw_reference": "b86b67a2-6957-908b-a9d8-5277d583f504",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**100%**\n\nThe requirement is disjunctive: Python **or** Go **or** Rust. Satisfying any one of those languages meets the requirement in full.\n\nThe candidate lists Python (along with SQL and Bash). Python is one of the accepted languages, so the requirement is fully met. SQL and Bash are extra and do not reduce that match.",
+    "thinking_tokens": 360,
+    "tool_calls": []
+  }
+}

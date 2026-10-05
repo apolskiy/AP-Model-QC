@@ -1,0 +1,22 @@
+{
+  "request_hash": "eebf2ad22c6ebe0168d606f61091264dc7594aae8b05a797e82d9abed75d9797",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_mat_open_enumeration::MQC_RULE_mat_open_enumeration",
+    "duration_ms": 4262,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1311,
+    "mode": "live",
+    "output_tokens": 32,
+    "raw_reference": "043bf211-fe02-993d-ae79-ec2f3000f79b",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "Yes. The candidate meets the requirement by equivalence, not by a named match: MySQL is not PostgreSQL or Redis, but it is a similar database.",
+    "thinking_tokens": 292,
+    "tool_calls": []
+  }
+}

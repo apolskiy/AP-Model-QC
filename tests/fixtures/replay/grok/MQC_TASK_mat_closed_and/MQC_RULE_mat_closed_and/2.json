@@ -1,0 +1,22 @@
+{
+  "request_hash": "6a0b8f475aba09567607d4173e08ecc41e198e6659181df0529a5eb2a85c5ec4",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
+    "duration_ms": 3817,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1304,
+    "mode": "live",
+    "output_tokens": 61,
+    "raw_reference": "83c0f3c3-9b86-9a2e-8c2f-a460e919e4d6",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**50%**\n\nThe requirement is a closed AND: both Docker and Kubernetes must be present.\n\n- Docker: met (explicitly listed).\n- Kubernetes: not met (not named; \u201corchestration\u201d alone does not satisfy the specific requirement).\n\n1 of 2 required items = 50%.",
+    "thinking_tokens": 204,
+    "tool_calls": []
+  }
+}

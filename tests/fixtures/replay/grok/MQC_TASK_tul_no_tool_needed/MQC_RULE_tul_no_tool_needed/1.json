@@ -1,0 +1,22 @@
+{
+  "request_hash": "e610e521e5fda6ed3b79a6b00445e162a705e8ce4d25477508d84cd7528c455f",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_tul_no_tool_needed::MQC_RULE_tul_no_tool_needed",
+    "duration_ms": 2016,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1527,
+    "mode": "live",
+    "output_tokens": 24,
+    "raw_reference": "99d60df0-fe5f-9d49-b9a4-3669fae67a4b",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "RMA stands for Return Merchandise Authorisation, which is the approval we give you to send an item back to us.",
+    "thinking_tokens": 56,
+    "tool_calls": []
+  }
+}

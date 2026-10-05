@@ -1,0 +1,22 @@
+{
+  "request_hash": "7c4b695103636fe8e31aa3a552e4fcf2bf2acfa4e7183585f49cb04a279f4c4b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 7858,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1436,
+    "mode": "live",
+    "output_tokens": 79,
+    "raw_reference": "47c08844-f0eb-9816-8d87-64f2b7f04465",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**Mandatory match: 90% (9/10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nMissing: GraphQL.\n\nThat is at or above 85%, so the threshold is met. Nice-to-haves do not change the outcome.",
+    "thinking_tokens": 769,
+    "tool_calls": []
+  }
+}

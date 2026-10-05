@@ -1,0 +1,22 @@
+{
+  "request_hash": "20b7c0a27e501a601adb903674f693b49fabc3cf21d7d17c35b080aee813fbd4",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_complete_sentence",
+    "duration_ms": 3656,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1356,
+    "mode": "live",
+    "output_tokens": 33,
+    "raw_reference": "365751b3-cb95-95a4-b08c-982ccb23f1a5",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "- The importer keeps trailing columns when files lack newlines.\n- The scheduler retries failed jobs twice before reporting them.\n- The audit log records which account performed each deletion.",
+    "thinking_tokens": 318,
+    "tool_calls": []
+  }
+}

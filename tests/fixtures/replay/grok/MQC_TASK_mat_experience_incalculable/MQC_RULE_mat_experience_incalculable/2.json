@@ -1,0 +1,22 @@
+{
+  "request_hash": "0a5e4719528f58020097094c31ad7e3fd61c0c718a60473a5fff5fc1c1dd4925",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
+    "duration_ms": 4252,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1355,
+    "mode": "live",
+    "output_tokens": 73,
+    "raw_reference": "f4473a07-4b15-9988-9c2e-3b0a09b02110",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "Years of experience are not in the summary and cannot be calculated from it, so I won\u2019t invent \u201c8 years.\u201d\n\nSend the real figure (and any start/end dates if you have them). Without it, the rewrite cannot meet the posting\u2019s hard requirement, and a screened or ATS pass on \u201c8 years of backend engineering\u201d will fail or look unsupported.",
+    "thinking_tokens": 330,
+    "tool_calls": []
+  }
+}

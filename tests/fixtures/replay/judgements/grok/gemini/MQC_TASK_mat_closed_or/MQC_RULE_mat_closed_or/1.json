@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The candidate output provides the correct figure (100%) and explicitly names the 'or' connector (pointing out that the requirement is disjunctive) to explain why satisfying any single item meets the requirement in full.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "150f868efd162b6b5057f7c358983288069552d9923c266fa09f3b18f8bcadbe"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "62815bd31d88a5bc54eca936ceb03d3cacf0478389529838c4a9d5b2488a567b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
+    "duration_ms": 40484,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1526,
+    "mode": "live",
+    "output_tokens": 548,
+    "raw_reference": "e8978c48-09a9-9a08-8288-ebbc2cfe44ca",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The settlement math mixes two different kinds of reduction, and the coupon handling does not match how the function is called.\n\n**1. The tier discount is applied as the amount due, not as a percent off the basket.** `discount` is a percent off (`20` means 20% of 100, i.e. 20 currency). `total_amount * discount / 100` is that reduction, but the function then treats it as the balance and subtracts the coupon from it. A percent-of-total and a currency coupon are different units; both have to be taken off the basket, not off each other. For a standard 100 basket that is `100 - 20 - coupon`, not `20 - coupon`. The first call therefore yields `-10` instead of `50`.\n\n**2. Only the first coupon is applied.** `coupon_codes[0]` ignores every later code, so `[\"SAVE20\", \"SAVE30\"]` subtracts 20 and drops the 30. Every recognized code is a currency amount and should be summed. That call should owe `100 - 20 - 20 - 30 = 30`, not `0`. Indexing `[0]` also assumes the list is non-empty.\n\n**3. An unknown code aborts settlement.** `coupon_lookup[\"NOPE\"]` raises `KeyError` instead of meaning \"no currency off\". An unrecognized code should contribute 0 (or be rejected with an explicit validation error, not a lookup crash). With no coupon, the standard basket should still owe `100 - 20 = 80`.\n\n**4. The balance is allowed to go negative.** A currency coupon can exceed what is left after the percent off (`SAVE90` leaves `100 - 20 - 90 = -10`; the current formula yields `-70`). The amount owed should be floored at 0 so the customer is not paid to take the order.\n\nIt should do this instead: take the tier percent off the original total, subtract the sum of every recognized coupon (unknown codes add nothing), and return at least 0.\n\n```python\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount_amount = total_amount * DISCOUNT_BY_TIER[account_tier] / 100\n    coupon_sum = sum(coupon_lookup.get(code, 0) for code in coupon_codes)\n    return max(0, total_amount - discount_amount - coupon_sum)\n```\n\nAgainst the 100 basket that is 50, 0, 80, and 30.",
+    "thinking_tokens": 3606,
+    "tool_calls": []
+  }
+}

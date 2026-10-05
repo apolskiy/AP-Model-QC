@@ -1,0 +1,22 @@
+{
+  "request_hash": "75264b96b048b7f11eb4f1822fb0b09b31524fcf4391c786ebff169f4604b3f5",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
+    "duration_ms": 4279,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1349,
+    "mode": "live",
+    "output_tokens": 64,
+    "raw_reference": "d13551d5-2afe-99ea-9073-37e87b0fec29",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The change request is too vague to apply unambiguously. It says to \u201craise the threshold,\u201d but the config has two thresholds and no target value.\n\nPlease specify:\n1. Which key: `retry_threshold` or `alert_threshold`?\n2. The new value (or the exact amount to raise it by).",
+    "thinking_tokens": 171,
+    "tool_calls": []
+  }
+}

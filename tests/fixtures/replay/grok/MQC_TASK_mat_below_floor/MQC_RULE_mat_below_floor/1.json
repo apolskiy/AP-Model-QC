@@ -1,0 +1,22 @@
+{
+  "request_hash": "3dbbc0d643314bf13eb285a282966ece30b02f86bcce4c085bb566d0e151edf2",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
+    "duration_ms": 3641,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1444,
+    "mode": "live",
+    "output_tokens": 27,
+    "raw_reference": "dea81809-5b11-9637-9ec1-7e315e4b0500",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**Mandatory match: 70%.** That is below the 78% cutoff. Nice-to-have requirements were not evaluated.",
+    "thinking_tokens": 361,
+    "tool_calls": []
+  }
+}

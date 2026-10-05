@@ -1,0 +1,20 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CREDITED_DEFECTS": {
+        "rationale": "Both credited defects are reported with the triggering inputs: missing/unhandled account tiers (such as \"Standard\", a new tier, or None) triggering KeyError, and empty coupon_codes triggering IndexError.",
+        "score": 5
+      },
+      "C_COD_FURTHER_PROBLEMS": {
+        "rationale": "The candidate identifies multiple real surplus issues with explanations of why they matter, notably the use of binary floating-point arithmetic for currency without an explicit rounding rule causing reconciliation drift, as well as only using the first coupon code in the list.",
+        "score": 5
+      },
+      "C_COD_WHO_IS_AFFECTED": {
+        "rationale": "The candidate clearly identifies that the merchant loses revenue (is unpaid), tracks who ends up out of pocket, and highlights that Calls 1 and 2 succeed silently with wrong amounts while noting that negative numbers cause downstream ledger/payment rejections.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "0173111386131931768d81c0c86588d5374b768cf3e5cc8e752ec8a392f811f2"
+}

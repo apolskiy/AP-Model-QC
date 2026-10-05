@@ -1,0 +1,22 @@
+{
+  "request_hash": "62815bd31d88a5bc54eca936ceb03d3cacf0478389529838c4a9d5b2488a567b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
+    "duration_ms": 36394,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1526,
+    "mode": "live",
+    "output_tokens": 432,
+    "raw_reference": "446cc178-b5cd-9223-82d8-136e235b994c",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The settlement math treats the tier percentage as the amount owed, then only redeems the first coupon and can drive the result below zero.\n\n**Tier discount is applied as the payable amount, not as a reduction.** `total_amount * discount / 100` is the currency value of the percentage off (20 on this basket). That value is then used as the base, so a 20% discount becomes \u201cowe 20,\u201d not \u201ctake 20 off 100.\u201d A discount is a percentage of the total, so the amount after the tier discount should be `total_amount * (100 - discount) / 100` (80 here).\n\n**The coupon is subtracted from that discount value, not from the total.** Percentage and coupon are different units. The percent must be converted into a currency reduction of the basket first; the looked-up coupon amounts are then subtracted from what remains. They must not be subtracted from the discount figure itself.\n\n**Only `coupon_codes[0]` is redeemed.** The argument is a list, but every code after the first is ignored, so `[\"SAVE20\", \"SAVE30\"]` applies 20 and drops 30. Sum the lookup value of every code.\n\n**A missing code is an unguarded lookup.** `coupon_lookup[coupon_codes[0]]` assumes every code exists, so `\"NOPE\"` raises `KeyError`. An unrecognized code is not redeemable: reject or skip it instead of crashing, and do not invent a discount for it.\n\n**Nothing stops the result from going negative.** A coupon larger than the discounted total (the `SAVE90` case) makes `amount_owed` negative, which would pay the customer. Floor the result at 0.\n\nOn the 100-unit standard basket that is 80 after the tier discount, then minus the coupon currency total, and never below 0: `SAVE30` \u2192 50; `SAVE90` \u2192 0; `NOPE` \u2192 no redemption / a deliberate validation failure, not `KeyError`; `SAVE20` + `SAVE30` \u2192 30.",
+    "thinking_tokens": 3152,
+    "tool_calls": []
+  }
+}

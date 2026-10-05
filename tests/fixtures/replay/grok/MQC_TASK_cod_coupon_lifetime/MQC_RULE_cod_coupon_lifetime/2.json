@@ -1,0 +1,22 @@
+{
+  "request_hash": "c0e457e4f6ebe4a6a515d9b5e332c641dcd0f7710d1399dcd2b4cdaab1d7bbf1",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
+    "duration_ms": 10041,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1419,
+    "mode": "live",
+    "output_tokens": 182,
+    "raw_reference": "2fc055d2-ec2a-9023-82ec-db3246497ca3",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "Bound each code with an explicit validity window stored on the code itself, and refuse redemption unless the redemption time falls inside that window.\n\nThe lookup cannot stay a bare amount. Today `coupon_lookup[code]` yields only a number, so settlement has nothing to check and every issued code stays valid forever. For the bound to be enforceable at redeem time, the lookup must return a record that carries at least:\n\n- the discount value\n- `expires_at` (or `valid_until`)\n- preferably `valid_from` as well, if codes should not be usable before a start time\n\nSettlement should compare a trusted server timestamp (or the order\u2019s authoritative timestamp) to that window and reject the code when `now` is outside it, before applying the value. A bound that exists only at issuance, or only in a side channel the lookup does not return, cannot be enforced here.",
+    "thinking_tokens": 807,
+    "tool_calls": []
+  }
+}

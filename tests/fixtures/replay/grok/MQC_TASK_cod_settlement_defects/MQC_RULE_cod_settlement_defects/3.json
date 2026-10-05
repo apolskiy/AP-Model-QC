@@ -1,0 +1,22 @@
+{
+  "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
+    "duration_ms": 39373,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1455,
+    "mode": "live",
+    "output_tokens": 595,
+    "raw_reference": "1775fdc6-2b51-9594-b05e-946ef17b3636",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The function both mis-charges and crashes. Against the three production calls it returns `-10`, `0`, and raises `KeyError`.\n\n**1. Tier \u201cdiscount\u201d is applied as the amount still due, not the amount off.**  \n`amount_owed = total_amount * discount / 100 - coupon_sum` treats `20` / `30` as the percent the customer still pays. A standard 100-unit basket becomes `20` before coupons, not `80`.  \nCall 1 returns `-10` instead of `50` (`100 - 20% - 30`). Call 2 returns `0` instead of `60`. Premium is worse (`30` left before coupons, not `70`).  \nAffected: every customer (silent undercharge or a credit) and the merchant (lost revenue). Billing that accepts the number will not notice.\n\n**2. The result is not floored at zero.**  \nCall 1 is already negative. A coupon larger than the post-tier total does the same even if the percent math is fixed.  \nAffected: the merchant (unintended credit/refund) and payment/ledger systems that reject or mis-post a negative charge. Customers can be stuck or wrongly credited.\n\n**3. Only `coupon_codes[0]` is used.**  \n`coupon_sum` never sums the list. Extra codes are ignored.  \nAffected: customers who pass more than one valid code (overcharged). Anyone reconciling \u201csum of coupons\u201d sees a short discount.\n\n**4. Unknown coupon raises `KeyError`.**  \nCall 3 (`\"NOPE\"`) dies in `coupon_lookup[...]` instead of rejecting the code or settling the tier discount only.  \nAffected: that shopper (checkout fails) and on-call (uncaught exception). Same for any code missing from the lookup.\n\n**5. Unknown tier raises `KeyError`.**  \n`DISCOUNT_BY_TIER[account_tier]` has no fallback. `\"Standard\"`, a new tier, or `None` aborts before coupons.  \nAffected: those accounts (cannot settle) and support.\n\n**6. Empty `coupon_codes` raises `IndexError`.**  \n`coupon_codes[0]` assumes a non-empty list. A basket with no coupon cannot settle.  \nAffected: any no-coupon checkout.\n\n**7. Money is computed with binary float.**  \n`total_amount * discount / 100` is a float. On non-round amounts this drifts by fractions of a unit.  \nAffected: finance/reconciliation and customers on amounts that do not divide cleanly. Currency should be decimal/cents with an explicit rounding rule.\n\nThe three calls do not hit 5\u20136, but those paths are still broken for other production inputs. Calls 1\u20132 are the dangerous ones: they succeed with the wrong amount.",
+    "thinking_tokens": 2462,
+    "tool_calls": []
+  }
+}

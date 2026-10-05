@@ -1,0 +1,22 @@
+{
+  "request_hash": "47d3c562fdb188fcd9aff2de94aa97ce1e178be96e705c2fe523b47a6b2e9090",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
+    "duration_ms": 3069,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1338,
+    "mode": "live",
+    "output_tokens": 59,
+    "raw_reference": "8d5eda71-1672-9c93-8849-f1220750026f",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "According to the glossary, **AMBER** does not mean a warning. It marks a record that has completed successfully and been archived, and it is raised only after a successful run.\n\nThe on-call rota is deliberately **not** notified. The change advisory board receives a weekly digest instead.",
+    "thinking_tokens": 186,
+    "tool_calls": []
+  }
+}

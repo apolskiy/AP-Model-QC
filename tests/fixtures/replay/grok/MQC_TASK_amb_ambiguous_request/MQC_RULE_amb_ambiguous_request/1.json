@@ -1,0 +1,22 @@
+{
+  "request_hash": "75264b96b048b7f11eb4f1822fb0b09b31524fcf4391c786ebff169f4604b3f5",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
+    "duration_ms": 2877,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1349,
+    "mode": "live",
+    "output_tokens": 50,
+    "raw_reference": "298f6b8a-807a-9f5c-ac6e-54436d653a39",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "CR-118 doesn\u2019t say which threshold to change or what the new value should be. The config has both `retry_threshold` (3) and `alert_threshold` (85).\n\nWhich threshold should be raised, and to what value?",
+    "thinking_tokens": 174,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CREDITED_DEFECTS": {
+        "rationale": "Both credited defects are clearly identified with the specific triggering inputs: an empty coupon list (`[]`) causing an IndexError on `coupon_codes[0]`, and an unknown account tier (anything other than 'standard' or 'premium') causing a KeyError on `DISCOUNT_BY_TIER`.",
+        "score": 5
+      },
+      "C_COD_FURTHER_PROBLEMS": {
+        "rationale": "The candidate identifies multiple genuine further problems, most notably using binary floats for money, explaining why it matters (precision issues, off-by-a-cent errors, and failed equality checks in accounting).",
+        "score": 5
+      },
+      "C_COD_WHO_IS_AFFECTED": {
+        "rationale": "The candidate clearly explains who loses (the business loses the sale, customers are undercharged/credited) and notes that payment gateways fail on negative charges. However, it does not explicitly contrast this by stating that the zero settlement passes through silently / raises nothing, falling slightly short of level 5.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "eab06fc21508323db651e4acb66dce29114e7041ae63510614f1a1812769a600"
+}

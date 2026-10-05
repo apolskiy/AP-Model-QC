@@ -1,0 +1,22 @@
+{
+  "request_hash": "7870611fbc09fcb9b0ddc29e01535e4e72df2573d0f01c4a0d699c2069f36d86",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
+    "duration_ms": 12483,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1387,
+    "mode": "live",
+    "output_tokens": 299,
+    "raw_reference": "19956921-bb7c-991b-a671-7547b41c3eb7",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The function treats the tier percentage as the fraction of the total that is still owed, and it applies only the first coupon. It should treat that percentage as a discount off the total and apply every coupon.\n\n**What it computes**\n\n- `discount` is the tier rate from the module: 20 for `\"standard\"`, 30 for `\"premium\"`.\n- `coupon_sum` is only `coupon_lookup[coupon_codes[0]]`. Later codes are ignored. An empty list raises `IndexError`.\n- The return value is `total_amount * discount / 100 - coupon_sum`.\n\nFor a $100 standard order and a $5 coupon, that is `100 * 20 / 100 - 5 = 15`. That is 20% of the total, minus the coupon \u2014 not the balance after a 20% discount.\n\n**What it should compute**\n\nLeave the stated rates as discounts (20% and 30% off), not as the share still owed. Sum every coupon, then:\n\n`amount_owed = total_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)`\n\nThe same $100 standard order with a $5 coupon should be `100 * 80 / 100 - 5 = 75`. A premium order would use 70% of the total (`100 - 30`), then subtract the coupons.",
+    "thinking_tokens": 1022,
+    "tool_calls": []
+  }
+}

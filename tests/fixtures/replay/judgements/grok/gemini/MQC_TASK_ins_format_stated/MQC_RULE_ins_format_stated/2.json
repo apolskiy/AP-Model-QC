@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_SUMMARY_FAITHFUL": {
+        "rationale": "Every change from the release note is accurately represented without additions, omissions, or shifts in emphasis.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ef5465d0c7e0023b12feab310ac0e589a355bbf0a8610d3bd608cae3438e7df5"
+}

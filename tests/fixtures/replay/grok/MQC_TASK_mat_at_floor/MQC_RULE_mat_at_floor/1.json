@@ -1,0 +1,22 @@
+{
+  "request_hash": "5e377e352f8c1e404fd739ac4070c31177e029e860d451fe30a66b109430f8bd",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
+    "duration_ms": 8505,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1483,
+    "mode": "live",
+    "output_tokens": 93,
+    "raw_reference": "20dc8c92-6c70-92b7-8c5f-fc495e4eff62",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**Mandatory match: 78%.** Combined match over all requirements: **85.3%** (12.8/15), which meets the 85% bar.\n\nMandatory credit is 7.8/10: full credit on items 1\u20137; 4/5 on item 8 (Docker, Kubernetes, Terraform, Ansible; Helm missing); no credit on Kafka or GraphQL. All five nice-to-haves are present.",
+    "thinking_tokens": 902,
+    "tool_calls": []
+  }
+}

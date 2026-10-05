@@ -1,0 +1,32 @@
+{
+  "request_hash": "18db08df6ef15cfd15fa7a7cdc51bb5e6c1b200d39a79a4f07aa7dea80f12888",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_tul_malformed_arguments::MQC_RULE_tul_malformed_arguments",
+    "duration_ms": 1942,
+    "engine": "grok",
+    "finish_reason": "tool_calls",
+    "input_tokens": 1500,
+    "mode": "live",
+    "output_tokens": 18,
+    "raw_reference": "784d620a-e187-98b4-8ce3-5f15a3215c9e",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "",
+    "thinking_tokens": 54,
+    "tool_calls": [
+      {
+        "arguments": {
+          "limit": 5,
+          "query": "damaged on arrival"
+        },
+        "call_id": "call-1310e1e8-08d8-4ea1-9298-b23bc6f50d58-0",
+        "sequence": 0,
+        "tool_name": "search_policy"
+      }
+    ]
+  }
+}

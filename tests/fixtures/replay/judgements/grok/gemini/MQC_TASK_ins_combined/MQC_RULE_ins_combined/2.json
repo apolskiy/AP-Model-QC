@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate captures all four changes from the original release note clearly and accurately while complying with all constraints. No information was lost or degraded.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "8656efe00dd5f82c76e061641cf256f0244b925ac9a5397fd1e1e979c64613b9"
+}

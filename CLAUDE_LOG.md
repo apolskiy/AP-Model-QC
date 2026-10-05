@@ -2627,3 +2627,31 @@ would have reached a real account.
 
 84 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures against
 the default engine are the known gemini findings.
+
+## 2026-10-04: Grok recorded, and a case that fails on every engine
+
+64 task directories and 102 judgements written against `grok-4.7` in a 25-minute
+live run, replaying in 2 seconds with the same result. **4 findings**, the fewest
+of the four engines.
+
+| Engine | Findings |
+|---|---|
+| gemini | 2 |
+| grok | 4 |
+| openai | 8 |
+| claude | 10 |
+
+**`134205` fails on all four.** It asks whether a model overstates a figure
+stated in a source, and every engine alters it. With one engine that reads as a
+model defect; with four it reads as a property of the task, and the distinction
+is only available because the corpus is recorded against more than one.
+
+**Grok's findings are its own, though.** `QC_LLM_AMBIGUITY_UNHANDLED` on
+`134408` is unique to it: an incalculable figure assumed rather than asked
+about, which is the ablation pair from the `ambiguity_discrimination` family
+doing exactly what it was registered to do.
+
+### State
+
+84 preconditions passing, pylint 10.00/10 exit 0. The 2 graded failures against
+the default engine are the known gemini findings.

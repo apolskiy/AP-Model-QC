@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_TABLE_FIDELITY": {
+        "rationale": "All four regions are listed with their exact counts from the table and presented in the original order without omissions or reordering.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "01738dbe08fa0db18834334cd8cf7654d019dff4b14d9e7c1370f26adac6277a"
+}

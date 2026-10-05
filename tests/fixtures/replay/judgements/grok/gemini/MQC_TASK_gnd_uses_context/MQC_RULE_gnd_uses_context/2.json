@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CONTEXT_FIDELITY": {
+        "rationale": "The candidate output accurately states what AMBER means according to the glossary (marks a record completed successfully and archived, not a warning) and correctly addresses the notification aspect, explicitly noting that the on-call rota is deliberately not notified and the change advisory board receives a weekly digest instead.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "6987cbdc207f90c26bb95265d5603c140701f6583904edeb1d01c364fb83116b"
+}

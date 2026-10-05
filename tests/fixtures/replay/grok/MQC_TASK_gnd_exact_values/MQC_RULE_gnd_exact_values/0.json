@@ -1,0 +1,22 @@
+{
+  "request_hash": "1917d71ab933b7c2e55089864ce5ffb66989d1b3321591333e122e86426b583c",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
+    "duration_ms": 3823,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1348,
+    "mode": "live",
+    "output_tokens": 52,
+    "raw_reference": "a9f6ce1a-0852-9974-bd56-eb5ae17dc640",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "North America recorded 41.2 million in Q3 revenue. EMEA recorded 28.7 million and Japan recorded 11.4 million. Australia recorded 6.1 million, and total revenue was 87.4 million across these four regions.",
+    "thinking_tokens": 329,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_ARITHMETIC_SHOWN": {
+        "rationale": "The candidate provides the correct percentage (47.1%) and explicitly includes the two figures it is derived from (41.2 and 87.4), connecting them clearly to North America and total revenue.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "003945152ed9103565fd7fdcae85d499280572c907f04e41e934c0502cc562bf"
+}

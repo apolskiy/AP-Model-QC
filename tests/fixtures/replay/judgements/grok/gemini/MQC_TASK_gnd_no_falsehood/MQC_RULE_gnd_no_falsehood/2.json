@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_ARITHMETIC_SHOWN": {
+        "rationale": "The share percentage is correct (47.1%) and the response explicitly provides and identifies both figures from which it is calculated (41.2 for North America and 87.4 for total revenue).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "1b84c5f6a84e1f38f6d73d6d5826dd4819bbcca0df738b42664ebff3671e2c62"
+}

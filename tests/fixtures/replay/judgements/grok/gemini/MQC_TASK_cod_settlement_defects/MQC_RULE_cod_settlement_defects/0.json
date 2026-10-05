@@ -1,0 +1,20 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CREDITED_DEFECTS": {
+        "rationale": "The candidate reports both remaining defects (KeyError on unknown account tier and IndexError on an empty coupon list) along with the specific inputs triggering each.",
+        "score": 5
+      },
+      "C_COD_FURTHER_PROBLEMS": {
+        "rationale": "The candidate identifies multiple valid further problems beyond the basic defects, specifically calling out floating-point arithmetic for money and explaining why it matters (penny drift and reconciliation mismatches for finance), as well as coupon stacking failure and input validation gaps.",
+        "score": 5
+      },
+      "C_COD_WHO_IS_AFFECTED": {
+        "rationale": "The candidate explains who is out of pocket (merchant loses revenue / sale price, buyer gets a windfall or undercharged), carries through the exact arithmetic for the calls, and notes that the zero-dollar call succeeds silently while the negative amount causes downstream billing / stuck negative charge issues.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "15c669ea32f9f4b84069cc7cf264633af9d69185df7617beda0b380a02ae7bad"
+}

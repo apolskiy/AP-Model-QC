@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_CEILING_PROCEEDS": {
+        "rationale": "The response accurately calculates the mandatory match (90%), proceeds, and explicitly states that nice-to-haves do not affect or change the outcome.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e50e94c1bf9889f9674678893b344cd891cce5f1743a51b6eb6aa270c9bbf753"
+}

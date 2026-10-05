@@ -1,0 +1,22 @@
+{
+  "request_hash": "62815bd31d88a5bc54eca936ceb03d3cacf0478389529838c4a9d5b2488a567b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
+    "duration_ms": 34969,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1526,
+    "mode": "live",
+    "output_tokens": 352,
+    "raw_reference": "b6699919-898d-99a7-9737-ac7f40885b12",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The percentage tier discount is applied as the amount due, only the first coupon is redeemed, missing codes are assumed to exist, and the result is never floored at zero.\n\n**The tier rate is used as the balance, not as a reduction.** `total_amount * discount / 100` is the currency value of the percentage off (20 on a 100 basket at the standard tier). That value is then used as the starting amount owed, and the coupon is subtracted from it. A discount and a coupon are different units: the rate has to be turned into a currency reduction of the basket, and the coupon is already currency. Amount owed should be the basket minus that reduction, then minus coupons: `total_amount * (100 - discount) / 100 - coupon_sum` (80 before coupons on these calls, not 20).\n\n**Only `coupon_codes[0]` is looked up.** Later codes are never read, so `[\"SAVE20\", \"SAVE30\"]` drops SAVE30. Sum every recognized code. The same `[0]` access also assumes the list is non-empty.\n\n**A missing code is indexed directly.** `coupon_lookup[coupon_codes[0]]` raises `KeyError` for `\"NOPE\"`. Skip unrecognized codes (treat them as no reduction) instead of aborting settlement.\n\n**Nothing stops a negative balance.** After the percentage is applied correctly, SAVE90 is still 90 against an 80 remainder, and the function returns that negative number. Clamp the result to 0; the customer should not be paid for over-redeeming.\n\nOn these 100-unit standard baskets that is 50, 0, 80, and 30 respectively.",
+    "thinking_tokens": 2652,
+    "tool_calls": []
+  }
+}

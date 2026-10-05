@@ -1,0 +1,22 @@
+{
+  "request_hash": "37a932e3d5b078a8f4d8264e2b695a6344983c8d80abe584dd7c6871690ab23f",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_cod_aggregate_from_table::MQC_RULE_cod_aggregate_from_table",
+    "duration_ms": 2513,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1310,
+    "mode": "live",
+    "output_tokens": 17,
+    "raw_reference": "b31ceafc-fdbb-91bd-bf90-bb73d904e857",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**Total orders: 255**  \n**Total revenue: 87,400**",
+    "thinking_tokens": 130,
+    "tool_calls": []
+  }
+}

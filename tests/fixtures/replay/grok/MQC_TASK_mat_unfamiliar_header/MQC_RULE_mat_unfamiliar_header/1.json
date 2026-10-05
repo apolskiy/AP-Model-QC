@@ -1,0 +1,22 @@
+{
+  "request_hash": "2eb318edfc608407f95898cc544415cbdf9867338483823fc5c4362855884b56",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
+    "duration_ms": 2927,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1325,
+    "mode": "live",
+    "output_tokens": 67,
+    "raw_reference": "3af83e36-12bd-9b8e-bd90-831d7ea4391c",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**\"What you will need on day one.\"** \u2014 mandatory. \"Will need\" states a requirement, and \"on day one\" means you must already have it when you start.\n\n**\"What would make you stand out.\"** \u2014 optional. \"Would make you stand out\" describes a differentiator, not something required.",
+    "thinking_tokens": 199,
+    "tool_calls": []
+  }
+}

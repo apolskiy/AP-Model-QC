@@ -1,0 +1,22 @@
+{
+  "request_hash": "6a0b8f475aba09567607d4173e08ecc41e198e6659181df0529a5eb2a85c5ec4",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
+    "duration_ms": 4064,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1304,
+    "mode": "live",
+    "output_tokens": 52,
+    "raw_reference": "c3aae1f2-5047-902c-9699-4833fc26f28d",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**50%**\n\nThe requirement lists 2 items: Docker and Kubernetes. The candidate explicitly covers Docker only (1/2). \u201cContainers and orchestration\u201d does not name Kubernetes, so it does not count. 1 \u00f7 2 = 50%.",
+    "thinking_tokens": 231,
+    "tool_calls": []
+  }
+}

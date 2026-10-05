@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_WARNS_ONLY_WHERE_DUE": {
+        "rationale": "The candidate specifically names that the availability gate failed, clearly provides the margin (0.4 percentage points below the 99.5 percent minimum), and explicitly states that the incident-duration gate held/passed.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "30658b54fb04cc0defbe483c50b91a2d52e068695ca017776534bebdff2f0fcb"
+}

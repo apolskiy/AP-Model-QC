@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_CAUSE": {
+        "rationale": "The candidate correctly identified line 2 as carrying the error and explicitly named the unclosed parenthesis on the sorted() call.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "7628c13cf00cf4dbea39014ace2f1ad3790015cb78b405bad16f90a1e79f218e"
+}

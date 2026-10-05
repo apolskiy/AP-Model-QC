@@ -1,0 +1,22 @@
+{
+  "request_hash": "7c4b695103636fe8e31aa3a552e4fcf2bf2acfa4e7183585f49cb04a279f4c4b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 6800,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1436,
+    "mode": "live",
+    "output_tokens": 160,
+    "raw_reference": "d8196ac2-3520-91f1-932c-9716fe8536af",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**Mandatory match: 90% (9/10).** That meets the 85% bar, so the candidate passes on mandatory requirements alone. Nice-to-haves do not change the outcome.\n\n| # | Mandatory requirement | Resume |\n|---|---|---|\n| 1 | Python | Match |\n| 2 | SQL | Match |\n| 3 | Linux administration | Match |\n| 4 | Git | Match |\n| 5 | REST API design | Match |\n| 6 | Unit testing | Match |\n| 7 | CI pipelines | Match |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Match |\n| 9 | Kafka | Match |\n| 10 | GraphQL | No match |\n\n**Gap:** GraphQL is not on the resume.",
+    "thinking_tokens": 630,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "7870611fbc09fcb9b0ddc29e01535e4e72df2573d0f01c4a0d699c2069f36d86",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
+    "duration_ms": 12769,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1387,
+    "mode": "live",
+    "output_tokens": 278,
+    "raw_reference": "7509ceec-ac4d-993f-85b3-075593c67552",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The function treats the tier percentages as the share of the bill that is still owed, and it applies only the first coupon. It should treat those percentages as the share taken off, then subtract every coupon.\n\n**What it computes now**\n\n- `discount` is `20` for `\"standard\"` and `30` for `\"premium\"`.\n- `coupon_sum` is only `coupon_lookup[coupon_codes[0]]`. Later codes are ignored.\n- The return value is `total_amount * discount / 100 - coupon_sum`.\n\nSo a $100 standard order with a $5 coupon becomes `100 * 20 / 100 - 5 = 15`, not the amount left after a 20% discount. Premium is the same mistake with 30%: the customer is charged about 30% of the total, minus one coupon, instead of about 70% minus the coupons.\n\n**What it should compute**\n\nKeep the module\u2019s percentages as discounts off the total: 20% off standard, 30% off premium. That means the tier-adjusted subtotal is `total_amount * (100 - discount) / 100` (80% and 70% of the total). Then subtract the sum of `coupon_lookup[code]` for every code in `coupon_codes`, not just the first.",
+    "thinking_tokens": 859,
+    "tool_calls": []
+  }
+}

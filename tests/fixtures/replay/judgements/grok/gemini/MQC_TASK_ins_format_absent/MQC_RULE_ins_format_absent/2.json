@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_UNPROMPTED_SHAPE": {
+        "rationale": "The candidate output is written in plain prose with no unprompted machine-readable or incidental structure.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ecd4769c0b2b2d0eac16c4945273fb0eef34ad85f906f572926ec2d2b831efbc"
+}

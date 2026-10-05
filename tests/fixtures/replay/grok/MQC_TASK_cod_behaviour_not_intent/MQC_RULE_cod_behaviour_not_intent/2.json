@@ -1,0 +1,22 @@
+{
+  "request_hash": "b21ee44af5e053f491329d3f76fc399183d1ba832c9f191f03191ef89eae19c8",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
+    "duration_ms": 3889,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1337,
+    "mode": "live",
+    "output_tokens": 52,
+    "raw_reference": "6c2623eb-ce08-901e-aede-8c06d836cf9b",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "It returns the first two rows in the original order, the ones scoring 10 and 90.\n\n`sorted(...)` builds a new list and throws it away, so `entries` is never reordered. The return is just `entries[:limit]`.",
+    "thinking_tokens": 325,
+    "tool_calls": []
+  }
+}

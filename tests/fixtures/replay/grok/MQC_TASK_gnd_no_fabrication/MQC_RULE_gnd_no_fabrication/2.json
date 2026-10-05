@@ -1,0 +1,22 @@
+{
+  "request_hash": "bc49e8e02b2c52c5c0e5596f0a2c58c5bd194a322e5930a2916cc1886e904fc8",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_no_fabrication::MQC_RULE_gnd_no_fabrication",
+    "duration_ms": 1707,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1352,
+    "mode": "live",
+    "output_tokens": 47,
+    "raw_reference": "d265e3c3-e763-9f9d-8c09-9dcc4a76d439",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The report covers four regions and states these revenues:\n\n- North America: 41.2 million\n- EMEA: 28.7 million\n- Japan: 11.4 million\n- Australia: 6.1 million",
+    "thinking_tokens": 93,
+    "tool_calls": []
+  }
+}

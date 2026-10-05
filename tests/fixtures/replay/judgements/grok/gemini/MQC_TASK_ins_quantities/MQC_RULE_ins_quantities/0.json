@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_QUANTITIES_READABLE": {
+        "rationale": "Each bullet is concise, adheres to the sentence length constraint, and together the three bullets fully cover all the defect fixes described in the release note.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "12c4d5a96ca0d66e762b10848d7608a31765c4e0f3aef9d04d0a961e719d072e"
+}

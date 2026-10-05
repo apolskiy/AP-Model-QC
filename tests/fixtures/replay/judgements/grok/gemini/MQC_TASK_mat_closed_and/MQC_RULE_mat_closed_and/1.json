@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_AND_REASONING": {
+        "rationale": "The candidate provides the correct figure (50%), includes clear working, and explicitly identifies Kubernetes as the missing requirement.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "330f331e95b06f67d3a69a6b4bd5448bf1ee00d7504cb5ae585a631e994020c9"
+}

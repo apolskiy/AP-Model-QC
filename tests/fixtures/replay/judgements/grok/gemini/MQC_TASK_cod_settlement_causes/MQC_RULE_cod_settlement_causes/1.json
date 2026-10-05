@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CAUSES_DIAGNOSED": {
+        "rationale": "The response identifies each independent defect (percentage tier discount applied as balance instead of reduction, indexing only the first coupon code, direct indexing causing KeyError on missing codes, and lack of clamping to zero for negative totals) and provides the remedy for each, keeping the causes distinct.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "23ffa8625ffaa1456b4ea21bb24165633ecd3540d94e6f6bdc245d9c1c0a8ea0"
+}

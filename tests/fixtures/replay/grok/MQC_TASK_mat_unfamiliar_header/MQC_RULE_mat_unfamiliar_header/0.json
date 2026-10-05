@@ -1,0 +1,22 @@
+{
+  "request_hash": "2eb318edfc608407f95898cc544415cbdf9867338483823fc5c4362855884b56",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
+    "duration_ms": 2958,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1325,
+    "mode": "live",
+    "output_tokens": 82,
+    "raw_reference": "e7cd2e0a-8f58-98e2-96a5-a09cdbc7a8f4",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**\"What you will need on day one.\" \u2014 mandatory.**  \n\"Will need\" states a requirement, and \"on day one\" means those skills are expected from the start (Python, SQL).\n\n**\"What would make you stand out.\" \u2014 optional.**  \n\"Would make you stand out\" describes differentiators that help you stand out, not must-haves (Grafana, technical writing).",
+    "thinking_tokens": 168,
+    "tool_calls": []
+  }
+}

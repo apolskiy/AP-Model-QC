@@ -1,0 +1,22 @@
+{
+  "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
+    "duration_ms": 40911,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1455,
+    "mode": "live",
+    "output_tokens": 675,
+    "raw_reference": "a943d9b8-2755-962f-b2c7-8a31b57f7965",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The function charges the wrong amount, drops coupons, and crashes on ordinary inputs. Against the 100-unit basket, the first two production calls return `-10.0` and `0.0` instead of a positive balance, and the third raises `KeyError`.\n\n**1. Amount owed is computed as the discount, not the price after discount.**\n`total_amount * discount / 100 - coupon_sum` treats the tier percent as the fraction to charge, then subtracts the coupon from that. `standard: 20` and `premium: 30` only make sense as percent-off (premium should pay less). Correct settlement is percent-off first, then coupons, floored at zero: `(total_amount * (100 - discount) / 100) - coupon_sum`.\n- Call 1 returns `-10` instead of `50` (100 \u2212 20% \u2212 30).\n- Call 2 returns `0` instead of `60` (100 \u2212 20% \u2212 20).\n- A premium basket would be `30 \u2212 coupon`, so premium pays *more* than standard.\nCustomers are undercharged or credited. The business loses the sale and may pay a refund. Finance cannot reconcile. Payment gateways that reject a negative charge fail the order.\n\n**2. The result is not clamped at zero.**\nEven after a formula fix, a coupon larger than the discounted total still returns a negative balance. Same impact: erroneous credits, refunds, or a failed charge. No production call currently hits this except as a side effect of defect 1.\n\n**3. Only the first coupon is applied.**\n`coupon_codes` is a list and the local is named `coupon_sum`, but the code reads `coupon_codes[0]` only. Extra codes are silently ignored. Customers who stacked coupons pay more than they should. These three calls pass one code, so they do not show it.\n\n**4. An unknown coupon crashes checkout.**\n`coupon_lookup[coupon_codes[0]]` raises `KeyError` when the code is missing. Call 3 (`\"NOPE\"`) does this. The customer cannot pay. Support and on-call see a 500 instead of \u201cinvalid coupon.\u201d\n\n**5. No coupons crashes checkout.**\n`coupon_codes[0]` raises `IndexError` on `[]`. A customer checking out without a coupon cannot settle.\n\n**6. An unknown tier crashes checkout.**\n`DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for anything other than `\"standard\"` or `\"premium\"`. Those customers cannot settle; there is no fallback or domain error.\n\n**7. Money is a float.**\n`/ 100` yields a binary float. These integer examples happen to be exact (`-10.0`, `0.0`); other totals will not be. Customers and accounting see off-by-a-cent charges and failed equality checks. Use integer cents or `Decimal`.\n\nDefects 1\u20132 and 7 affect every successful call. Defects 4\u20136 turn a bad code, an empty list, or a new tier into an unhandled exception. Defect 3 silently shortchanges multi-coupon orders.",
+    "thinking_tokens": 2696,
+    "tool_calls": []
+  }
+}

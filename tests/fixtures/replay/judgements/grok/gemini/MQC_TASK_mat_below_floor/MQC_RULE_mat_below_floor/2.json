@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The candidate output warns that the score is below the 78% cutoff and states that nice-to-have requirements were not evaluated, but it does not specify which mandatory requirements were unmet (Kafka, GraphQL, and the infrastructure line).",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "ce6da3837115228e8076e937d3518ce0a8809bcd8fcbbb713a44d85bff9c9075"
+}

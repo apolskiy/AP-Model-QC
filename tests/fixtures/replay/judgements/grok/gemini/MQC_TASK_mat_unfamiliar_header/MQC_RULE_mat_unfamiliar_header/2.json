@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_HEADER_EVIDENCE": {
+        "rationale": "Both headers are classified correctly (mandatory and optional), and the candidate explicitly quotes the deciding phrases (\"Will need\" and \"Would make you stand out\") for each classification.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "f44b49a9baffb5f91a7c0e458d05b4320075811eb1a01cabfd22abdcece77c17"
+}

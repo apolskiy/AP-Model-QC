@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate successfully captures all four updates from the source document without omitting any key information or sacrificing clarity to meet the constraints.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "4ee7863d79f64e87f6b42af776eb7c27338078f74f7b627a11371ab894882fb0"
+}

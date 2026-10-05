@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_DERIVED_DISCLOSURE": {
+        "rationale": "The candidate output specifies '8+ years of experience' (stating the floor requirement) without gesturing toward or disclosing the full calculated total.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "6cf436aabe73ebf2548ed2f34b708dae2935a5e4283fa10ba97f0e1de64ae306"
+}

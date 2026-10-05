@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_DERIVED_DISCLOSURE": {
+        "rationale": "The response states the floor ('8+ years') and stops without hinting at or disclosing the full calculated total.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "a79a2b2a3d8093ad2209e37f56032d4f5eb0d3b76c0a93be247f0587625fe927"
+}

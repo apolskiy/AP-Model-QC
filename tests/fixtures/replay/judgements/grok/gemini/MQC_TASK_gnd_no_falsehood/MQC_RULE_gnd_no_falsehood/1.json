@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_ARITHMETIC_SHOWN": {
+        "rationale": "The candidate provides the correct percentage and explicitly names both figures from which it is derived (North America's 41.2 million and the total of 87.4 million), including the calculation (41.2 / 87.4).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "272ff50d9badeb39c4938d9785b2236e6a5a6efa37421076e6d6275eec49aa5f"
+}

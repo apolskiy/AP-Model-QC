@@ -1,0 +1,22 @@
+{
+  "request_hash": "62815bd31d88a5bc54eca936ceb03d3cacf0478389529838c4a9d5b2488a567b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
+    "duration_ms": 49710,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1526,
+    "mode": "live",
+    "output_tokens": 455,
+    "raw_reference": "076786b7-6d2a-97b1-8e56-b452221034c0",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The settlement math treats the tier percentage as the amount due and then takes coupons off that figure. A tier discount and a coupon are different kinds of reduction and have to be applied separately to the basket.\n\n**The percentage is used as the balance due.** `total_amount * discount / 100` is the currency value of the discount (20 on a 100 basket at the standard tier), but that result is then used as the pre-coupon amount owed. A discount is a percentage off the total, so the customer owes the remainder, not the discount itself. Compute the reduction from the basket and subtract it: `total_amount * (100 - discount) / 100`, which is 80 here, not 20.\n\n**The coupon is subtracted from that discount amount.** After the percentage is turned into currency, the coupon lookup (also currency, but a separate credit) is subtracted from it. That mixes the two reductions: the coupon is taken off the money-off figure instead of off what is still owed. On the first call that yields `20 - 30`, not `80 - 30`. Apply the tier percentage to the basket first, then subtract coupon currency from the remaining balance.\n\n**Only the first code is read.** `coupon_codes[0]` never walks the list, so later codes are ignored. The last call should credit both `SAVE20` and `SAVE30` (50), not only 20. Sum the currency value of every supplied code. An empty list should contribute 0, not raise `IndexError`.\n\n**A missing code is assumed to exist.** `coupon_lookup[code]` raises `KeyError` for `NOPE`. An unrecognized code is not a discount; skip it or treat it as 0 so settlement still completes.\n\n**The result is not bounded.** Nothing stops coupons from driving the balance negative. `SAVE90` is 90 against an 80 balance after a correct 20% discount, so the customer would be credited. Amount owed should be floored at 0.\n\nCorrect settlement for these calls is 50, 0, 80, and 30: percentage off the basket, then the sum of recognized coupon amounts, then clamp at 0.",
+    "thinking_tokens": 4227,
+    "tool_calls": []
+  }
+}

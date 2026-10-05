@@ -1,0 +1,22 @@
+{
+  "request_hash": "376d6826af31520c5df895e1f4e60126ea548017ebce6374cee1f6dba91d0ab9",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
+    "duration_ms": 4006,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1309,
+    "mode": "live",
+    "output_tokens": 50,
+    "raw_reference": "c0472333-398e-9a06-bffd-3ef701367b63",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**100%**\n\nThe requirement is a closed OR: any one of Python, Go, or Rust fully satisfies it. The candidate lists Python, so the requirement is met in full. SQL and Bash are extra and do not reduce the match.",
+    "thinking_tokens": 322,
+    "tool_calls": []
+  }
+}

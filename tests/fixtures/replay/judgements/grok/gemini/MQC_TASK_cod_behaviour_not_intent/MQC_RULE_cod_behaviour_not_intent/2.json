@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_DISCARD": {
+        "rationale": "The candidate correctly states the return value (the first two rows in original order, scoring 10 and 90) and explicitly identifies that sorted builds a new list and throws it away without modifying entries.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "b5e211a174d1422224084085763bf87177b0512608ef6cabf3bde18f3b09d79b"
+}

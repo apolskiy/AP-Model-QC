@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CAUSES_DIAGNOSED": {
+        "rationale": "The candidate clearly identifies the independent causes behind the defects (percentage applied as bill base rather than a deduction, only applying the first coupon, unhandled missing keys, and lack of flooring at zero) and provides a specific remedy for each, keeping them distinct.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "8bff57a3f79574e4ebd4e9059ee9ebdecbc29161f0ba704583835cdae0227ca6"
+}

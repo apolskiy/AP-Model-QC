@@ -1,0 +1,22 @@
+{
+  "request_hash": "4abaeb866c592ebae4c30f3e311ab2ca64018c75ec56871bc6e88053409089c0",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_cod_preserves_literals::MQC_RULE_cod_preserves_literals",
+    "duration_ms": 2954,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1334,
+    "mode": "live",
+    "output_tokens": 42,
+    "raw_reference": "a0955ce4-0018-9d90-adf6-b13c36be4f3d",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",
+    "thinking_tokens": 212,
+    "tool_calls": []
+  }
+}

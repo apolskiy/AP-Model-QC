@@ -1,0 +1,22 @@
+{
+  "request_hash": "7c4b695103636fe8e31aa3a552e4fcf2bf2acfa4e7183585f49cb04a279f4c4b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
+    "duration_ms": 9489,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1436,
+    "mode": "live",
+    "output_tokens": 79,
+    "raw_reference": "17a2635c-35e8-9c3e-ad73-fc7bf2249da2",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**Mandatory match: 90% (9/10).** That meets the 85% bar, so the candidate proceeds. Nice-to-haves do not change the outcome.\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nMissing mandatory item: GraphQL.",
+    "thinking_tokens": 996,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_QUANTITIES_READABLE": {
+        "rationale": "The three bullets are terse, clear, and collectively cover all three defect fixes described in the release note without sacrificing informative content.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "45d67fcd1304dd42f9131b7c07eeb08c882a5996fec6ec3090d3b53ef27f747b"
+}

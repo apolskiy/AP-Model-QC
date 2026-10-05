@@ -1,0 +1,22 @@
+{
+  "request_hash": "c0e457e4f6ebe4a6a515d9b5e332c641dcd0f7710d1399dcd2b4cdaab1d7bbf1",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
+    "duration_ms": 7666,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1419,
+    "mode": "live",
+    "output_tokens": 178,
+    "raw_reference": "6af79c40-00cb-9c85-b6ec-477fc3aa1a37",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "Give every code an absolute expiry and refuse redemption once that time has passed. A relative TTL alone is not enforceable unless the lookup also stores when the clock started.\n\n`coupon_lookup` currently maps a code to a bare amount, so the redeem path has nothing to compare against \u201cnow.\u201d Each entry needs at least:\n\n- the discount value\n- `expires_at` (an absolute timestamp, not a duration)\n\nOptionally also `valid_from`, and a status such as active / revoked / already redeemed.\n\nRedemption should load that record, reject the code if it is missing, not yet valid, past `expires_at`, or no longer active, and only then apply the value. Without `expires_at` (or an equivalent `issued_at` + TTL pair stored on the record), the lookup cannot enforce a lifetime no matter what policy you declare outside it.",
+    "thinking_tokens": 532,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "6b71f3408dfaa2406effe4dbd0dde7b4f66c52e61a10c77f311ab544d107af68",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
+    "duration_ms": 2602,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1312,
+    "mode": "live",
+    "output_tokens": 39,
+    "raw_reference": "c9216d91-b80b-9839-9d07-a5eff0d0fba8",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "`fetch_profile` takes `client` and `user_id`, calls `client.get` with the path `/users/{user_id}`, and returns the result of `response.json()`.",
+    "thinking_tokens": 183,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "5ed7ff1a73634632529bb0ad1e65e023252c93a58dfd2155a5c85416c8b4535b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
+    "duration_ms": 3684,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1394,
+    "mode": "live",
+    "output_tokens": 24,
+    "raw_reference": "2c12a21c-9d67-9b20-9de8-0309ff4263e0",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "8+ years of backend engineering across transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
+    "thinking_tokens": 321,
+    "tool_calls": []
+  }
+}

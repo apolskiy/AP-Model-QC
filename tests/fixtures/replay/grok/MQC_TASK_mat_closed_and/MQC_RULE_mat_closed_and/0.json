@@ -1,0 +1,22 @@
+{
+  "request_hash": "6a0b8f475aba09567607d4173e08ecc41e198e6659181df0529a5eb2a85c5ec4",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
+    "duration_ms": 3610,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1304,
+    "mode": "live",
+    "output_tokens": 59,
+    "raw_reference": "129a3fca-da2d-9c0e-8aa0-76b61ee68576",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**50%**\n\nThe requirement is a closed AND: both **Docker** and **Kubernetes** are mandatory (2 items).\n\nThe candidate mentions **Docker** only. **Kubernetes** is absent.\n\n1 of 2 required items are met \u2192 1/2 = **50%**.",
+    "thinking_tokens": 198,
+    "tool_calls": []
+  }
+}

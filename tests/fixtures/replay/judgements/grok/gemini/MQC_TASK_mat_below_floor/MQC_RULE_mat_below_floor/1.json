@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_BELOW_ACTIONABLE": {
+        "rationale": "The response warns that the match falls below the required threshold and explicitly names the 78% cutoff without evaluating the nice-to-have items, but it does not specify which mandatory requirements are unmet.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "83c2af107e4dc6656139cfc7769892fd0b4a3ea9ee78e5c91a0bc29b05a5b57a"
+}

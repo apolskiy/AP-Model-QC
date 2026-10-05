@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_ORDER_COMPLETE": {
+        "rationale": "All four changes from the source are present. The two changes with measurable quantities appear first in their original relative order, followed by the remaining two changes in their original relative order.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "c1a861eef3ec5962429853c251e50de9862741aa32cbf88e323f3671403d74a5"
+}

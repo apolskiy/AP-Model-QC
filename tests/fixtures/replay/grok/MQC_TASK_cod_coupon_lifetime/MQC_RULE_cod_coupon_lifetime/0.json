@@ -1,0 +1,22 @@
+{
+  "request_hash": "c0e457e4f6ebe4a6a515d9b5e332c641dcd0f7710d1399dcd2b4cdaab1d7bbf1",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
+    "duration_ms": 6793,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1419,
+    "mode": "live",
+    "output_tokens": 168,
+    "raw_reference": "807d5bbf-ef8a-9fb1-92cd-0a7979d287df",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "Bound each code with an explicit validity window stored beside its value, and reject redemption when the current time falls outside that window.\n\n`coupon_lookup` currently maps a code to a bare amount, so expiry cannot be checked. Each entry needs at least:\n\n- `value` \u2014 the discount amount (what the lookup returns today)\n- `expires_at` \u2014 the instant after which the code is no longer redeemable\n\nA `valid_from` (or `issued_at`) is worth adding if codes should not be usable before a start time. The redeem path must read that metadata and compare it to the current time before applying the value; a timestamp that is stored but never checked does not enforce the bound.\n\nIssued codes then stop being valid once `expires_at` passes, without relying on deleting them from the lookup.",
+    "thinking_tokens": 474,
+    "tool_calls": []
+  }
+}

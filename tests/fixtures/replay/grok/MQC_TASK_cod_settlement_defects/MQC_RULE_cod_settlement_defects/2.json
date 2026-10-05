@@ -1,0 +1,22 @@
+{
+  "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
+    "duration_ms": 34061,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1455,
+    "mode": "live",
+    "output_tokens": 361,
+    "raw_reference": "451fce5f-bccb-91da-8095-0144db3cfd11",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The settlement math is inverted, coupons are only partly applied, and several ordinary inputs crash checkout.\n\n1. Tier \u201cdiscount\u201d is used as the amount charged, not the amount taken off. `total_amount * discount / 100` is the discount slice itself; the coupon is then subtracted from that slice. On a 100-unit standard basket the function computes `20 - coupon`, not `80 - coupon`. The first call returns `-10`; the second returns `0`. Premium is the same bug with 30. Customers are undercharged; the business loses the sale price; billing can record a credit instead of a charge.\n\n2. The result is not floored at zero. A coupon larger than that slice yields a negative amount owed (first call: `-10`). Customers can be credited; payment or ledger code that rejects negatives fails the order.\n\n3. Only `coupon_codes[0]` is read, despite the name `coupon_sum`. Later codes are silently ignored. Customers who pass more than one code do not get them; nothing tells them the extras were dropped.\n\n4. An unknown code raises `KeyError`. The third call (`\"NOPE\"`) crashes instead of rejecting the coupon. That customer cannot check out; the caller gets an unhandled exception.\n\n5. An empty `coupon_codes` list raises `IndexError` on `[0]`. Customers with no coupon cannot settle.\n\n6. An unknown `account_tier` raises `KeyError` on `DISCOUNT_BY_TIER`. Anyone not exactly `\"standard\"` or `\"premium\"` cannot settle.\n\n7. Money is computed with binary floats and no rounding to the minor unit. Non-round baskets can be off by fractions of a cent. Customers and reconciliation both see drift.",
+    "thinking_tokens": 2394,
+    "tool_calls": []
+  }
+}

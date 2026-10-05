@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_DISCARD": {
+        "rationale": "The candidate gives the correct return value (the rows with scores 10 and 90 in their original order) and explicitly names that sorted() creates a new list and throws it away without modifying the original entries list.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "35cd893e95657297392ccb337fee4a34aba29ded1381abf79797342d81486964"
+}

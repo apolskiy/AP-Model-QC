@@ -1,0 +1,22 @@
+{
+  "request_hash": "0a5e4719528f58020097094c31ad7e3fd61c0c718a60473a5fff5fc1c1dd4925",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
+    "duration_ms": 5721,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1355,
+    "mode": "live",
+    "output_tokens": 86,
+    "raw_reference": "e868be8d-540d-9226-be08-06bb7412ec19",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "Years of experience are neither stated nor calculable from the summary, so I can\u2019t rewrite it to match an 8-year requirement without inventing that figure.\n\nSend the actual years (or start/end dates I can calculate from).\n\nNot supplying it means the summary cannot honestly satisfy the posting. I won\u2019t insert \u201c8 years,\u201d and a version that omits tenure will still fail a requirement that is explicitly years-based.",
+    "thinking_tokens": 402,
+    "tool_calls": []
+  }
+}

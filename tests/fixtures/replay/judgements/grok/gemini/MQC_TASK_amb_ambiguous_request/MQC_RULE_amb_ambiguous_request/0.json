@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_AMB_QUESTION_IS_USEFUL": {
+        "rationale": "The candidate clearly exceeds level 3 by explicitly identifying and naming both missing details needed to resolve the ambiguity (which specific threshold key to update and what new value to set). However, it falls short of level 5 because it does not explicitly state what it will do once the requested information is provided.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "f526fe794a7287771b496de01cf19bb27e3155ed95bbe7451cd1eebcca2f7b16"
+}

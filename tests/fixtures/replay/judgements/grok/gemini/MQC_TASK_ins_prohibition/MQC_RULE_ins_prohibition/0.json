@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_PROHIBITION_NATURAL": {
+        "rationale": "The candidate completely avoided em dashes and en dashes, combining the clauses using standard commas and a conjunction. The resulting prose flows smoothly and reads completely naturally as though unconstrained.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ccd484af1f5ab14a8b4810758092255852347c98c8a0e3d923c140b59f680602"
+}

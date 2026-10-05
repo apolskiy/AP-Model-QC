@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_LIFETIME_IS_ENFORCEABLE": {
+        "rationale": "The candidate recommends bounding the code's lifetime with an absolute expiry (or issued_at + TTL) and explicitly specifies what data the lookup must store/carry (e.g., `expires_at` timestamp alongside the discount value) so redemption can compare it against the current time to enforce the bound.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "3b4472a32ff6e357ea22c702a9eab19eb97ce4924036eb4c01611be899ba041d"
+}

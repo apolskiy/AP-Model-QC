@@ -1,0 +1,22 @@
+{
+  "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
+    "duration_ms": 27871,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1455,
+    "mode": "live",
+    "output_tokens": 540,
+    "raw_reference": "f222c9b3-2f00-9230-9a54-48cc6f36a9f3",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The settlement math is inverted, coupons are applied unsafely, and bad inputs crash checkout instead of being rejected.\n\n**1. Tier \u201cdiscount\u201d is used as the amount due, not taken off the basket.**  \n`total_amount * discount / 100` treats 20 as \u201ccharge 20%,\u201d not \u201c20% off.\u201d On a 100-unit standard basket that is 20 before coupons, not 80. Every standard and premium order is undercharged. The merchant loses most of the sale; customers are underbilled.\n\n**2. The coupon is subtracted from that already-shrunk figure, and the result is not floored at 0.**  \n`settle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})` returns **-10**. `[\"SAVE20\"]` returns **0**. A normal coupon can wipe the bill or produce a negative balance. Customers get free or credit orders; finance and payment systems see bogus charges or unintended refunds.\n\n**3. Only the first coupon is read, despite `coupon_codes` and `coupon_sum`.**  \n`coupon_lookup[coupon_codes[0]]` ignores every code after the first, so nothing is actually summed. Customers who pass more than one valid code only get the first. Extra codes never affect the amount.\n\n**4. An unknown coupon crashes the call.**  \n`settle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})` raises `KeyError: 'NOPE'`. Checkout fails instead of rejecting the code or charging the tier price with no coupon. That customer cannot pay; support and lost sales follow.\n\n**5. An empty coupon list crashes the same way.**  \n`coupon_codes[0]` raises `IndexError` when the list is empty. Shoppers with no coupon cannot settle.\n\n**6. An unknown tier crashes.**  \n`DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for any tier other than `\"standard\"` or `\"premium\"`. Those accounts cannot check out. The three production calls do not hit this, but the lookup is unguarded.\n\n**7. Money is computed with binary floats.**  \n`/` yields a float. Totals that are not nice decimals can be off by fractions of a unit. Customers and reconciliation both see penny drift; there is no rounding to a currency unit.\n\nThe three production calls, as written: **-10**, **0**, and **KeyError**. None charges 80 minus a valid coupon, which is what a 20% standard discount on 100 implies.",
+    "thinking_tokens": 1865,
+    "tool_calls": []
+  }
+}

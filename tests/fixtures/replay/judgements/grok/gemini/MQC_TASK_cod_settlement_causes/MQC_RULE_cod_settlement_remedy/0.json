@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_REMEDY_IS_DETERMINATE": {
+        "rationale": "The candidate recognizes that an unknown code should not crash the settlement process and notes that it should not yield a discount ('skip it instead of crashing, and do not invent a discount for it'). However, it falls short of Level 5 because it hedges between proceeding ('skip it') and halting/failing ('reject', 'a deliberate validation failure'), and does not explicitly specify how the code should handle it (e.g., using `.get(code, 0)` or guarding membership during accumulation).",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "7c4e5455aa1a6ccd7ce1002aa1329bfc94e464da5b1d0da6f146dc6c5fa9b302"
+}

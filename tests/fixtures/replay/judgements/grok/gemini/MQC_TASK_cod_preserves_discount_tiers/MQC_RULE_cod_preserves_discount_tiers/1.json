@@ -1,0 +1,16 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_MISCOMPUTATION": {
+        "rationale": "The response clearly and precisely identifies the miscomputation as calculating the discount amount rather than the discounted price/amount owed, but it does not explicitly state who loses money.",
+        "score": 4
+      },
+      "C_COD_TIERS_UNCHANGED": {
+        "rationale": "The response preserves the module's 20% and 30% tier percentages and correctly distinguishes the discount percentage from the remainder (80% for standard, 70% for premium) while walking through an example.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "b6cc2bef811d41c553ab90edbdc6eef3a0b882d3305026993d706c70af25334c"
+}

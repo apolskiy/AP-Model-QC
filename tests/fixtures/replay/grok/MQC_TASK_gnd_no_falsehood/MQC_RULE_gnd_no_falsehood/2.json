@@ -1,0 +1,22 @@
+{
+  "request_hash": "abbbd5a2442dd80ab19a46bc4cbad35715bff69f102aad2aaae4061351880abb",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
+    "duration_ms": 4971,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1343,
+    "mode": "live",
+    "output_tokens": 25,
+    "raw_reference": "e41cb022-8676-990f-a8e3-6d18f4a71693",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "North America contributed the largest share: 47.1% of total revenue (41.2 / 87.4).",
+    "thinking_tokens": 425,
+    "tool_calls": []
+  }
+}

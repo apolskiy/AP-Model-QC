@@ -1,0 +1,22 @@
+{
+  "request_hash": "abbbd5a2442dd80ab19a46bc4cbad35715bff69f102aad2aaae4061351880abb",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
+    "duration_ms": 5000,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1343,
+    "mode": "live",
+    "output_tokens": 57,
+    "raw_reference": "a068d72e-12cc-9b28-9a8a-bc272b30bf90",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**North America, about 47.1%.**\n\nNorth America (41.2 million) is the largest of the four regions. Its share of the stated total (87.4 million) is 41.2 / 87.4 \u2248 **47.1%**.",
+    "thinking_tokens": 389,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "request_hash": "439f0e0394c9a636be66b59b3a4c4ca944e6f417b7d3c33de81772eb35f89f11",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_tul_selects_among_several::MQC_RULE_tul_selects_among_several",
+    "duration_ms": 1473,
+    "engine": "grok",
+    "finish_reason": "tool_calls",
+    "input_tokens": 1506,
+    "mode": "live",
+    "output_tokens": 21,
+    "raw_reference": "fc706e3c-5c31-9c76-9933-8c2b86e1dce5",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "",
+    "thinking_tokens": 31,
+    "tool_calls": [
+      {
+        "arguments": {
+          "limit": 5,
+          "query": "days to return an item after delivery"
+        },
+        "call_id": "call-3e8b5705-c6a9-4d2a-b9d5-fc17d05f56f1-0",
+        "sequence": 0,
+        "tool_name": "search_policy"
+      }
+    ]
+  }
+}

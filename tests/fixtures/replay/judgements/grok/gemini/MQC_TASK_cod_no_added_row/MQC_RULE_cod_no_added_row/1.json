@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_TABLE_FIDELITY": {
+        "rationale": "All four regions (North, East, South, West) and their corresponding order counts (120, 80, 35, 20) are accurately reproduced in the exact order presented in the source table without any omissions or alterations.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "a077ee7e654cf49e9339477e9fab51f379c59f075ee32374b21d94b839321e50"
+}

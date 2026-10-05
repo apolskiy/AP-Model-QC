@@ -1,0 +1,22 @@
+{
+  "request_hash": "6626b6a54fbfcb5452970a1b22eeca065bcdb83c36b7c156e1b644a0dd08bc63",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
+    "duration_ms": 2199,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1311,
+    "mode": "live",
+    "output_tokens": 23,
+    "raw_reference": "8a694e12-e225-9ef6-89c3-81670bb480c0",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "North: 120 orders  \nEast: 80 orders  \nSouth: 35 orders  \nWest: 20 orders",
+    "thinking_tokens": 104,
+    "tool_calls": []
+  }
+}

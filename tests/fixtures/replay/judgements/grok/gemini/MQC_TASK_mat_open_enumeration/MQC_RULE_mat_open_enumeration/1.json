@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OPEN_EQUIVALENCE": {
+        "rationale": "The candidate accepts the requirement by equivalence rather than a named match, explicitly flags it as judged/equivalence, and names the category ('database').",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "655ded4bedfdf946dacd2443686fa4362e173bc08e736cca3939370e660c4b04"
+}

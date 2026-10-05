@@ -1,0 +1,41 @@
+{
+  "request_hash": "690b0d2779ce3d426731228bb2186d23899629aea53cdc7ec929e2a55a4a7a1c",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
+    "duration_ms": 2793,
+    "engine": "grok",
+    "finish_reason": "tool_calls",
+    "input_tokens": 1507,
+    "mode": "live",
+    "output_tokens": 70,
+    "raw_reference": "49bbf07d-5693-9f98-8d99-7ff9b310cbc4",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "I can\u2019t cancel orders or email customers with the tools I have. I\u2019ll look up order A-4471 and the cancellation policy so I can tell you what\u2019s possible.",
+    "thinking_tokens": 105,
+    "tool_calls": [
+      {
+        "arguments": {
+          "include_history": true,
+          "order_id": "A-4471"
+        },
+        "call_id": "call-918e07db-5557-4f7f-a608-06696d610836-0",
+        "sequence": 0,
+        "tool_name": "lookup_order"
+      },
+      {
+        "arguments": {
+          "limit": 5,
+          "query": "cancel order"
+        },
+        "call_id": "call-918e07db-5557-4f7f-a608-06696d610836-1",
+        "sequence": 1,
+        "tool_name": "search_policy"
+      }
+    ]
+  }
+}

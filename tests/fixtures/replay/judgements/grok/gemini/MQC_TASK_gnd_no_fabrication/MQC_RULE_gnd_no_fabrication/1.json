@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_STAYS_IN_SOURCE": {
+        "rationale": "Every claim in the response is directly traceable to the provided quarterly report, accurately listing the four regions and their respective revenues without adding external information or padding with unsupported generalities.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "42fdedd947e5779e1429d1c99c0c3fa1ae6f06cef33efeafa910f217e18f88b0"
+}

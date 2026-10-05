@@ -1,0 +1,22 @@
+{
+  "request_hash": "6e2f500cc3ce4692cbd943dd4337802a6876fb7b9646a7cf7079ce5ac00b0817",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
+    "duration_ms": 2491,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1343,
+    "mode": "live",
+    "output_tokens": 94,
+    "raw_reference": "18842647-516d-987a-9609-069a81f725d5",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**Warning:** The availability gate failed. Measured availability is 99.1 percent, which is 0.4 percentage points below the 99.5 percent minimum. The incident-duration gate passed: neither incident exceeded 60 minutes (12 minutes and 41 minutes).\n\n**Weekly availability summary**\n- Measured availability: 99.1 percent\n- Incidents: 2 (12 minutes and 41 minutes)\n- Longest incident: 41 minutes",
+    "thinking_tokens": 139,
+    "tool_calls": []
+  }
+}

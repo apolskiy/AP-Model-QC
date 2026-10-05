@@ -1,0 +1,22 @@
+{
+  "request_hash": "20b7c0a27e501a601adb903674f693b49fabc3cf21d7d17c35b080aee813fbd4",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_word_ceiling",
+    "duration_ms": 6532,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1356,
+    "mode": "live",
+    "output_tokens": 32,
+    "raw_reference": "e9cbfcdd-9e19-9887-a2f5-42cbc66b0375",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "- The importer keeps a trailing column without a newline.\n- The scheduler retries a failed job twice before reporting.\n- The audit log records which account performed deletion.",
+    "thinking_tokens": 829,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "6626b6a54fbfcb5452970a1b22eeca065bcdb83c36b7c156e1b644a0dd08bc63",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
+    "duration_ms": 1864,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1311,
+    "mode": "live",
+    "output_tokens": 23,
+    "raw_reference": "67fb4ef6-0317-962c-ab6e-6febbd60b258",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "- North: 120\n- East: 80\n- South: 35\n- West: 20",
+    "thinking_tokens": 100,
+    "tool_calls": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "bdfaaae7a1cbd0c099783c51d4ede3d02bc98470333479d0c745badf279c9687",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_ins_ordering::MQC_RULE_ins_ordering",
+    "duration_ms": 3230,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1337,
+    "mode": "live",
+    "output_tokens": 41,
+    "raw_reference": "b57e3596-352f-9e13-b934-5bb6a48dab1f",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "- The export job now completes in under 30 seconds.\n- The importer accepts files up to 2 GB.\n- The login page was restyled.\n- The help link points to the new documentation.",
+    "thinking_tokens": 273,
+    "tool_calls": []
+  }
+}

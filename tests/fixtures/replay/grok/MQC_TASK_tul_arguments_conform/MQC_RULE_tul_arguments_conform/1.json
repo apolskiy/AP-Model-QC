@@ -1,0 +1,32 @@
+{
+  "request_hash": "4297c83c423f3a3026c1792847ab0747eb46637ef290c95d377621ada01f6e03",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_tul_arguments_conform::MQC_RULE_tul_arguments_conform",
+    "duration_ms": 1644,
+    "engine": "grok",
+    "finish_reason": "tool_calls",
+    "input_tokens": 1504,
+    "mode": "live",
+    "output_tokens": 22,
+    "raw_reference": "ebeb9da7-0090-9d95-b7ac-549fe6c7ee97",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "",
+    "thinking_tokens": 38,
+    "tool_calls": [
+      {
+        "arguments": {
+          "include_history": true,
+          "order_id": "A-4471"
+        },
+        "call_id": "call-18204f9a-0578-4e9d-bad7-0fc8826d1bd4-0",
+        "sequence": 0,
+        "tool_name": "lookup_order"
+      }
+    ]
+  }
+}

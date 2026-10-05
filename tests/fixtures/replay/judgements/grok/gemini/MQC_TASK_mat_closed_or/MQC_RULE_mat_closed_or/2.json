@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The candidate provides the correct figure (100%) and explicitly names the 'OR' connector, explaining that any one of the listed items is sufficient to fully meet the requirement.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "9d8d1f32fb42a437660b0d08ec02ecd62cf27c0c95f4a80f00f44bf5329398ab"
+}

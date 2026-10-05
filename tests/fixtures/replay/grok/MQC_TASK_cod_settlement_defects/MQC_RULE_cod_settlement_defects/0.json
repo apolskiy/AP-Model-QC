@@ -1,0 +1,22 @@
+{
+  "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
+    "duration_ms": 45855,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1455,
+    "mode": "live",
+    "output_tokens": 557,
+    "raw_reference": "ea1511c7-aa07-98e2-afe5-f958bf40392e",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The settlement math is wrong, and several inputs crash checkout. Against the 100-unit calls, the first two succeed but charge the wrong amount; the third raises.\n\n1. **Discount percent is treated as the amount due.** `total_amount * discount / 100 - coupon_sum` charges the discount slice, not the remainder. A 20% standard discount on 100 becomes 20 before the coupon, not 80. Premium (30) is charged *more* than standard (20), so the tier benefit is inverted. **Affected:** every buyer is undercharged; premium buyers are treated worse than standard; the merchant loses the sale price.\n\n2. **Those two successful production calls return the wrong money.** `(\"standard\", 100, [\"SAVE30\"], \u2026)` returns **-10**, not 50. `(\"standard\", 100, [\"SAVE20\"], \u2026)` returns **0**, not 60. There is no floor at zero, so a large coupon becomes a credit/refund. **Affected:** the buyer (windfall or a stuck negative charge) and the merchant (lost revenue, bad ledger entries).\n\n3. **Only the first coupon is applied.** `coupon_sum` reads `coupon_codes[0]` and never sums the list. Extra codes are silently ignored. **Affected:** buyers who stack coupons do not get the discount the argument list implies.\n\n4. **Unknown coupon crashes.** `coupon_lookup[coupon_codes[0]]` raises `KeyError` when the code is missing. The third call, `[\"NOPE\"]` against `{\"SAVE30\": 30}`, does this. **Affected:** the buyer (checkout dies instead of a rejected-coupon error) and whoever operates the service (unhandled exception).\n\n5. **Unknown tier crashes.** `DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for anything other than `\"standard\"` or `\"premium\"`. **Affected:** buyers on any other tier, and the service.\n\n6. **No coupons crashes.** `coupon_codes[0]` raises `IndexError` on an empty list. **Affected:** buyers checking out without a coupon.\n\n7. **Money is a binary float.** `/` yields a float, so totals can be off by fractions of a unit. **Affected:** buyers and finance (penny drift, reconciliation mismatches).\n\n8. **No validation of amount or coupon value.** Negative totals, non-numeric values, or a coupon larger than the discounted total are not rejected. Combined with (1) and (2), that either throws `TypeError` mid-checkout or posts a negative amount owed. **Affected:** the buyer, the merchant, and downstream billing.",
+    "thinking_tokens": 3055,
+    "tool_calls": []
+  }
+}
