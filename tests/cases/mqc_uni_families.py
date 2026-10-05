@@ -22,7 +22,7 @@ from pathlib import Path
 import allure
 import pytest
 
-from cmn.code_standards import uncapped_spending_steps
+from cmn.workflow_standards import uncapped_spending_steps
 from cmn.registries import registered_evaluation_families
 from cmn.traceability import MatrixRow, check_matrix_integrity
 from tests.cases.graded_support import (
