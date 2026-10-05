@@ -22,9 +22,9 @@ from pathlib import Path
 import allure
 import pytest
 
-from cmn.workflow_standards import uncapped_spending_steps
 from cmn.registries import registered_evaluation_families
 from cmn.traceability import MatrixRow, check_matrix_integrity
+from cmn.workflow_standards import uncapped_spending_steps
 from tests.cases.graded_support import (
     case_families_from_suite,
     case_rules_from_suite,
