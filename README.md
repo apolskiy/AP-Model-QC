@@ -24,8 +24,53 @@ paid tier.
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **69 written**: 40 evaluator, 21 security, 8 tool |
-| Recorded responses | **Complete for all four engines**: gemini, openai and grok at 64 task directories each, claude at 57, with 415 judgements. Replays in seconds and costs nothing |
+| Recorded responses | **812 candidate responses** and **415 judgements**, complete for all four engines. Replays in seconds and costs nothing |
 | Model findings | **24 findings** — gemini 2, openai 8, claude 10, grok 4 — each with a reproduction, an expected result and an observed one, in `config/findings/` |
+
+## What Is Measured Against Each Model
+
+**69 graded cases against each model**, and the same 69 whether the run is live
+or replayed. Selection is transport-independent: `--mode live` and
+`--mode replay` collect identically, and only where the response comes from
+differs. **A replay is therefore the same test, not a reduced one.**
+
+| | |
+|---|---|
+| Graded cases per model | **69** — 40 evaluator, 21 security, 8 tool |
+| Models measured | **4** — gemini, openai, claude, grok |
+| Case executions per full sweep | **276** |
+| Observations per case | **3**, escalating to 5 on a single disagreement |
+| Recorded candidate responses | **812 candidate responses** |
+| Recorded judge responses | **415 judgements** |
+
+**Three observations per case, not one, and that is a method rather than a
+margin.** A single sample cannot distinguish a model that fails from a model
+that is inconsistent, and inconsistency is itself a finding: a case that passes
+twice and fails once is reported, not rounded to a pass.
+**14 inconsistency findings** of the 24 are visible only because of it: more
+than half, and none of them reachable by a single-sample run.
+
+### Live and replay measure the same thing differently
+
+| | Live | Replay |
+|---|---|---|
+| Where the response comes from | The provider's endpoint | `tests/fixtures/replay/` |
+| Cases collected | 69 per model | 69 per model |
+| Cost | Real. Grok's full recording ran 25 minutes for about **$0.22** | **Nothing** |
+| What it establishes | How the model behaves **now** | That a finding still reproduces from the evidence |
+| Credential needed | Yes | **None** |
+
+**The recordings are committed**, so anyone can reproduce any finding here
+without an account with any vendor:
+
+```bash
+pytest --engine grok --mode replay --tests 134205
+```
+
+**Replay is what makes the findings auditable, and live is what makes them
+true.** A finding is retired only by a live run that stops reproducing it, never
+by a replay of our own recording — a replay would confirm the recording, which
+is the one thing not in question.
 
 ## Why The Model Gates Are Red
 

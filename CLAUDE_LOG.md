@@ -2796,3 +2796,61 @@ every time an engine is recorded.
 
 Consumer 151 passing, pylint 10.00/10. The two reds are `134107` and `134205`,
 both catalogued, and both expected to stay red.
+
+## 2026-10-05: What each model is actually put through, and a figure that had gone stale
+
+The owner's point: testing models and finding problems with them is the demo,
+and nothing stated how much each model faces.
+
+### The numbers, measured rather than estimated
+
+| | |
+|---|---|
+| Graded cases per model | **69** — 40 evaluator, 21 security, 8 tool |
+| Models measured | **4** |
+| Case executions per full sweep | **276** |
+| Observations per case | **3**, escalating to 5 on one disagreement |
+| Recorded candidate responses | **812** |
+| Recorded judge responses | **415** |
+
+**Live and replay collect identically**, which was verified rather than assumed:
+`--mode live` and `--mode replay` both collect 69 of 154 for grok. Selection is
+transport-independent and only where the response comes from differs, so **a
+replay is the same test, not a reduced one.** That is what makes a finding
+auditable by anyone without an account at any vendor.
+
+### A figure that had drifted, and the method it describes
+
+The README and `problems_found.md` both said **eleven of the twenty** findings
+were visible only because of the three-observation method. That was true against
+three engines. **grok's recording on 2026-10-04 made it fourteen of
+twenty-four** and neither sentence moved.
+
+**It is the figure that justifies the method**, so it is the worst one to carry
+by hand: a single sample cannot distinguish a model that fails from a model that
+is inconsistent, and more than half the findings are of the second kind. It is
+recomputed from the registers now.
+
+### Three more figures given sources
+
+| Figure | Recomputed from |
+|---|---|
+| Cases per model | The graded case definitions, already counted for another claim |
+| Candidate responses | The recorded fixtures |
+| Judgements | The judgement fixtures |
+
+### A false red this check produced, and the fix
+
+`**14 inconsistency findings**` wrapped across a line, the pattern stopped
+matching, and the check reported "the README states no inconsistency findings"
+while the number was correct.
+
+**A figure check that fails when prose is rewrapped reports a defect that is not
+one**, and a check that cries wolf trains a reader to ignore it. The README text
+is now normalised with `re.sub(r"\s+", " ", ...)` before matching, so every
+figure pattern is insensitive to wrapping.
+
+### State
+
+151 passing, pylint 10.00/10. The two reds are `134107` and `134205`, both
+catalogued and both expected to stay red.

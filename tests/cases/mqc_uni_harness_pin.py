@@ -832,7 +832,14 @@ class TestMQCTargetStrictness:
             None
         """
         root = _root()
-        readme = (root / "README.md").read_text(encoding="utf-8")
+        # WHITESPACE IS NORMALISED BEFORE MATCHING, because a figure check
+        # that fails when prose is rewrapped reports a defect that is not
+        # one. `**14 inconsistency findings**` broke across a line on
+        # 2026-10-05 and the pattern stopped matching while the number was
+        # correct, which is a false red and trains a reader to ignore this.
+        readme = re.sub(
+            r"\s+", " ", (root / "README.md").read_text(encoding="utf-8")
+        )
         wrong: list[str] = []
 
         def compare(label: str, pattern: str, actual: int) -> None:
@@ -882,6 +889,34 @@ class TestMQCTargetStrictness:
             )
         compare("graded cases", r"\*\*(\d+) written\*\*", graded)
 
+        # THE SAME COUNT, A DIFFERENT CLAIM, and the one a reader of the front
+        # page is actually asking about: how many cases each model faces. Added
+        # 2026-10-05, because the README said what the suite contains and never
+        # said what any model is put through.
+        compare(
+            "cases per model",
+            r"\*\*(\d+) graded cases against each model\*\*",
+            graded,
+        )
+
+        replay = root / "tests" / "fixtures" / "replay"
+        compare(
+            "candidate responses",
+            r"\*\*(\d+) candidate responses\*\*",
+            sum(
+                1
+                for engine in sorted(replay.glob("*"))
+                if engine.is_dir() and engine.name != "judgements"
+                for _ in engine.rglob("*")
+                if _.is_file()
+            ),
+        )
+        compare(
+            "judgements",
+            r"\*\*(\d+) judgements\*\*",
+            sum(1 for path in (replay / "judgements").rglob("*") if path.is_file()),
+        )
+
         # ADDED 2026-10-05, AND BOTH HAD JUST GONE STALE. The README said
         # `EVAL` and `TOOL` were unrecorded when all four engines were recorded,
         # and described three workflows when there were eleven. A figure with no
@@ -900,6 +935,18 @@ class TestMQCTargetStrictness:
             for source in sorted((root / "config" / "findings").glob("*.yaml"))
         )
         compare("model findings", r"\*\*(\d+) findings\*\*", findings)
+
+        # THE SUBSET THE METHOD EXISTS FOR. Stated at eleven of twenty when the
+        # README was written against three engines, and grok's recording made it
+        # fourteen of twenty-four without anybody touching the sentence.
+        compare(
+            "inconsistency findings",
+            r"\*\*(\d+) inconsistency findings\*\*",
+            sum(
+                source.read_text(encoding="utf-8").count("QC_LLM_INCONSISTENT")
+                for source in sorted((root / "config" / "findings").glob("*.yaml"))
+            ),
+        )
 
         corpora = sorted((root / "data" / "tasks").glob("*.yaml"))
         compare("corpora", r"\*\*(\d+) corpora", len(corpora))
