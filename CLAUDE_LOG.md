@@ -2854,3 +2854,69 @@ figure pattern is insensitive to wrapping.
 
 151 passing, pylint 10.00/10. The two reds are `134107` and `134205`, both
 catalogued and both expected to stay red.
+
+## 2026-10-05: 10.00/10 and exit 1, and a verification that read the wrong one
+
+All four model gates went red on the lint step, on the first push where they got
+past the harness pin and actually ran.
+
+```
+tests/cases/mqc_uni_harness_pin.py:813:4: R0914: Too many local variables (16/15)
+Your code has been rated at 10.00/10
+Error: Process completed with exit code 8.
+```
+
+Identically on both platforms.
+
+### Both lines are true, and only one of them gates
+
+**A refactor message does not cost a tenth of a point.** `R0914` is reported,
+the score still rounds to 10.00/10, and pylint exits **8**.
+
+**Pylint's status is a bitfield, not a severity.** `1` is fatal, `2` error, `4`
+warning, **`8` refactor**, `16` convention, `32` usage. So 8 means "an
+R-message was issued" and nothing worse, and a reader checking "did it crash"
+sees a non-zero status that is neither a crash nor a score change. The gate is
+`fail-under=10.0` **and the exit code**, and the exit code is the stricter of
+the two: it fails on a message the score does not move.
+
+**The local verification read the score line.** Every check in this session ran
+`pylint ... | tail -3` and reported "10.00/10 exit 0" from the rating. A pipe
+discards the left-hand exit status, and `echo $?` after it reports `tail`
+succeeding. So the command that was supposed to establish the gate would pass
+answered a question the gate does not ask.
+
+| | |
+|---|---|
+| What was run | `pylint ... \| tail -3` |
+| What was read | `Your code has been rated at 10.00/10` |
+| What the gate reads | The exit code |
+| Result | A red arrived on a commit reported green |
+
+**This is the fourth instance of the class this project has been cataloguing**,
+and the first authored by the verification rather than found by it: a local
+check asking an easier question than CI. Pylint is now run to a file with the
+exit code read directly, which is what the gate does.
+
+### The defect itself was real and the ceiling was right
+
+`MQC_CAS_UNI_115317` had accumulated **one bespoke computation per figure**, and
+the tenth took it past fifteen locals. The figures are the thing that grows, so
+they are a list now: `_readme_figures` returns label, pattern and actual value
+per row, with `_inventoried_precondition_count` and `_graded_case_count` beside
+it. **A twelfth figure is a row in that list rather than a change to the case.**
+
+**Eleven figures are recomputed there**, and adding the sources for cases per
+model, candidate responses, judgements and inconsistency findings is what
+crossed the line. That the limit fired exactly when a case stopped being one
+check and became a registry is the ceiling doing its job.
+
+### State
+
+151 passing, pylint **exit 0** verified by exit code. The two reds are `134107`
+and `134205`, both catalogued.
+
+**`mqc_uni_harness_pin.py` is 995 lines against the thousand-line ceiling**,
+with five lines of headroom. The next addition to it has to be a split, and the
+natural seam is the one just created: the README-figure machinery is a separate
+subject from the harness pin.

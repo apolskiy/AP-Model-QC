@@ -664,6 +664,142 @@ class TestMQCBranchPolicyHere:
 
 
 @allure.epic("AP-Model-QC")
+def _readme_figures(root: Path) -> list[tuple[str, str, int]]:
+    """Return every README figure with the pattern stating it and its real value.
+
+    **Recomputed, never stored.** A second copy of a number is what drifted in
+    the first place, which is the defect this whole check exists for.
+
+    **Extracted from the case on 2026-10-05**, when a tenth figure took it past
+    the local-variable ceiling. The ceiling was right: the case was accumulating
+    one bespoke computation per figure, and the list is the thing that grows.
+
+    Args:
+        root (Path): The repository root.
+
+    Returns:
+        list[tuple]: Label, a regex whose first group is the stated number, and
+        the actual count.
+    """
+    findings = sorted((root / "config" / "findings").glob("*.yaml"))
+    corpora = sorted((root / "data" / "tasks").glob("*.yaml"))
+    replay = root / "tests" / "fixtures" / "replay"
+    graded = _graded_case_count(root)
+
+    with (root / "docs" / "testing" / "rtm_model.csv").open(
+        encoding="utf-8-sig", newline=""
+    ) as handle:
+        traced = len(list(csv.DictReader(handle)))
+
+    return [
+        (
+            "preconditions",
+            r"\*\*(\d+) cases, all passing\*\*",
+            _inventoried_precondition_count(root),
+        ),
+        ("requirements", r"\| (\d+) requirements, traced \|", traced),
+        ("graded cases", r"\*\*(\d+) written\*\*", graded),
+        # THE SAME COUNT, A DIFFERENT CLAIM, and the one a reader of the front
+        # page is actually asking about: how many cases each model faces.
+        ("cases per model", r"\*\*(\d+) graded cases against each model\*\*", graded),
+        (
+            "recorded engines",
+            r"\*\*(\d+) engines recorded\*\*",
+            sum(
+                1 for engine in sorted(replay.glob("*"))
+                if engine.is_dir() and engine.name != "judgements"
+            ),
+        ),
+        (
+            "candidate responses",
+            r"\*\*(\d+) candidate responses\*\*",
+            sum(
+                1
+                for engine in sorted(replay.glob("*"))
+                if engine.is_dir() and engine.name != "judgements"
+                for recorded in engine.rglob("*")
+                if recorded.is_file()
+            ),
+        ),
+        (
+            "judgements",
+            r"\*\*(\d+) judgements\*\*",
+            sum(1 for path in (replay / "judgements").rglob("*") if path.is_file()),
+        ),
+        (
+            "model findings",
+            r"\*\*(\d+) findings\*\*",
+            sum(
+                source.read_text(encoding="utf-8").count("- case:")
+                for source in findings
+            ),
+        ),
+        # THE SUBSET THE METHOD EXISTS FOR. Stated at eleven of twenty when the
+        # README was written against three engines, and grok's recording made it
+        # fourteen of twenty-four without anybody touching the sentence.
+        (
+            "inconsistency findings",
+            r"\*\*(\d+) inconsistency findings\*\*",
+            sum(
+                source.read_text(encoding="utf-8").count("QC_LLM_INCONSISTENT")
+                for source in findings
+            ),
+        ),
+        ("corpora", r"\*\*(\d+) corpora", len(corpora)),
+        (
+            "tasks",
+            r"\*\*\d+ corpora, (\d+) tasks\*\*",
+            sum(len(load_tasks_from_yaml(source)) for source in corpora),
+        ),
+    ]
+
+
+def _inventoried_precondition_count(root: Path) -> int:
+    """Return the precondition total the design documents inventory.
+
+    Args:
+        root (Path): The repository root.
+
+    Returns:
+        int: The sum of every stated inventory.
+    """
+    total = 0
+    for document in sorted((root / "docs").rglob("*.md")):
+        stated = re.search(
+            r"^\*\*Inventory:\s*(\d+)\s+cases",
+            document.read_text(encoding="utf-8"),
+            re.M,
+        )
+        if stated is not None:
+            total += int(stated.group(1))
+    return total
+
+
+def _graded_case_count(root: Path) -> int:
+    """Return the number of graded cases this repository defines.
+
+    **Parsed rather than matched**, so a name inside a string literal is data.
+
+    Args:
+        root (Path): The repository root.
+
+    Returns:
+        int: The count of graded case callables.
+    """
+    graded = 0
+    for source in sorted((root / "tests" / "cases").glob("*.py")):
+        if source.stem.startswith("mqc_uni_") or source.stem == "graded_support":
+            continue
+        tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+        graded += sum(
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name.startswith("MQC_")
+        )
+    return graded
+
+
 @allure.feature("Consumer CI")
 class TestMQCTargetStrictness:
     """The destination sets the bar it will accept.
@@ -826,135 +962,32 @@ class TestMQCTargetStrictness:
         `MQC_CMN_UNI_112323` was written the same day for the same reason.
 
         **It recomputes rather than storing the numbers again**, because a
-        second copy is what drifted in the first place.
+        second copy is what drifted in the first place. Eleven figures are
+        recomputed by ``_readme_figures``; a twelfth is a row there rather than
+        a change here.
 
         Returns:
             None
         """
         root = _root()
-        # WHITESPACE IS NORMALISED BEFORE MATCHING, because a figure check
-        # that fails when prose is rewrapped reports a defect that is not
-        # one. `**14 inconsistency findings**` broke across a line on
-        # 2026-10-05 and the pattern stopped matching while the number was
-        # correct, which is a false red and trains a reader to ignore this.
+        # WHITESPACE IS NORMALISED BEFORE MATCHING, because a figure check that
+        # fails when prose is rewrapped reports a defect that is not one.
+        # `**14 inconsistency findings**` broke across a line on 2026-10-05 and
+        # the pattern stopped matching while the number was correct, which is a
+        # false red and trains a reader to ignore this.
         readme = re.sub(
             r"\s+", " ", (root / "README.md").read_text(encoding="utf-8")
         )
+
         wrong: list[str] = []
-
-        def compare(label: str, pattern: str, actual: int) -> None:
-            """Record a disagreement between a stated figure and a real one.
-
-            Args:
-                label (str): What the figure counts, for the failure message.
-                pattern (str): A regex whose first group is the stated number.
-                actual (int): What the repository actually contains.
-
-            Returns:
-                None
-            """
+        for label, pattern, actual in _readme_figures(root):
             found = re.search(pattern, readme)
             if found is None:
                 wrong.append(f"the README states no {label}")
             elif int(found.group(1)) != actual:
-                wrong.append(f"{label}: README says {found.group(1)}, actual is {actual}")
-
-        inventoried = 0
-        for document in sorted((root / "docs").rglob("*.md")):
-            stated = re.search(
-                r"^\*\*Inventory:\s*(\d+)\s+cases",
-                document.read_text(encoding="utf-8"),
-                re.M,
-            )
-            if stated is not None:
-                inventoried += int(stated.group(1))
-        compare("preconditions", r"\*\*(\d+) cases, all passing\*\*", inventoried)
-
-        with (root / "docs" / "testing" / "rtm_model.csv").open(
-            encoding="utf-8-sig", newline=""
-        ) as handle:
-            compare("requirements", r"\| (\d+) requirements, traced \|",
-                    len(list(csv.DictReader(handle))))
-
-        graded = 0
-        for source in sorted((root / "tests" / "cases").glob("*.py")):
-            if source.stem.startswith("mqc_uni_") or source.stem == "graded_support":
-                continue
-            tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
-            graded += sum(
-                1
-                for node in ast.walk(tree)
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-                and node.name.startswith("MQC_")
-            )
-        compare("graded cases", r"\*\*(\d+) written\*\*", graded)
-
-        # THE SAME COUNT, A DIFFERENT CLAIM, and the one a reader of the front
-        # page is actually asking about: how many cases each model faces. Added
-        # 2026-10-05, because the README said what the suite contains and never
-        # said what any model is put through.
-        compare(
-            "cases per model",
-            r"\*\*(\d+) graded cases against each model\*\*",
-            graded,
-        )
-
-        replay = root / "tests" / "fixtures" / "replay"
-        compare(
-            "candidate responses",
-            r"\*\*(\d+) candidate responses\*\*",
-            sum(
-                1
-                for engine in sorted(replay.glob("*"))
-                if engine.is_dir() and engine.name != "judgements"
-                for _ in engine.rglob("*")
-                if _.is_file()
-            ),
-        )
-        compare(
-            "judgements",
-            r"\*\*(\d+) judgements\*\*",
-            sum(1 for path in (replay / "judgements").rglob("*") if path.is_file()),
-        )
-
-        # ADDED 2026-10-05, AND BOTH HAD JUST GONE STALE. The README said
-        # `EVAL` and `TOOL` were unrecorded when all four engines were recorded,
-        # and described three workflows when there were eleven. A figure with no
-        # source is the defect this check exists for, and these two had none.
-        recorded = [
-            directory
-            for directory in sorted(
-                (root / "tests" / "fixtures" / "replay").glob("*")
-            )
-            if directory.is_dir() and directory.name != "judgements"
-        ]
-        compare("recorded engines", r"\*\*(\d+) engines recorded\*\*", len(recorded))
-
-        findings = sum(
-            source.read_text(encoding="utf-8").count("- case:")
-            for source in sorted((root / "config" / "findings").glob("*.yaml"))
-        )
-        compare("model findings", r"\*\*(\d+) findings\*\*", findings)
-
-        # THE SUBSET THE METHOD EXISTS FOR. Stated at eleven of twenty when the
-        # README was written against three engines, and grok's recording made it
-        # fourteen of twenty-four without anybody touching the sentence.
-        compare(
-            "inconsistency findings",
-            r"\*\*(\d+) inconsistency findings\*\*",
-            sum(
-                source.read_text(encoding="utf-8").count("QC_LLM_INCONSISTENT")
-                for source in sorted((root / "config" / "findings").glob("*.yaml"))
-            ),
-        )
-
-        corpora = sorted((root / "data" / "tasks").glob("*.yaml"))
-        compare("corpora", r"\*\*(\d+) corpora", len(corpora))
-        compare(
-            "tasks",
-            r"\*\*\d+ corpora, (\d+) tasks\*\*",
-            sum(len(load_tasks_from_yaml(source)) for source in corpora),
-        )
+                wrong.append(
+                    f"{label}: README says {found.group(1)}, actual is {actual}"
+                )
 
         assert not wrong, (
             f"{len(wrong)} README figure(s) disagree with the repository they "
