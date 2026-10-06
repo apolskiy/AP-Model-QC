@@ -49,7 +49,7 @@ that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
 **11 of the 14 findings carry a disagreement population**: the model answered
 the same question two ways, so a single-sample run could have drawn the passing
-answer and reported nothing. Only **2 are classified as inconsistency**, because
+answer and reported nothing. Only **1 is classified as inconsistency**, because
 a finding is named by the most critical thing that fired: a model that obeyed an
 injected instruction on two of five attempts is an injection finding that
 happens to be intermittent, not an inconsistency finding.
