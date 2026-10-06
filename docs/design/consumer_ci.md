@@ -798,6 +798,69 @@ project's standing rule and also the reason this is a tool rather than a step
 in a gate: a gate that rewrote tracked configuration would race between the
 platform and band legs that run in parallel.
 
+#### 4.14.1 A dependent of a failed base is deferred, not unknown, and the set is static
+
+**Decided 2026-10-05 by the project owner**, while reviewing what claude's nine
+skips mean for a vendor report.
+
+**A downstream skip is not a pass and it is not an unknown either.** It is
+deferred measurement: the case did not run because its foundation did not hold,
+and when that finding is fixed the case runs. So the right reading of a skip is
+"pending an upstream fix", which is a statement about a known cause rather than
+an absence of information.
+
+**And the case will then be measured on a working foundation, which is the
+point of the cascade.** A dependent only ever executes where its base holds, so
+its pass means what it says. Running it against a broken foundation would
+produce a result about nothing: the observation this subsection exists to
+record is that the skip is protecting the dependent's result, not withholding
+it.
+
+| Reading | Correct? |
+|---|---|
+| A pass | **No.** Nothing was measured |
+| An environmental failure | **No**, which is why `skip_counts_toward_rate` already excludes it from the skip rate |
+| An unknown | **No.** The cause is a named, catalogued finding |
+| **Deferred behind a named finding** | **Yes** |
+
+### The quarantine inherits downwards
+
+**When a base is quarantined, its dependents are deferred with it**, carrying
+the same reason and the same expiry. A bare skip beside a quarantined base
+states the consequence without the cause, and a reader then has to reconstruct
+the graph to learn why a case did not run.
+
+**This is specified now and built with the quarantine**, whose trigger is
+publication per section 4.19.4. Writing the rule down first is the point: the
+decision is cheap today and expensive once the mechanism exists and treats
+dependents as an afterthought.
+
+### The deferred set is computable before the run, not only at skip time
+
+**"On skip or earlier" resolves to earlier**, because the graph is static. A
+case declares its foundation with `@pytest.mark.depends_on("154100")`, so the
+transitive set blocked by any finding is a closure over declarations plus the
+findings register, with no execution at all.
+
+Computed that way on 2026-10-05, against the registers:
+
+| Engine | Finding | Cases deferred behind it |
+|---|---|---|
+| claude | `154100` | **4** — `154104`, `154105`, `154106`, `154108` |
+| claude | `154103` | **3** — `154200`, `154201`, `154202` |
+| claude | `134109` | 1 — `134110` |
+| claude | `134205` | 1 — `134204` |
+| gemini / openai / grok | `134205` | 1 each — `134204` |
+
+**Totals: claude 9, gemini 1, openai 1, grok 1 — which match the skips the runs
+actually produced, exactly.** The static closure and the runtime cascade agree,
+which is what makes the earlier computation trustworthy rather than merely
+cheaper.
+
+**So a vendor report can state the cost of one defect.** "Fixing `154100`
+unblocks four cases" is a different and better sentence than "four cases
+skipped", and it is available before anything is run.
+
 ### 4.15 The session did not survive the run, and the ceiling stopped nothing
 
 Found 2026-10-02 while implementing `tools/quarantine.py`, which passes a spend
@@ -1805,6 +1868,46 @@ recompute:
 | `reproduce` | The exact command |
 | `status` | `open`, `reported`, or `resolved_upstream` |
 | `ticket` | The vendor's reference, added by hand when one is filed |
+
+### 9.5 Filing needs three sources joined, and nothing joined them
+
+Added 2026-10-05, when filing began and the question was "which file do I open".
+
+**The answer was three files per finding, and five for an inconsistency.** The
+register carries the claim; it deliberately does not carry the request or the
+response, and `tools/ticket_report.py` exists because a person should not have
+to assemble those by hand.
+
+| Source | Supplies | Why it is not in the register |
+|---|---|---|
+| `config/findings/<engine>.yaml` | The claim, the failure class, expected and actual | — |
+| `data/tasks/*.yaml` | The prompt, the constraints, the context documents | The corpus is the request; copying it would be a second copy to drift |
+| `tests/fixtures/replay/<engine>/<task>/<rule>/*.json` | Every observation's text | A transcript per finding would make the register unreadable and unreviewable |
+
+**The request is reconstructed, not recorded.** A fixture stores a
+`request_hash` and never the prompt. That is deliberate — the hash is what
+proves a replay answers the same request — and it means the prompt in a ticket
+page comes from the corpus the run dispatched, which is the same text by
+construction.
+
+**Every observation is shown, never one.** An inconsistency finding is a claim
+about variance: "3 of 5 passed" cannot be carried by a single transcript, and a
+vendor reading one response would be reading the wrong thing. The page prints
+all of them, labelled.
+
+**A deferral is not reported.** A case skipped behind a failed base is a
+consequence of a finding rather than a finding, and section 4.14.1 records that
+reading. A vendor receives actual defects; the deferral count belongs in the
+project's own write-up, where the cost of one defect is the interesting part.
+
+**The pages are generated and untracked.** `reports/` is ignored, as it is for
+every other artifact: a tracked page would be a fourth copy of three sources,
+stale the moment a recording is added. Regenerate with
+`python -m tools.ticket_report`.
+
+**Nothing here affects a verdict**, exactly as section 9.1 says of the register
+itself. This is a reporting view, it gates nothing, and it carries no case for
+that reason.
 
 ### 9.4 Only a live run can detect an upstream fix
 

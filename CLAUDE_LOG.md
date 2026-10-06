@@ -3150,3 +3150,120 @@ claude 10, grok 4. Nothing unregistered, nothing ours.
 
 153 passing, pylint exit 0. The two reds are `134107` and `134205`,
 both catalogued.
+
+## 2026-10-05: A downstream skip is deferred measurement, and the set is static
+
+The project owner's reading of claude's nine skips, which turns out to settle a
+quarantine design question before the quarantine is built.
+
+### The reading
+
+**A skip behind a failed base is not a pass, not an environmental failure, and
+not an unknown.** It is deferred: the case did not run because its foundation
+did not hold, and when that finding is fixed the case runs.
+
+**The cascade is protecting the dependent's result, not withholding it.** A
+dependent only ever executes where its base holds, so its pass means what it
+says; run against a broken foundation it would be a result about nothing. That
+is the argument for skipping downstream rather than failing or forcing.
+
+### The quarantine inherits downwards, and that is now written down
+
+When a base is quarantined, its dependents are deferred with it, carrying the
+same reason and expiry. **A bare skip beside a quarantined base states the
+consequence without the cause**, leaving a reader to reconstruct the graph.
+
+Specified now and built with the quarantine, whose trigger is publication per
+section 4.19.4. **The decision is cheap today and expensive once the mechanism
+exists and treats dependents as an afterthought.**
+
+### "On skip or earlier" resolves to earlier
+
+The graph is static: a case declares its foundation with
+`@pytest.mark.depends_on("154100")`, so the set blocked by any finding is a
+closure over declarations plus the findings register, computable with **no
+execution at all**.
+
+| Engine | Finding | Deferred behind it |
+|---|---|---|
+| claude | `154100` | **4** |
+| claude | `154103` | **3** |
+| claude | `134109`, `134205` | 1 each |
+| gemini, openai, grok | `134205` | 1 each |
+
+**Totals: claude 9, gemini 1, openai 1, grok 1 — matching the skips the runs
+produced, exactly.** The static closure and the runtime cascade agree, which is
+what makes computing it early trustworthy rather than merely cheaper.
+
+**So a vendor report can state the cost of one defect**: "fixing `154100`
+unblocks four cases" rather than "four cases skipped", and it is available
+before anything runs.
+
+### State
+
+153 passing, pylint exit 0. The two reds are `134107` and `134205`, both
+catalogued.
+
+## 2026-10-05: Filing needed three files joined, and a hash is not evidence
+
+The question that exposed it: which file do I open to file a ticket.
+
+### The answer was three, and five for an inconsistency
+
+| Source | Supplies |
+|---|---|
+| `config/findings/<engine>.yaml` | The claim, the failure class, expected and actual |
+| `data/tasks/*.yaml` | The prompt, the constraints, the context documents |
+| `tests/fixtures/replay/<engine>/<task>/<rule>/*.json` | Each observation's text |
+
+**The register deliberately carries no transcript**, which is right for a
+register and wrong for a person about to open a ticket.
+`tools/ticket_report.py` joins the three into one page per engine: 2 findings
+for gemini, 8 for openai, 10 for claude, 4 for grok.
+
+### A fixture stores a request hash and never the prompt
+
+**The project owner's objection, and it is correct as stated**: a hash cannot be
+filed with anybody. A vendor needs the words that were sent.
+
+**What the hash is actually for**: `load_fixture` recomputes the hash of the
+request about to be replayed and refuses a mismatch with
+`QC_HARNESS_FIXTURE_STALE`. So it is an integrity link, not evidence.
+
+**Which makes the reconstruction provable rather than assumed.** The prompt in
+a ticket page comes from the corpus, and if the corpus had drifted from what
+was recorded, replay would report stale instead of reproducing the finding.
+**The reproduction command passing is the proof that the prompt shown is the
+prompt sent.**
+
+### Why the fixtures keep only the hash
+
+Recording the composed request would put **812 copies of text the corpus
+already holds** into the fixtures, and a second copy that can drift is the
+anti-pattern removed four times this week: four `repository_root`s, "eleven of
+twenty", a hardcoded engine roster, a hand-kept pylint path list.
+
+| | |
+|---|---|
+| Single source for the request | The corpus |
+| Link proving a recording answers it | The hash |
+| What a vendor receives | The rendered page, not a fixture |
+
+**What this does lose**: a fixture is not self-contained away from its corpus.
+Inside this repository they are never apart, and nothing external is ever
+handed a fixture.
+
+### Two things the pages state that a register cannot
+
+**Every observation, not one.** An inconsistency finding is a claim about
+variance: "3 of 5 passed" cannot be carried by a single transcript, and a vendor
+reading one response would be reading the wrong thing.
+
+**No deferrals.** A case skipped behind a failed base is a consequence of a
+finding rather than a finding, per section 4.14.1. Vendors get actual defects;
+the deferral count is portfolio and article material.
+
+### State
+
+153 passing, pylint exit 0. Pages are generated into `reports/`, which is
+ignored: a tracked page would be a fourth copy of three sources.
