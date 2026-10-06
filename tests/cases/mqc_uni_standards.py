@@ -24,6 +24,7 @@ from pathlib import Path
 import allure
 import pytest
 
+from cmn.module_size import runway_problems
 from cmn.case_module_standards import (
     extraction_problems,
     unbounded_subprocess_calls,
@@ -348,5 +349,41 @@ class TestMQCBoundedSubprocesses:
         assert not problems, (
             f"{len(problems)} subprocess invocation(s) carry no timeout, so a "
             f"child that stalls blocks until a runner cancels the job: "
+            + "; ".join(problems)
+        )
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Suite governance")
+class TestMQCModuleRunway:
+    """How close a module may get to the ceiling before it splits."""
+
+    @allure.story("A module at the runway ceiling is reported")
+    def MQC_CAS_UNI_115715_a_module_at_the_runway_ceiling_is_reported(
+        self,
+    ) -> None:
+        """No module sits at the runway ceiling without a declared reason.
+
+        **The hard ceiling fires at the worst moment and this one does not.**
+        A module at 998 lines fails the build on a prose edit; a module at nine
+        hundred is reported here, where the next author sees it before adding
+        anything.
+
+        **The margin is for prose, not for more cases.** A case that pushes a
+        module past the ceiling moves out with its subject, which is cheap now
+        that a case module holds only cases.
+
+        Design: ``code-style.md`` section 5.1.
+
+        Returns:
+            None
+        """
+        root = Path(__file__).resolve().parents[2]
+        problems = runway_problems(
+            root, root / "config" / "module_runway.yaml", date.today()
+        )
+        assert not problems, (
+            f"{len(problems)} module(s) are at the runway ceiling without a "
+            f"declared reason, or carry a lapsed declaration: "
             + "; ".join(problems)
         )

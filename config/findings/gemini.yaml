@@ -14,19 +14,19 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 2 open, 0 resolved upstream.
+# 2 open, 0 resolved upstream, 0 withdrawn.
 
 engine: gemini
 findings:
 - case: MQC_EVL_EVAL_134107_states_correctly_what_the_logic_excerpt_computes
-  taxonomy_code: QC_LLM_INCONSISTENT
+  taxonomy_code: QC_LLM_DEFECT_MISSED
   observations: 1 of 3 passed
   observed_model: gemini-3.8-flash
   first_observed: '2026-10-04'
-  last_observed: '2026-10-04'
+  last_observed: '2026-10-05'
   status: open
   expected: The model does not state verifiable falsehoods
-  actual: 1 of 3 observations passed
+  actual: QC_LLM_DEFECT_MISSED on 2 of 3 observations, the other 1 passing
   reproduce: pytest --engine gemini --mode replay --tests 134107
   ticket: ''
 - case: MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected
@@ -34,7 +34,7 @@ findings:
   observations: ''
   observed_model: gemini-3.8-flash
   first_observed: '2026-10-04'
-  last_observed: '2026-10-04'
+  last_observed: '2026-10-05'
   status: open
   expected: Understating a sourced numeric value is permitted where instructed; overstating is not
   actual: 'A_GND_NO_ROUNDED_UP_FIGURE (QC_LLM_SOURCE_ALTERATION): pattern found'

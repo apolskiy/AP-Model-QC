@@ -131,80 +131,131 @@ def _request_block(task: Optional[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _scenario(task: Optional[dict[str, Any]]) -> str:
+    """Return the scenario in one sentence, from the task's own instruction.
+
+    **The first line of a report has to say what was being attempted**, per
+    section 9.5.1. A reader opening a ticket needs the situation before the
+    detail, and the task's instruction is the situation.
+
+    Args:
+        task (Optional[dict]): The task definition, or None when unmapped.
+
+    Returns:
+        str: One sentence, or a statement that the task is not resolvable.
+    """
+    if task is None:
+        return "a scenario this report could not resolve to a shipped task"
+    instruction = " ".join(str(task.get("user_prompt", "")).split())
+    if len(instruction) > 150:
+        instruction = instruction[:147].rstrip() + "..."
+    planted = any(
+        "assistant" in str(document.get("content", "")).lower()
+        or "instruction" in str(document.get("content", "")).lower()
+        for document in task.get("context_documents") or []
+    )
+    carried = (
+        " with an instruction planted in the supplied document"
+        if planted else ""
+    )
+    return f'the model was asked: "{instruction}"{carried}'
+
+
+def _frequency(entry: dict[str, Any], responses: list[str]) -> str:
+    """Return how often the failure occurred, in words.
+
+    **The ratio is the finding when it is intermittent.** An attacker retries,
+    so "obeyed on 2 of 5 attempts" is a security claim and "obeyed" alone
+    overstates while "sometimes" understates.
+
+    Args:
+        entry (dict): The register entry.
+        responses (list): The recorded observations.
+
+    Returns:
+        str: A phrase such as ``"3 out of 5 times"``.
+    """
+    population = str(entry.get("observations") or "").strip()
+    if population:
+        parts = population.split()
+        if len(parts) >= 3 and parts[0].isdigit() and parts[2].isdigit():
+            passed, total = int(parts[0]), int(parts[2])
+            return f"{total - passed} out of {total} times"
+    if responses:
+        return f"on each of {len(responses)} observations" if len(
+            responses
+        ) > 1 else "on the single observation taken"
+    return "on an observation this report could not locate"
+
+
 def _steps(
     engine: str,
     entry: dict[str, Any],
     task: Optional[dict[str, Any]],
     responses: list[str],
 ) -> list[str]:
-    """Return the numbered steps, each pairing what was expected with what happened.
+    """Return the detail, then every failing output, then the reproduction.
 
-    **The order is the report's whole usability**, per section 9.5.1: a reader
-    needs the case, then the issue, then one step at a time with its expected
-    and actual result beside each other. Prose that states a request in one
-    place and a response in another cannot be followed.
+    **Ordered as feedback reads**, per section 9.5.1: the scenario and its
+    detail, then what the engine produced and how often, then how to see it
+    again. The earlier version numbered steps and repeated the same expected
+    and actual pair against each observation, which stated the requirement
+    five times and the finding once.
 
     Args:
         engine (str): The engine under test.
         entry (dict): The register entry.
-        task (Optional[dict]): The task definition, or None when unmapped.
+        task (Optional[dict]): The task definition.
         responses (list): Each recorded observation's text.
 
     Returns:
         list[str]: Markdown lines.
     """
-    out: list[str] = ["### Steps to reproduce", ""]
-    number = 0
+    out = ["### The scenario, in detail", ""]
+    if task is None:
+        out.extend(["_The task could not be resolved._", ""])
+    else:
+        out.extend(["**What was asked**", "", "```",
+                    str(task.get("user_prompt", "")).rstrip(), "```", ""])
+        constraints = task.get("constraints") or []
+        if constraints:
+            out.extend(["**What it was told not to do**", ""])
+            for item in constraints:
+                if isinstance(item, dict):
+                    out.append(
+                        f"- `{item.get('constraint_id', '')}` "
+                        f"({item.get('kind', '')}): {item.get('text', '')}"
+                    )
+            out.append("")
+        documents = task.get("context_documents") or []
+        if documents:
+            out.extend(["**What it was given to work from**", ""])
+            for item in documents:
+                if not isinstance(item, dict):
+                    continue
+                out.append(f"*{item.get('title', item.get('document_id', ''))}*")
+                out.extend(["", "```",
+                            str(item.get("content", "")).rstrip(), "```", ""])
 
-    number += 1
-    taken = (
-        f"{len(responses)} observations were taken"
-        if len(responses) != 1
-        else "one observation was taken"
-    )
+    failing = [body for body in responses if body.strip()]
     out.extend([
-        f"**Step {number}. Send the request below to "
-        f"`{entry.get('observed_model', '')}`.**",
+        f"### What `{entry.get('observed_model', '')}` produced",
         "",
-        "| | |",
-        "|---|---|",
-        "| Expected | The model answers rather than refusing or erroring |",
-        f"| Actual | It answered, and {taken} |",
+        f"**It failed {_frequency(entry, responses)}.** Every observation taken "
+        f"is shown, because a ratio cannot be read from one of them.",
         "",
-        _request_block(task),
     ])
-
-    for index, text_value in enumerate(responses):
-        number += 1
+    if not failing:
+        out.extend(["_No recording was located for this case._", ""])
+    for index, body in enumerate(failing):
         label = (
-            f"observation {index + 1} of {len(responses)}"
-            if len(responses) > 1
-            else "the response"
+            f"Observation {index + 1} of {len(failing)}"
+            if len(failing) > 1 else "The response"
         )
-        out.extend([
-            f"**Step {number}. Read {label}.**",
-            "",
-            "| | |",
-            "|---|---|",
-            f"| Expected | {entry.get('expected', '')} |",
-            f"| Actual | {entry.get('actual', '')} |",
-            "",
-            "Returned:",
-            "",
-            "```",
-            text_value.rstrip() or "[empty response]",
-            "```",
-            "",
-        ])
+        out.extend([f"**{label}**", "", "```", body.rstrip(), "```", ""])
 
-    number += 1
     out.extend([
-        f"**Step {number}. Reproduce it here, at no cost.**",
-        "",
-        "| | |",
-        "|---|---|",
-        "| Expected | The case passes |",
-        f"| Actual | The case fails with `{entry.get('taxonomy_code', '')}` |",
+        "### Seeing it again",
         "",
         "```",
         str(entry.get("reproduce", "")),
@@ -212,7 +263,9 @@ def _steps(
         "",
         f"The recordings are committed, so this needs no credential and spends "
         f"nothing. It replays what `{engine}` returned on "
-        f"{entry.get('first_observed', '')} rather than calling the model again.",
+        f"{entry.get('first_observed', '')} rather than calling the model "
+        f"again, and only a live run can establish that the behaviour has "
+        f"changed since.",
         "",
     ])
     return out
@@ -246,11 +299,14 @@ def _section(
     responses = recorded_observations(root, engine, task_id, rule_id)
 
     out = [
-        f"## Test case: `{case}`",
+        f"## `{case}`",
         "",
-        f"**Requirement.** {_sentence(entry.get('expected', ''))}",
+        f"**During this scenario:** {_scenario(tasks.get(task_id))}.",
         "",
-        f"**Issue.** {_issue_sentence(entry)}",
+        f"**Expected:** {_sentence(entry.get('expected', ''))}",
+        "",
+        f"**`{entry.get('observed_model', '')}` produced a failing output "
+        f"{_frequency(entry, responses)}:** {_issue_sentence(entry)}",
         "",
         "| | |",
         "|---|---|",

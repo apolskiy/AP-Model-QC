@@ -576,6 +576,12 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115206` | N | `the_candidate_engine_reaches_the_plan_the_channel_uses` |
 | `115602` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
 | `115708` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
+| `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
+| `115711` | N | `a_case_module_holding_support_code_is_reported` |
+| `115712` | N | `a_subprocess_without_a_timeout_is_reported` |
+| `115713` | N | `a_screening_hit_on_an_ordinary_case_is_reported` |
+| `115714` | N | `a_failure_message_without_a_taxonomy_code_is_reported` |
+| `115715` | N | `a_module_at_the_runway_ceiling_is_reported` |
 | `115408` | P | `the_tool_writes_what_reconciling_decided` |
 | `115409` | P | `one_dispatch_session_serves_a_whole_run` |
 | `115410` | P | `the_session_records_the_models_it_served` |
@@ -583,7 +589,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 50 cases, 34 negative, 11 positive, 5 boundary.** Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 54 cases, 38 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 ### 4A. The harness is a dependency, not the directory next door
 
@@ -1907,6 +1913,78 @@ than resurrecting a judgement about a different assertion.
 
 **Withdrawn findings are excluded from the ticket pages**, since the pages
 exist to be filed and a withdrawn finding must not be.
+
+### 9.4.2 The instrument is checked for manufacturing findings
+
+Added 2026-10-05, after two findings were withdrawn in one day and neither was
+caught by anything until a reader checked the arithmetic by hand.
+
+**A false positive in the instrument is the most expensive defect this project
+can produce.** It arrives looking exactly like the output: a red gate, a
+taxonomy code, a reproduction command, a page ready to file. Nothing about its
+shape distinguishes it from a real finding.
+
+| Withdrawn | Cause |
+|---|---|
+| grok `134107` | A regex required a settling verb adjacent to its figure, and the model wrote the figure in backticks |
+| claude `134109` | A screen vector matched a description of an outcome, aborting one observation of five on an ordinary case |
+
+**Both were ours and both were about reading rather than about the model.** So
+two preconditions now assert the two mechanisms, each pinned to the instance
+that occurred.
+
+#### `MQC_CAS_UNI_115713`: an ordinary case screens clean
+
+Every recorded response on a case that does not declare adversarial content is
+screened, and a hit is reported. **On an ordinary case a hit aborts the
+observation**, which does not evaluate, does not pass, and makes a single one of
+five `QC_LLM_INCONSISTENT`.
+
+**A declared adversarial case is excluded deliberately.** There a hit is
+evidence feeding the grade, and a model quoting the payload it caught is the
+behaviour under test: openai quoting a base64 override it then complied with,
+and claude quoting a disclosure request it refused, are both correct records.
+
+#### `MQC_CAS_UNI_115714`: every failure message names its class
+
+`tools/findings.py` classifies by the code in the message, so a failure
+carrying none is `UNCLASSIFIED` and enters no register. **The finding exists,
+the gate is red, and the catalogue a vendor would be sent from does not have
+it.**
+
+`QC_LLM_RUBRIC_FAILURE` was registered, documented and attached to the result,
+and absent from the message. claude `134110` was therefore unrecordable, and it
+is a real finding that two of our own defects had been hiding.
+
+**All three branches of `failure_detail` are asserted**, because the third was
+missing a code as well, and an anomalous branch is where one is least likely to
+be noticed.
+
+#### A third gap, found by drifting into it
+
+**The stated inventory in this document is compared to its rows by nothing.**
+The harness has `MQC_CMN_UNI_112203` for that, and five cases were added here
+on 2026-10-05 with the count incremented and no row written: the figure read 52
+against 48 rows and every suite run passed.
+
+**It is the same shape as the two above.** A number stated and checked nowhere
+drifts, which is the defect `112203`, `112314` and `112323` exist to prevent on
+the harness side, and the parity table in section 5 does not cover it because
+the inventory is per document rather than shared code.
+
+**Recorded as outstanding**, alongside the vacuity pass: both are checks this
+repository should have and does not.
+
+#### What these two do not cover
+
+**Only false positives.** Both ask whether a failure is real. Neither asks
+whether a pass is real, and a case that wrongly passes is invisible to
+everything here: an assertion that cannot fail reports nothing and looks like
+coverage.
+
+**That is the next pass and it is recorded as outstanding rather than implied**:
+injecting a violating input per assertion and recording the ones that do not
+fire. `OPEN_QUESTIONS.md` carries it.
 
 ### 9.5 Filing needs three sources joined, and nothing joined them
 

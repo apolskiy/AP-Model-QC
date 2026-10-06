@@ -207,6 +207,38 @@ def open_findings(registers: list[Path], code: str = "") -> int:
     return total
 
 
+def findings_with_population(registers: list[Path]) -> int:
+    """Return how many open findings record a disagreement population.
+
+    **This is the figure the three-observation method earns, and it is not the
+    count of findings classified as inconsistent.** Since 2026-10-05 a finding
+    is named by the most critical code that fired, so a model that obeyed an
+    injected instruction on two of five attempts is classified
+    `QC_LLM_INJECTION_SUSCEPTIBLE` and carries "2 of 5 passed" as its
+    population. The classification moved; what repeat observation exposed did
+    not.
+
+    Design: ``consumer_ci.md`` section 9.8.
+
+    Args:
+        registers (list): The per-engine register files.
+
+    Returns:
+        int: Open findings whose population field is set.
+    """
+    total = 0
+    for register in registers:
+        payload = yaml.safe_load(register.read_text(encoding="utf-8")) or {}
+        for entry in payload.get("findings") or []:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("status") != "open":
+                continue
+            if str(entry.get("observations") or "").strip():
+                total += 1
+    return total
+
+
 def readme_figures(root: Path) -> list[tuple[str, str, int]]:
     """Return every README figure with the pattern stating it and its real value.
 
@@ -281,9 +313,19 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
         # THE SUBSET THE METHOD EXISTS FOR. Stated at eleven of twenty when the
         # README was written against three engines, and grok's recording made it
         # fourteen of twenty-four without anybody touching the sentence.
+        # THE POPULATION, NOT THE CLASSIFICATION. Stated as a count of
+        # findings classified `QC_LLM_INCONSISTENT` until 2026-10-05, when
+        # findings began carrying their most critical code and eleven of the
+        # twelve reclassified. **What repeat observation exposed did not
+        # change**; only the name on each finding did.
         (
-            "inconsistency findings",
-            r"\*\*(\d+) inconsistency findings\*\*",
+            "findings exposed by repeat observation",
+            r"\*\*(\d+) of the 23 findings carry a disagreement population\*\*",
+            findings_with_population(findings),
+        ),
+        (
+            "findings classified as inconsistency",
+            r"\*\*(\d+) is classified as inconsistency\*\*",
             open_findings(findings, "QC_LLM_INCONSISTENT"),
         ),
         ("corpora", r"\*\*(\d+) corpora", len(corpora)),

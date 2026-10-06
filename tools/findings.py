@@ -35,6 +35,8 @@ from typing import Any, Final, Optional
 
 import yaml
 
+from cmn.registries import most_critical
+
 _REGISTER_ROOT: Final[Path] = Path("config/findings")
 _MODEL_CODE: Final[re.Pattern] = re.compile(r"\b(QC_LLM_[A-Z_]+|QC_SEC_[A-Z_]+)\b")
 _POPULATION: Final[re.Pattern] = re.compile(r"(\d+) of (\d+) observations passed")
@@ -198,13 +200,19 @@ def parse_failures(report: Path) -> dict[str, dict[str, Any]]:
             continue
         case = str(element.get("name", ""))
         message = f"{failure.get('message', '')}\n{failure.text or ''}"
-        code = _MODEL_CODE.search(message)
-        if code is None:
+        # THE MOST CRITICAL CODE, NOT THE FIRST ONE. A disagreement emits
+        # `QC_LLM_INCONSISTENT` and then names what the failing observations
+        # reported, and taking the first match catalogued a security
+        # compromise as a consistency observation. `most_critical` ranks them
+        # per `test_taxonomy.md` section 6.4. Section 9.8 here.
+        found = _MODEL_CODE.findall(message)
+        if not found:
             failures[case] = {"taxonomy_code": "", "observations": ""}
             continue
         population = _POPULATION.search(message)
+        classified = most_critical(found) or found[0]
         failures[case] = {
-            "taxonomy_code": code.group(1),
+            "taxonomy_code": classified,
             # EMPTY WHERE THE RUN DID NOT SAY, rather than "1 of 1". A
             # consistency finding states its population and a deterministic
             # one does not, and inventing a population would put a figure
@@ -213,9 +221,48 @@ def parse_failures(report: Path) -> dict[str, dict[str, Any]]:
                 f"{population.group(1)} of {population.group(2)} passed"
                 if population is not None else ""
             ),
-            "actual": _first_sentence(message, code.group(1)),
+            # NAMED BY THE CLASSIFICATION, NOT THE WRAPPER. The consistency
+            # message opens with `QC_LLM_INCONSISTENT` and names what the
+            # failing observations reported afterwards, so taking the first
+            # sentence described the disagreement where the finding is a
+            # compromise. Where the two differ, the sentence is built from the
+            # classification and the population, which is what a reader needs:
+            # what went wrong, and how often. Section 9.8.
+            "actual": _classified_sentence(message, classified, population),
         }
     return failures
+
+
+def _classified_sentence(
+    message: str, classified: str, population: Any
+) -> str:
+    """Return one sentence naming what failed, and how often where it varied.
+
+    **The wrapper fires first and is not the finding.** A disagreement emits
+    `QC_LLM_INCONSISTENT` and then names what the failing observations
+    reported, so the message's first sentence describes variance where the
+    finding may be a compromise.
+
+    Args:
+        message (str): The failure message.
+        classified (str): The code the finding is named by.
+        population (Any): The population match, or None where the run stated
+            none.
+
+    Returns:
+        str: The run's own words where the classification leads the message,
+        and a sentence built from the classification and the population where
+        it does not.
+    """
+    if message.lstrip().startswith(("AssertionError: " + classified, classified)):
+        return _first_sentence(message, classified)
+    if population is not None:
+        passed, total = int(population.group(1)), int(population.group(2))
+        return (
+            f"{classified} on {total - passed} of {total} observations, "
+            f"the other {passed} passing"
+        )
+    return _first_sentence(message, classified)
 
 
 def _first_sentence(message: str, code: str) -> str:

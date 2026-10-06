@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Modules already past the runway ceiling when the rule was written.
+#
+# THE RULE IS `code-style.md` SECTION 5.1: at 900 lines a
+# module is close enough to the thousand-line hard limit that the next
+# subject belongs in a module of its own, named for that subject. The
+# margin is room for prose and comments, not a runway for more cases.
+#
+# A GAP IS A DECLARED ABSENCE, NOT AN EXEMPTION, exactly as
+# `support_extraction.yaml` and `flag_coverage.yaml` are: each entry carries
+# a reason and an expiry, because a list with no expiry is where oversized
+# modules go to be forgotten. An expired entry fails the run.
+#
+# THE LIST SHRINKS AND NEVER GROWS. A module crossing the ceiling after this
+# was written fails until it is split or declared deliberately, and removing
+# the last entry deletes the file.
+#
+# SPLIT BY SUBJECT, NEVER BY NUMBER. `mqc_uni_criticality.py` came out of
+# `mqc_uni_metadata.py` because the ranking is its own subject; a
+# `_2` suffix would destroy the one-subject-per-module property the
+# suite is navigable by.
+#
+# NOTHING IS PAST THE CEILING HERE, which is the finished state.
+past_the_runway: {}

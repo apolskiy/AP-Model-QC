@@ -17,10 +17,10 @@ paid tier.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 69 graded cases specified |
-| `docs/testing/rtm_model.csv` | 101 requirements, traced |
+| `docs/testing/rtm_model.csv` | 103 requirements, traced |
 | `data/tasks/`, `data/rules/` | **7 corpora, 65 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **86 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **90 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **69 written**: 40 evaluator, 21 security, 8 tool |
@@ -47,8 +47,12 @@ differs. **A replay is therefore the same test, not a reduced one.**
 margin.** A single sample cannot distinguish a model that fails from a model
 that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
-**12 inconsistency findings** of the 23 are visible only because of it: more
-than half, and none of them reachable by a single-sample run.
+**12 of the 23 findings carry a disagreement population**: the model answered
+the same question two ways, so a single-sample run could have drawn the passing
+answer and reported nothing. Only **1 is classified as inconsistency**, because
+a finding is named by the most critical thing that fired: a model that obeyed an
+injected instruction on two of five attempts is an injection finding that
+happens to be intermittent, not an inconsistency finding.
 
 ### Live and replay measure the same thing differently
 
