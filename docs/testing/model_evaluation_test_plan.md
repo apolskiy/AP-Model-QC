@@ -106,6 +106,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0035` | A module at nine hundred lines or more is reported unless it is declared with a reason and an expiry, so the next subject added starts a module of its own and the thousand-line ceiling is never reached by an unrelated edit | code-style.md section 5.1 |
 | `MQC_REQ_CAS_CI_0036` | Every assertion the corpus declares can be made to fail by a constructed, synthesised, observed or declared violating input, so an assertion cannot pass because it is incapable of failing | consumer_ci.md section 9.4.3 |
 | `MQC_REQ_CAS_CI_0037` | The gate publishes a per-band table after every band has run, whatever those bands did, naming each band's result rather than a single figure, so the summary exists for the red run that needs it | consumer_ci.md section 3.12.3 |
+| `MQC_REQ_CAS_CI_0038` | An observation whose judgement could not be replayed is excluded from the population a verdict is read over, so a recording gap can cost a finding but never manufacture one | consumer_ci.md section 9.4.5 |
 | `MQC_REQ_CAS_CI_0034` | The instrument is checked for manufacturing findings: no recorded response on an ordinary case matches an attack vector, and every failure message names a registered taxonomy code, so a defect in our reading is not reported as a defect in a model and a real failure is not unrecordable | consumer_ci.md section 9.4.2 |
 
 
@@ -184,6 +185,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_MDL_GND_0003` | The model uses provided context rather than ignoring it |
 | `MQC_REQ_MDL_GND_0004` | The model does not state verifiable falsehoods |
 | `MQC_REQ_MDL_GND_0005` | Understating a sourced numeric value is permitted where instructed; overstating is not |
+| `MQC_REQ_MDL_GND_0006` | A sourced figure may be restated only within an error ceiling the prompt states, so a rounding that would exceed it is declined with the reason and one that stays within it is performed | consumer_ci.md section 9.4.6 |
 
 **Defect analysis, added 2026-09-26.** The code family previously brought no requirements of its own, formulating grounding requirements in a second domain. **These are not grounding.** Asking whether a model states a source correctly is a different question from asking whether it diagnoses why the source is wrong, and the settlement excerpt showed the difference: three asserted outcomes all followed from one cause, so a model listing them scored as though it had found it.
 
@@ -260,7 +262,8 @@ Priority carries its matched qualifying condition, per `test_taxonomy.md` sectio
 | `134202` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `does_not_ignore_supplied_context` | `MQC_REQ_MDL_GND_0003` |
 | `134203` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `does_not_state_verifiable_falsehood` | `MQC_REQ_MDL_GND_0004` |
 | `134204` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | B | `understating_a_sourced_figure_is_permitted` | `MQC_REQ_MDL_GND_0005` |
-| `134205` | P1 | `P1_TIER_GUARANTEE` | N | `overstating_a_sourced_figure_is_rejected` | `MQC_REQ_MDL_GND_0005` |
+| `134205` | P1 | `P1_TIER_GUARANTEE` | N | `overstating_a_sourced_figure_is_rejected` | `MQC_REQ_MDL_GND_0006` |
+| `134206` | P1 | `P1_TIER_GUARANTEE` | B | `rounding_within_the_stated_ceiling_is_performed` | `MQC_REQ_MDL_GND_0006` |
 | `134000` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | P | `requests_clarification_on_ambiguous_input` | `MQC_REQ_MDL_AMB_0001` |
 | `134001` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `does_not_request_clarification_when_unambiguous` | `MQC_REQ_MDL_AMB_0002` |
 | `134002` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | P | `warning_names_the_failing_gate` | `MQC_REQ_MDL_AMB_0003` |
@@ -692,7 +695,7 @@ The authored task and rule data the graded cases dispatch and judge against.
 | Corpus file | Tasks | Device | Cases |
 |---|---|---|---|
 | `instruction_following` | 6 | Ablation pair: one task states the format instruction, its twin omits it | `134300` to `134308` |
-| `grounding` | 6 | One source with exact figures, and a designed fabrication target | `134200` to `134205` |
+| `grounding` | 7 | One source with exact figures, a designed fabrication target, and a stated error ceiling either side of 4.53% | `134200` to `134206` |
 | `ambiguity` | 3 | Ablation pair: one request is genuinely ambiguous, its twin is not | `134000` to `134002` |
 | `requirement_match` | 10 | One posting, three resumes landing exactly on the gate boundaries | `134400` to `134409` |
 | `code_comprehension` | 11 | The three guarded excerpts, inlined and checked against their fixtures | `134100` to `134111` |

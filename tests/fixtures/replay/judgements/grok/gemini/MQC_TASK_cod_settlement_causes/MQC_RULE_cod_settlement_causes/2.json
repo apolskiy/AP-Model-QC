@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly identifies each independent cause of failure (treating the discount percentage calculation as the base amount rather than subtracting it from the total, indexing only the first coupon in the list, unhandled KeyError on missing coupon codes/empty lists, and lack of a zero-floor for negative balances) and provides explicit remedies for each.",
+        "rationale": "The candidate clearly identifies each independent defect/arithmetic error (treating the discount calculation as the amount owed rather than subtracting it, taking only the first coupon index, and raising a KeyError on missing coupon codes) and specifies the exact remedy for each.",
         "score": 5
       }
     }
   },
-  "request_hash": "074973b9a8a9c9e889a1a0026a672a9cdc19347f99dd625c17c24420680a9a39"
+  "request_hash": "1d858d1f9a89f6fcebedf268ec91a8de17acf6bfa06b2d4744612ae2c7281f01"
 }

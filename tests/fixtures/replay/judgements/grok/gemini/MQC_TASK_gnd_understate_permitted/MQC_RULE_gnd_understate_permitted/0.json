@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The candidate provides 28.7 million, which is exactly at the sourced figure for EMEA revenue, and explicitly states that it matches the stated amount.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "8e02c29054ce2ecdce99c77fbf37761148bded7e3545680bb6105678532936a1"
+}

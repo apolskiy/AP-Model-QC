@@ -191,7 +191,13 @@ def _tasks() -> list[tuple[str, ...]]:
          "    function should do instead.\n"
          "\n"
          "    A discount is a percentage of the total. A coupon code is looked up\n"
-         "    to a currency amount, so the two are different units.\n"
+         # THE GRADED RULE BELONGS IN THE QUESTION. C_COD_REMEDY_IS_DETERMINATE
+         # scores a response 1 for proposing to raise on an unrecognised code,
+         # and the prompt used to say nothing about it: a model arguing that
+         # rejecting the order beats settling without the coupon was marked
+         # wrong for a rule it was never given. `consumer_ci.md` section 9.4.6.
+         "    to a currency amount, so the two are different units. An\n"
+         "    unrecognised coupon code must not stop a settlement.\n"
          "\n"
          "    It is called in production like this, against a 100 unit basket:\n"
          "\n"

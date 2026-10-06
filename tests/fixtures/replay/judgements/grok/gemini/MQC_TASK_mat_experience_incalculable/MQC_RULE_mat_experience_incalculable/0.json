@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate asks for the necessary figure/dates and identifies concrete consequences (the summary cannot satisfy the posting and will fail an explicitly years-based requirement). However, it falls slightly short of Level 5 because it does not explicitly state that this omission alone can decide the application's overall outcome (e.g., that the candidate will be rejected or the application set aside entirely on this basis).",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "3546894a91b2ef511df69c0bc30c42eeecca4c806f701b9017f34e6fb437c0e7"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "44ade81ccb2dc15401bb1e0d8c52ede78191dc1f6d4dae1b2b8eaf96e9a63292",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1536,
+    "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
+    "duration_ms": 33422,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1538,
+    "mode": "live",
+    "output_tokens": 356,
+    "raw_reference": "f35a7dd4-6692-9d9b-b3c3-137892a1aa37",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The settlement math treats the tier percentage as the bill, drops every coupon after the first, and aborts on an unknown code.\n\n**The tier percentage is used as the amount due, not as a reduction.** `total_amount * discount / 100` is the discount itself (20 on a 100-unit standard basket). That value is then used as the amount owed. A discount is a percentage off the total, so the pre-coupon balance must be the total minus that percentage: `total_amount * (100 - discount) / 100` (80 for standard, 70 for premium). Premium is a larger discount, so it must leave a smaller balance, not a larger one.\n\n**A currency coupon is then subtracted from that discount portion.** Coupons are currency amounts, not percentages. They have to be subtracted from the post-discount currency balance. Subtracting them from `total * discount / 100` mixes a discount slice with a cash credit, so both the base and the units are wrong. On the first call that yields `20 - 30` instead of `80 - 30`.\n\n**Only `coupon_codes[0]` is looked up.** Later codes never affect the sum. Every recognised code should be resolved to its currency amount and those amounts added. `[\"SAVE20\", \"SAVE30\"]` must take 50 off the discounted total, not only 20.\n\n**An unknown code raises `KeyError` and stops settlement.** `coupon_lookup[code]` assumes every code exists. An unrecognised code must be skipped (contribute 0) so the tier discount and any valid coupons still settle. `[\"NOPE\"]` should finish as the discounted total with no coupon credit, not raise.",
+    "thinking_tokens": 2666,
+    "tool_calls": []
+  }
+}

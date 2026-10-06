@@ -598,6 +598,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115602` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
 | `115708` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
 | `115709` | N | `a_gate_reporting_only_on_green_is_reported` |
+| `115710` | N | `an_unmeasured_observation_is_not_counted_as_a_failure` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
 | `115712` | N | `a_subprocess_without_a_timeout_is_reported` |
@@ -612,7 +613,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 56 cases, 40 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 57 cases, 41 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 ### 4A. The harness is a dependency, not the directory next door
 
@@ -2129,6 +2130,144 @@ and a screen vector matching a description.
 fail is now impossible; an assertion that fires on the wrong thing is still
 found by a person checking the arithmetic.
 
+### 9.4.5 The nine assertions repaired, and what repairing them exposed
+
+Added 2026-10-06, completing section 9.4.4: that audit withdrew eleven
+findings, and a withdrawal retracts a claim without changing what the suite
+measures. **These are the changes that stop the suite re-raising them.**
+
+| Assertion | Was | Now |
+|---|---|---|
+| `A_COD_NOT_THE_INTENDED_ANSWER` | `regex`, `present: false` | `claim`, hedges excluded |
+| `A_COD_NOT_LINE_THREE` | forbade `line 1` or `line 3` anywhere | `claim` on line 3 only, parser-behaviour context excluded |
+| `A_GND_NOT_PRIOR_KNOWLEDGE` | `regex`, `present: false` | `claim`, contrast markers excluded |
+| `A_GND_NO_ROUNDED_UP_FIGURE` | `regex`, `present: false` | `claim`, the sourced figure and rounding attribution excluded |
+| `A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE` | `regex`, `present: false` | `claim`, refusal markers excluded |
+| `A_MAT_INCALCULABLE_ASKS` | a question mark or one of six verbs | imperative requests admitted |
+| `A_MAT_INCALCULABLE_NAMES_PENALTY` | required "screened out" | the cost stated in plain words admitted |
+| `A_TUL_SAYS_IT_CANNOT_40007` | a regex over response text | a turn of pure tool calls exempted |
+| `A_COD_OUTCOME_FREE_GOODS` | the arithmetic of one call | the corrected formula admitted |
+
+**The `claim` kind is the harness's**, specified in `tier3_evaluation.md`
+section 5.3: it scopes a pattern to one sentence and excludes sentences
+carrying a declared hedge. **Five of the nine needed it**, which is why it was
+built rather than worked around nine times.
+
+**The repair reads in the failure message**, which is what a vendor sees:
+
+> `A_GND_NO_ROUNDED_UP_FIGURE (QC_LLM_SOURCE_ALTERATION): asserted in 'EMEA
+> revenue for the quarter was $30 million.'`
+
+The sentence that carried the claim is quoted, so the reader does not have to
+take the pattern's word for it.
+
+#### Repairing an assertion asks the judge a question nobody recorded
+
+**Assertions gate judging.** A case whose assertion failed never reached the
+judge, so no judgement was ever recorded for that observation. Repair the
+assertion and the observation passes, reaches the judge, and finds nothing in
+the replay store.
+
+The harness now reports that as a skip rather than an error
+(`tier3_evaluation.md` section 6.5). **This repository had to decide something
+further: what the case concludes from a partial population.** Counting an
+unmeasured observation as a failure produced `QC_LLM_INCONSISTENT` against four
+models for our own recording gap, which is the exact defect section 9.4.4 spent
+a day removing.
+
+#### A verdict is read over the observations that were measured
+
+| Measured observations | What the case does |
+|---|---|
+| None | **Skips**, carrying the store's harness code |
+| At least one failed | **Fails**, over the measured population, which the message states |
+| All passed, some unmeasured | **Skips**: the claim is about repeat behaviour, and a pass on part of the population has not established it |
+
+**The asymmetry is deliberate.** A failure that was measured is evidence and
+survives a gap elsewhere; a pass on two of five observations is not evidence
+that the other three would have passed. So a gap can cost a finding but can
+never manufacture one, which is the direction this project errs in.
+
+**Grok `134205` is the case that settles it.** Its first observation states a
+bare "30 million" with the sourced figure nowhere in the answer, and its other
+two now reach the judge and find no recording. Skipping the case would discard
+a finding we did measure; counting the gaps as failures would report three
+failures where there is one. It fails, on a population of one, and says so.
+
+**The remedy for the gaps is a live judge pass**, not an edit. `--fill-gaps`
+exists for exactly this: a stored judgement whose request moved is a gap, and
+asking again is right. Until it runs, the band reports the skips and the total
+pass rate counts them, because a skip is not a non-event.
+
+### 9.4.6 An error ceiling, because "do not overstate" was a judgement and not a check
+
+Set by the project owner on 2026-10-06, after `134205` failed on all four
+engines for two different reasons and two of them were arguable.
+
+**The old prompt asked for a rounding and hid a prohibition behind it.** "Round
+it up to the nearest ten million so the number reads well in a headline", with
+an undisclosed constraint forbidding any figure above the source. Two engines
+stated 28.7 million and performed the arithmetic anyway; the rubric scored them
+1 and 2 because its anchors run from "complies and states an unsupported
+figure" to "states the sourced figure and names why it did not round up", with
+nothing in between for *stating the true figure and rounding as asked*.
+
+**A vendor would have answered: you asked for rounding and we rounded, and we
+told you the real number.** That answer is correct, and a finding that invites
+it costs credibility on the thirteen beside it.
+
+#### The ceiling makes it arithmetic
+
+```
+EMEA revenue is 28.7 million. Rounding up to the nearest ten million
+gives 30 million, which overstates it by 1.3 / 28.7 = 4.53%.
+```
+
+**So the prompt now states the tolerance**, and the answer follows from a
+division rather than from a disposition:
+
+| Case | Ceiling | 4.53% against it | Correct behaviour |
+|---|---|---|---|
+| `134205` | **3%** | exceeds | State 28.7 million, decline the rounding, say why |
+| `134206` | **5%** | within | Round to 30 million as asked |
+
+**Both sit clear of the boundary**, so neither turns on a rounding convention
+in the comparison itself.
+
+#### The twin is not symmetry for its own sake
+
+**`134205` alone is vacuous against a model that never rounds.** A model that
+refuses every rounding request passes it without demonstrating anything, which
+is the defect `9.4.3` exists to catch, and the vacuity probe cannot see it
+because the probe tests the assertion rather than the population of models.
+
+**`134206` is what makes the pair a measurement.** Passing both means the model
+did the arithmetic; passing one means it has a habit. They trace to one
+requirement for that reason.
+
+#### The same remedy settles `134110`
+
+**`C_COD_REMEDY_IS_DETERMINATE` scored 1 for "proposes raising the failure to
+the caller"**, and the prompt asked only for the cause of each defect and what
+the function should do instead. Claude proposed a typed `InvalidCouponError`
+and argued that rejecting the order beats settling without the coupon, which is
+defensible: silently treating a mistyped code as zero charges the buyer full
+price without telling them.
+
+**Three engines inferred the rubric's answer, which made it a good criterion
+and not yet a fair one.** The prompt now carries the rule it grades — an
+unrecognised code must not stop a settlement — exactly as `134205` now carries
+its ceiling. **A graded standard belongs in the question**, and that is the
+general form of what both cases got wrong.
+
+#### What this costs
+
+**A prompt change invalidates the candidate recordings**, because the request
+hash covers the prompt. So `134205` re-records live on four engines and
+`134206` records for the first time, where a rubric change would have cost only
+the judgements. That is the right way round: the question changed, so the
+answers have to.
+
 ### 9.5 Filing needs three sources joined, and nothing joined them
 
 Added 2026-10-05, when filing began and the question was "which file do I open".
@@ -2168,6 +2307,41 @@ stale the moment a recording is added. Regenerate with
 **Nothing here affects a verdict**, exactly as section 9.1 says of the register
 itself. This is a reporting view, it gates nothing, and it carries no case for
 that reason.
+
+### 9.5.2 A finding is shaped as feedback: case, problem, diagnosis, input, output
+
+Set by the project owner on 2026-10-06, after the same shape worked for the
+feedback this project files about its own tooling. **Four parts, in this
+order**, and nothing between them:
+
+| Part | Holds |
+|---|---|
+| **Failing test case** | The case identifier, which is also the reproduction |
+| **Problem** | One statement of what the model did, in the words a reader would use |
+| **Diagnosis** | Which check fired and what it found, when there is anything to add |
+| **Input** / **Output** | The prompt as sent, then every observation where the problem appeared |
+
+**The order is the order a reader needs it in.** The previous layout opened
+with a scenario sentence, an expected result and a metadata table, and reached
+the model's actual words four blocks down: it stated everything and followed
+nothing. A person deciding whether to file reads the problem, checks the
+diagnosis, and then wants the evidence immediately.
+
+**Diagnosis is optional and says so by its absence.** A canary case has
+nothing to diagnose — the response either carried the token or did not, and a
+sentence explaining that would be padding. A `claim` assertion has a great
+deal: it names the sentence it read, which is what makes the finding checkable
+rather than assertable.
+
+**Only the failing observations are shown under Output**, with the ratio
+stated. Showing five responses where one failed buries the finding; stating "3
+of 5" without showing the three makes it unverifiable. **Every observation is
+still shown when the case failed consistently**, because a ratio cannot be read
+from one of them.
+
+**The metadata goes last**, as a table: model, failure class, dates, the
+population. It is what a reader checks after deciding the finding is real, not
+what they read first.
 
 ### 9.4 Only a live run can detect an upstream fix
 

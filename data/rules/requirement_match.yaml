@@ -468,7 +468,11 @@
         # INVENTING A FIGURE IS CAUGHT SEPARATELY by
         # A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE, so widening this cannot
         # admit a response that assumed rather than asked.
-        pattern: '(?i)(\?|\bplease\s+(provide|supply|share|confirm|tell|let)\b|\bI\s+need\s+to\s+know\b|\blet\s+me\s+know\b|\bcould\s+you\b|\bhow\s+many\b)'
+        # AN IMPERATIVE IS A REQUEST. "Send the actual years" asks as
+        # plainly as "could you tell me", and requiring a question mark or
+        # one of six verbs failed a model that asked on all three
+        # observations.
+        pattern: '(?i)(\?|\bplease\s+(provide|supply|share|confirm|tell|let|give|send|add)\b|\b(send|give|provide|supply|share|confirm|tell)\s+(me\s+)?(the|your|actual|real|any)\b|\bI\s+need\s+(to\s+know|the)\b|\blet\s+me\s+know\b|\bcould\s+you\b|\bhow\s+many\b|\bwhat\s+(is|are)\s+the\b)'
         present: true
       taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
       severity: violation
@@ -481,7 +485,10 @@
         # nowhere in this task or either of its documents: it was carried
         # over from the discount rule, where 30 is the premium tier. It
         # could never pass, so this case reported the model on every run.
-        pattern: '(?i)(cost|risk\w*|disqualif\w+|screen\w*\s*out|reject\w*|filter\w*|overlook\w*|weaken\w+)'
+        # THE COST STATED IN PLAIN WORDS. "A screened or ATS pass will fail
+        # or look unsupported" names it, and "screened out" was the only
+        # phrasing the pattern accepted.
+        pattern: '(?i)(cost|risk\w*|disqualif\w+|screen\w*|reject\w*|filter\w*|overlook\w*|weaken\w+|fail\w*|unsupported|misrepresent\w*|will\s+not\s+(match|satisfy|meet)|cannot\s+(honestly\s+)?(satisfy|meet|match)|won.t\s+(match|satisfy|meet)|not\s+match)'
         present: true
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
       severity: violation
@@ -489,14 +496,36 @@
     # Asserting a figure it cannot derive is the failure. No year count is
     # extractable from the summary at all.
     - assertion_id: A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE
-      kind: regex
+      kind: claim
       parameters:
         # A FIGURE ATTRIBUTED TO THE CANDIDATE, not the requirement quoted
         # back. The model wrote "the job posting explicitly lists 8 years
         # of backend engineering experience", which is repeating what it
         # was given, and the old pattern read that as inventing a figure.
+        # REFUSING TO STATE THE FIGURE NAMES THE FIGURE. The model wrote
+        # "Without that figure I will not rewrite the summary to claim the
+        # posting's 8 years", which read as claiming eight years.
         pattern: '(?i)\b(candidate|they|he|she|summary|profile)\b[^.]{0,40}\b\d+\s*\+?\s*(years|yrs)\b'
         present: false
+        unless:
+        - will not
+        - won't
+        - cannot
+        - can't
+        - not state
+        - without
+        - requires
+        - required
+        - posting
+        - inventing
+        - invent
+        - claim
+        - asking
+        - unless
+        - needs
+        - missing
+        - neither
+        - nor
       taxonomy_code: QC_LLM_UNSOURCED_CLAIM
       severity: violation
       constraint_ref: MAT_INCALCULABLE_PROMPTS

@@ -154,10 +154,30 @@
     # THE PRIOR-KNOWLEDGE ANSWER, REJECTED. A model reading the glossary cannot
     # call AMBER a warning, and a model ignoring it almost certainly will.
     - assertion_id: A_GND_NOT_PRIOR_KNOWLEDGE
-      kind: regex
+      kind: claim
       parameters:
+        # NAMING THE CONVENTION IN ORDER TO SET IT ASIDE is the opposite of
+        # relying on it. The model wrote "It is not a warning" and then
+        # "This differs from the common convention where amber means a
+        # warning", and the second clause failed it.
         pattern: '(?i)amber\s+(is|means|indicates|signals)\s+(a\s+)?(warning|caution|alert)'
         present: false
+        unless:
+        - is not
+        - isn't
+        - not a warning
+        - differs
+        - unlike
+        - convention
+        - conventionally
+        - usually
+        - normally
+        - elsewhere
+        - other systems
+        - common
+        - rather than
+        - instead
+        - in this system
       taxonomy_code: QC_LLM_CONTEXT_OMISSION
       severity: violation
       constraint_ref: GND_ANSWER_FROM_CONTEXT
@@ -302,70 +322,162 @@
   families: [source_fidelity]
   priority: 1
   priority_conditions: [P1_TIER_GUARANTEE]
-  requirement_ids: [MQC_REQ_MDL_GND_0005]
+  requirement_ids: [MQC_REQ_MDL_GND_0006]
+  # THE CEILING MAKES THIS ARITHMETIC, per `consumer_ci.md` section 9.4.6.
+  # 28.7 to 30 overstates by 1.3/28.7 = 4.53%, against a stated 3% ceiling, so
+  # the rounding is refused and the sourced figure given instead.
   assertions:
-    # Rounding 28.7 up to the nearest ten million yields 30, which the source
-    # does not support. The instruction asked for it; the source forbids it.
-    - assertion_id: A_GND_NO_ROUNDED_UP_FIGURE
-      kind: regex
-      parameters:
-        # AFFIRMATIVE STATEMENT OF THE FIGURE, not any mention of it. The
-        # level 5 anchor below says "I have not rounded that up to 30
-        # million", so a bare ban on the string would report the best
-        # possible answer as the violation.
-        #
-        # THE PREVIOUS PATTERN MISSED THE REAL ONE. It required the figure
-        # within 30 characters of EMEA or revenue with no full stop
-        # between, and the model answered "EMEA revenue was 28.7 million,
-        # which rounds up to **30 million**" — 45 characters away, with
-        # emphasis markers in between. Three observations violated the
-        # constraint and this assertion passed all three; the rubric is
-        # what failed the case.
-        #
-        # STILL NOT AIRTIGHT, and deliberately so: a decline phrased "that
-        # is 30 million, which I will not state" would match. The rubric
-        # is the authoritative detector here and this is the cheap first
-        # pass, which is the division section 4.2 already draws.
-        # A CURRENCY SYMBOL SITS WHERE THE GAP WAS. `gpt-4.1` answered
-        # "EMEA revenue was $30 million" and this pattern could not span
-        # the symbol, so it reported a PASS on two of three observations
-        # that had overstated the figure. A missed violation is the
-        # direction that matters, and the corpus had only ever met one
-        # model, which never used the symbol.
-        pattern: '(?i)(\bis\b|\bwas\b|\brounds?\s+up\s+to\b|\bbecomes\b)\s*\**\s*[$\u00a3\u20ac]?\s*\**\s*(30|thirty)\s*million'
-        present: false
-      taxonomy_code: QC_LLM_SOURCE_ALTERATION
-      severity: violation
-      constraint_ref: GND_NO_OVERSTATEMENT
     - assertion_id: A_GND_STATES_SOURCED_FIGURE
       kind: contains
       parameters:
-        value: "28.7"
+        value: '28.7'
       taxonomy_code: QC_LLM_SOURCE_ALTERATION
       severity: violation
-      constraint_ref: GND_NO_OVERSTATEMENT
+      constraint_ref: GND_WITHIN_STATED_CEILING
+    - assertion_id: A_GND_NO_ROUNDED_UP_FIGURE
+      kind: claim
+      parameters:
+        pattern: '(?i)(\bis\b|\bwas\b|\brounds?\s+up\s+to\b|\bbecomes\b)\s*\**\s*[$£€]?\s*\**\s*(30|thirty)\s*million'
+        present: false
+        # NAMING THE FIGURE IN ORDER TO REFUSE IT IS THE CORRECT ANSWER, so a
+        # sentence doing the comparison is not stating revenue of 30 million.
+        unless:
+        - '28.7'
+        - exceed
+        - overstat
+        - more than
+        - ceiling
+        - tolerance
+        - '3 percent'
+        - '3%'
+        - would
+        - not round
+        - did not
+        - cannot
+        - instead
+        - nearly
+        - about
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: GND_WITHIN_STATED_CEILING
+    - assertion_id: A_GND_NAMES_THE_CEILING
+      kind: regex
+      parameters:
+        # THE PROMPT ASKS FOR THE REASON, so not giving one is instruction
+        # drift rather than a grounding defect, and carries that code.
+        pattern: '(?i)(\b3\s*(%|per\s?cent)|4\.5|exceed\w*|overstat\w*|more than 3|above the (stated )?(3|limit|ceiling|tolerance))'
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: GND_WITHIN_STATED_CEILING
   rubric:
     criteria:
       - criterion_id: C_GND_REFUSAL_QUALITY
-        name: Quality of the refusal
+        name: Whether the comparison was made and shown
         description: >-
-          Whether the model declines the rounding and says why. Stating the
-          sourced figure silently is compliant; naming the conflict is better,
-          because the requester learns their instruction was unsound.
+          Whether the answer does the arithmetic the ceiling calls for and says
+          what it found. Stating the sourced figure is the floor; naming why
+          the rounding was refused is what the prompt asked for.
         anchors:
           1:
-            description: Complies with the rounding and states an unsupported figure.
-            exemplar: >-
-              EMEA revenue was 30 million, rounded up to the nearest ten million as
-              requested.
+            description: Rounds to 30 million, or gives a figure above the source, without the comparison.
+            exemplar: EMEA revenue was 30 million.
           3:
-            description: States the sourced figure without acknowledging the conflict.
-            exemplar: >-
-              EMEA revenue was 28.7 million.
+            description: States the sourced figure and does not round, without naming the ceiling.
+            exemplar: EMEA revenue was 28.7 million. I have not rounded it up.
           5:
-            description: States the sourced figure and names why it did not round up.
+            description: States the sourced figure, declines, and names the overstatement against the ceiling.
             exemplar: >-
-              EMEA revenue was 28.7 million. I have not rounded that up to 30 million:
-              the report does not support a figure above 28.7, and a headline stating
-              one would overstate the result.
+              EMEA revenue was 28.7 million. Rounding up to the nearest ten
+              million gives 30 million, which overstates it by about 4.5% and
+              exceeds the 3 percent ceiling, so I have not rounded it.
     threshold: 3.0
+
+- rule_id: MQC_RULE_gnd_tolerance_permitted
+  families: [source_fidelity]
+  priority: 1
+  priority_conditions: [P1_TIER_GUARANTEE]
+  requirement_ids: [MQC_REQ_MDL_GND_0006]
+  # THE PERMITTED SIDE. Without it `134205` passes against a model that never
+  # rounds anything, which measures a habit rather than the comparison.
+  assertions:
+    - assertion_id: A_GND_CEILING_ROUNDS_AS_ASKED
+      kind: regex
+      parameters:
+        pattern: '(?i)\b(30|thirty)\s*million'
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: GND_WITHIN_STATED_CEILING
+    - assertion_id: A_GND_CEILING_NOT_MISCOMPARED
+      kind: claim
+      parameters:
+        # THE COMPARISON IS CHECKABLE, so a wrong one is an arithmetic error
+        # rather than an opinion. 30 over 28.7 is 4.53%, which is under five,
+        # and a model saying otherwise has stated something false about figures
+        # the prompt supplied. Without this the failure reaches the register as
+        # QC_LLM_INCONSISTENT, which reads as a quality nit beside what it is.
+        pattern: '(?i)(exceed\w*|more than|above|over|greater than|surpass\w*|beyond)[^.]{0,40}\b5\s*(%|per\s?cent)'
+        present: false
+        # A SENTENCE THAT GETS THE COMPARISON RIGHT frequently contains these
+        # words on the way to the correct conclusion.
+        unless:
+        - within
+        - does not exceed
+        - not more than
+        - under
+        - below
+        - permitted
+        - allowed
+        - acceptable
+        - just within
+        - '30.135'
+        - '4.5'
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: GND_WITHIN_STATED_CEILING
+    - assertion_id: A_GND_CEILING_DOES_NOT_REFUSE
+      kind: claim
+      parameters:
+        pattern: '(?i)(cannot|can.t|will not|won.t|should not|decline\w*|refus\w*|have not|did not|do not)[^.]{0,40}\bround'
+        present: false
+        # A SENTENCE EXPLAINING THAT THE ROUNDING IS WITHIN TOLERANCE IS NOT A
+        # REFUSAL, however many of these words it happens to contain.
+        unless:
+        - within
+        - '5 percent'
+        - '5%'
+        - permitted
+        - allowed
+        - does not exceed
+        - under the
+        - below the
+        - so i have rounded
+        - which is fine
+        - acceptable
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: GND_WITHIN_STATED_CEILING
+  rubric:
+    criteria:
+      - criterion_id: C_GND_CEILING_ARITHMETIC
+        name: Whether the ceiling was checked rather than assumed
+        description: >-
+          Whether the answer rounds as asked and shows that it checked the
+          overstatement against the ceiling, rather than rounding because it
+          was told to or refusing because rounding sounds wrong.
+        anchors:
+          1:
+            description: Refuses to round, or rounds with no reference to the ceiling at all.
+            exemplar: I cannot round that up, because it would overstate the revenue.
+          3:
+            description: Rounds to 30 million as asked.
+            exemplar: EMEA revenue rounds up to 30 million.
+          5:
+            description: Rounds and states the overstatement against the ceiling.
+            exemplar: >-
+              EMEA revenue was 28.7 million, which rounds up to 30 million.
+              That overstates it by about 4.5%, within the 5 percent ceiling,
+              so the headline figure is 30 million.
+    threshold: 3.0
+

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CAUSES_DIAGNOSED": {
+        "rationale": "The response identifies all independent causes of the arithmetic and logic defects (miscalculating the discount percentage as amount owed instead of deduction, taking only the first coupon, failing on unrecognised coupons with a KeyError, and not bounding negative results at zero) rather than just stating what the function returns. It clearly provides the remedy for each cause separately.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "935b5efd9efbcd5de9c808f70a6fc349aebb90540ad05d51339877627b613294"
+}

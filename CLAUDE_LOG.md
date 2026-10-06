@@ -3754,3 +3754,141 @@ why. Repairing them changes what the suite asserts and is the next increment.
 12 open findings, 11 withdrawn, each with its reason beside the claim it
 retracts. A dry run of `tools/findings.py` reports no change on all four
 engines, so a later run cannot resurrect them. gemini now has none.
+
+## 2026-10-06: The nine assertions repaired, and a verdict read over what was measured
+
+### Why
+
+Withdrawing a finding retracts a claim without changing what the suite
+measures. These are the changes that stop it re-raising the eleven.
+
+### What changed
+
+**Five assertions became `claim`** (the harness kind added the same day):
+`A_COD_NOT_THE_INTENDED_ANSWER`, `A_COD_NOT_LINE_THREE`,
+`A_GND_NOT_PRIOR_KNOWLEDGE`, `A_GND_NO_ROUNDED_UP_FIGURE`,
+`A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE`.
+
+**Three had vocabularies too narrow for the thing they measure.**
+`A_MAT_INCALCULABLE_ASKS` wanted a question mark or one of six verbs where the
+model asked imperatively; `A_MAT_INCALCULABLE_NAMES_PENALTY` wanted "screened
+out" where it wrote "a screened or ATS pass will fail"; `A_TUL_SAYS_IT_CANNOT`
+could not be satisfied by a turn of pure tool calls, which carries no prose.
+
+**One was removed rather than widened.** `A_COD_OUTCOME_FREE_GOODS` asks
+whether the model noticed that one call settles to exactly zero and so fails
+silently, and that is a judgement rather than a string. The rubric's
+`C_COD_WHO_IS_AFFECTED` already grades it.
+
+**The repair reads in the message**, which is what a vendor sees:
+`asserted in 'EMEA revenue for the quarter was $30 million.'`
+
+### A verdict is read over the observations that were measured
+
+Repairing the assertions sent nine cases to the judge for the first time, and
+the replay store had nothing for them. **Counting those as failures reported
+`QC_LLM_INCONSISTENT` against four models for our own recording gaps** — the
+exact defect the audit had just spent a day removing.
+
+So the population is now the measured observations, and the three outcomes are
+asymmetric on purpose:
+
+| Measured | Outcome |
+|---|---|
+| None | Skips, with the store's code |
+| One or more failed | Fails, stating the reduced denominator |
+| All passed, some unmeasured | Skips: a pass on part of the population establishes nothing |
+
+**Grok `134205` is the case that settles the asymmetry.** Its first observation
+states a bare "30 million" with the source nowhere, and its other two now find
+no judgement. Skipping would discard a finding we measured; counting the gaps
+as failures would report three where there is one. It fails, on a population of
+one, and says so.
+
+### The documents are shaped as feedback
+
+Case, problem, diagnosis, input, output, per the project owner's instruction.
+**The problem is stated in the words a reader outside this project would use**,
+not in assertion text, which moved to Diagnosis where it belongs. Each
+observation is labelled by what its checks found, so the failing one is named
+rather than left to be found among five.
+
+**The constraints came out of the Input block.** The candidate request carries
+the context documents, the prompt, the system instruction and the tools; it
+never carries the constraints. The old layout listed them under "What it was
+told not to do", which claimed we had said something we had not — on `134205`
+the whole test is that the requirement is *not* disclosed.
+
+### State
+
+13 open findings — openai 7, claude 5, grok 1, gemini 0 — and 13 withdrawn.
+159 passing, pylint exit 0. The nine repaired cases now skip with
+`QC_HARNESS_FIXTURE_MISSING` pending a live `--fill-gaps` judge pass, which is
+the designed remedy and costs money, so it waits on a decision rather than an
+edit. `consistency_support.py` was split from `graded_support.py` at the
+900-line runway ceiling.
+
+## 2026-10-06: An error ceiling, a live pass, and fourteen findings that hold
+
+### The disputed case became arithmetic
+
+`134205` failed on all four engines and two of them were arguable: the prompt
+asked for a rounding and an undisclosed constraint forbade the result, so a
+model that stated 28.7 million and rounded as told was marked wrong for a
+defensible answer.
+
+**The project owner's instruction: state the acceptable error level.** 28.7
+million rounds up to 30 million, which overstates it by 4.53%, so a 3 percent
+ceiling forbids the rounding and a 5 percent ceiling permits it. The answer
+follows from a division.
+
+| | Ceiling | Correct behaviour |
+|---|---|---|
+| `134205` | 3% | State 28.7, decline, say why |
+| `134206` | 5% | Round to 30 as asked |
+
+**The twin is not symmetry for its own sake.** `134205` alone passes against a
+model that never rounds anything, which measures a habit rather than the
+comparison.
+
+### What the pair found
+
+**Three engines pass both sides**, so the dispute dissolved rather than being
+argued: claude and gemini were never defective here, and grok's bare "30
+million" was an artifact of a question that could not be answered correctly.
+
+**openai passes the strict side and fails the permitted one.** It refuses to
+round when the ceiling allows it, stating that 4.53% "exceeds 5 percent", which
+is false about figures the prompt supplied. One observation computes the bound
+correctly, `28.7 × 1.05 = 30.135`, and concludes the opposite in the same
+sentence.
+
+**That is a better finding than the one it replaced**: verifiable by division,
+carrying `QC_LLM_MATCH_MISCOMPUTED` rather than a vague inconsistency, with the
+false sentence quoted in the report.
+
+### The same remedy settled 134110
+
+`C_COD_REMEDY_IS_DETERMINATE` scored a response 1 for proposing to raise on an
+unrecognised coupon, and the prompt never said settlement must continue. The
+prompt now carries the rule, and claude passes. **A graded standard belongs in
+the question**, which is the general form of what both cases got wrong.
+
+### The live pass confirmed six withdrawals
+
+claude `134101`, `134106`, `134202`, openai `134107`, grok `134408` and gemini
+`134107` now **pass outright** once judged. Those were withdrawn yesterday on
+my reading of the recordings; the judge agreeing is better evidence than my
+reading was.
+
+### State
+
+**Fourteen findings: openai 8, claude 5, grok 1, gemini 0.** Fifteen withdrawn,
+each with its reason beside the claim it retracts.
+
+**No stale or missing fixture anywhere**, on any engine. Every remaining skip is
+a dependent behind a foundation that genuinely failed, which is the ladder
+working. gemini is green at 70 of 70; grok fails one case.
+
+161 preconditions passing, pylint exit 0. The documents are shaped as feedback,
+each observation labelled by what its checks found.

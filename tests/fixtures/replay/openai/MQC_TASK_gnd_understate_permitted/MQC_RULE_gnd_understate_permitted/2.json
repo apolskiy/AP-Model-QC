@@ -1,0 +1,22 @@
+{
+  "request_hash": "12fd367c0977b1968ad9a6bb3a06bd028ae3028092b84cffbac4a43ea4d6b149",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
+    "duration_ms": 1001,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 127,
+    "mode": "live",
+    "output_tokens": 20,
+    "raw_reference": "chatcmpl-EW7XI51QJ0W2IHcugN1nPTs2Vbkfb",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Based on the report, a conservative floor for EMEA revenue is **28.7 million**.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

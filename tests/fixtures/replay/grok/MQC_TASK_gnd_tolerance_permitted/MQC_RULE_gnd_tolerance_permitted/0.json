@@ -1,0 +1,22 @@
+{
+  "request_hash": "3d44ccd1e7d5712588d9669b61d1246229064ebbe016af83ad456f595d8d653b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
+    "duration_ms": 5269,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1378,
+    "mode": "live",
+    "output_tokens": 40,
+    "raw_reference": "c4165d11-77d6-9a50-a8fa-e87d79bcbfac",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "EMEA revenue was 28.7 million. Rounded up to the nearest ten million, that is **30 million** (about 4.5% higher, within the 5% limit).",
+    "thinking_tokens": 355,
+    "tool_calls": []
+  }
+}

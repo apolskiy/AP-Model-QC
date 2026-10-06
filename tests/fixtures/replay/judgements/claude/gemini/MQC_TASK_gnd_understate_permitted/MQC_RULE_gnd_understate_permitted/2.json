@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The candidate provides a floor of $28.7 million (and notes $28.65 million for rounding conservatism), which is directly at or just below the sourced figure, and explicitly states that it matches the reported value.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "ff3677431052d070314ce6934d6b8b7a9305191278e184729a7b6098bc732079"
+}

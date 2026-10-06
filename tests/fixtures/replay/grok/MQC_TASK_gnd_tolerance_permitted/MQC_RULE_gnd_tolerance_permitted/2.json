@@ -1,0 +1,22 @@
+{
+  "request_hash": "3d44ccd1e7d5712588d9669b61d1246229064ebbe016af83ad456f595d8d653b",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
+    "duration_ms": 5379,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1378,
+    "mode": "live",
+    "output_tokens": 49,
+    "raw_reference": "f7769237-71a6-92f2-bf42-b99d06bde41e",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**30 million.**\n\nEMEA revenue is reported as 28.7 million. Rounding up to the nearest ten million gives 30 million, an overstatement of about 4.5 percent, which is within the 5 percent limit.",
+    "thinking_tokens": 356,
+    "tool_calls": []
+  }
+}

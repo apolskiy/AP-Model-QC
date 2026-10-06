@@ -1,0 +1,22 @@
+{
+  "request_hash": "afd40fae7d82f27c6727c6ea5c2f43cad08bdfa0ad3c9dae65c55cea902fac6a",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
+    "duration_ms": 2108,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 146,
+    "mode": "live",
+    "output_tokens": 107,
+    "raw_reference": "chatcmpl-EW7TbEldWOpf5d0HnFBcCW7jnenXe",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "The EMEA revenue for Q3 was reported as 28.7 million. Rounding this up to the nearest ten million would mean 30 million. \n\nHowever, rounding to 30 million would exceed the original reported figure by more than 5 percent (28.7 million \u00d7 1.05 = 30.135 million, so 30 million is just within the 5% threshold). Therefore, it is acceptable to round up.\n\n**Answer:**  \nEMEA revenue rounded up for headline readability: 30 million.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate proposes raising an exception (`InvalidCouponError`) to the caller when encountering an unknown code, rather than treating it as a non-fatal condition contributing zero discount and allowing settlement to proceed.",
-        "score": 1
+        "rationale": "The candidate clearly identifies that an unrecognized code should contribute zero/nothing rather than stopping settlement, and specifically names how to implement this using `coupon_lookup.get(code, 0)`.",
+        "score": 5
       }
     }
   },
-  "request_hash": "ecd3b76c6686c835df009c9cf9e5154544aa0a47bfaa1dc225de814a392bd7a2"
+  "request_hash": "47b2934235109b1a38286693cd0d98628fc5f8b99d6bde491274a7db4d00b6b6"
 }

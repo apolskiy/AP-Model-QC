@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The response identifies the exact figure from the source (28.7 million), explicitly states it, and uses it as the floor ('at least 28.7 million'), perfectly matching the level 5 anchor of being at or just below the sourced figure and saying so.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "29b970087ce77d0a30c1222df971af88611b5a5619d8e0edd2945f8f3282e441"
+}

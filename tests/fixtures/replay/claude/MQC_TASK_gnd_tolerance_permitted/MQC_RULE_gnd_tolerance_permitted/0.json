@@ -1,0 +1,22 @@
+{
+  "request_hash": "fd4bbfbda10d159957dc702252a1db4710d19ccc4e410ddf0ab9ed4795fe042f",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
+    "duration_ms": 4576,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 200,
+    "mode": "live",
+    "output_tokens": 284,
+    "raw_reference": "msg_011Cfmiprj4znza9jXVnkxHy",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**EMEA revenue: about 30 million** (reported: 28.7 million)\n\nRounding up to 30 million adds 1.3 million, which overstates the figure by about 4.5% (1.3 \u00f7 28.7). That is within your 5% limit, so the rounded figure works for the headline.\n\nThe report doesn't specify a currency, so I've left the figures unitless.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

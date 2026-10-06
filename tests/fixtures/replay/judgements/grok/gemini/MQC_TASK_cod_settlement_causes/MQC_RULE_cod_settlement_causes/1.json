@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response identifies each independent defect (percentage tier discount applied as balance instead of reduction, indexing only the first coupon code, direct indexing causing KeyError on missing codes, and lack of clamping to zero for negative totals) and provides the remedy for each, keeping the causes distinct.",
+        "rationale": "The response identifies all three independent causes of failure (treating the tier discount amount as the balance owed instead of subtracting it from the total, only evaluating the first coupon code in the list, and raising a KeyError on unrecognised coupon codes) and provides a clear remedy for each defect separately.",
         "score": 5
       }
     }
   },
-  "request_hash": "23ffa8625ffaa1456b4ea21bb24165633ecd3540d94e6f6bdc245d9c1c0a8ea0"
+  "request_hash": "3ea81816b9bef52736ab35034c5ca55c4ee5a91105ca51f4120eac2070e9dca9"
 }

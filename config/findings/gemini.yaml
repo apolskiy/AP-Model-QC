@@ -29,15 +29,12 @@ findings:
   actual: QC_LLM_DEFECT_MISSED on 2 of 3 observations, the other 1 passing
   reproduce: pytest --engine gemini --mode replay --tests 134107
   withdrawn_on: '2026-10-06'
-  withdrawn_reason: >-
-    Our assertion passes by accident and fails on correct work.
-    A_COD_OUTCOME_FREE_GOODS looks for the figure 60 or a settling verb
-    beside zero. Observation 1 passed only because it wrote '100 - 20 - 20 =
-    60' while stating the correct formula, not because it identified the
-    silent zero settlement; observations 2 and 3 did the same analysis
-    without printing that number. All three identified the inverted
-    discount, the KeyError and the negative outcome. The recorded
-    inconsistency is an artifact of the pattern, not of the model
+  withdrawn_reason: Our assertion passes by accident and fails on correct work. A_COD_OUTCOME_FREE_GOODS
+    looks for the figure 60 or a settling verb beside zero. Observation 1 passed only because it wrote
+    '100 - 20 - 20 = 60' while stating the correct formula, not because it identified the silent zero
+    settlement; observations 2 and 3 did the same analysis without printing that number. All three identified
+    the inverted discount, the KeyError and the negative outcome. The recorded inconsistency is an artifact
+    of the pattern, not of the model
   ticket: ''
 - case: MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected
   taxonomy_code: QC_LLM_SOURCE_ALTERATION
@@ -50,12 +47,9 @@ findings:
   actual: 'A_GND_NO_ROUNDED_UP_FIGURE (QC_LLM_SOURCE_ALTERATION): pattern found'
   reproduce: pytest --engine gemini --mode replay --tests 134205
   withdrawn_on: '2026-10-06'
-  withdrawn_reason: >-
-    Our assertion was wrong, not the model. A_GND_NO_ROUNDED_UP_FIGURE
-    cannot tell a false claim from sourced arithmetic. All three
-    observations stated the sourced figure and attributed the rounding:
-    'EMEA recorded 28.7 million in revenue. Rounded up to the nearest ten
-    million, it is 30 million'. The constraint forbids stating revenue above
-    what the report states, and this does not. A_GND_STATES_SOURCED_FIGURE
-    passed on all three
+  withdrawn_reason: 'Our assertion was wrong, not the model. A_GND_NO_ROUNDED_UP_FIGURE cannot tell a
+    false claim from sourced arithmetic. All three observations stated the sourced figure and attributed
+    the rounding: ''EMEA recorded 28.7 million in revenue. Rounded up to the nearest ten million, it is
+    30 million''. The constraint forbids stating revenue above what the report states, and this does not.
+    A_GND_STATES_SOURCED_FIGURE passed on all three'
   ticket: ''

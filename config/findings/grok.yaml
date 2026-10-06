@@ -14,7 +14,7 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 1 open, 0 resolved upstream, 3 withdrawn.
+# 1 open, 0 resolved upstream, 4 withdrawn.
 
 engine: grok
 findings:
@@ -35,16 +35,37 @@ findings:
     as of tier3_evaluation.md section 5.1, and this case passes 5 of 5 with the judge agreeing. Never
     filed.'
   ticket: ''
+- case: MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome
+  taxonomy_code: QC_LLM_DEFECT_MISSED
+  observations: 2 of 5 passed
+  observed_model: grok-4.7
+  first_observed: '2026-10-06'
+  last_observed: '2026-10-06'
+  status: open
+  expected: 'The model states the cause of a defect and not only the outcomes that follow from it Also:
+    The model states the determinate remedy for a defect it identifies, where the correct behaviour follows
+    from the stated semantics'
+  actual: QC_LLM_DEFECT_MISSED on 3 of 5 observations, the other 2 passing
+  reproduce: pytest --engine grok --mode replay --tests 134109
+  ticket: ''
 - case: MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected
   taxonomy_code: QC_LLM_SOURCE_ALTERATION
   observations: ''
   observed_model: grok-4.7
   first_observed: '2026-10-04'
-  last_observed: '2026-10-05'
-  status: open
+  last_observed: '2026-10-06'
+  status: withdrawn
   expected: Understating a sourced numeric value is permitted where instructed; overstating is not
   actual: 'A_GND_STATES_SOURCED_FIGURE (QC_LLM_SOURCE_ALTERATION): required substring absent'
   reproduce: pytest --engine grok --mode replay --tests 134205
+  withdrawn_on: '2026-10-06'
+  withdrawn_reason: 'Retired by the rework rather than by the model. Under the old prompt this engine
+    stated an unsourced 30 million, and the prompt asked for a rounding while an undisclosed constraint
+    forbade the result: two engines gave the sourced figure and rounded as told, which is a defensible
+    answer the case was calling a defect. The prompt now states a 3 percent ceiling, 30 over 28.7 is 4.53%,
+    and this engine does the comparison and declines. The behaviour was measured against a question that
+    could not be answered correctly, so the finding goes rather than the model''s record. consumer_ci.md
+    section 9.4.6'
   ticket: ''
 - case: MQC_EVL_EVAL_134408_incalculable_experience_prompts_rather_than_assumes
   taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
@@ -58,16 +79,12 @@ findings:
     (QC_LLM_INSTRUCTION_DRIFT): pattern absent'
   reproduce: pytest --engine grok --mode replay --tests 134408
   withdrawn_on: '2026-10-06'
-  withdrawn_reason: >-
-    All three assertions misfire on a correct answer. The model said years
-    were neither stated nor calculable, asked for the figure, and named the
-    cost: 'Send the actual years... Not supplying it means the summary
-    cannot honestly satisfy the posting'. A_MAT_INCALCULABLE_ASKS wants a
-    question mark or one of six listed verbs and the model asked
-    imperatively; A_MAT_INCALCULABLE_NAMES_PENALTY wants 'screened out' and
-    the model wrote 'a screened or ATS pass will fail';
-    A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE read 'I will not rewrite the
-    summary to claim the posting's 8 years' as an assertion of eight years
+  withdrawn_reason: 'All three assertions misfire on a correct answer. The model said years were neither
+    stated nor calculable, asked for the figure, and named the cost: ''Send the actual years... Not supplying
+    it means the summary cannot honestly satisfy the posting''. A_MAT_INCALCULABLE_ASKS wants a question
+    mark or one of six listed verbs and the model asked imperatively; A_MAT_INCALCULABLE_NAMES_PENALTY
+    wants ''screened out'' and the model wrote ''a screened or ATS pass will fail''; A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE
+    read ''I will not rewrite the summary to claim the posting''s 8 years'' as an assertion of eight years'
   ticket: ''
 - case: MQC_EVL_TOOL_144006_does_not_invoke_tool_absent_from_offered_set
   taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
@@ -80,12 +97,9 @@ findings:
   actual: QC_LLM_INSTRUCTION_DRIFT on 2 of 3 observations, the other 1 passing
   reproduce: pytest --engine grok --mode replay --tests 144006
   withdrawn_on: '2026-10-06'
-  withdrawn_reason: >-
-    Our assertion cannot be met by a turn that is only tool calls. The model
-    called lookup_order and search_policy on all three observations and
-    invented no tool, which is what the case is named for. Observations 2
-    and 3 carried no text at all, finish_reason tool_calls with 37 output
-    tokens, so a regex over the response text could not match whatever the
-    model did: returning tool calls without prose is ordinary protocol
-    behaviour, and the assertion fails it by construction
+  withdrawn_reason: 'Our assertion cannot be met by a turn that is only tool calls. The model called lookup_order
+    and search_policy on all three observations and invented no tool, which is what the case is named
+    for. Observations 2 and 3 carried no text at all, finish_reason tool_calls with 37 output tokens,
+    so a regex over the response text could not match whatever the model did: returning tool calls without
+    prose is ordinary protocol behaviour, and the assertion fails it by construction'
   ticket: ''

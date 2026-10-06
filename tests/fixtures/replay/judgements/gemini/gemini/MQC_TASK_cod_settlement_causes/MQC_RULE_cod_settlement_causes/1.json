@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly identifies each independent underlying cause of the defects (the arithmetic error in calculating the remaining discount balance, unhandled KeyError on missing coupons, single-element indexing ignoring multiple coupons, and lack of a lower bound allowing negative balances) and provides an appropriate remedy for each, keeping them distinct.",
+        "rationale": "The candidate clearly identifies the independent underlying causes of the defects (computing discount amount instead of balance owed, indexing only the first coupon, unsafe dictionary lookup causing KeyError, and lack of lower-bound clamping against negative balances) and provides a specific remedy for each, keeping them distinct.",
         "score": 5
       }
     }
   },
-  "request_hash": "577aec5f98c231943451daa001f116feacd9f27beb57f408578518303dd06822"
+  "request_hash": "2d467abccc0aefc4b3ef167f982be20f6bbf42d5ae152040e8be8179df084d49"
 }

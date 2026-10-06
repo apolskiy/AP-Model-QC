@@ -1,0 +1,22 @@
+{
+  "request_hash": "ab1cadc7b3cefae51c440f71a2d7ff0fab581d16ca9cae41ae914d688a7da51b",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
+    "duration_ms": 3693,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 176,
+    "mode": "live",
+    "output_tokens": 191,
+    "raw_reference": "msg_011CfmjjpphrHMvyTSruGmvp",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**EMEA revenue was at least 28.7 million.**\n\nThe report states EMEA recorded exactly 28.7 million in Q3, so 28.7 million is the highest floor the report supports. The figure is internally consistent: the four regions (41.2 + 28.7 + 11.4 + 6.1) sum to the reported total of 87.4 million.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

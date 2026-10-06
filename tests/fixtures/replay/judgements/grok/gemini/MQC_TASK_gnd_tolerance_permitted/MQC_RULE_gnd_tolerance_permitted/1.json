@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CEILING_ARITHMETIC": {
+        "rationale": "The candidate rounds EMEA revenue to 30 million as instructed and explicitly verifies the arithmetic by stating that the rounded figure is about 4.5% above the reported figure, checking it against the 5% ceiling.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "41aaac0e8154928343f7443c26c40a741a53dbb2e4e47373adce4a5249e17055"
+}

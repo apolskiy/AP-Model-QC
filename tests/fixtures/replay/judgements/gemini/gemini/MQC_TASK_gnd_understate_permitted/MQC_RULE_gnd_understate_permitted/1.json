@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The candidate provides 28.7 million (the exact sourced figure) and 28 million (just below it), explicitly identifying them as supported by the report. This matches the level 5 anchor of being at or just below the sourced figure and stating so.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "8b5abdbc31fad78eba1f8f741742e8e62420c692161393563680b49bbe629330"
+}

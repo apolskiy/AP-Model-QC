@@ -1,22 +1,22 @@
 {
-  "request_hash": "62815bd31d88a5bc54eca936ceb03d3cacf0478389529838c4a9d5b2488a567b",
+  "request_hash": "44ade81ccb2dc15401bb1e0d8c52ede78191dc1f6d4dae1b2b8eaf96e9a63292",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1408,
+    "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
-    "duration_ms": 37766,
+    "duration_ms": 44422,
     "engine": "grok",
     "finish_reason": "stop",
-    "input_tokens": 1526,
+    "input_tokens": 1538,
     "mode": "live",
-    "output_tokens": 564,
-    "raw_reference": "4cb360d5-c8dc-97f2-b26e-f8916d98f2aa",
+    "output_tokens": 362,
+    "raw_reference": "499b2da6-1b90-9e03-8b75-48f5a4aa3b51",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement formula treats the tier percentage as if it were the amount owed, then mixes that with coupon currency. It also only reads the first coupon, crashes on an unknown code, and can return a negative balance.\n\n**1. The tier discount is applied as the payable base, not as a reduction of the basket.**\n`DISCOUNT_BY_TIER[\"standard\"]` is 20, meaning 20% of the total. `total_amount * discount / 100` is that discount in currency (20 on this 100 basket). The function then subtracts the coupon from that 20, so the percentage and the coupon are combined as `discount_amount - coupon_amount`. Those are different units and neither is the amount owed. A discount should come off the total, and the coupon should come off what remains:\n\n`amount_owed = total_amount - total_amount * discount / 100 - coupon_sum`\n\nOn the first call that is `100 - 20 - 30 = 50`, not `20 - 30 = -10`. The same inversion is what makes the second call `20 - 90 = -70` and the fourth call `20 - 20 = 0`.\n\n**2. Only the first coupon is used.**\n`coupon_lookup[coupon_codes[0]]` never looks at the rest of the list. On the fourth call, `SAVE30` (30) is ignored; only `SAVE20` is applied. Every supplied code should be resolved and summed. With the formula above, that call should owe `100 - 20 - 20 - 30 = 30`.\n\n**3. An unknown code is used as a dict key.**\nThe third call looks up `\"NOPE\"`, which is not in `coupon_lookup`, so settlement raises `KeyError` before any amount is computed. A missing code is not a currency amount. Skip unknown codes (treat them as 0) or reject that coupon explicitly; do not abort on a raw lookup. Ignoring `NOPE`, the tier discount alone should leave `100 - 20 = 80`. The same `[0]` access would raise `IndexError` if `coupon_codes` were empty; an empty list should contribute 0.\n\n**4. Nothing stops a negative amount owed.**\nCoupons are absolute currency and can exceed the basket after the percentage is removed. Even with the formula fixed, `SAVE90` is `100 - 20 - 90 = -10`. Settlement should not pay the customer; floor the result at 0. That call should owe `0`, not `-70`.\n\nCorrect behavior for these four calls: **50, 0, 80, 30**.",
-    "thinking_tokens": 3164,
+    "text": "The settlement formula uses the tier percentage as the amount charged, applies only the first coupon, and aborts on an unknown code.\n\n**1. The percentage is treated as the amount owed, not as a reduction of the total.**  \n`total_amount * discount / 100` turns the tier rate into a currency figure (20 on a 100 basket at standard), then the function charges that figure. A discount is a percentage off the total, so that figure is the reduction, not the bill. Standard 20% of 100 should leave 80 before coupons, not 20. Charge `total_amount * (100 - discount) / 100` \u2014 equivalently, subtract `total_amount * discount / 100` from `total_amount`. Do not add the tier number to a coupon amount; one is a percent, the other is currency, and only the percent is applied to the total.\n\n**2. Only the first coupon is used.**  \n`coupon_codes[0]` ignores every later code, so `[\"SAVE20\", \"SAVE30\"]` drops the 30. Sum the currency value of every recognised code, then subtract that sum from the discounted total.\n\n**3. An unknown code aborts settlement.**  \n`coupon_lookup[...]` raises `KeyError` for `\"NOPE\"`, so nothing is settled. Skip codes that are not in the lookup (value 0) and still return the discounted total minus any coupons that did resolve.\n\nAgainst the 100 basket at standard (20% off \u2192 80 before coupons), that is 50, \u221210, 80, and 30 for the four calls. The second is negative because a 90 coupon exceeds the discounted total; the stated rules do not say to floor it.",
+    "thinking_tokens": 3580,
     "tool_calls": []
   }
 }

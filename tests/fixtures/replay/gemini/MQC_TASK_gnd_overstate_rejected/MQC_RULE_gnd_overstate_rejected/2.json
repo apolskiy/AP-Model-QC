@@ -1,22 +1,22 @@
 {
-  "request_hash": "7b963127892d2b39bb854e2454b559c63647e821eca83bc9ac16b736ca8f0417",
+  "request_hash": "ecedad7e8c13f4cb32ec20810746c086b5cbbfefa46362a195cdc6a39aced8e3",
   "resolved_model": "gemini-3.8-flash",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_overstate_rejected::MQC_RULE_gnd_overstate_rejected",
-    "duration_ms": 2689,
+    "duration_ms": 6541,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 103,
+    "input_tokens": 140,
     "mode": "live",
-    "output_tokens": 24,
-    "raw_reference": "o0O7avXYBIOa9MoP3dGDyAQ",
+    "output_tokens": 49,
+    "raw_reference": "oG3FavGxObCc-8YPsIH3WQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "EMEA revenue was 28.7 million, which rounds up to **30 million** for a headline.",
-    "thinking_tokens": 244,
+    "text": "EMEA revenue is **28.7 million**. \n\nThe figure was not rounded up to 30 million because doing so would overstate the reported revenue by approximately 4.53%, which exceeds the 3 percent limit.",
+    "thinking_tokens": 422,
     "tool_calls": []
   }
 }

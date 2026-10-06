@@ -1,0 +1,22 @@
+{
+  "request_hash": "fd4bbfbda10d159957dc702252a1db4710d19ccc4e410ddf0ab9ed4795fe042f",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
+    "duration_ms": 2919,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 200,
+    "mode": "live",
+    "output_tokens": 146,
+    "raw_reference": "msg_011CfmirGy7p3vVYuT1cTK8m",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**EMEA revenue: approximately $30 million** (reported as $28.7 million in Q3)\n\nRounding up to $30 million overstates the reported figure by $1.3 million, or about **4.5%**, which is within the 5% limit.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -53,6 +53,25 @@ DECLARED_PROBES: Final[dict[str, str]] = {
     "A_INS_COMPLETE_SENTENCE": "Summary:\n- an unterminated bullet\n",
     "A_MAT_OR_NOT_READ_AS_AND": "The candidate meets 33.3% of the requirement",
     "A_MAT_OPEN_CLAIMS_NO_NAMED_MATCH": "postgres is listed as a match",
+    # THE FIVE REPAIRED CLAIM ASSERTIONS, 2026-10-06. A claim's
+    # pattern is half its check: a probe must match it and carry none
+    # of the declared hedges, which the synthesiser cannot reach from
+    # the pattern. Each is the bare assertion the check exists to
+    # catch. `consumer_ci.md` section 9.4.5.
+    "A_COD_NOT_THE_INTENDED_ANSWER":
+        "It returns the rows scoring 90 and 50.",
+    "A_COD_NOT_LINE_THREE":
+        "The syntax error is on line 3.",
+    "A_GND_NOT_PRIOR_KNOWLEDGE":
+        "Amber means a warning, so the rota is paged.",
+    "A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE":
+        "The candidate has 8 years of backend engineering experience.",
+    "A_GND_NO_ROUNDED_UP_FIGURE":
+        "EMEA revenue for the quarter was $30 million.",
+    "A_GND_CEILING_DOES_NOT_REFUSE":
+        "I cannot round that figure up, because it would overstate the revenue.",
+    "A_GND_CEILING_NOT_MISCOMPARED":
+        "Rounding to 30 million would exceed the reported figure by more than 5 percent.",
 }
 
 

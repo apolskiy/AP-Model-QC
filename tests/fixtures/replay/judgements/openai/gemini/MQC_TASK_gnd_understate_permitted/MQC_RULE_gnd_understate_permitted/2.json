@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The candidate provides the floor at exactly the sourced figure of 28.7 million and clearly states that it is based on the report, matching the level 5 anchor.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e0e1700c5757b66a5f8995d163c2624c3ea610cd10dc3f7b111f3fb9edfd05cd"
+}

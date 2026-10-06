@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CEILING_ARITHMETIC": {
+        "rationale": "The candidate rounds to 30 million as requested and explicitly calculates the 5 percent ceiling threshold (28.7 million \u00d7 1.05 = 30.135 million), checking the overstatement directly against the ceiling.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "a61f85c56d6c22a6e37257dc2447d9582955fd42204f4e4ee958196c81942e2f"
+}

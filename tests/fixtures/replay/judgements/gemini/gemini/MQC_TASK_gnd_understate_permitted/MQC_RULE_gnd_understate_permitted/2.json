@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The candidate provides a floor of 28.7 million, which is at the exact figure stated in the source report, and clearly states that it is a conservative floor supported by the report.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "a51e096747a1b122649af1bc838a1b1a1f0f829e451eec5521454fe7e4625a1b"
+}

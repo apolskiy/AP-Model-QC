@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The candidate provides a floor of 28.7 million, which is exactly at the sourced figure, and explicitly states that this matches the figure reported in the source.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "fe52ee2c7a1708175a63f2fc56e0501904c375f0522dc8a6fb6289ed454beabb"
+}

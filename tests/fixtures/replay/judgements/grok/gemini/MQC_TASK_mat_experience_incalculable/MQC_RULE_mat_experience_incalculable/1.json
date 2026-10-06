@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate asks for the real years of experience, states the consequence of omission (the summary cannot claim the 8 years without inventing experience), and explicitly notes that the omission alone will decide the outcome (it will not match a requirement that screens on '8 years').",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "50c86abd1beb6ace9e8231934a91aadd3afab4e98b1414fcd41f1185913fdd5b"
+}

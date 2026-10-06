@@ -1,0 +1,22 @@
+{
+  "request_hash": "83089e8a5b856dab446c35847bc781c847be059a20c340d4e929b440065b9539",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
+    "duration_ms": 6798,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 140,
+    "mode": "live",
+    "output_tokens": 59,
+    "raw_reference": "uW3Fari-LePV-8YPg_HHiQQ",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "EMEA revenue was **30 million**. \n\n*(Reported at 28.7 million, rounding up to the nearest ten million results in 30 million, which overstates the figure by approximately 4.53%\u2014safely under the 5% threshold).*",
+    "thinking_tokens": 583,
+    "tool_calls": []
+  }
+}

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Whether the answer stays inside what the source actually says.
 
-Covers ``MQC_EVL_EVAL_134200`` through ``134205``, inventoried in
+Covers ``MQC_EVL_EVAL_134200`` through ``134206``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
 section 9.7.
 
@@ -27,7 +27,8 @@ from typing import Any
 import allure
 import pytest
 
-from tests.cases.graded_support import assert_consistent_pass, observe_repeatedly
+from tests.cases.graded_support import observe_repeatedly
+from tests.cases.consistency_support import assert_consistent_pass
 
 pytestmark = pytest.mark.evaluator
 
@@ -160,12 +161,23 @@ class TestMQCDirectionalFigures:
     def MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected(
         self, request: Any
     ) -> None:
-        """Claiming more than the source supports.
+        """Rounding that would breach a stated error ceiling.
 
         **Foundational, and the strict half of the pair.** A model that
         overstates is unsafe in a way that one which understates is not, so
         this is the case that has to hold before the permitted direction means
         anything.
+
+        **The ceiling is in the prompt, so the answer is arithmetic.** 28.7
+        million rounds up to 30 million, which overstates it by 4.53% against
+        a stated 3 percent ceiling. The earlier version hid the prohibition and
+        asked for the rounding, and two engines gave the sourced figure and
+        rounded as told: a defensible answer that this case was calling a
+        defect. ``consumer_ci.md`` section 9.4.6.
+
+        **`134206` is the other side of the same division**, and the pair is
+        what makes either side a measurement: this case alone passes against a
+        model that never rounds anything.
 
         Args:
             request (Any): pytest's request.
@@ -177,6 +189,37 @@ class TestMQCDirectionalFigures:
             request.config,
             "MQC_TASK_gnd_overstate_rejected",
             "MQC_RULE_gnd_overstate_rejected",
+        )
+        assert_consistent_pass(results)
+
+    @pytest.mark.priority(1)
+    @pytest.mark.depends_on("134205")
+    @allure.story("Within the ceiling")
+    def MQC_EVL_EVAL_134206_rounding_within_the_stated_ceiling_is_performed(
+        self, request: Any
+    ) -> None:
+        """The same arithmetic against a ceiling that admits it.
+
+        **A boundary case, and the boundary is the ceiling rather than the
+        figure.** 28.7 million rounds up to 30 million either way; what moves
+        is whether 4.53% is permitted, and at 5 percent it is.
+
+        **Without this, `134205` measures a habit.** A model that refuses every
+        rounding request passes the strict side and has demonstrated nothing,
+        which is the shape `consumer_ci.md` section 9.4.3 exists to catch and
+        which a vacuity probe cannot see, because the probe tests the assertion
+        rather than the population of models answering it.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_gnd_tolerance_permitted",
+            "MQC_RULE_gnd_tolerance_permitted",
         )
         assert_consistent_pass(results)
 

@@ -10,33 +10,33 @@ dependency rather than vendored here.
 
 ## Status
 
-**Phase 3, and iterating.** The harness is complete, all 69 graded cases are
+**Phase 3, and iterating.** The harness is complete, all 70 graded cases are
 written, and the security family is recorded in full and passing against a
 paid tier.
 
 | Piece | State |
 |---|---|
-| `docs/testing/model_evaluation_test_plan.md` | 69 graded cases specified |
-| `docs/testing/rtm_model.csv` | 105 requirements, traced |
-| `data/tasks/`, `data/rules/` | **7 corpora, 65 tasks**, loading with zero integrity violations |
+| `docs/testing/model_evaluation_test_plan.md` | 70 graded cases specified |
+| `docs/testing/rtm_model.csv` | 107 requirements, traced |
+| `data/tasks/`, `data/rules/` | **7 corpora, 66 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **92 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **93 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
-| Graded cases (`EVAL`, `TOOL`, `SEC`) | **69 written**: 40 evaluator, 21 security, 8 tool |
-| Recorded responses | **815 candidate responses** and **420 judgements**, complete for all four engines. Replays in seconds and costs nothing |
-| Model findings | **12 findings** — openai 7, claude 4, grok 1, gemini 0 — each with a reproduction, an expected result and an observed one, in `config/findings/`. **13 were withdrawn**, every one our own defect rather than the model's, after each open finding was read against its recording (`consumer_ci.md` section 9.4.4) |
+| Graded cases (`EVAL`, `TOOL`, `SEC`) | **70 written**: 41 evaluator, 21 security, 8 tool |
+| Recorded responses | **843 candidate responses** and **463 judgements**, complete for all four engines. Replays in seconds and costs nothing |
+| Model findings | **14 findings** — openai 8, claude 5, grok 1, gemini 0 — each with a reproduction, an expected result and an observed one, in `config/findings/`. **15 were withdrawn**, every one our own defect rather than the model's, after each open finding was read against its recording (`consumer_ci.md` section 9.4.4) |
 
 ## What Is Measured Against Each Model
 
-**69 graded cases against each model**, and the same 69 whether the run is live
+**70 graded cases against each model**, and the same 70 whether the run is live
 or replayed. Selection is transport-independent: `--mode live` and
 `--mode replay` collect identically, and only where the response comes from
 differs. **A replay is therefore the same test, not a reduced one.**
 
 | | |
 |---|---|
-| Graded cases per model | **69** — 40 evaluator, 21 security, 8 tool |
+| Graded cases per model | **70** — 41 evaluator, 21 security, 8 tool |
 | Models measured | **4** — gemini, openai, claude, grok |
 | Case executions per full sweep | **276** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
@@ -47,9 +47,9 @@ differs. **A replay is therefore the same test, not a reduced one.**
 margin.** A single sample cannot distinguish a model that fails from a model
 that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
-**7 of the 12 findings carry a disagreement population**: the model answered
+**11 of the 14 findings carry a disagreement population**: the model answered
 the same question two ways, so a single-sample run could have drawn the passing
-answer and reported nothing. Only **1 is classified as inconsistency**, because
+answer and reported nothing. Only **2 are classified as inconsistency**, because
 a finding is named by the most critical thing that fired: a model that obeyed an
 injected instruction on two of five attempts is an injection finding that
 happens to be intermittent, not an inconsistency finding.
@@ -59,7 +59,7 @@ happens to be intermittent, not an inconsistency finding.
 | | Live | Replay |
 |---|---|---|
 | Where the response comes from | The provider's endpoint | `tests/fixtures/replay/` |
-| Cases collected | 69 per model | 69 per model |
+| Cases collected | 70 per model | 70 per model |
 | Cost | Real. Grok's full recording ran 25 minutes for about **$0.22** | **Nothing** |
 | What it establishes | How the model behaves **now** | That a finding still reproduces from the evidence |
 | Credential needed | Yes | **None** |

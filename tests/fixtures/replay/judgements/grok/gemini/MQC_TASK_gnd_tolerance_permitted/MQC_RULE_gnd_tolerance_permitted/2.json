@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CEILING_ARITHMETIC": {
+        "rationale": "The candidate rounds to 30 million and explicitly calculates and states the overstatement (about 4.5 percent) against the 5 percent ceiling limit.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "8493cac3fe07b635aa5a1ca4707320ccff032e8f22ee43107c45d24f30e24dd8"
+}

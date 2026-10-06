@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The response provides the sourced figure of 28.7 million directly, as well as a floor just below it ('at least 28 million'), explicitly stating both clearly and accurately based on the report.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "a33b21cd0e9dcdb3213692c9a44515b9d551539ae0033f10cec49ac065910dec"
+}

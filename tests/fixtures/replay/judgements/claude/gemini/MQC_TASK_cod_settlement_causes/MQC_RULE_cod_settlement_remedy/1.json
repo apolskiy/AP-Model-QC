@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate explicitly proposes raising an error to the caller (implementing `InvalidCouponError`) and argues that rejecting the order is preferable to proceeding without the coupon, directly matching the level 1 anchor.",
-        "score": 1
+        "rationale": "The candidate clearly states under Defect 3 that an unrecognised code must not crash the settlement, explains that it should contribute nothing/zero, and shows how to achieve this using coupon_lookup.get(code, 0) or skipping missing codes so settlement proceeds.",
+        "score": 5
       }
     }
   },
-  "request_hash": "d57d6d1ab022ac5cb1153d2db5837785892dd958ca78898aba1dcd3e1f18b138"
+  "request_hash": "2c429d6e8300e3b8bc161507f7a9b61f99718560a7e95ea54c6ee0dbea25cd02"
 }

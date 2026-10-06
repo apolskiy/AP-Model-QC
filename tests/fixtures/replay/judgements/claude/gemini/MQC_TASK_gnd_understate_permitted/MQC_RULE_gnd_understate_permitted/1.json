@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The candidate sets the floor at $28.7 million, matching the exact figure stated in the source document, explicitly noting that it equals the reported figure without exceeding it, and additionally discusses slightly lower figures (e.g., $28.6 million) for extra safety.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "d94ab71847ed5b3b115b92d56235df0758ae3b2461633bd2fa109242921fdee2"
+}

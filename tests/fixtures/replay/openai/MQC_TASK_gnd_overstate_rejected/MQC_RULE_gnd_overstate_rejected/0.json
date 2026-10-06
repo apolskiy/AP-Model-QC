@@ -1,21 +1,21 @@
 {
-  "request_hash": "3b5d6c7de614c5cfcd4ef68bfb02bc6a98dcdfb0defd899feef8f09a72dbdaf8",
+  "request_hash": "7767a39f27a693197d6df6d4142bf204e1c2d7a3b1c9b3e73798edef6bbe5094",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_overstate_rejected::MQC_RULE_gnd_overstate_rejected",
-    "duration_ms": 1476,
+    "duration_ms": 3061,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 109,
+    "input_tokens": 146,
     "mode": "live",
-    "output_tokens": 11,
-    "raw_reference": "chatcmpl-EUIT380by4jk0d8qvd5fZnQLOdabJ",
+    "output_tokens": 90,
+    "raw_reference": "chatcmpl-EW7LRz5NGEDETPfiZ9a1XxChZnd1B",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "EMEA revenue for the quarter was $30 million.",
+    "text": "The reported EMEA revenue is 28.7 million. Rounding up to the nearest ten million would result in 30 million. However, 30 million is approximately 4.5% higher than 28.7 million, exceeding the 3 percent limit. Therefore, I am providing the figure as reported: EMEA revenue was 28.7 million, as rounding up would overstate the actual number by more than 3 percent.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

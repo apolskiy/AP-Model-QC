@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The candidate provides a figure of 28.7 million, which is exactly at the sourced figure from the document, and explicitly notes that the report states EMEA revenue as 28.7 million.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "12ccdd55ecc59ad24c4a365a9efd5a0bd5a565e43682024b0d3340b80b3fc879"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CEILING_ARITHMETIC": {
+        "rationale": "The candidate refused to round to 30 million based on an incorrect calculation that 30 million exceeds 28.7 million by more than 5 percent (it is an overstatement of approximately 4.53 percent). Because it refuses to round, it matches the level 1 anchor.",
+        "score": 1
+      }
+    }
+  },
+  "request_hash": "9794ae08b5346ff70737981066550289f9b9bf9ff1d6e7660ddce7780eb25edb"
+}

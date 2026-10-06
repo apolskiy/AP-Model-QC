@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CEILING_ARITHMETIC": {
+        "rationale": "The candidate rounds EMEA revenue to 30 million and explicitly calculates and states the overstatement ($1.3 million, or about 4.5%) checked against the 5% ceiling limit.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e18df40c593e7cd619f58d7ab4b841bbeee8d913607f1ac4f8b138c9057e921b"
+}

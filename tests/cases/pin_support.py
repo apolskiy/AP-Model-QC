@@ -329,7 +329,11 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
         ),
         (
             "findings classified as inconsistency",
-            r"\*\*(\d+) is classified as inconsistency\*\*",
+            # THE VERB AGREES WITH THE COUNT, so the pattern admits both.
+            # Pinning "is" made the prose unfixable the day the count
+            # reached two, which is the same brittleness as pinning the
+            # total did one line above.
+            r"\*\*(\d+) (?:is|are) classified as inconsistency\*\*",
             open_findings(findings, "QC_LLM_INCONSISTENT"),
         ),
         ("corpora", r"\*\*(\d+) corpora", len(corpora)),

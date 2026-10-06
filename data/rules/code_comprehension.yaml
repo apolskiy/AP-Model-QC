@@ -86,7 +86,7 @@
     # THE ANSWER DRAWN FROM THE NAME. 90 and 50 is what a sorting function
     # would return, and is the fabrication this excerpt exists to induce.
     - assertion_id: A_COD_NOT_THE_INTENDED_ANSWER
-      kind: regex
+      kind: claim
       parameters:
         # THE ANSWER GIVEN, not the question restated. The intended-but-
         # wrong answer is "the rows scoring 90 and 50", so the figures
@@ -99,8 +99,36 @@
         # list, which put 90 within 40 characters of 50. Two observations
         # did not restate the inputs and passed, so this reported as
         # inconsistency and blamed the model for a phrasing choice.
+        # A SUBSTRING CANNOT SEE THE SENTENCE IT SITS IN. Narrowing the
+        # window was the first attempt and it was not enough: the model
+        # wrote "The function looks like it should return the rows scoring
+        # 90 and 50, but it doesn't" and that read as giving the wrong
+        # answer. The kind is now claim, scoped to one sentence and
+        # excluding the hedges below. Harness tier3_evaluation.md 5.3.
         pattern: '(?i)\b(returns?|result\w*|output\w*|answer\w*)\b[^.]{0,40}\b90\b[^.]{0,25}\b50\b'
         present: false
+        unless:
+        - looks like
+        - looks as
+        - appears
+        - appeared
+        - seems
+        - seemed
+        - intended
+        - intent
+        - should
+        - would
+        - supposed
+        - meant
+        - apparent
+        - but
+        - is not
+        - isn't
+        - does not
+        - doesn't
+        - rather than
+        - instead
+        - coincidence
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation
       constraint_ref: COD_BEHAVIOUR_NOT_INTENT
@@ -399,10 +427,36 @@
     # NAMING LINE 3 is the plausible wrong answer: that is where the
     # interpreter reports the problem, not where the defect is.
     - assertion_id: A_COD_NOT_LINE_THREE
-      kind: regex
+      kind: claim
       parameters:
-        pattern: '(?i)line\s*[13]\b'
+        # LINE 1 IS NO LONGER FORBIDDEN. Nothing here turns on it, and the
+        # excerpt's line 1 is the signature, so mentioning it is innocuous.
+        #
+        # AND MENTIONING LINE 3 IS NOT LOCATING THE ERROR THERE. The
+        # unclosed parenthesis makes the parser read line 3 as a
+        # continuation, and CPython before 3.10 reports the error at it.
+        # All four engines answered line 2; the only one marked wrong was
+        # the one that went on to explain this.
+        pattern: '(?i)(error|issue|problem|fault|bug|missing|unclosed)[^.]{0,40}\bline\s*3\b|\bline\s*3\b[^.]{0,30}(has|holds|carries|contains|is where)[^.]{0,25}(error|issue|problem)'
         present: false
+        unless:
+        - older
+        - earlier
+        - before
+        - legacy
+        - version
+        - treats
+        - treated
+        - continuation
+        - argument list
+        - part of
+        - pointing
+        - points at
+        - reported
+        - reports
+        - depending
+        - either way
+        - cause is on line 2
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation
       constraint_ref: COD_LOCATE_SYNTAX_ERROR
@@ -478,28 +532,18 @@
     # returns a number, and looks like a successful discount. This is the one
     # that reaches production, and grading the two as one finding let a model
     # name the obvious half and score as though it found both.
-    - assertion_id: A_COD_OUTCOME_FREE_GOODS
-      kind: regex
-      parameters:
-        # THE CORRECT VALUE, because it is the one thing an answer cannot
-        # produce without having found this outcome. 60 is what the call
-        # should settle to; the function returns 0.0.
-        #
-        # THE OLD PATTERN COULD PASS WITHOUT THE DEFECT. `zero` matched "No
-        # Floor at Zero" and `0\.0` matched "-10.0", both of which belong to
-        # outcome 2. One observation passed on those words while never
-        # mentioning this outcome, which is exactly the merge the comment
-        # above says these two were separated to prevent.
-        #
-        # THE ALTERNATIVES are the ways of saying it that avoid the figure.
-        # A SETTLING VERB BEFORE THE FIGURE. "No Floor at Zero" is outcome
-        # 2's remedy and must not match; "takes it to exactly zero" is this
-        # outcome and must. The preposition is what separates them.
-        pattern: '(?i)(\b60(\.0)?\b|\b(settles?|settlement|takes?\s+it|comes?\s+out|results?\s+in|evaluates?\s+to|returns?)\s+(to\s+)?(exactly\s+)?(0|zero)\b|\bpays?\s+nothing\b|\bcharged\s+nothing\b|\bfree\s+of\s+charge\b)'
-        present: true
-      taxonomy_code: QC_LLM_DEFECT_MISSED
-      severity: violation
-      constraint_ref: COD_REPORT_EVERY_DEFECT
+    # A_COD_OUTCOME_FREE_GOODS WAS REMOVED ON 2026-10-06, not widened.
+    # Its subject is whether the model noticed that one call settles to
+    # exactly zero and so fails silently, and that is a judgement rather
+    # than a string. The pattern passed on an incidental 60 printed
+    # beside the correct formula and failed the same analysis phrased as
+    # "computes the discount amount, not the post-discount price".
+    #
+    # THE RUBRIC ALREADY ASKS IT. C_COD_WHO_IS_AFFECTED grades whether the
+    # answer "notices that the zero settlement fails silently where the
+    # negative one does not", which is the question, and a judge can tell
+    # that from a statement that the formula is wrong. consumer_ci.md
+    # section 9.4.5.
   rubric:
     criteria:
       - criterion_id: C_COD_CREDITED_DEFECTS

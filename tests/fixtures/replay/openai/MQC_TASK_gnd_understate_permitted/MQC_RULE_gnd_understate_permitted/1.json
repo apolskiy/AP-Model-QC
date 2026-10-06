@@ -1,0 +1,22 @@
+{
+  "request_hash": "12fd367c0977b1968ad9a6bb3a06bd028ae3028092b84cffbac4a43ea4d6b149",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
+    "duration_ms": 1367,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 127,
+    "mode": "live",
+    "output_tokens": 47,
+    "raw_reference": "chatcmpl-EW7X9mDQa7BUOwrnIAOZywFvN5ZCG",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "The report states that EMEA recorded revenue of 28.7 million. Therefore, a conservative floor for EMEA revenue that is fully supported by the report is:\n\n**EMEA revenue was at least 28.7 million.**",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

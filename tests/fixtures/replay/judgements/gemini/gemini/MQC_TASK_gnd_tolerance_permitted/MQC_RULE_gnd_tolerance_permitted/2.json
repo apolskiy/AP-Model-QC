@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CEILING_ARITHMETIC": {
+        "rationale": "The candidate rounded the revenue to 30 million as requested and explicitly calculated and stated the overstatement (approximately 4.53%) checked against the 5 percent ceiling.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "979b00b27d7694007771f7c6fddcc313114e494f5cf267facdc9730bd1e85054"
+}

@@ -1,0 +1,22 @@
+{
+  "request_hash": "c572247218b3b6780cfa9df97fa05332cec447ce32a5fb4f9d1c055cbd105db2",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
+    "duration_ms": 10249,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1358,
+    "mode": "live",
+    "output_tokens": 46,
+    "raw_reference": "dc0a8540-4d4a-956d-8229-308bba60fb0a",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "**28.7 million**\n\nThe report states EMEA revenue as 28.7 million, which matches the regional total (87.4 million). That figure is a supported floor and is not above what the report states.",
+    "thinking_tokens": 543,
+    "tool_calls": []
+  }
+}

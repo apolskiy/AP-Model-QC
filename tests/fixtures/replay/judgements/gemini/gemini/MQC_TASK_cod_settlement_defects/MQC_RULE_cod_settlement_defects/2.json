@@ -3,18 +3,18 @@
   "reply": {
     "scores": {
       "C_COD_CREDITED_DEFECTS": {
-        "rationale": "The candidate reports both remaining defects: an empty coupon list causing an IndexError (triggered by `coupon_codes = []`) and an unhandled account tier causing a KeyError (triggered by non-mapped tiers such as 'guest', 'gold', or `None`).",
+        "rationale": "The candidate reports both credited defects with specific inputs that trigger them: an empty coupon list (`coupon_codes = []`) causing an `IndexError`, and a missing/unrecognized account tier (such as `\"guest\"`) causing a `KeyError` on `DISCOUNT_BY_TIER`.",
         "score": 5
       },
       "C_COD_FURTHER_PROBLEMS": {
-        "rationale": "The candidate identifies multiple genuine further problems, most notably floating-point precision issues with currency (along with ignored subsequent coupons), and explains why it matters (accounting and rounding discrepancies on payment gateways and receipts).",
+        "rationale": "The candidate identifies multiple valid additional problems, notably floating-point precision issues in financial calculations (with an explanation of ledger reconciliation discrepancies and improper rounding) as well as silent omission of subsequent coupons in multi-coupon lists.",
         "score": 5
       },
       "C_COD_WHO_IS_AFFECTED": {
-        "rationale": "The candidate clearly identifies who loses (the merchant/business suffering revenue loss and giving items away for free) and notes that payment systems may fail on negative values. However, it does not explicitly contrast this by stating that the zero settlement fails silently / raises nothing, falling slightly short of level 5.",
+        "rationale": "The candidate clearly carries through the arithmetic and identifies that the merchant/business loses revenue and is left unpaid/out of pocket. However, it does not explicitly notice that the zero settlement (from call #2) fails silently while the negative settlement triggers processing failures.",
         "score": 4
       }
     }
   },
-  "request_hash": "f53820057890e5c3f4ed82454431920a1febbfbfab4aeeb0a010d58bd13ba59f"
+  "request_hash": "8c7a8276bf5c34f95918d7f1b9f36ac868024ce6f711d2fbfc80efb5e1aefdc2"
 }

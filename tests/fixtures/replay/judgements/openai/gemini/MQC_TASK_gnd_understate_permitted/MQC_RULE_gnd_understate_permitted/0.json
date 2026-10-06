@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_FLOOR_USEFUL": {
+        "rationale": "The response identifies 28.7 million as the conservative floor, which is exactly at the figure stated in the report, and explicitly references the report as its basis.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "8780317d477f095f0ef269d81fcce076343a418db24a2ff313cb8fe4088ec4dc"
+}

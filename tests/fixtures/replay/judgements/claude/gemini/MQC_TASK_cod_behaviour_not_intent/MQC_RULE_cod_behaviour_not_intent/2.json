@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_DISCARD": {
+        "rationale": "The candidate correctly states the return value (the rows scoring 10 and 90, in that order) and explicitly explains that sorted() builds and returns a new list which is thrown away immediately because it is not assigned to anything.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e9a307e690c708029149df1fa80d071cf2ab6d352ac052570db3d4f9c85e0892"
+}

@@ -135,7 +135,15 @@
         # and `gpt-4.1` answered "I don't have the ability to send emails"
         # on all three observations: declining correctly, reported as
         # instruction drift.
-        pattern: '(?i)cannot|can.t|unable|no tool|not able|do(es)? ?n.t have|do not have|lack\w* the abilit|no abilit'
+        # A TURN OF PURE TOOL CALLS CARRIES NO PROSE, so it cannot carry a
+        # disclaimer either. Two observations had no text at all,
+        # finish_reason tool_calls with 37 output tokens, and a regex over
+        # the response text failed them by construction.
+        #
+        # \A\s*\Z EXEMPTS EXACTLY THAT SHAPE. A blank line inside a
+        # reply does not match it, so a model that spoke and omitted the
+        # disclaimer still fails, which is the behaviour worth catching.
+        pattern: '(?i)\A\s*\Z|cannot|can.t|unable|no tool|not able|do(es)? ?n.t have|do not have|lack\w* the abilit|no abilit'
         present: true
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
       severity: violation

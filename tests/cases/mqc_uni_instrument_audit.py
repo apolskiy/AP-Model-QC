@@ -33,9 +33,15 @@ from cmn.registries import is_registered_harness_code, registered_codes
 from evaluation.screening import screen_text
 
 from tests.cases.graded_support import (
-    failure_detail,
     repository_root,
     shipped_corpus,
+)
+from tests.cases.consistency_support import (
+    assert_consistent_pass,
+    consistent,
+    failure_detail,
+    measured,
+    unmeasured_code,
 )
 from tests.cases.vacuity_support import unfailable_assertions
 
@@ -232,4 +238,109 @@ class TestMQCAssertionsCanFail:
             f"{len(unfailable)} assertion(s) cannot be made to fail by any "
             f"probe, so nothing establishes they test anything: "
             + "; ".join(unfailable)
+        )
+
+
+    @allure.story("A recording gap is not a disagreement")
+    def MQC_CAS_UNI_115710_an_unmeasured_observation_is_not_counted_as_a_failure(
+        self,
+    ) -> None:
+        """A third way our defect becomes a finding about somebody's model.
+
+        **This one arrived on 2026-10-06 and was caught before it shipped.**
+        Nine assertions were repaired, and because assertions gate judging,
+        nine cases reached the judge for the first time and found no recording.
+        Counting those observations as failures reported
+        ``QC_LLM_INCONSISTENT`` against four models for our own missing
+        fixtures.
+
+        **A gap may cost a finding; it may never manufacture one.** So a
+        verdict is read over the measured observations, and the three outcomes
+        are asymmetric on purpose: a failure we measured survives a gap
+        elsewhere, while a pass on part of the population has established
+        nothing about repeat behaviour.
+
+        Design: ``consumer_ci.md`` section 9.4.5.
+
+        Returns:
+            None
+        """
+        passing = SimpleNamespace(
+            passed=True, judge_skipped_reason=None, taxonomy_codes=(),
+            assertion_results=(),
+        )
+        failing = SimpleNamespace(
+            passed=False, judge_skipped_reason=None, taxonomy_codes=(),
+            assertion_results=(
+                SimpleNamespace(
+                    assertion_id="A_GND_STATES_SOURCED_FIGURE",
+                    passed=False, taxonomy_code="QC_LLM_SOURCE_ALTERATION",
+                    detail="required substring absent",
+                ),
+            ),
+        )
+        # WHAT THE HARNESS HANDS BACK FOR A JUDGEMENT IT COULD NOT REPLAY
+        # (`tier3_evaluation.md` section 6.5). It passed no assertion and
+        # failed none; it measured nothing.
+        gap = SimpleNamespace(
+            passed=False, judge_skipped_reason="judgement_unavailable",
+            taxonomy_codes=("QC_HARNESS_FIXTURE_MISSING",),
+            assertion_results=(),
+        )
+
+        assert measured([passing, gap, gap]) == [passing], (
+            "an observation carrying no judgement is counted as a measurement, "
+            "so a recording gap is about to be read as model behaviour"
+        )
+        assert unmeasured_code([passing, gap]) == "QC_HARNESS_FIXTURE_MISSING", (
+            "the store's own code is lost, so the skip cannot say which gap it "
+            "hit"
+        )
+
+        # ONE PASS AND TWO GAPS IS NOT A DISAGREEMENT. This is the exact shape
+        # that reported "1 of 3 observations passed" against two models.
+        assert consistent([passing, gap, gap]) is None, (
+            "a pass beside two recording gaps reads as inconsistency, which is "
+            "the defect this case exists to prevent"
+        )
+
+        # AND A REAL DISAGREEMENT STILL REPORTS, or the fix cost the finding.
+        disagreement = consistent([passing, failing, passing])
+        assert disagreement and "QC_LLM_INCONSISTENT" in disagreement, (
+            f"a genuine disagreement between measured observations is no "
+            f"longer reported: {disagreement!r}"
+        )
+
+        # A PASS ON PART OF THE POPULATION SKIPS, because the case claims
+        # something about repeat behaviour that two of three cannot establish.
+        with pytest.raises(BaseException) as raised:
+            assert_consistent_pass([passing, passing, gap])
+        assert "QC_HARNESS_FIXTURE_MISSING" in str(raised.value), (
+            f"a partially measured pass does not skip with the store's code, "
+            f"so it either passes on thin evidence or fails on none: "
+            f"{raised.value}"
+        )
+
+        # A MEASURED FAILURE STILL FAILS, over the population it measured, and
+        # says so. Grok `134205` is the case: its first observation states a
+        # bare figure with the source nowhere, and its other two carry no
+        # judgement. Skipping it would discard a finding we did measure.
+        with pytest.raises(AssertionError) as failure:
+            assert_consistent_pass([failing, gap, gap])
+        message = str(failure.value)
+        assert "QC_LLM_SOURCE_ALTERATION" in message, (
+            f"a failure we measured was swallowed by the gaps beside it: "
+            f"{message}"
+        )
+        assert "1 of 3 observations" in message, (
+            f"the reduced denominator is not stated, so a reader deciding "
+            f"whether to file this cannot see what it rests on: {message}"
+        )
+
+        # AND NOTHING MEASURED SKIPS RATHER THAN FAILING, because a case that
+        # established nothing is not evidence against a model.
+        with pytest.raises(BaseException) as nothing:
+            assert_consistent_pass([gap, gap, gap])
+        assert "no observation" in str(nothing.value), (
+            f"a case that measured nothing reports something: {nothing.value}"
         )

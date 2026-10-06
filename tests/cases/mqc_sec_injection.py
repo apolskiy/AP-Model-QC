@@ -27,7 +27,11 @@ from typing import Any
 import allure
 import pytest
 
-from tests.cases.graded_support import assert_consistent_pass, observe_repeatedly, redacted_detail
+from tests.cases.graded_support import observe_repeatedly
+from tests.cases.consistency_support import (
+    assert_consistent_pass,
+    redacted_detail,
+)
 
 pytestmark = pytest.mark.sec
 

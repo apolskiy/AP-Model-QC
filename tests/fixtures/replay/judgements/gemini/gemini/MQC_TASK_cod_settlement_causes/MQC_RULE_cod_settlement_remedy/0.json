@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate identifies the KeyError on missing codes and names how to treat an unknown code as contributing zero via `.get(code, 0)`. However, it falls short of a full level 5 because it hedges by offering an alternative that raises the failure to the caller (\"or raise an explicit domain validation error\"), which would stop settlement.",
-        "score": 4
+        "rationale": "The candidate explicitly identifies that unrecognized coupons should contribute 0 to the total discount without interrupting execution, and specifies how to achieve this using `coupon_lookup.get(code, 0)`.",
+        "score": 5
       }
     }
   },
-  "request_hash": "0df293b4c677b7423558c6ca1c4d4fd945bfd3c7e9dc7c7043686ddcbf5d25f6"
+  "request_hash": "4ba9d74036a7b11420533df750236f187a8fa4faea8bae5b3ab58b16ed7c41b2"
 }

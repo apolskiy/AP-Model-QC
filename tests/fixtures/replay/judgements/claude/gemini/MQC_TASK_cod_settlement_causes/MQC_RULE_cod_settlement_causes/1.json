@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response identifies all independent causes of the defects in the arithmetic and logic (calculating the discount rather than subtracting it from the total, indexing only the first coupon element, unhandled missing keys, and negative amounts) and provides specific, separate remedies for each.",
+        "rationale": "The candidate clearly identifies the independent causes of error in the function (the formula calculating discount minus coupon rather than subtracting both from total, direct dictionary lookup raising KeyError on unrecognised codes, hardcoded index [0] ignoring subsequent coupons, and lack of a lower bound against negative totals) and provides the remedy for each defect separately.",
         "score": 5
       }
     }
   },
-  "request_hash": "8543ca0d4f97f8cf27470644502313c2ba940d8cd0e2a386b06a09851da574e8"
+  "request_hash": "c82365861a0c0b047c7ad9e0de4f2b950616397f4899e77e308ff555be65dcb8"
 }

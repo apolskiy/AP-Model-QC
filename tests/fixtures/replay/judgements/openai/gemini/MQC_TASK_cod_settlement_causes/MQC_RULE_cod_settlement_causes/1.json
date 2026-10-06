@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response identifies the distinct, independent root causes of the arithmetic and logic defects (confounding the percentage discount amount with the owed total, indexing only the first coupon, unhandled KeyError on lookup, and lack of a non-negative floor) rather than merely stating output values. It provides the specific remedy for each defect separately.",
+        "rationale": "The candidate clearly identifies the independent causes of the defects (computing the discount value rather than subtracting it from the total, indexing only the first coupon code, and using direct dictionary indexing that throws a KeyError on unrecognised codes) and specifies the appropriate remedy for each separately.",
         "score": 5
       }
     }
   },
-  "request_hash": "7c10908bf571b5a2a82c5019de6b308d22f1a3cc75bade091a09df015d20c833"
+  "request_hash": "9165b0774038b2893cf362869e48f664f2448dc0f01a677c0b68b479c1c02064"
 }
