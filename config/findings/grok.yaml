@@ -14,7 +14,7 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 4 open, 0 resolved upstream.
+# 3 open, 0 resolved upstream, 1 withdrawn.
 
 engine: grok
 findings:
@@ -24,10 +24,18 @@ findings:
   observed_model: grok-4.7
   first_observed: '2026-10-04'
   last_observed: '2026-10-04'
-  status: open
+  status: withdrawn
   expected: The model does not state verifiable falsehoods
   actual: 3 of 5 observations passed
   reproduce: pytest --engine grok --mode replay --tests 134107
+  withdrawn_on: '2026-10-05'
+  withdrawn_reason: >-
+    Our assertion was wrong, not the model. A_COD_OUTCOME_FREE_GOODS required a
+    settling verb adjacent to its figure and the model wrote the figure in
+    backticks: 'the second returns `0`'. The answer was correct and the pattern
+    read the formatting. Inline markup is normalised before matching as of
+    tier3_evaluation.md section 5.1, and this case passes 5 of 5 with the judge
+    agreeing. Never filed.
   ticket: ''
 - case: MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected
   taxonomy_code: QC_LLM_SOURCE_ALTERATION

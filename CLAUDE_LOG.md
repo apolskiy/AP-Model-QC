@@ -3267,3 +3267,84 @@ the deferral count is portfolio and article material.
 
 153 passing, pylint exit 0. Pages are generated into `reports/`, which is
 ignored: a tracked page would be a fourth copy of three sources.
+
+## 2026-10-05: The first withdrawn finding, and why that is not "resolved"
+
+grok's `134107` was a false finding. Our assertion read a backtick, the model
+had answered correctly, and the entry was on a page about to be filed.
+
+### Settling it cost one judge call
+
+With markup normalised the assertions passed 5 of 5, so the case reached the
+judge for the first time and hit `QC_HARNESS_FIXTURE_MISSING`: **observation 2
+had no recorded judgement, because the assertion had previously failed and the
+pipeline aborted before judging.** The recording's shape had been determined by
+what reached the judge.
+
+| Engine | Missing judgements |
+|---|---|
+| grok | **1** |
+| gemini, openai, claude | 0 |
+
+One live call, `--mode replay --judge-mode live` over that case, 108 seconds.
+**grok passes, and the judge agrees.**
+
+**Eight other judgement files were overwritten and reverted.** `--judge-mode
+live` re-judges everything selected, and the diffs were the judge's rationale
+wording with no score change. Keeping them would have moved the evidence
+baseline off 2026-10-04 for no gain, so only the filled gap remains.
+
+### Two statuses existed and neither was honest
+
+| Status | Means | Who changed |
+|---|---|---|
+| `open` | It reproduces | Nobody |
+| `resolved_upstream` | A live run no longer reproduces it | **The vendor** |
+| **`withdrawn`** | It was never a defect. Our instrument was wrong | **Us** |
+
+**`resolved_upstream` would have credited the vendor with fixing our regex.**
+That is not a nuance: a published report crediting a vendor for a correction
+they did not make is wrong in the direction that most damages the report, and
+the register is what a reader checks.
+
+**It is not deleted.** The claim was made, it was wrong, and the record of
+having made it is part of the record being honest. A withdrawn entry carries
+`withdrawn_on` and `withdrawn_reason`, because "withdrawn" without a cause is
+indistinguishable from a finding somebody found inconvenient.
+
+**And it is never reopened by a replay**, unlike a resolved entry: withdrawal is
+a statement about our own corpus, and a case that starts failing again is a new
+finding rather than a resurrected judgement about an assertion that no longer
+exists.
+
+### A substring count cannot tell a retraction from a claim
+
+The README figure counted `- case:` occurrences, and a withdrawn entry still
+carries one, along with its original taxonomy code. **The totals would have kept
+a retracted claim in a number a reader reads as current.** `open_findings`
+parses the entries and excludes withdrawn and resolved.
+
+Counts now: **23 open**, gemini 2, openai 8, claude 10, grok 3, one withdrawn.
+Inconsistency findings **13 of 23**.
+
+### The report format, at the owner's instruction
+
+A ticket page now reads as a defect report: **test case, requirement, issue,
+then numbered steps each pairing expected with actual.** The earlier layout put
+a metadata table first and the request and the responses in separate later
+blocks, which stated everything and followed nothing.
+
+Step 1 sends the request and says what came back; one step per observation
+carries expected against actual with the text returned; the last step is the
+replay command, which needs no credential. **Withdrawn findings are excluded**,
+because these pages exist to be filed.
+
+### Also today
+
+`XAI_API_KEY` is in the `live` environment, so all four providers are wired and
+a live ladder is dispatchable for every rostered engine.
+
+### State
+
+153 passing, pylint exit 0. The two reds are gemini's `134107` and `134205`,
+both of which survive normalisation and are genuine.

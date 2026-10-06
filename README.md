@@ -24,8 +24,8 @@ paid tier.
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **69 written**: 40 evaluator, 21 security, 8 tool |
-| Recorded responses | **812 candidate responses** and **415 judgements**, complete for all four engines. Replays in seconds and costs nothing |
-| Model findings | **24 findings** — gemini 2, openai 8, claude 10, grok 4 — each with a reproduction, an expected result and an observed one, in `config/findings/` |
+| Recorded responses | **812 candidate responses** and **416 judgements**, complete for all four engines. Replays in seconds and costs nothing |
+| Model findings | **23 findings** — gemini 2, openai 8, claude 10, grok 3 — each with a reproduction, an expected result and an observed one, in `config/findings/`. One was **withdrawn**: our assertion was wrong, not the model |
 
 ## What Is Measured Against Each Model
 
@@ -41,13 +41,13 @@ differs. **A replay is therefore the same test, not a reduced one.**
 | Case executions per full sweep | **276** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
 | Recorded candidate responses | **812 candidate responses** |
-| Recorded judge responses | **415 judgements** |
+| Recorded judge responses | **416 judgements** |
 
 **Three observations per case, not one, and that is a method rather than a
 margin.** A single sample cannot distinguish a model that fails from a model
 that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
-**14 inconsistency findings** of the 24 are visible only because of it: more
+**13 inconsistency findings** of the 23 are visible only because of it: more
 than half, and none of them reachable by a single-sample run.
 
 ### Live and replay measure the same thing differently

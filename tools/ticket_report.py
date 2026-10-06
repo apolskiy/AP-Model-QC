@@ -131,6 +131,93 @@ def _request_block(task: Optional[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _steps(
+    engine: str,
+    entry: dict[str, Any],
+    task: Optional[dict[str, Any]],
+    responses: list[str],
+) -> list[str]:
+    """Return the numbered steps, each pairing what was expected with what happened.
+
+    **The order is the report's whole usability**, per section 9.5.1: a reader
+    needs the case, then the issue, then one step at a time with its expected
+    and actual result beside each other. Prose that states a request in one
+    place and a response in another cannot be followed.
+
+    Args:
+        engine (str): The engine under test.
+        entry (dict): The register entry.
+        task (Optional[dict]): The task definition, or None when unmapped.
+        responses (list): Each recorded observation's text.
+
+    Returns:
+        list[str]: Markdown lines.
+    """
+    out: list[str] = ["### Steps to reproduce", ""]
+    number = 0
+
+    number += 1
+    taken = (
+        f"{len(responses)} observations were taken"
+        if len(responses) != 1
+        else "one observation was taken"
+    )
+    out.extend([
+        f"**Step {number}. Send the request below to "
+        f"`{entry.get('observed_model', '')}`.**",
+        "",
+        "| | |",
+        "|---|---|",
+        "| Expected | The model answers rather than refusing or erroring |",
+        f"| Actual | It answered, and {taken} |",
+        "",
+        _request_block(task),
+    ])
+
+    for index, text_value in enumerate(responses):
+        number += 1
+        label = (
+            f"observation {index + 1} of {len(responses)}"
+            if len(responses) > 1
+            else "the response"
+        )
+        out.extend([
+            f"**Step {number}. Read {label}.**",
+            "",
+            "| | |",
+            "|---|---|",
+            f"| Expected | {entry.get('expected', '')} |",
+            f"| Actual | {entry.get('actual', '')} |",
+            "",
+            "Returned:",
+            "",
+            "```",
+            text_value.rstrip() or "[empty response]",
+            "```",
+            "",
+        ])
+
+    number += 1
+    out.extend([
+        f"**Step {number}. Reproduce it here, at no cost.**",
+        "",
+        "| | |",
+        "|---|---|",
+        "| Expected | The case passes |",
+        f"| Actual | The case fails with `{entry.get('taxonomy_code', '')}` |",
+        "",
+        "```",
+        str(entry.get("reproduce", "")),
+        "```",
+        "",
+        f"The recordings are committed, so this needs no credential and spends "
+        f"nothing. It replays what `{engine}` returned on "
+        f"{entry.get('first_observed', '')} rather than calling the model again.",
+        "",
+    ])
+    return out
+
+
 def _section(
     root: Path,
     engine: str,
@@ -138,11 +225,11 @@ def _section(
     pairs: dict[str, tuple[str, str]],
     tasks: dict[str, dict[str, Any]],
 ) -> list[str]:
-    """Return the markdown for one finding.
+    """Return the defect report for one finding.
 
-    **Separated from ``page_for`` on 2026-10-05**, when a tenth rendered field
-    took that function past the local-variable ceiling. The division is the one
-    the ceiling suggested: this renders a finding, that assembles a page.
+    **Case, then issue, then steps**, per section 9.5.1. The earlier layout put
+    the metadata table first and the request and responses in separate later
+    blocks, which stated everything and followed nothing.
 
     Args:
         root (Path): The repository root.
@@ -159,7 +246,11 @@ def _section(
     responses = recorded_observations(root, engine, task_id, rule_id)
 
     out = [
-        f"## `{case}`",
+        f"## Test case: `{case}`",
+        "",
+        f"**Requirement.** {_sentence(entry.get('expected', ''))}",
+        "",
+        f"**Issue.** {_issue_sentence(entry)}",
         "",
         "| | |",
         "|---|---|",
@@ -171,37 +262,61 @@ def _section(
     if str(entry.get("observations") or "").strip():
         out.append(f"| Consistency | {entry.get('observations')} |")
     out.extend([
-        f"| Reproduce | `{entry.get('reproduce', '')}` |",
-        "",
-        f"**Expected.** {entry.get('expected', '')}",
-        "",
-        f"**Observed.** {entry.get('actual', '')}",
-        "",
-        "### The request",
-        "",
-        _request_block(tasks.get(task_id)),
-        "### What the model returned",
+        f"| Task | `{task_id}` |",
         "",
     ])
+
     if not responses:
-        out.append(
-            f"_No recording found at "
-            f"`tests/fixtures/replay/{engine}/{task_id}/{rule_id}/`._\n"
-        )
-    for index, text in enumerate(responses):
-        label = (
-            f"Observation {index + 1} of {len(responses)}"
-            if len(responses) > 1
-            else "Response"
-        )
         out.extend([
-            f"**{label}**\n",
-            "```",
-            text.rstrip() or "[empty response]",
-            "```\n",
+            f"_No recording found at "
+            f"`tests/fixtures/replay/{engine}/{task_id}/{rule_id}/`, so the steps "
+            f"below cannot carry what was returned._",
+            "",
         ])
+    out.extend(_steps(engine, entry, tasks.get(task_id), responses))
     out.extend(["---", ""])
     return out
+
+
+def _issue_sentence(entry: dict[str, Any]) -> str:
+    """Return the one sentence stating what went wrong.
+
+    **Separated from the requirement it follows**, because the two are different
+    claims: the first is what should hold and the second is what was seen.
+
+    Args:
+        entry (dict): The register entry.
+
+    Returns:
+        str: The sentence.
+    """
+    observations = str(entry.get("observations") or "").strip()
+    if observations:
+        return (
+            f"The requirement does not hold consistently: {observations}, so "
+            f"no single sample from this model characterises its behaviour "
+            f"here."
+        )
+    return _sentence(str(entry.get("actual", "")))
+
+
+def _sentence(text: str) -> str:
+    """Return text punctuated as a sentence.
+
+    **The register's fields are phrases, not sentences.** A requirement reads
+    "Understating a sourced value is permitted where instructed; overstating is
+    not" with no stop, and two such phrases concatenated run together.
+
+    Args:
+        text (str): The phrase.
+
+    Returns:
+        str: The same text ending in a full stop, or empty when there was none.
+    """
+    stripped = text.strip()
+    if not stripped:
+        return ""
+    return stripped if stripped[-1] in ".!?" else f"{stripped}."
 
 
 def page_for(root: Path, engine: str) -> str:
@@ -219,7 +334,13 @@ def page_for(root: Path, engine: str) -> str:
         return f"# {engine}\n\nNo findings register.\n"
 
     payload = yaml.safe_load(register.read_text(encoding="utf-8")) or {}
-    findings = payload.get("findings") or []
+    # WITHDRAWN FINDINGS ARE EXCLUDED. These pages exist to be filed, and a
+    # withdrawn finding must not be: it records a claim we made and retracted
+    # because our own assertion was wrong. Section 9.4.1.
+    findings = [
+        entry for entry in (payload.get("findings") or [])
+        if not (isinstance(entry, dict) and entry.get("status") == "withdrawn")
+    ]
     pairs = case_rules_from_suite(root)
     tasks = load_tasks(root)
 

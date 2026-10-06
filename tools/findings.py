@@ -40,6 +40,12 @@ _MODEL_CODE: Final[re.Pattern] = re.compile(r"\b(QC_LLM_[A-Z_]+|QC_SEC_[A-Z_]+)\
 _POPULATION: Final[re.Pattern] = re.compile(r"(\d+) of (\d+) observations passed")
 _RESOLVED: Final[str] = "resolved_upstream"
 
+# WITHDRAWN IS OURS, RESOLVED IS THEIRS. A finding withdrawn because our own
+# assertion was wrong must not read as a vendor fix: crediting a vendor with a
+# correction they did not make is wrong in the direction that most damages a
+# published report. Section 9.4.1.
+_WITHDRAWN: Final[str] = "withdrawn"
+
 # WHERE A FAILURE MESSAGE STOPS BEING THE FINDING AND STARTS BEING OUR
 # TRACEBACK. Declared as constants rather than written inline, because an
 # escape inside an edited literal is the one class of change this project
@@ -374,6 +380,13 @@ def merge(
             changes.append(f"RECORDED {case} ({measured['taxonomy_code']})")
             continue
 
+        # A WITHDRAWN ENTRY IS LEFT ALONE. It records a claim we made and
+        # retracted, so stamping it with today's run would make it look live
+        # again, and reopening it would resurrect a judgement about an
+        # assertion that no longer exists. Section 9.4.1.
+        if entry.get("status") == _WITHDRAWN:
+            continue
+
         entry["last_observed"] = run.today.isoformat()
         serving = run.models.get(case, "")
         if serving and serving != entry.get("observed_model"):
@@ -430,7 +443,13 @@ def render(engine: str, findings: dict[str, dict[str, Any]]) -> str:
         str: YAML, with the generated-file warning a reader needs.
     """
     ordered = [findings[case] for case in sorted(findings)]
-    open_count = sum(1 for entry in ordered if entry.get("status") != _RESOLVED)
+    open_count = sum(
+        1 for entry in ordered
+        if entry.get("status") not in (_RESOLVED, _WITHDRAWN)
+    )
+    withdrawn_count = sum(
+        1 for entry in ordered if entry.get("status") == _WITHDRAWN
+    )
     header = (
         "# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy\n"
         "# SPDX-License-Identifier: MIT\n"
@@ -447,7 +466,9 @@ def render(engine: str, findings: dict[str, dict[str, Any]]) -> str:
         "# NOTHING HERE AFFECTS A VERDICT. A record that could turn a gate\n"
         "# green would be a quarantine with a different name, and a P0 or P1\n"
         "# cannot be exempted at all.\n"
-        f"#\n# {open_count} open, {len(ordered) - open_count} resolved upstream.\n\n"
+        f"#\n# {open_count} open, "
+        f"{len(ordered) - open_count - withdrawn_count} resolved upstream, "
+        f"{withdrawn_count} withdrawn.\n\n"
     )
     return header + yaml.safe_dump(
         {"engine": engine, "findings": ordered},

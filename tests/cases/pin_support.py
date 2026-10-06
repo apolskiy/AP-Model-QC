@@ -25,6 +25,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from ingestion.loaders import load_tasks_from_yaml
 from tools import harness_pin
 
@@ -171,6 +173,40 @@ def inventoried_case_ids() -> frozenset[str]:
     return frozenset(found)
 
 
+def open_findings(registers: list[Path], code: str = "") -> int:
+    """Return how many findings are open, optionally of one failure class.
+
+    **A withdrawn or resolved entry is excluded.** A withdrawn one records a
+    claim made and retracted because our own assertion was wrong, and counting
+    it would keep a retraction in a total a reader reads as current.
+
+    **Parsed rather than counted as substrings.** A withdrawn entry still
+    carries ``- case:`` and its original taxonomy code, so an occurrence count
+    cannot tell a live claim from a retracted one.
+
+    Design: ``consumer_ci.md`` section 9.4.1.
+
+    Args:
+        registers (list): The per-engine register files.
+        code (str): A taxonomy code to restrict the count to, or empty for all.
+
+    Returns:
+        int: The count of open findings.
+    """
+    total = 0
+    for register in registers:
+        payload = yaml.safe_load(register.read_text(encoding="utf-8")) or {}
+        for entry in payload.get("findings") or []:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("status") in ("withdrawn", "resolved_upstream"):
+                continue
+            if code and entry.get("taxonomy_code") != code:
+                continue
+            total += 1
+    return total
+
+
 def readme_figures(root: Path) -> list[tuple[str, str, int]]:
     """Return every README figure with the pattern stating it and its real value.
 
@@ -233,13 +269,14 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
             r"\*\*(\d+) judgements\*\*",
             sum(1 for path in (replay / "judgements").rglob("*") if path.is_file()),
         ),
+        # COUNTED FROM THE PARSED ENTRIES, NOT FROM OCCURRENCES. A substring
+        # count included a withdrawn entry, which still carries `- case:` and
+        # its original taxonomy code: a retracted claim would have stayed in a
+        # total a reader reads as current. `consumer_ci.md` section 9.4.1.
         (
             "model findings",
             r"\*\*(\d+) findings\*\*",
-            sum(
-                source.read_text(encoding="utf-8").count("- case:")
-                for source in findings
-            ),
+            open_findings(findings),
         ),
         # THE SUBSET THE METHOD EXISTS FOR. Stated at eleven of twenty when the
         # README was written against three engines, and grok's recording made it
@@ -247,10 +284,7 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
         (
             "inconsistency findings",
             r"\*\*(\d+) inconsistency findings\*\*",
-            sum(
-                source.read_text(encoding="utf-8").count("QC_LLM_INCONSISTENT")
-                for source in findings
-            ),
+            open_findings(findings, "QC_LLM_INCONSISTENT"),
         ),
         ("corpora", r"\*\*(\d+) corpora", len(corpora)),
         (

@@ -1869,6 +1869,45 @@ recompute:
 | `status` | `open`, `reported`, or `resolved_upstream` |
 | `ticket` | The vendor's reference, added by hand when one is filed |
 
+### 9.4.1 A finding can be withdrawn, and that is not the same as resolved
+
+Added 2026-10-05, when the first finding was withdrawn.
+
+**Two statuses existed and neither was honest.** grok's `134107` stopped
+reproducing because `A_COD_OUTCOME_FREE_GOODS` was corrected: it had required a
+settling verb adjacent to its figure, and the model had written the figure in
+backticks. The answer was right and our pattern read the formatting.
+
+| Status | Means | Who changed |
+|---|---|---|
+| `open` | It reproduces | Nobody |
+| `resolved_upstream` | A live run no longer reproduces it | **The vendor** |
+| **`withdrawn`** | **It was never a defect. Our instrument was wrong** | **Us** |
+
+**`resolved_upstream` would have credited the vendor with fixing our regex.**
+That is not a nuance: a published report crediting a vendor for a correction
+they did not make is wrong in the direction that most damages the report, and
+the register is the thing a reader checks.
+
+**A withdrawn entry carries why, and the date.** `withdrawn_on` and
+`withdrawn_reason` are required, because "withdrawn" without a cause is
+indistinguishable from a finding somebody found inconvenient. The reason names
+what was wrong with the instrument, which is the only claim being made.
+
+**It is not deleted, for the same reason a resolved finding is not.** The claim
+was made, it was wrong, and the record of having made it is part of the record
+being honest. A register that silently loses its mistakes is a register whose
+remaining entries carry less weight.
+
+**A withdrawn entry is never reopened by a replay.** A resolved entry is, per
+section 9.4, because replay cannot establish that a vendor still has a defect.
+Withdrawal is a statement about our own corpus, which replay does test: if the
+case starts failing again, that is a new finding and gets a new entry rather
+than resurrecting a judgement about a different assertion.
+
+**Withdrawn findings are excluded from the ticket pages**, since the pages
+exist to be filed and a withdrawn finding must not be.
+
 ### 9.5 Filing needs three sources joined, and nothing joined them
 
 Added 2026-10-05, when filing began and the question was "which file do I open".

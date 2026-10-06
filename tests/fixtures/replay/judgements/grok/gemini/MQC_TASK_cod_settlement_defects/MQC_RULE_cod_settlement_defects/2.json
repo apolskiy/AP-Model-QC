@@ -1,0 +1,20 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CREDITED_DEFECTS": {
+        "rationale": "The candidate reports both credited defects along with the inputs that trigger them: an empty coupon_codes list causing an IndexError, and an unknown account_tier causing a KeyError.",
+        "score": 5
+      },
+      "C_COD_FURTHER_PROBLEMS": {
+        "rationale": "The candidate identifies genuine additional problems (the use of binary floats without minor-unit rounding, as well as ignoring subsequent coupons in the list) and explains why they matter (drift in reconciliation and dropped customer discounts).",
+        "score": 5
+      },
+      "C_COD_WHO_IS_AFFECTED": {
+        "rationale": "The candidate clearly identifies who loses (explaining that customers are undercharged and the business loses the sale price, while negative balances may fail downstream payment/ledger systems). However, it falls just short of level 5 as it does not explicitly articulate that the zero settlement raises nothing and passes silently.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "db431430336ed9ef9c3aeffe238419d26122ea1f43524d921528081d49168408"
+}
