@@ -104,6 +104,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0032` | A collected case module defines no module-level function or non-test class, the supporting code living in a sibling module collection does not reach, so a case file reads as a list of claims and a helper is owned by an interface rather than privately re-derived per module | test_taxonomy.md section 13 |
 | `MQC_REQ_CAS_CI_0033` | Every subprocess invocation carries a timeout, so a child that stalls fails the case with a named harness code rather than blocking until a runner cancels the job and reports a failure with no failing step | test_taxonomy.md section 14 |
 | `MQC_REQ_CAS_CI_0035` | A module at nine hundred lines or more is reported unless it is declared with a reason and an expiry, so the next subject added starts a module of its own and the thousand-line ceiling is never reached by an unrelated edit | code-style.md section 5.1 |
+| `MQC_REQ_CAS_CI_0036` | Every assertion the corpus declares can be made to fail by a constructed, synthesised, observed or declared violating input, so an assertion cannot pass because it is incapable of failing | consumer_ci.md section 9.4.3 |
 | `MQC_REQ_CAS_CI_0034` | The instrument is checked for manufacturing findings: no recorded response on an ordinary case matches an attack vector, and every failure message names a registered taxonomy code, so a defect in our reading is not reported as a defect in a model and a real failure is not unrecordable | consumer_ci.md section 9.4.2 |
 
 

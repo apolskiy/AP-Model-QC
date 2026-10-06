@@ -582,6 +582,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115713` | N | `a_screening_hit_on_an_ordinary_case_is_reported` |
 | `115714` | N | `a_failure_message_without_a_taxonomy_code_is_reported` |
 | `115715` | N | `a_module_at_the_runway_ceiling_is_reported` |
+| `115716` | N | `an_assertion_that_cannot_fail_is_reported` |
 | `115408` | P | `the_tool_writes_what_reconciling_decided` |
 | `115409` | P | `one_dispatch_session_serves_a_whole_run` |
 | `115410` | P | `the_session_records_the_models_it_served` |
@@ -589,7 +590,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 54 cases, 38 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 55 cases, 39 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 ### 4A. The harness is a dependency, not the directory next door
 
@@ -1985,6 +1986,57 @@ coverage.
 **That is the next pass and it is recorded as outstanding rather than implied**:
 injecting a violating input per assertion and recording the ones that do not
 fire. `OPEN_QUESTIONS.md` carries it.
+
+### 9.4.3 Whether a pass is real, which nothing asked until now
+
+Added 2026-10-05, the pass the owner agreed to run after the two false-positive
+checks.
+
+**Every other check in this section asks whether a failure is real.** This asks
+the opposite: an assertion that cannot fail reports nothing, costs nothing, and
+**looks exactly like coverage**. Section 9.4.2 closed the false-positive class
+and left this one entirely unexamined.
+
+#### Three probes, because no single one reaches every assertion
+
+| Probe | Reaches | Found |
+|---|---|---|
+| **Constructed** | Presence, substring, length and schema, where a violating input follows from the kind | **82** |
+| **Synthesised** | Absence patterns carrying literal alternatives | **7** |
+| **Observed** | Absence patterns some real recorded response happens to match | **13** |
+| **Declared** | The remainder, by hand | **5** |
+
+**107 of 107 assertions are demonstrably failable. None is vacuous.**
+
+**A synthesis is verified before it is trusted.** A candidate that does not
+match is discarded rather than counted, so a weak synthesiser understates
+rather than lies. The first version reached 82 of 107 and reported 25 unknown,
+which is the honest answer to "we could not check" and is not the same answer
+as "it is sound".
+
+#### The declared probes are apparatus, not corpus
+
+Five absence patterns defeat the synthesiser. Each carries a hand-written
+violating input in `vacuity_support.py` rather than in the corpus, because **a
+probe is test apparatus and the corpus is the request a model receives**
+(section 13 of the harness taxonomy).
+
+**Every declared probe is re-verified on each run.** A probe that stops making
+its assertion fire is a failure here, not a quiet excuse: that is the
+difference between a declared gap and an exemption, and it is the same
+distinction the other registries draw.
+
+#### What this still does not establish
+
+**That an assertion tests the right thing.** A probe shows an assertion *can*
+fire; whether what it fires on is what the requirement meant is a judgement, and
+the only instrument for that is reading it. Two were read this way on
+2026-10-05 and both were wrong: a regex requiring a verb adjacent to its figure,
+and a screen vector matching a description.
+
+**So this closes the cheapest half of the question.** An assertion that cannot
+fail is now impossible; an assertion that fires on the wrong thing is still
+found by a person checking the arithmetic.
 
 ### 9.5 Filing needs three sources joined, and nothing joined them
 

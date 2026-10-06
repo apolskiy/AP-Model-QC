@@ -3508,3 +3508,61 @@ and `actual` names the classification rather than the wrapper that fired first.
 
 156 passing, pylint exit 0. The two reds are gemini's `134107` and `134205`,
 both genuine.
+
+## 2026-10-05: The vacuity pass, and the runway rule catching itself first
+
+The last of the audit: everything else asked whether a failure was real, and
+nothing had asked whether a **pass** was.
+
+### 107 of 107 assertions can be made to fail
+
+| Probe | Reached |
+|---|---|
+| **Constructed**, from the assertion's kind | 82 |
+| **Synthesised**, from a pattern's literal alternatives | 7 |
+| **Observed**, a real recorded response that happens to match | 13 |
+| **Declared**, hand-written and verified | 5 |
+
+**None is vacuous.** An assertion that cannot fail reports nothing and looks
+exactly like coverage, and nothing in this project detected that class before
+today.
+
+**The first synthesiser reached 82 and reported 25 unknown**, which is the
+honest answer to "we could not check" and is a different answer from sound. The
+corpus closed 13 of those: a pattern some real model output matches can
+demonstrably fire, whatever a synthesiser manages.
+
+**Five needed hand-written probes**, each verified before being recorded and
+re-verified on every run, so a probe that stops working fails rather than
+quietly excusing its assertion. They live in `vacuity_support.py` rather than
+the corpus, because a probe is apparatus and the corpus is the request a model
+receives.
+
+### One scare that was not a defect
+
+`A_INS_COMPLETE_SENTENCE` anchors with `^` and `$`, and a hand probe suggested
+it could never match a multi-line reply. **`_check_regex` compiles with
+`re.MULTILINE`**, so it fires correctly; my probe omitted the flag the runner
+supplies. Checked through `run_assertion` rather than against my own
+reimplementation, which is the lesson from the audit's two earlier wrong turns.
+
+### What this still does not establish
+
+**That an assertion tests the right thing.** A probe shows it *can* fire;
+whether what it fires on is what the requirement meant is a judgement. Two were
+read that way today and both were wrong. **This closes the cheaper half.**
+
+### The runway rule caught itself on its first run
+
+The nine-hundred-line rule landed and immediately reported
+`mqc_uni_instrument.py` at 904 lines, because the two audit subjects had been
+added to it. **That is the outcome it was written for**, so they moved to
+`mqc_uni_instrument_audit.py`: one subject in two halves, a failure of ours
+reported as a model's and a pass that could never have been a failure.
+
+710 lines and 234, from 904.
+
+### State
+
+157 passing, pylint exit 0. The two reds are gemini's `134107` and `134205`,
+both genuine.
