@@ -320,7 +320,11 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
         # change**; only the name on each finding did.
         (
             "findings exposed by repeat observation",
-            r"\*\*(\d+) of the 23 findings carry a disagreement population\*\*",
+            # THE TOTAL IS A `\d+` HERE ON PURPOSE. Pinning it to 23 put a
+            # second copy of the finding count inside the check that exists
+            # to catch a second copy, and it stopped matching the day
+            # eleven findings were withdrawn.
+            r"\*\*(\d+) of the \d+ findings carry a disagreement population\*\*",
             findings_with_population(findings),
         ),
         (

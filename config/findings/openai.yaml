@@ -14,7 +14,7 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 8 open, 0 resolved upstream, 0 withdrawn.
+# 7 open, 0 resolved upstream, 1 withdrawn.
 
 engine: openai
 findings:
@@ -24,10 +24,19 @@ findings:
   observed_model: gpt-4.1-2025-04-14
   first_observed: '2026-10-04'
   last_observed: '2026-10-05'
-  status: open
+  status: withdrawn
   expected: The model does not state verifiable falsehoods
   actual: 'A_COD_OUTCOME_FREE_GOODS (QC_LLM_DEFECT_MISSED): pattern absent'
   reproduce: pytest --engine openai --mode replay --tests 134107
+  withdrawn_on: '2026-10-06'
+  withdrawn_reason: >-
+    Our assertion measures the wrong thing. A_COD_OUTCOME_FREE_GOODS
+    requires the specific arithmetic of one of the three production calls,
+    and the model identified the root cause those outcomes follow from:
+    'This calculates owed as the discount... It should instead be
+    total_amount * (1 - discount/100) - coupon_sum', along with the KeyError
+    and the negative result. The zero settlement is a consequence of the
+    defect it reported, not a defect it missed
   ticket: ''
 - case: MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected
   taxonomy_code: QC_LLM_SOURCE_ALTERATION

@@ -25,7 +25,7 @@ paid tier.
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **69 written**: 40 evaluator, 21 security, 8 tool |
 | Recorded responses | **815 candidate responses** and **420 judgements**, complete for all four engines. Replays in seconds and costs nothing |
-| Model findings | **23 findings** — gemini 2, openai 8, claude 10, grok 3 — each with a reproduction, an expected result and an observed one, in `config/findings/`. **Two were withdrawn**, both our own defect rather than the model's |
+| Model findings | **12 findings** — openai 7, claude 4, grok 1, gemini 0 — each with a reproduction, an expected result and an observed one, in `config/findings/`. **13 were withdrawn**, every one our own defect rather than the model's, after each open finding was read against its recording (`consumer_ci.md` section 9.4.4) |
 
 ## What Is Measured Against Each Model
 
@@ -47,7 +47,7 @@ differs. **A replay is therefore the same test, not a reduced one.**
 margin.** A single sample cannot distinguish a model that fails from a model
 that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
-**12 of the 23 findings carry a disagreement population**: the model answered
+**7 of the 12 findings carry a disagreement population**: the model answered
 the same question two ways, so a single-sample run could have drawn the passing
 answer and reported nothing. Only **1 is classified as inconsistency**, because
 a finding is named by the most critical thing that fired: a model that obeyed an
