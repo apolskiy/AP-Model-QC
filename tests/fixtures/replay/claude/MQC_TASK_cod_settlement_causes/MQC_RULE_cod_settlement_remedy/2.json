@@ -1,0 +1,22 @@
+{
+  "request_hash": "3d8ae1a5121b8ae8768a54c7ce1ea0aceeefed0b1db2b625ffb02712b4f2845b",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
+    "duration_ms": 21638,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 423,
+    "mode": "live",
+    "output_tokens": 2157,
+    "raw_reference": "msg_011CfkPgrLKhbWLqTQSkofk2",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "# Defects in `settle_order`\n\n## What each production call does today\n\n`DISCOUNT_BY_TIER[\"standard\"]` is 20, so `total_amount * discount / 100` is always 20 for these calls.\n\n| Call | Returns now | Should return |\n|---|---|---|\n| `[\"SAVE30\"]` | `20 - 30 = -10` | `100 - 20 - 30 = 50` |\n| `[\"SAVE90\"]` | `20 - 90 = -70` | `100 - 20 - 90 = -10`, floored to **0** |\n| `[\"NOPE\"]` | raises `KeyError: 'NOPE'` | a deliberate outcome, such as a clear \"invalid coupon\" error |\n| `[\"SAVE20\", \"SAVE30\"]` | `20 - 20 = 0` | `100 - 20 - 50 = 30` if coupons stack |\n\n## Defect 1: It computes the discount, not the amount owed\n\n**Cause:** `total_amount * discount / 100` is the discount amount (20), not the discounted price (80). The function never subtracts that discount from the total. It then subtracts the coupon from the discount itself.\n\nThe units are consistent: percent \u00d7 total / 100 gives currency, and the coupon is also currency. So this is not a unit mismatch. The arithmetic is simply aimed at the wrong quantity.\n\n**Fix:** Compute `total - total * discount / 100 - coupons`, which is equivalent to `total * (100 - discount) / 100 - coupons`.\n\n## Defect 2: No floor at zero\n\n**Cause:** Nothing stops the coupons from exceeding the remaining price. Even with Defect 1 fixed, `SAVE90` gives `80 - 90 = -10`. That means the business owes the customer money. Today it returns -70 because of both defects combined.\n\n**Fix:** Clamp the result with `max(0, ...)`. Separately, decide whether excess coupon value is simply forfeited. Clamping forfeits it.\n\n## Defect 3: Unknown coupons crash the function\n\n**Cause:** `coupon_lookup[coupon_codes[0]]` uses direct indexing. A code that isn't in the lookup raises a raw `KeyError`. An empty `coupon_codes` list would also raise `IndexError`.\n\n**Fix:** Validate codes explicitly. Either raise a meaningful error (for example `InvalidCouponError(\"NOPE\")`) or deliberately ignore unknown codes. Which one is right is a business decision. The current crash is neither choice, just an accident. An empty list should mean \"no coupons,\" so the coupon sum is 0.\n\n## Defect 4: Only the first coupon is applied\n\n**Cause:** `coupon_codes[0]` reads a single element. Any other codes are silently dropped. That's why `SAVE20` is applied and `SAVE30` vanishes.\n\n**Fix:** Sum over all codes. If stacking is not allowed, reject requests with more than one code instead of silently ignoring the rest.\n\n## Minor issues\n\n- **Unknown tier:** `DISCOUNT_BY_TIER[account_tier]` also raises a bare `KeyError` for tiers like `\"gold\"`. Validate the tier with a clear error.\n- **Floating point:** `/ 100` produces floats. Currency should use `Decimal`, or integer minor units such as cents, to avoid rounding drift.\n\n## Corrected version\n\nThis assumes stacking is allowed and unknown coupons are rejected:\n\n```python\nfrom decimal import Decimal\n\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\nclass InvalidCouponError(ValueError):\n    pass\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    if account_tier not in DISCOUNT_BY_TIER:\n        raise ValueError(f\"Unknown account tier: {account_tier!r}\")\n    discount_pct = Decimal(DISCOUNT_BY_TIER[account_tier])\n    total = Decimal(total_amount)\n\n    unknown = [c for c in coupon_codes if c not in coupon_lookup]\n    if unknown:\n        raise InvalidCouponError(f\"Unknown coupon code(s): {unknown}\")\n    coupon_sum = sum((Decimal(coupon_lookup[c]) for c in coupon_codes), Decimal(0))\n\n    discounted = total - total * discount_pct / 100   # percentage of total\n    amount_owed = discounted - coupon_sum             # currency minus currency\n    return max(Decimal(0), amount_owed)\n```\n\nWith this version, the four production calls return **50**, **0**, **`InvalidCouponError`**, and **30**.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

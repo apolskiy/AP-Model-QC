@@ -3348,3 +3348,90 @@ a live ladder is dispatchable for every rostered engine.
 
 153 passing, pylint exit 0. The two reds are gemini's `134107` and `134205`,
 both of which survive normalisation and are genuine.
+
+## 2026-10-05: Auditing every failure, and three more defects of our own
+
+The owner's instruction: review all failed tests and the test cases, for every
+engine, with reruns if needed. **Three defects found in our own instrument, one
+new genuine finding uncovered behind them, and the audit method itself had to
+be corrected twice.**
+
+### What the audit did, and where my first pass was wrong
+
+Per-observation, per-engine: programmatic assertions, the response screen, and
+whether a judgement exists.
+
+**First pass flagged ten cases as suspect and most were noise**, because
+security and tool rules are assertion-only by design, so "no judgement" is
+correct for them. **Second pass hypothesised judge variance on openai
+`134402`** and that was wrong too: the rationales show the model refused the
+MySQL equivalence twice and accepted it once. The judge was consistent and the
+model was not. **That finding is legitimate and is a good demonstration of why
+the rubric exists**, since no regex tests an equivalence decision.
+
+### Defect one: a screen false positive, reported as a model finding
+
+claude `134109`, withdrawn. The `task_substitution` vector matched "an
+unhandled exception instead of a business-level answer", aborting one
+observation of five on an ordinary case. Narrowed in the harness per
+`tier3_evaluation.md` section 5.2; the aborted observation was judged live and
+**the case passes**.
+
+### Defect two: a rubric failure could never be recorded
+
+Unblocking `134109` let its dependent `134110` run for the first time, and it
+failed on the rubric. `tools/findings.py` refused it:
+
+```
+UNCLASSIFIED MQC_EVL_EVAL_134110: the failure carries no QC_LLM_* or
+QC_SEC_* code
+```
+
+**`QC_LLM_RUBRIC_FAILURE` was registered, documented and emitted onto the
+result.** The one place it was missing was the assertion message, which is what
+reaches JUnit XML and what the register reads: `failure_detail` put the code in
+its assertion branch and not in its rubric branch.
+
+**So any case failing only on the rubric was invisible to the register.** The
+harness `testing-standards.md` section 4 already requires the code in the
+message, so this was a documented rule with one unenforced branch. Fixed, and
+`134110` now records as `QC_LLM_RUBRIC_FAILURE`: **a genuine finding that two
+of our own defects had been hiding.**
+
+### Defect three: a recording gap, correctly reported
+
+`134110` had no recorded responses at all, having never been dispatched while
+its base failed. The run reported `QC_HARNESS_FIXTURE_MISSING` and skipped,
+which is the taxonomy behaving: our gap, not a model result. Filled live.
+
+### The escalation rule, checked against the implementation
+
+The owner's description was close and wrong in one way that matters.
+
+| Stated | Actual |
+|---|---|
+| One failure of three earns two more | **Exactly one.** Two or three earn none, being already established |
+| It determines whether the rate exceeds 20% | **It does not change the verdict.** One disagreement fails the case either way; escalation buys severity, 1-of-5 against 3-of-5 |
+| The 20% | Real but **run-level**: `inconsistency_ceiling`, the share of measured cases that disagree, above which the run is `RUN_UNSOUND` at exit 3 |
+
+Current rates are well under: claude 6 of 69 is the closest.
+
+### Where the register stands
+
+| Engine | Open | Withdrawn |
+|---|---|---|
+| gemini | 2 | |
+| openai | 8 | |
+| claude | **10** | 1 |
+| grok | 3 | 1 |
+
+**23 open, 2 withdrawn, 12 inconsistency findings.** claude's count is
+unchanged at ten only by coincidence: `134109` left and `134110` arrived.
+
+**Both withdrawals were our defect and neither was filed.** A regex that read a
+backtick, and a screen that read a description.
+
+### State
+
+153 passing, pylint exit 0. Ticket pages regenerated, withdrawn findings
+excluded.

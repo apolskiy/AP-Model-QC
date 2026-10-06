@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_REMEDY_IS_DETERMINATE": {
+        "rationale": "The candidate explicitly proposes raising an error to the caller (implementing `InvalidCouponError`) and argues that rejecting the order is preferable to proceeding without the coupon, directly matching the level 1 anchor.",
+        "score": 1
+      }
+    }
+  },
+  "request_hash": "d57d6d1ab022ac5cb1153d2db5837785892dd958ca78898aba1dcd3e1f18b138"
+}

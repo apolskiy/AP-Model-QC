@@ -656,9 +656,17 @@ def failure_detail(result: Any) -> str:
     if failures:
         return "; ".join(failures)
     if result.score is not None:
+        # THE CODE GOES IN THE MESSAGE, per the harness `testing-standards.md`
+        # section 4: root-cause class has to be recoverable from the artifact
+        # alone. The assertion branch above carries its code and this one did
+        # not, so a case failing only on the rubric reached `tools/findings.py`
+        # as UNCLASSIFIED and could never be recorded as a finding.
+        # `QC_LLM_RUBRIC_FAILURE` was registered, documented and emitted onto
+        # the result; the one place it was missing was the text a reader and the
+        # register actually see. `consumer_ci.md` section 9.7.
         return (
-            f"every assertion passed and the rubric scored "
-            f"{result.score.value} against a threshold it did not clear"
+            f"QC_LLM_RUBRIC_FAILURE: every assertion passed and the rubric "
+            f"scored {result.score.value} against a threshold it did not clear"
         )
     return (
         f"no assertion failed and no score was produced: "

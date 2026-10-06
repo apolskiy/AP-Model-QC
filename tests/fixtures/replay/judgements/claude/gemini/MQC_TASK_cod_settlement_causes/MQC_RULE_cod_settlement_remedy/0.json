@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_REMEDY_IS_DETERMINATE": {
+        "rationale": "The candidate proposes raising the failure to the caller (suggesting a domain-specific InvalidCouponError) and implements this in the corrected code, which stops settlement when an unknown coupon code is encountered rather than treating it as contributing zero and proceeding.",
+        "score": 1
+      }
+    }
+  },
+  "request_hash": "098c1af49dc37c072ef3507e64b065a93e40738d6989ec735e773c0ee187bd53"
+}
