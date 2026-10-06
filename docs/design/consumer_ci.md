@@ -508,6 +508,27 @@ debug-artifact exclusion uses.
 commit and this repository's commit, because a commit is a property of the
 checkout and the provenance guard compares both.
 
+#### 3.12.3 A reporting job runs after every band, and a red run is the one worth reading
+
+Added 2026-10-06 at the project owner's instruction: **for a release decision
+the band results matter, and a total tells a reader nothing of substance.** The
+`report` job renders the per-band table the harness specifies in
+`cmn_verdict_and_cli.md` section 7.11.1, into `$GITHUB_STEP_SUMMARY`.
+
+**It needs all three bands and runs `if: always()`.** A band that failed still
+established what it established, and this is the job whose output a person reads
+precisely when something went wrong: a summary that appeared only on green would
+be a summary of the runs nobody needs to look at.
+
+**One `--priority` per report, not a filename convention.** A row is attributed
+to the band that produced it because the workflow says which is which, so
+renaming an artifact cannot silently relabel a band's result.
+
+**The table never overrides a band.** Each band still gates on its own status
+(section 3.12.2), so `report` is a reader, not a judge. **A run at 95% overall
+with one P0 failure does not ship**, and the table states that verdict in its
+own line rather than leaving it to be inferred from a healthy total.
+
 #### 3.12.2 Only the lower band answers to a floor
 
 P0 and P1 gate on pytest's exit status, and that is exactly V1: "any P0 or P1
@@ -576,6 +597,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115206` | N | `the_candidate_engine_reaches_the_plan_the_channel_uses` |
 | `115602` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
 | `115708` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
+| `115709` | N | `a_gate_reporting_only_on_green_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
 | `115712` | N | `a_subprocess_without_a_timeout_is_reported` |
@@ -590,7 +612,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 55 cases, 39 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 56 cases, 40 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 ### 4A. The harness is a dependency, not the directory next door
 

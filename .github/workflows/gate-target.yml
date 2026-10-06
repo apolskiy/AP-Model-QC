@@ -461,3 +461,64 @@ jobs:
             python -m tools.band_report reports/junit_mqc_p2p4.xml --priority 2,3,4
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # THE BAND TABLE, AFTER EVERY BAND. A release question is answered by the
+  # blocking bands, so the gate's own summary states each one and marks the
+  # total as deciding nothing: a run at 95% overall with a P0 failure does not
+  # ship. Harness `cmn_verdict_and_cli.md` section 7.11.
+  #
+  # `if: always()` BECAUSE A RED RUN IS THE ONE WORTH READING. A band that
+  # failed still established what it established, and a report that only
+  # appears on green is a report nobody needs.
+  report:
+    name: result (${{ inputs.engine }}, ${{ matrix.os }})
+    needs: [resolve, lint, preconditions, graded-p0, graded-p1, graded-lower]
+    if: always()
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      - name: Install the pinned harness and this package
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+
+      # EACH BAND'S REPORT, DOWNLOADED BY THE NAME THAT BAND PUBLISHED. The
+      # names differ between a gated and an ungated run, so the pattern follows
+      # the same condition the bands upload under.
+      - name: Collect each band's report
+        if: always()
+        uses: actions/download-artifact@v6
+        with:
+          pattern: >-
+            ${{ needs.resolve.outputs.gated == 'true'
+                && format('mqc-reports-cases-p*-replay-{0}-{1}', inputs.engine, matrix.os)
+                || format('scratch-ungated-cases-p*-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
+          path: collected
+          merge-multiple: true
+
+      - name: The gate result, band by band
+        if: always()
+        shell: bash
+        run: |
+          # ONE --priority PER REPORT, so a row is attributed to the band that
+          # produced it rather than inferred from a filename.
+          {
+            echo "## Gate result for ${{ inputs.engine }} on ${{ matrix.os }}"
+            echo ""
+            python -m tools.band_report --overall \
+              collected/junit_mqc_p0.xml \
+              collected/junit_mqc_p1.xml \
+              collected/junit_mqc_p2p4.xml \
+              --priority 0 --priority 1 --priority 2,3,4
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"

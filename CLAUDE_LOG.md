@@ -3669,3 +3669,35 @@ per cent.
 ### State
 
 Harness 712 passing, cases 157 passing, pylint exit 0 in both.
+
+## 2026-10-06: A reporting job, because the red run is the one worth reading
+
+### Why
+
+The per-band table the harness now renders had nowhere to run. Each band job
+published its own JUnit and said its own piece, and assembling the three was
+something a person did by opening three tabs.
+
+### What changed
+
+A `report` job in `gate-target.yml`, needing all three graded jobs and running
+`if: always()`. **The condition is the substance.** A release question is only
+ever asked when something failed, so a summary gated on `success()` would have
+appeared for exactly the runs nobody needs to read.
+
+`--overall` in `tools/band_report.py` takes one report and one `--priority` per
+band and refuses a mismatch between their counts. **A row is attributed by what
+the workflow says produced it**, not by a filename, so renaming an artifact
+cannot relabel a band's result.
+
+### What this cost to get right
+
+The job downloads under the gated or the ungated artifact pattern, matching the
+condition the bands upload under. Reusing one pattern would have produced an
+empty table on half the runs, and an empty table reads as a clean one.
+
+### State
+
+Cases 158 passing, pylint exit 0. The two reds are the catalogued gemini
+findings `134107` and `134205`, which are the deliverable rather than a defect.
+`115709` holds the job to needing every band and running whatever they did.

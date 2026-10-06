@@ -13,9 +13,19 @@ status unless `pipefail` is set, so a failing band would have reported success.
 **The arithmetic is the harness's**, imported rather than repeated, so the job
 summary and the console cannot disagree.
 
+**The overall report is a per-band table, not a single figure.** A release
+question is answered by the blocking bands: a run at 95% overall with one P0
+failure does not ship, so a total on its own tells a reader nothing they can
+act on.
+
 Usage::
 
     python -m tools.band_report reports/junit_mqc_p0.xml --priority 0
+
+    python -m tools.band_report --overall \
+        reports/junit_mqc_p0.xml reports/junit_mqc_p1.xml \
+        reports/junit_mqc_p2p4.xml \
+        --priority 0 --priority 1 --priority 2,3,4
 """
 
 import argparse
@@ -24,7 +34,7 @@ from pathlib import Path
 from typing import Optional
 from xml.etree import ElementTree
 
-from cmn.band_summary import band_lines
+from cmn.band_summary import band_lines, band_table
 
 
 def counts_from(report: Path) -> tuple[int, int, list[str]]:
@@ -64,21 +74,47 @@ def main(argv: Optional[list[str]] = None) -> int:
         not fail the job it is describing.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("report", type=Path)
-    parser.add_argument("--priority", default="")
+    parser.add_argument("report", type=Path, nargs="+")
+    parser.add_argument(
+        "--priority", action="append", default=None,
+        help="The band each report covers, repeated once per report",
+    )
+    parser.add_argument(
+        "--overall", action="store_true",
+        help="Render a per-band table with totals rather than one band's lines",
+    )
     parsed = parser.parse_args(argv)
 
-    if not parsed.report.is_file():
-        print(f"No report at {parsed.report}, so this band ran nothing.")
+    bands = parsed.priority or [""]
+    if len(bands) != len(parsed.report):
+        print(
+            f"{len(parsed.report)} report(s) and {len(bands)} band label(s), "
+            f"so a row could not be attributed. Pass one --priority per report."
+        )
         return 0
 
-    passed, failed, reasons = counts_from(parsed.report)
-    lines = band_lines(
-        passed=passed, failed=failed, skip_reasons=reasons,
-        priority=parsed.priority,
-    )
-    for line in lines or ["This band selected nothing."]:
-        print(line)
+    measured: list[tuple[str, int, int, list[str]]] = []
+    for report, band in zip(parsed.report, bands):
+        if not report.is_file():
+            print(f"No report at {report}, so that band ran nothing.")
+            continue
+        passed, failed, reasons = counts_from(report)
+        measured.append((band, passed, failed, reasons))
+
+    if not measured:
+        return 0
+
+    if parsed.overall:
+        for line in band_table(measured) or ["Nothing was measured."]:
+            print(line)
+        return 0
+
+    for band, passed, failed, reasons in measured:
+        lines = band_lines(
+            passed=passed, failed=failed, skip_reasons=reasons, priority=band,
+        )
+        for line in lines or ["This band selected nothing."]:
+            print(line)
     return 0
 
 
