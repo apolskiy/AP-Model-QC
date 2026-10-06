@@ -28,6 +28,7 @@ from pathlib import Path
 
 import pytest
 
+from cmn.band_summary import band_lines, skip_reasons_from
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
 from cmn.selection import (
@@ -193,3 +194,32 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     """
     del exitstatus
     publish_prerequisites(session.config)
+
+
+def pytest_terminal_summary(
+    terminalreporter: Any, exitstatus: int, config: Any
+) -> None:
+    """Print what this selection established, in its own terms.
+
+    **pytest's last line reports what it did not run.** A band job ends with a
+    count of deselected cases, which is every precondition plus every other
+    band, and no rate divides into it. This states the band's own denominator.
+
+    Args:
+        terminalreporter (Any): pytest's reporter, carrying the statistics.
+        exitstatus (int): Unused; the summary is about what ran, not the code.
+        config (Any): The invocation, for the band filter.
+
+    Returns:
+        None
+    """
+    del exitstatus
+    stats = getattr(terminalreporter, "stats", {}) or {}
+    lines = band_lines(
+        passed=len(stats.get("passed", [])),
+        failed=len(stats.get("failed", [])),
+        skip_reasons=skip_reasons_from(stats.get("skipped", [])),
+        priority=str(config.getoption("--priority") or ""),
+    )
+    for line in lines:
+        terminalreporter.write_line(line)

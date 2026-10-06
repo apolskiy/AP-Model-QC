@@ -3566,3 +3566,106 @@ reported as a model's and a pass that could never have been a failure.
 
 157 passing, pylint exit 0. The two reds are gemini's `134107` and `134205`,
 both genuine.
+
+## 2026-10-06: A band job reports its band, not what it declined to run
+
+The project owner read a P1 gate job whose last line was `3 failed, 7 passed,
+146 deselected` and said the 146 is confusing and yields no percentage.
+
+### The number that is not a result
+
+**146 is every precondition plus every case in the other bands.** It is the
+largest figure on the line, nothing divides into it, and a reader has to
+subtract it from a total nothing states to find the denominator.
+
+**A band job is read for its band**, because a workflow run has one conclusion
+and a band is the unit a remedy attaches to: P0 and P1 block a release, a lower
+band is a bug to open and quarantine. Totals across bands belong to the
+verdict, which has every observation and the rules for weighing them.
+
+```
+Band P0: 15 selected, 12 executed, 9 passed, 3 failed, 3 skipped behind a failed foundation, 75.0% pass
+Band P1: 10 selected, 6 executed, 5 passed, 1 failed, 4 skipped behind a failed foundation, 83.3% pass
+Band P2: 35 selected, 34 executed, 29 passed, 5 failed, 1 skipped behind a failed foundation, 85.3% pass
+```
+
+### The denominators are the verdict's, not new ones
+
+**Two rates that disagreed would be worse than one**, so a pass rate is over
+what executed, a skip behind a failed foundation is named and excluded, and an
+empty denominator yields no rate rather than a hundred per cent.
+
+**A skip behind a failed foundation is a consequence of a result rather than
+one of its own.** Counting it as a failure would charge a model twice for one
+defect; counting it as a pass would credit it for a case nobody ran.
+
+**An empty selection prints nothing at all**, because a row of zeroes reads as
+a clean result.
+
+### Read from the report, not piped from the run
+
+The job summary could have captured the console line by piping the band step,
+and **a pipeline returns its last command's status unless `pipefail` is set**,
+so a failing band would have reported success. That is the trap this project
+walked into on 2026-10-05 reading a pylint score through `tail`.
+
+`tools/band_report.py` reads the JUnit XML the band already writes and imports
+the harness arithmetic, so the job summary and the console cannot disagree.
+
+### State
+
+712 passing, pylint exit 0.
+
+## 2026-10-06: Two rates, because a skip is not a non-event
+
+**The project owner's correction, and it overturns what I shipped an hour
+earlier.** The band summary stated one rate, over what executed, and excluded
+skips from the denominator entirely.
+
+### Why that was wrong
+
+**A dependent is skipped to save cost, not to keep it out of the results.** The
+reason it skipped is a failure upstream, an environment that was not set, or a
+defect in our own scripts, and each of those is a thing the band failed to
+establish. **A rate that drops skips from its denominator flatters the run by
+exactly the number of cases it declined to measure.**
+
+My defence was that the verdict excludes dependency skips from its pass rate,
+and that was the wrong argument: **the verdict is a decision and this is a
+report**, and they answer different questions. A gate asks whether a run may
+pass; a reader asks what a band established.
+
+### Both, with their fractions
+
+```
+Band P1: 10 selected, 6 executed, 5 passed, 1 failed, 4 skipped behind a failed foundation
+Band P1: execution pass 83.3% (5 of 6), total pass 50.0% (5 of 10)
+```
+
+| Rate | Over | Answers |
+|---|---|---|
+| Execution | passed plus failed | Of what ran, how much held |
+| Total | everything selected | Of what the band set out to establish, how much it did |
+
+**The gap is the cost of the skips**, and P1 is the case in point: 83.3% was
+the honest answer to "of what ran, how much held" and the misleading answer to
+"how did P1 do". Six of ten cases were measured.
+
+**The fraction is printed beside each percentage**, so a reader checks the
+arithmetic rather than trusting it, for the same reason a finding carries its
+population beside its code.
+
+**The skips are still named by kind**, because the remedy differs: one behind a
+failed foundation clears when the foundation is fixed, and one for another
+reason is usually ours.
+
+### What did not change
+
+The verdict keeps its own denominators and its own floor. This changed a
+report, not a decision, and `112332` now asserts both rates including that a
+band measuring nothing reads as nothing established rather than as a hundred
+per cent.
+
+### State
+
+Harness 712 passing, cases 157 passing, pylint exit 0 in both.

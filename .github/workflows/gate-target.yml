@@ -255,6 +255,23 @@ jobs:
             --junitxml=reports/junit_mqc_p0.xml \
             --alluredir=reports/allure-results
 
+      - name: Band P0 result, in the band's own terms
+        if: always()
+        shell: bash
+        run: |
+          # THE BAND'S OWN DENOMINATOR. pytest's last line reports what it
+          # declined to run, and the deselected count is every precondition
+          # plus the other bands: no rate divides into it. Harness
+          # `cmn_verdict_and_cli.md` section 7.11.
+          #
+          # READ FROM THE REPORT, NOT PIPED FROM THE RUN. Piping would make the
+          # band step's exit status that of the last command in the pipeline.
+          {
+            echo "### Band P0, release blocking on ${{ inputs.engine }}, ${{ matrix.os }}"
+            echo ""
+            python -m tools.band_report reports/junit_mqc_p0.xml --priority 0
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Carry the outcomes to P1
         if: always()
         uses: actions/upload-artifact@v6
@@ -323,6 +340,24 @@ jobs:
             --carry-outcomes reports/carry.json \
             --junitxml=reports/junit_mqc_p1.xml \
             --alluredir=reports/allure-results
+
+      - name: Band P1 result, in the band's own terms
+        if: always()
+        shell: bash
+        run: |
+          # THE BAND'S OWN DENOMINATOR. pytest's last line reports what it
+          # declined to run, and the deselected count is every precondition
+          # plus the other bands: no rate divides into it. Harness
+          # `cmn_verdict_and_cli.md` section 7.11.
+          #
+          # READ FROM THE REPORT, NOT PIPED FROM THE RUN. Piping would make the
+          # band step's exit status that of the last command in the pipeline.
+          {
+            echo "### Band P1, release blocking on ${{ inputs.engine }}, ${{ matrix.os }}"
+            echo ""
+            python -m tools.band_report reports/junit_mqc_p1.xml --priority 1
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Carry the outcomes to P2-P4
         if: always()
@@ -408,3 +443,21 @@ jobs:
                 || format('scratch-ungated-cases-p2p4-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
           path: reports/
           retention-days: 90
+
+      - name: Bands P2 to P4 result, in their own terms
+        if: always()
+        shell: bash
+        run: |
+          # THE BAND'S OWN DENOMINATOR. pytest's last line reports what it
+          # declined to run, and the deselected count is every precondition
+          # plus the other bands: no rate divides into it. Harness
+          # `cmn_verdict_and_cli.md` section 7.11.
+          #
+          # READ FROM THE REPORT, NOT PIPED FROM THE RUN. Piping would make the
+          # band step's exit status that of the last command in the pipeline.
+          {
+            echo "### Bands P2 to P4, pass floor on ${{ inputs.engine }}, ${{ matrix.os }}"
+            echo ""
+            python -m tools.band_report reports/junit_mqc_p2p4.xml --priority 2,3,4
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
