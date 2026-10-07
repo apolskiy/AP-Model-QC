@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly identifies the independent causes behind the defects (percentage applied as bill base rather than a deduction, only applying the first coupon, unhandled missing keys, and lack of flooring at zero) and provides a specific remedy for each, keeping them distinct.",
+        "rationale": "The candidate clearly identifies the independent causes of defect (incorrect tier discount calculation treating the discount as the owed balance, only using the first coupon, and raising a KeyError on unrecognised codes) and provides the remedy for each.",
         "score": 5
       }
     }
   },
-  "request_hash": "8bff57a3f79574e4ebd4e9059ee9ebdecbc29161f0ba704583835cdae0227ca6"
+  "request_hash": "9c5678b4a1d111fc2ef5f8066f09ae9faeb09a2cfe40c601460f962c3ee323b9"
 }

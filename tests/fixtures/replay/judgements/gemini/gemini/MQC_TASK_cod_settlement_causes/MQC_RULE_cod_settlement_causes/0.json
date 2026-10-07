@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly identifies each independent root cause (the discount calculation computing the discount amount rather than post-discount balance, KeyError on missing lookup, only indexing the first coupon code, and lack of lower-bound clamping for negative totals) and provides the remedy for each separately rather than deriving them from one another or merely stating return values.",
+        "rationale": "The response clearly identifies the independent causes of the defects (the inverted percentage calculation, direct dictionary indexing causing KeyError, single-element indexing of coupon_codes, and lack of a zero floor) rather than merely listing the output values. It provides the specific remedy for each cause and keeps them cleanly separated.",
         "score": 5
       }
     }
   },
-  "request_hash": "7cb82d8aaf554f0f3ff21d7e33ff601efc6814d5751e08d3989b3eb59dcc1fe8"
+  "request_hash": "e614e910dc2f629638ace0102d72cad6c0ac396ead71ecf3b4fc121067feb4a6"
 }

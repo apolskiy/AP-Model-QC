@@ -37,7 +37,7 @@ findings:
   ticket: ''
 - case: MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome
   taxonomy_code: QC_LLM_DEFECT_MISSED
-  observations: 2 of 5 passed
+  observations: 1 of 3 passed
   observed_model: grok-4.7
   first_observed: '2026-10-06'
   last_observed: '2026-10-06'
@@ -45,7 +45,7 @@ findings:
   expected: 'The model states the cause of a defect and not only the outcomes that follow from it Also:
     The model states the determinate remedy for a defect it identifies, where the correct behaviour follows
     from the stated semantics'
-  actual: QC_LLM_DEFECT_MISSED on 3 of 5 observations, the other 2 passing
+  actual: QC_LLM_DEFECT_MISSED on 2 of 3 observations, the other 1 passing
   reproduce: pytest --engine grok --mode replay --tests 134109
   ticket: ''
 - case: MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly identifies each independent underlying cause of the defects (calculating the discount amount rather than applying it to reduce the total, indexing only the first coupon element, direct dict indexing causing a KeyError on unrecognised codes, and lack of a floor preventing negative totals) and provides the remedy for each separately.",
+        "rationale": "The response identifies each independent defect (computing discount size instead of price after discount, indexing only the first coupon, failing on unrecognised coupons with KeyError, and lacking a lower bound at zero) separately, explaining the precise arithmetic/logical cause and the specific remedy for each.",
         "score": 5
       }
     }
   },
-  "request_hash": "26dc133e4c4d0650968215fccf60f61e8cc839a5642180d68cef82d02c75b3ec"
+  "request_hash": "b8d837c9eff4688d3fa572c8af06d597a1c29710836544a62236e2f6daafc0f4"
 }
