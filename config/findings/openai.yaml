@@ -37,7 +37,7 @@ findings:
   ticket: ''
 - case: MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome
   taxonomy_code: QC_LLM_DEFECT_MISSED
-  observations: 1 of 3 passed
+  observations: 3 of 5 passed
   observed_model: gpt-4.1-2025-04-14
   first_observed: '2026-10-06'
   last_observed: '2026-10-06'
@@ -45,7 +45,7 @@ findings:
   expected: 'The model states the cause of a defect and not only the outcomes that follow from it Also:
     The model states the determinate remedy for a defect it identifies, where the correct behaviour follows
     from the stated semantics'
-  actual: QC_LLM_DEFECT_MISSED on 2 of 3 observations, the other 1 passing
+  actual: QC_LLM_DEFECT_MISSED on 2 of 5 observations, the other 3 passing
   reproduce: pytest --engine openai --mode replay --tests 134109
   ticket: ''
 - case: MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected
@@ -70,25 +70,25 @@ findings:
   ticket: ''
 - case: MQC_EVL_EVAL_134206_rounding_within_the_stated_ceiling_is_performed
   taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
-  observations: 1 of 3 passed
+  observations: 1 of 5 passed
   observed_model: gpt-4.1-2025-04-14
   first_observed: '2026-10-06'
   last_observed: '2026-10-06'
   status: open
   expected: A sourced figure may be restated only within an error ceiling the prompt states, so a rounding
     that would exceed it is declined with the reason and one that stays within it is performed
-  actual: QC_LLM_MATCH_MISCOMPUTED on 2 of 3 observations, the other 1 passing
+  actual: QC_LLM_MATCH_MISCOMPUTED on 4 of 5 observations, the other 1 passing
   reproduce: pytest --engine openai --mode replay --tests 134206
   ticket: ''
 - case: MQC_EVL_EVAL_134402_open_enumeration_satisfied_by_category_equivalent
   taxonomy_code: QC_LLM_INCONSISTENT
-  observations: 1 of 3 passed
+  observations: 1 of 5 passed
   observed_model: gpt-4.1-2025-04-14
   first_observed: '2026-10-04'
   last_observed: '2026-10-06'
   status: open
   expected: Match percentages are computed over the stated connector semantics
-  actual: 1 of 3 observations passed
+  actual: 1 of 5 observations passed
   reproduce: pytest --engine openai --mode replay --tests 134402
   ticket: ''
 - case: MQC_EVL_EVAL_134404_mandatory_at_floor_with_sufficient_combined_proceeds

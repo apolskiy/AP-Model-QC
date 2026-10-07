@@ -1,0 +1,22 @@
+{
+  "request_hash": "afd40fae7d82f27c6727c6ea5c2f43cad08bdfa0ad3c9dae65c55cea902fac6a",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
+    "duration_ms": 1073,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 146,
+    "mode": "live",
+    "output_tokens": 63,
+    "raw_reference": "chatcmpl-EWE6SeiWhai3HNjGuC5R4eMLQDQ7a",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "The EMEA revenue for Q3 was 28.7 million. Rounding up to the nearest ten million would result in 30 million, which overstates the actual figure by more than 5 percent. Therefore, the figure is reported as 28.7 million to avoid overstating EMEA\u2019s revenue.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response identifies all independent causes of the arithmetic and logic defects (miscalculating the discount percentage as amount owed instead of deduction, taking only the first coupon, failing on unrecognised coupons with a KeyError, and not bounding negative results at zero) rather than just stating what the function returns. It clearly provides the remedy for each cause separately.",
+        "rationale": "The response identifies each independent underlying cause (calculating the discount amount rather than subtracting it from the total, indexing only the first coupon code, and unsafe dictionary lookup causing KeyError) and provides clear remedies for each defect.",
         "score": 5
       }
     }
   },
-  "request_hash": "935b5efd9efbcd5de9c808f70a6fc349aebb90540ad05d51339877627b613294"
+  "request_hash": "366eb7e0e200c28634ed188d2ea1af1329ac2fe6bb0e8cd875ee2c89a8b07fb2"
 }

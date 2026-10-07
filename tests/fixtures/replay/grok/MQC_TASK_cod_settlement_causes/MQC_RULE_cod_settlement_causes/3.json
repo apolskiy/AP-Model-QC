@@ -1,22 +1,22 @@
 {
-  "request_hash": "44ade81ccb2dc15401bb1e0d8c52ede78191dc1f6d4dae1b2b8eaf96e9a63292",
+  "request_hash": "285408820d81e187be653a4aff964e918aa70450cf0fd6be2e407869ced47f4c",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
-    "duration_ms": 27218,
+    "duration_ms": 44453,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1538,
     "mode": "live",
-    "output_tokens": 273,
-    "raw_reference": "25b01248-a11c-959b-b9be-7336e654c69c",
+    "output_tokens": 285,
+    "raw_reference": "1c94851f-e891-91cd-8f70-325e7e1f3746",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement is wrong for three independent reasons.\n\n1. The tier discount is treated as the amount owed, not as a reduction of the total. `total_amount * discount / 100` is only the currency value of the percentage. That value is then used as the balance, so a 20% tier on 100 becomes 20 before coupons, instead of 80. Discount and coupon are different units: convert the percentage into a currency reduction of the basket, and subtract that from the total. The amount owed should start at `total_amount * (100 - discount) / 100`.\n\n2. Only the first coupon is applied. `coupon_codes[0]` drops every later code, so `[\"SAVE20\", \"SAVE30\"]` never adds the second currency amount. Every supplied code should be looked up and those currency amounts summed.\n\n3. An unknown code aborts the call. `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so settlement never finishes. An unrecognised code should be ignored and contribute 0; valid coupons and the tier discount should still be applied.\n\nCorrect settlement is therefore: percentage off the basket total, then subtract the sum of recognised coupon currency amounts only. For the four production calls that is 50, -10, 80, and 30.",
-    "thinking_tokens": 2223,
+    "text": "The settlement math treats a percentage and a currency amount as the same kind of term, and coupon lookup is both incomplete and fatal.\n\n**The percentage is used as the balance, not as a reduction.** `total_amount * discount / 100` is only the tier discount in currency (20 on a 100-unit standard basket). Subtracting the coupon from that slice does not produce an amount owed, because a discount rate and a coupon are different units and both have to come off the basket. It should keep `total_amount - (total_amount * discount / 100) - coupon currency`, i.e. apply the tier rate to the total, then subtract coupons.\n\n**Only `coupon_codes[0]` is read.** Later codes never affect the sum, so `[\"SAVE20\", \"SAVE30\"]` drops `SAVE30`. Every recognised code should contribute its looked-up currency amount.\n\n**A missing code aborts the call.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so an unrecognised code stops settlement. Unknown codes should be skipped (amount 0); a basket with no recognised coupon should still settle at the tier-discounted total.\n\nOn a 100-unit standard basket that is 50, \u221210, 80, and 30 for the four production calls, with no exception on `\"NOPE\"`.",
+    "thinking_tokens": 3449,
     "tool_calls": []
   }
 }

@@ -3892,3 +3892,41 @@ working. gemini is green at 70 of 70; grok fails one case.
 
 161 preconditions passing, pylint exit 0. The documents are shaped as feedback,
 each observation labelled by what its checks found.
+
+## 2026-10-06: Every finding now rests on five observations
+
+### What changed
+
+The harness escalation rule widened to five observations on any failure, so
+every one of the fourteen findings is now reported out of five rather than out
+of three. **A denominator of three was the weakest thing about the set**: "2 of
+3" invites the answer that three attempts prove nothing.
+
+| | Before | After |
+|---|---|---|
+| openai `134109` | 1 of 3 passed | **3 of 5 passed** |
+| openai `134206` | 1 of 3 passed | **1 of 5 passed** |
+| openai `134402` | 1 of 3 passed | **1 of 5 passed** |
+| grok `134109` | 1 of 3 passed | **1 of 5 passed** |
+| claude `154100`, openai `154104`, `154202` | all of 3 | **5 of 5** |
+
+The three consistent failures gained the most: "all observations" on three
+attempts is a claim a vendor can wave away, and five of five is not.
+
+### A stale half nobody could see
+
+Observations four and five of `cod_settlement_causes` answered a request from
+before the prompt carried its settlement rule, on claude, openai and grok. The
+narrow escalation rule never drew them, so they sat unread for a day.
+
+`MQC_CAS_UNI_115711` now calls the harness check against this repository's
+fixtures. The openai and grok pairs were refreshed by the live pass that drew
+them; **claude's were removed**, because that case passes three of three and
+will never escalate, so a recording answering a question the corpus no longer
+asks would have waited there indefinitely.
+
+### State
+
+**Fourteen findings, every one out of five: openai 8, claude 5, grok 1, gemini
+0.** No stale or missing fixture on any engine, and the store answers one
+question per case. 164 preconditions passing, pylint exit 0.

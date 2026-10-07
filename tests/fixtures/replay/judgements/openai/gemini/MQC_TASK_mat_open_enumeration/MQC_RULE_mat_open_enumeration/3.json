@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OPEN_EQUIVALENCE": {
+        "rationale": "The candidate output explicitly concludes that the requirement is 'Not met' and rejects MySQL as meeting the requirement. Under the rubric, refusing the equivalence corresponds directly to level 1.",
+        "score": 1
+      }
+    }
+  },
+  "request_hash": "8411ec7d85c08cf77b3f8615d59528a58b9cd9a88989444ec5534260d893e093"
+}

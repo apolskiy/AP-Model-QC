@@ -30,9 +30,11 @@ import allure
 import pytest
 
 from cmn.registries import is_registered_harness_code, registered_codes
+from cmn.replay_audit import divergent_recordings
 from evaluation.screening import screen_text
 
 from tests.cases.graded_support import (
+    FIXTURE_ROOT,
     repository_root,
     shipped_corpus,
 )
@@ -343,4 +345,34 @@ class TestMQCAssertionsCanFail:
             assert_consistent_pass([gap, gap, gap])
         assert "no observation" in str(nothing.value), (
             f"a case that measured nothing reports something: {nothing.value}"
+        )
+
+
+    @allure.story("A store refreshed in part names the half left behind")
+    def MQC_CAS_UNI_115711_a_replay_store_refreshed_in_part_is_reported(
+        self,
+    ) -> None:
+        """Every candidate recording a case holds answers the same request.
+
+        **A fourth way our defect becomes a finding about somebody's model**,
+        and the quietest of them: observations four and five of one task
+        carried a request hash from before a prompt change, and nothing read
+        them because the escalation rule drew them only on exactly one
+        disagreement.
+
+        **Widening that rule to five on any failure draws them**, and the case
+        would skip on ``QC_HARNESS_FIXTURE_STALE`` at the moment it was trying
+        to establish a rate. A store refreshed in part is worse than one wholly
+        stale, because the half that loads looks current.
+
+        Design: ``consumer_ci.md`` section 9.4.3.1.
+
+        Returns:
+            None
+        """
+        divergent = divergent_recordings(repository_root() / FIXTURE_ROOT)
+        assert not divergent, (
+            "a case holds recordings answering different requests, so an "
+            "escalation reaching the older ones skips the case instead of "
+            "measuring it: " + "; ".join(divergent)
         )

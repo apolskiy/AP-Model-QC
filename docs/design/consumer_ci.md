@@ -599,6 +599,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115708` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
 | `115709` | N | `a_gate_reporting_only_on_green_is_reported` |
 | `115710` | N | `an_unmeasured_observation_is_not_counted_as_a_failure` |
+| `115711` | N | `a_replay_store_refreshed_in_part_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
 | `115712` | N | `a_subprocess_without_a_timeout_is_reported` |
@@ -613,7 +614,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 57 cases, 41 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 58 cases, 42 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 ### 4A. The harness is a dependency, not the directory next door
 
@@ -2009,6 +2010,32 @@ coverage.
 **That is the next pass and it is recorded as outstanding rather than implied**:
 injecting a violating input per assertion and recording the ones that do not
 fire. `OPEN_QUESTIONS.md` carries it.
+
+### 9.4.3.1 A recording the escalation never drew can be stale in silence
+
+Added 2026-10-06, when the escalation rule widened to five observations on any
+failure (harness `cmn_verdict_and_cli.md` section 4.9.2.1).
+
+**Three observations of `MQC_TASK_cod_settlement_causes` answered one request
+and the fourth and fifth answered another**, left from before the prompt
+carried its settlement rule. Nothing complained, because the narrow rule
+escalated only on exactly one disagreement, the case failed twice of three, and
+observations four and five were never read.
+
+**Widening the rule draws them.** The case would have skipped on
+`QC_HARNESS_FIXTURE_STALE` at the exact moment it was trying to establish a
+rate, which is the one moment the figure matters.
+
+**The check is the harness's and the fixtures are ours**, so
+`cmn.replay_audit.divergent_recordings` is called here with this repository's
+root, the same one-implementation-two-callers arrangement the annotation,
+header and encoding rules use.
+
+**Judgements are excluded, and that is not an exemption.** A judgement scores
+one candidate response, so its request carries that response and every
+observation's judgement answers a legitimately different request. The first run
+against real fixtures reported the whole store until that was understood, which
+is the check correcting its own rule.
 
 ### 9.4.4 Every open finding read against its recording, and eleven of twenty-three withdrawn
 

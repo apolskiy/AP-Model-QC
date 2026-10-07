@@ -562,12 +562,11 @@ def observe_repeatedly(
     **Every observation is dispatched, even after one fails.** Stopping early
     would hide the disagreement, which is the finding.
 
-    **And a single disagreement earns two more.** Three observations put a case
-    at 0, 33, 67 or 100 percent disagreement, and only the 33 is worth refining:
-    at five, one disagreement reads as a fifth and three as three fifths, which
-    are different findings although both fail. The rule is the harness's
-    (`cmn.observations.further_observations`) and this loop only dispatches what
-    it asks for, per design section 4.9.2.2.
+    **And any failure earns two more.** Three runs to pass, five once one has
+    failed, because a figure filed with a vendor rests on its denominator and
+    thirds are not a rate a reader can weigh. The rule is the harness's
+    (`cmn.observations.further_observations`) and this loop only dispatches
+    what it asks for, per design section 4.9.2.2.
 
     Args:
         config (Any): pytest's configuration, carrying the invocation.
