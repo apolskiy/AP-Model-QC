@@ -272,6 +272,20 @@ jobs:
             python -m tools.band_report reports/junit_mqc_p0.xml --priority 0
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
+      # EVERY CASE THE BAND SELECTED, not every case it managed to run. pytest
+      # exits zero on a run that skipped half of what it collected, so the band
+      # reported success at seven of eleven on claude with four blocking cases
+      # unmeasured. `consumer_ci.md` section 3.12.2.
+      #
+      # AFTER THE SUMMARY STEP, so the figures reach the job summary whichever
+      # way this goes: a reader deciding what to do needs the counts, and a
+      # step that fails before publishing them hides them.
+      - name: Band P0 answered for everything it selected
+        shell: bash
+        run: |
+          python tools/band_floor.py reports/junit_mqc_p0.xml \
+            --blocking --engine ${{ inputs.engine }}
+
       - name: Carry the outcomes to P1
         if: always()
         uses: actions/upload-artifact@v6
@@ -358,6 +372,20 @@ jobs:
             python -m tools.band_report reports/junit_mqc_p1.xml --priority 1
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # EVERY CASE THE BAND SELECTED, not every case it managed to run. pytest
+      # exits zero on a run that skipped half of what it collected, so the band
+      # reported success at seven of eleven on claude with four blocking cases
+      # unmeasured. `consumer_ci.md` section 3.12.2.
+      #
+      # AFTER THE SUMMARY STEP, so the figures reach the job summary whichever
+      # way this goes: a reader deciding what to do needs the counts, and a
+      # step that fails before publishing them hides them.
+      - name: Band P1 answered for everything it selected
+        shell: bash
+        run: |
+          python tools/band_floor.py reports/junit_mqc_p1.xml \
+            --blocking --engine ${{ inputs.engine }}
 
       - name: Carry the outcomes to P2-P4
         if: always()

@@ -108,6 +108,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0037` | The gate publishes a per-band table after every band has run, whatever those bands did, naming each band's result rather than a single figure, so the summary exists for the red run that needs it | consumer_ci.md section 3.12.3 |
 | `MQC_REQ_CAS_CI_0038` | An observation whose judgement could not be replayed is excluded from the population a verdict is read over, so a recording gap can cost a finding but never manufacture one | consumer_ci.md section 9.4.5 |
 | `MQC_REQ_CAS_CI_0039` | Every candidate recording a case holds answers the same request, so a replay store refreshed in part is reported rather than discovered when an escalation first draws the observation that was left behind | consumer_ci.md section 9.4.3.1 |
+| `MQC_REQ_CAS_CI_0040` | A release blocking band passes only where every case it selected was measured and passed, quarantined cases excepted, so a band cannot report green on cases that never ran | consumer_ci.md section 3.12.2 |
 | `MQC_REQ_CAS_CI_0034` | The instrument is checked for manufacturing findings: no recorded response on an ordinary case matches an attack vector, and every failure message names a registered taxonomy code, so a defect in our reading is not reported as a defect in a model and a real failure is not unrecordable | consumer_ci.md section 9.4.2 |
 
 

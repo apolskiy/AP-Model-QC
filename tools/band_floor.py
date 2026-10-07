@@ -4,10 +4,16 @@
 
 Specified by ``docs/design/consumer_ci.md`` section 3.12.2.
 
-**P0 and P1 need nothing like this.** "Any P0 or P1 observation not passing
-fails the run" and "this band had a failure" are the same statement, so pytest's
-exit status enforces V1 by itself. P2-P4 is the only band where a failure is not
-automatically fatal, so it is the only one that needs a rate.
+**Two floors, because the bands answer different questions.** A lower band is
+asked what rate the cases it measured achieved; a release blocking band is asked
+whether it measured what it selected at all.
+
+**The sentence this replaces was the defect.** It read that P0 and P1 need
+nothing like this, because "any P0 or P1 observation not passing fails the run"
+and "this band had a failure" are the same statement. They are not: a skipped
+case is an observation not passing, and an exit status cannot see one. claude
+band P1 reported success at seven of eleven, four blocking cases having skipped
+behind failed foundations.
 
 **A harness error is still fatal.** An ``error`` in the report is our defect and
 the floor is a statement about the model, so a band carrying one refuses rather
@@ -23,6 +29,7 @@ from pathlib import Path
 from typing import Final, Optional
 from xml.etree import ElementTree
 
+from cmn.config import load_quarantine_for
 from cmn.verdict import Thresholds
 
 logger = logging.getLogger(__name__)
@@ -66,6 +73,93 @@ def _counts(report: Path) -> tuple[int, int, int, int]:
     errors = sum(1 for case in cases if case.find("error") is not None)
     skips = sum(1 for case in cases if case.find("skipped") is not None)
     return len(cases), failures, errors, skips
+
+
+def assess_blocking(
+    report: Path, quarantined: frozenset[str] = frozenset()
+) -> tuple[int, str]:
+    """Return the exit code for a release blocking band and why.
+
+    **Every case the band selected was measured and passed, or the band fails.**
+    A skip is not a pass and not a failure; it is an absence, and a band that
+    exists to block a release cannot report green on an absence.
+
+    **Whatever caused the skip.** A foundation that did not hold, a fixture gone
+    stale, a budget exhausted: each means the case was not measured, which is
+    the one answer a blocking band may not round up.
+
+    **Quarantine is the only exclusion**, because somebody wrote down why, with
+    an expiry and a finding behind it. That is what separates an exclusion from
+    whatever the run happened to skip.
+
+    Args:
+        report (Path): The band's JUnit XML.
+        quarantined (frozenset[str]): Case identifiers declared quarantined,
+            which leave the denominator.
+
+    Returns:
+        tuple: The exit code and a message naming the figures behind it.
+    """
+    try:
+        selected, failures, errors, skipped = _counts(report)
+    except ValueError as error:
+        return _EXIT_REFUSED, str(error)
+
+    if errors:
+        return (
+            _EXIT_REFUSED,
+            f"{errors} case(s) reported an error rather than a failure, which "
+            f"is our defect and not a measurement of a model",
+        )
+    if not selected:
+        return (
+            _EXIT_REFUSED,
+            "the band collected no case, so it established nothing about a "
+            "band that blocks a release",
+        )
+
+    excused = _quarantined_skips(report, quarantined)
+    unmeasured = skipped - excused
+    passed = selected - failures - skipped
+    denominator = selected - excused
+    detail = (
+        f"{passed} of {denominator} selected passed, {failures} failed, "
+        f"{unmeasured} were not measured"
+        + (f", {excused} quarantined" if excused else "")
+    )
+
+    if failures or unmeasured:
+        return (
+            _EXIT_BELOW_FLOOR,
+            f"a release blocking band answers for every case it selected: "
+            f"{detail}",
+        )
+    return _EXIT_GREEN, f"the blocking band measured and passed everything: {detail}"
+
+
+def _quarantined_skips(report: Path, quarantined: frozenset[str]) -> int:
+    """Return how many skipped cases were declared quarantined.
+
+    **Matched on the identifier inside the test name**, because a JUnit name
+    carries the whole callable and a quarantine entry names the case.
+
+    Args:
+        report (Path): The band's JUnit XML.
+        quarantined (frozenset[str]): The declared identifiers.
+
+    Returns:
+        int: How many skips a declaration excuses.
+    """
+    if not quarantined:
+        return 0
+    excused = 0
+    for case in ElementTree.parse(report).iter("testcase"):
+        if case.find("skipped") is None:
+            continue
+        name = str(case.get("name", ""))
+        if any(entry and entry in name for entry in quarantined):
+            excused += 1
+    return excused
 
 
 def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
@@ -116,6 +210,25 @@ def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
     return _EXIT_GREEN, f"the band cleared its floor: {detail}"
 
 
+def _declared_quarantine(engine: str) -> frozenset[str]:
+    """Return the case identifiers quarantined for one engine.
+
+    **An absent file is a starting condition, not an error**, which is what the
+    harness loader already answers: a repository with nothing quarantined has
+    no quarantine file.
+
+    Args:
+        engine (str): Which engine ran, naming the file.
+
+    Returns:
+        frozenset[str]: The declared identifiers, empty where none are.
+    """
+    if not engine:
+        return frozenset()
+    entries = load_quarantine_for(Path("config"), engine)
+    return frozenset(str(entry.case_id) for entry in entries)
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     """Assess one band report and return its exit code.
 
@@ -136,9 +249,27 @@ def main(argv: Optional[list[str]] = None) -> int:
         default=None,
         help="Override the floor, for testing the boundary rather than the policy",
     )
+    parser.add_argument(
+        "--blocking",
+        action="store_true",
+        help=(
+            "Assess a release blocking band: every case selected was measured "
+            "and passed, quarantined cases excepted"
+        ),
+    )
+    parser.add_argument(
+        "--engine",
+        default="",
+        help="Which engine ran, naming the quarantine file to honour",
+    )
     parsed = parser.parse_args(argv)
 
-    code, message = assess(parsed.report, parsed.floor)
+    if parsed.blocking:
+        code, message = assess_blocking(
+            parsed.report, _declared_quarantine(parsed.engine)
+        )
+    else:
+        code, message = assess(parsed.report, parsed.floor)
     # LOGGED, NOT ALSO PRINTED. `basicConfig` below sends this to stderr, and
     # doing both put every verdict on the console twice.
     if code == _EXIT_GREEN:

@@ -529,11 +529,70 @@ renaming an artifact cannot silently relabel a band's result.
 with one P0 failure does not ship**, and the table states that verdict in its
 own line rather than leaving it to be inferred from a healthy total.
 
-#### 3.12.2 Only the lower band answers to a floor
+#### 3.12.2 Every band answers to a floor, and the blocking ones answer for every case they selected
 
-P0 and P1 gate on pytest's exit status, and that is exactly V1: "any P0 or P1
-observation not passing fails the run" and "this band had a failure" are the
-same statement, so no verdict computation is needed to enforce it.
+**Corrected 2026-10-07 by the project owner, and the sentence this replaces was
+the defect.** It read: P0 and P1 gate on pytest's exit status, and that is
+exactly V1, because "any P0 or P1 observation not passing fails the run" and
+"this band had a failure" are the same statement.
+
+**They are not the same statement.** A skipped case is an observation not
+passing, and pytest's exit status cannot see one. The gate said so out loud on
+claude:
+
+```
+Band P1: 11 selected, 7 executed, 7 passed, 0 failed, 4 skipped
+         execution pass 100.0% (7 of 7)   total pass 63.6% (7 of 11)
+```
+
+**The job reported success.** Four release-blocking cases were never measured
+and the band called itself a hundred percent. In the owner's words, that is not
+a passing rate, it is a **selective** passing rate: at the limit, two cases of
+eleven executing and passing would report the same green.
+
+##### The floor for a blocking band is every case it selected
+
+| Band | Denominator | Floor |
+|---|---|---|
+| P0, P1 | **Selected**, less quarantined | **100 percent** |
+| P2-P4 | Measured | `Thresholds.pass_floor` |
+
+**A skip is not a pass and it is not a failure; it is an absence**, and a band
+that exists to block a release cannot report green on an absence. So any skip
+that is not a quarantine fails a blocking band, whatever caused it: a
+foundation that did not hold, a fixture that went stale, a budget that ran out.
+Each of those means the case was not measured, and "not measured" is the one
+answer a release-blocking band may not round to a pass.
+
+##### Quarantine is the only exclusion, and it is a declaration
+
+A quarantined case leaves the denominator because somebody wrote down why, with
+an expiry and an open finding behind it (section 4.14, harness
+`cmn_verdict_and_cli.md` section 4.6). **That is the difference between an
+exclusion and an omission**: one is recorded and reviewable, the other is
+whatever the run happened to skip.
+
+**Nothing else is excused, including a dependent skipping behind a failed
+foundation.** The temptation is to excuse it because the foundation already
+failed and is already reported; the reason not to is that it lets one P0
+failure remove any number of P1 cases from the denominator without anybody
+deciding to. A blocking band red because its foundations fell over is the
+honest reading of what that band measured, and the band jobs are separate so
+that each one can state its own.
+
+##### Its relationship to V4
+
+The harness already carries this as a run-level rule: V4 fails a run whose P0
+and P1 skip rate exceeds `priority_skip_ceiling`, default 0.10. **The band
+floor is stricter and narrower.** V4 asks what a whole run tolerated; this asks
+whether one band measured what it selected, and a band is the unit a release
+decision is read from.
+
+**The two can disagree, and that is worth knowing rather than hiding.** A run
+skipping under a tenth of its blocking cases is verdict-green and band-red. The
+band is the stricter statement and the gate follows it; whether
+`priority_skip_ceiling` should fall to zero for consistency is a verdict
+decision and is recorded as an open question rather than taken here.
 
 **P2-P4 is the only band where a failure is not automatically fatal**, so it is
 the only one needing a pass rate. `tools/band_floor.py` reads the band's JUnit
@@ -600,6 +659,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115709` | N | `a_gate_reporting_only_on_green_is_reported` |
 | `115710` | N | `an_unmeasured_observation_is_not_counted_as_a_failure` |
 | `115711` | N | `a_replay_store_refreshed_in_part_is_reported` |
+| `115712` | N | `a_blocking_band_passing_on_unmeasured_cases_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
 | `115712` | N | `a_subprocess_without_a_timeout_is_reported` |
@@ -614,7 +674,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 58 cases, 42 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 59 cases, 43 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 ### 4A. The harness is a dependency, not the directory next door
 
