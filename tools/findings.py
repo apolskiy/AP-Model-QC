@@ -204,7 +204,7 @@ def parse_failures(report: Path) -> dict[str, dict[str, Any]]:
         # `QC_LLM_INCONSISTENT` and then names what the failing observations
         # reported, and taking the first match catalogued a security
         # compromise as a consistency observation. `most_critical` ranks them
-        # per `test_taxonomy.md` section 6.4. Section 9.8 here.
+        # per `harness_test_taxonomy.md` section 6.4. Section 9.8 here.
         found = _MODEL_CODE.findall(message)
         if not found:
             failures[case] = {"taxonomy_code": "", "observations": ""}

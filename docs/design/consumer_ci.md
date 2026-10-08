@@ -8,7 +8,7 @@ How this repository decides which harness it runs against, and what it refuses
 to run against at all.
 
 **Scope.** The harness owns the pipeline design; `AP-Harness-QC`
-`docs/design/ci_pipeline.md` is normative for workflow naming, the credential
+`docs/design/harness_ci_pipeline.md` is normative for workflow naming, the credential
 boundary, artifact contracts and exit code mapping, and none of it is restated
 here. Section 3C of that document holds the branch topology this one
 implements. What belongs here is the half that is **this repository's policy**:
@@ -45,7 +45,7 @@ answers:
 
 ## 2. The Pairing: Which Harness A Case Branch Runs Against
 
-A run is defined by a **pair** of refs. The topology is in `ci_pipeline.md`
+A run is defined by a **pair** of refs. The topology is in `harness_ci_pipeline.md`
 section 3C; this section states how this repository resolves it.
 
 ### 2.1 The pin is data
@@ -166,7 +166,7 @@ can be made strict without touching a conditional.
 
 ### 3.5 The code is `QC_HARNESS_UPSTREAM_UNVERIFIED`
 
-Registered in the harness `test_taxonomy.md` section 6.2, because
+Registered in the harness `harness_test_taxonomy.md` section 6.2, because
 `framework-rules.md` section 4.1 permits exactly one registry and it is not
 here.
 
@@ -657,7 +657,7 @@ so the constants are shared.
 ## 4. Test Inventory: `MQC_CAS_UNI_`
 
 Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
-`test_taxonomy.md` section 3.2.1.
+`harness_test_taxonomy.md` section 3.2.1.
 
 | ID | Category | Behaviour |
 |---|---|---|
@@ -708,6 +708,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115711` | N | `a_replay_store_refreshed_in_part_is_reported` |
 | `115712` | N | `a_blocking_band_passing_on_unmeasured_cases_is_reported` |
 | `115717` | P | `a_blocking_band_releases_only_on_a_recorded_dispensation` |
+| `115718` | N | `a_document_naming_no_repository_is_reported` |
 | `115716` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -723,7 +724,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 61 cases, 44 negative, 12 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 62 cases, 45 negative, 12 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check has now cost something, found 2026-10-08.** Five
 identifiers in this table are each bound to **two** different behaviours, and
@@ -813,7 +814,7 @@ established that a refusal reached anything, so the protection was structural
 and unasserted, which is the state this project has learned to distrust.
 ### 4.3 The branch policy reaches the pairing
 
-Added 2026-09-24. `115314` and `115315` cover what `ci_pipeline.md` section 3C.6
+Added 2026-09-24. `115314` and `115315` cover what `harness_ci_pipeline.md` section 3C.6
 means on this side, where branches are dated and the pairing mapping has to
 match them.
 
@@ -1402,7 +1403,7 @@ keyed by the adapter name: `adapter_for` looks an engine up in the adapter
 registry, so `engines.yaml` cannot carry two entries for one adapter today.
 Expressing two targets on one adapter needs an entry that names its adapter
 separately from its key, which is a roster change and an
-`extensibility_standard.md` section 3.4 question. **Until then a target is an
+`harness_extensibility_standard.md` section 3.4 question. **Until then a target is an
 engine**, and the workflows are named so that changing it is a rename rather
 than a restructure.
 
@@ -1540,7 +1541,7 @@ cannot be imported. The duplication is therefore forced rather than chosen, and
 it is marked as such at the top of both copies.
 
 **What makes it safe is that the patterns it carries are not authored here.**
-They are normative in the harness `docs/design/test_taxonomy.md` section 2.1, so
+They are normative in the harness `docs/design/harness_test_taxonomy.md` section 2.1, so
 the file is a transcription of a specification rather than a second opinion, and
 a divergence is a transcription error that the shared test naming would surface
 immediately.
@@ -1653,7 +1654,7 @@ may be used for rather than whether to build it.
 
 **Replay on both sides measures no model.** Both halves are recordings, so the
 only thing such a run can establish is that our pipeline still reads its own
-fixtures the same way (harness `test_taxonomy.md` section 7.4.2).
+fixtures the same way (harness `harness_test_taxonomy.md` section 7.4.2).
 
 | Candidate | Judge | What a result establishes |
 |---|---|---|
@@ -1798,7 +1799,7 @@ quota, so it does not start.
 
 ## 8. The Operator Runbook
 
-Added 2026-09-24. `docs/running_jobs.md` is the whole operating procedure for
+Added 2026-09-24. `docs/model_running_jobs.md` is the whole operating procedure for
 starting a debug or stabilization run. **A tester does not read a design
 document to dispatch a job**, which is a requirement rather than a courtesy: a
 procedure that costs a design read is a procedure people work around.
@@ -1813,7 +1814,7 @@ question well.
 | Document | Answers | Read when |
 |---|---|---|
 | `consumer_ci.md` | Why the gate refuses, what a verdict requires | Changing the pipeline |
-| `running_jobs.md` | Which workflow, which inputs, what comes back | **Starting a run** |
+| `model_running_jobs.md` | Which workflow, which inputs, what comes back | **Starting a run** |
 
 **Each repository carries its own.** The harness names no consumer, so it
 cannot point at this one, and the workflows differ anyway. There is nothing
@@ -1826,7 +1827,7 @@ A dispatch naming an input the workflow does not declare is rejected by GitHub
 with a message about the input, and a reader following the documented procedure
 concludes the procedure is broken rather than the page.
 
-`MQC_CAS_UNI_115504` reads every fenced command in `running_jobs.md`, extracts
+`MQC_CAS_UNI_115504` reads every fenced command in `model_running_jobs.md`, extracts
 the workflow and the inputs each one names, and requires that the workflow
 exists and declares every input. It is the same obligation `115704` places on a
 workflow installing the harness, applied to prose instead of to YAML.
@@ -2169,7 +2170,7 @@ coverage.
 
 **That is the next pass and it is recorded as outstanding rather than implied**:
 injecting a violating input per assertion and recording the ones that do not
-fire. `OPEN_QUESTIONS.md` carries it.
+fire. `harness_open_questions.md` carries it.
 
 ### 9.4.3.1 A recording the escalation never drew can be stale in silence
 
@@ -2199,7 +2200,7 @@ is the check correcting its own rule.
 
 ### 9.4.3.2 The step record is asserted at its call site, not only in its logic
 
-Added 2026-10-07, with the numbered steps `test_taxonomy.md` section 8
+Added 2026-10-07, with the numbered steps `harness_test_taxonomy.md` section 8
 specified and nothing emitted.
 
 **The harness owns the ledger's logic and this repository owns the call.**

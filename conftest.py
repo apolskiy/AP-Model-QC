@@ -44,6 +44,7 @@ from cmn.selection import (
     select_traced_cases,
 )
 from cmn.pytest_support import (
+    announce_test,
     add_mqc_options,
     configure_invocation,
     label_priority_severity,
@@ -115,7 +116,7 @@ def pytest_collection_modifyitems(
     """
     # BEFORE EVERY OTHER SELECTOR. A case this environment cannot run
     # is not this run's to measure, so it leaves the total rather than
-    # reporting a non-outcome inside it (`test_taxonomy.md` 7.5.1).
+    # reporting a non-outcome inside it (`harness_test_taxonomy.md` 7.5.1).
     deselect_unavailable_environments(config, items)
     label_priority_severity(items)
     # BEFORE THE ORDERING, because `arrange_dependencies` refuses a suite whose
@@ -150,6 +151,10 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
     # rather than republishing its predecessor's measurements. Harness
     # design cmn_verdict_and_cli.md section 5.4.1.
     begin_case()
+    # ANNOUNCED BEFORE ANYTHING RUNS, so a crash between here and a
+    # response leaves the case's name and module behind. A traceback
+    # names the line that raised, not the case that reached it.
+    announce_test(item)
     enforce_dependencies(item)
 
 
@@ -207,7 +212,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     publish_prerequisites(session.config)
     # ZERO SKIPS, ENFORCED. A precondition that did not run measured
     # nothing, and pytest exits 0 on a skip: a unit job reported green
-    # at 99.44% with four of them (`test_taxonomy.md` 7.5.1).
+    # at 99.44% with four of them (`harness_test_taxonomy.md` 7.5.1).
     refuse_precondition_skips(session)
 
 

@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: MIT
 """The code-style rules pylint cannot express, enforced on this tree.
 
-Covers ``MQC_CAS_UNI_115500`` through ``115502``, inventoried in
+Covers ``MQC_CAS_UNI_115500`` through ``115502``, ``115711``, ``115712``,
+``115715`` and ``115718``, inventoried in
 ``docs/design/consumer_ci.md`` section 4.
 
 **One project spans two repositories**, and a rule enforced on one side only is
@@ -20,6 +21,7 @@ A failure here is **not a model finding**, so the module carries no priority mar
 
 from datetime import date
 from pathlib import Path
+from typing import Final
 
 import allure
 import pytest
@@ -29,19 +31,33 @@ from cmn.case_module_standards import (
     extraction_problems,
     unbounded_subprocess_calls,
 )
+from cmn.document_standards import runbook_problems
+from cmn.document_naming import (
+    repository_token,
+    undifferentiated_documents,
+)
 from cmn.code_standards import (
     identifier_block_problems,
     annotation_gaps,
     encoding_gaps,
     future_annotation_imports,
     header_problems,
-    runbook_problems,
     markup_header_problems,
     markup_sources,
 )
 
 # This repository's root, two levels above a case module.
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+
+# THIS REPOSITORY'S RUNBOOK, named here rather than in the harness, which
+# names no consumer. The two documents carry different names so an open
+# editor tab says which checkout it belongs to (`code-style.md` 7.2).
+MODEL_RUNBOOK: Final[str] = "docs/model_running_jobs.md"
+
+# EXEMPT, AND FOR A STATED REASON. `consumer_ci.md` names this
+# repository's role, so the name is unmistakable without a prefix
+# (harness `code-style.md` section 7.2). Nothing generic is exempt.
+_EXEMPT_DOCUMENTS: Final[frozenset[str]] = frozenset({"consumer_ci.md"})
 
 pytestmark = pytest.mark.unit
 
@@ -164,7 +180,7 @@ class TestMQCRunbook:
         Returns:
             None
         """
-        problems = runbook_problems(_root())
+        problems = runbook_problems(_root(), MODEL_RUNBOOK)
         assert not problems, (
             "the runbook documents a dispatch that would be rejected, so the "
             "procedure fails for whoever follows it: " + "; ".join(problems)
@@ -248,7 +264,7 @@ class TestMQCEncodingDeclared:
         **The duplicate-binding check cannot see this.** Two modules occupying
         one block are two distinct identifiers, so counting bindings balances.
 
-        Design: ``test_taxonomy.md`` section 3.2.1.4.
+        Design: ``harness_test_taxonomy.md`` section 3.2.1.4.
 
         Returns:
             None
@@ -291,7 +307,7 @@ class TestMQCCaseModuleContents:
         expiry, and an expired entry fails this. The list shrinks and never
         grows, because anything undeclared fails here on the day it is written.
 
-        Design: ``test_taxonomy.md`` section 13.
+        Design: ``harness_test_taxonomy.md`` section 13.
 
         Returns:
             None
@@ -338,7 +354,7 @@ class TestMQCBoundedSubprocesses:
         judgement; whether a bound exists is not, and only the second is
         mechanical.
 
-        Design: ``test_taxonomy.md`` section 14.
+        Design: ``harness_test_taxonomy.md`` section 14.
 
         Returns:
             None
@@ -386,4 +402,43 @@ class TestMQCModuleRunway:
             f"{len(problems)} module(s) are at the runway ceiling without a "
             f"declared reason, or carry a lapsed declaration: "
             + "; ".join(problems)
+        )
+
+    @allure.story("A document name says which repository it belongs to")
+    def MQC_CAS_UNI_115718_a_document_naming_no_repository_is_reported(self) -> None:
+        """A filename carries this repository's token, or a stated exemption.
+
+        **One exemption, and it names this repository's role.** `consumer_ci.md`
+        is about being a consumer of the harness, which is what this repository
+        is, so a reader with it open knows where they are without a prefix.
+
+        **The same checker as the harness, called with this root.** Copying it
+        to state the one difference would be two implementations of one rule,
+        which is the arrangement every other standard here already uses.
+
+        Design: harness ``code-style.md`` section 7.2.
+
+        Returns:
+            None
+        """
+        root = Path(__file__).resolve().parents[2]
+        assert repository_token(root) == "model", (
+            "the repository root carries no token, so no document name can be "
+            "checked against one"
+        )
+
+        problems = undifferentiated_documents(root, _EXEMPT_DOCUMENTS)
+        assert not problems, (
+            f"{len(problems)} document name(s) do not say which repository "
+            f"they belong to, so an open editor tab does not either: "
+            + "; ".join(problems)
+        )
+
+        # THE EXEMPTION IS SPENT, NOT BANKED. An entry naming a document this
+        # repository does not carry is a permission nobody can audit.
+        present = {path.name for path in (root / "docs").rglob("*.md")}
+        stale = sorted(_EXEMPT_DOCUMENTS - present)
+        assert not stale, (
+            f"{len(stale)} exemption(s) name a document this repository does "
+            f"not carry: {', '.join(stale)}"
         )

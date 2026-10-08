@@ -414,7 +414,7 @@ def _declared_fields(case: Any, index: int) -> dict[str, Any]:
         # DECLARED BY THE RULE SET, not derived from the layer. The layer
         # answers for SEC and TOOL because each maps to one family and could
         # never have answered for EVAL, which spans four. Harness
-        # `test_taxonomy.md` section 11.8.3.
+        # `harness_test_taxonomy.md` section 11.8.3.
         "families": tuple(rules.families),
     }
 
@@ -425,7 +425,7 @@ def _skip_fields(
     """Return the observation a skipped case contributes to the pass rate.
 
     **A skip is a non-pass, and the reason decides whether it is a failure**
-    (harness `test_taxonomy.md` section 7.4.1). Recording it is what gives the
+    (harness `harness_test_taxonomy.md` section 7.4.1). Recording it is what gives the
     rate a skip to count: nothing recorded a skipped case, so a band that
     skipped a third of its cases reported a rate over the rest.
 
@@ -476,7 +476,7 @@ def _measured_fields(case: Any, outcome: Any, result: Any, index: int) -> dict[s
     # A JUDGE THAT DID NOT ANSWER IS NOT A MODEL FAILURE. The model produced a
     # response; our judgement of it is missing, so the observation is a skip
     # whose reason leaves the pass rate rather than a fail charged to the
-    # model (harness `test_taxonomy.md` section 7.4.1).
+    # model (harness `harness_test_taxonomy.md` section 7.4.1).
     if getattr(result, "judge_skipped_reason", "") == _JUDGEMENT_UNAVAILABLE:
         return _skip_fields(
             case,
@@ -565,7 +565,7 @@ def observe(
     # LOGGED ON ENTRY, because the ledger below is computed from a result and a
     # crash between the request and the response leaves none. A timeout, an
     # adapter raising, a connection dropping: each would otherwise record
-    # nothing about where the run had reached. `test_taxonomy.md` section 8.
+    # nothing about where the run had reached. `harness_test_taxonomy.md` section 8.
     marker = f"{case.case_id} observation {observation_index}"
     with entering(marker, 1, "ACTION", f"engine {config.getoption('--engine')}"):
         plan = dispatch_plan(config)
@@ -590,7 +590,7 @@ def observe(
         _record_steps(case.case_id, outcome, None)
         # AND THE OBSERVATION, carrying `environmental`: our infrastructure did
         # not produce a measurement, which is not the model's failure and leaves
-        # the pass rate (harness `test_taxonomy.md` section 7.4.1).
+        # the pass rate (harness `harness_test_taxonomy.md` section 7.4.1).
         record_observation(
             assemble_observation(
                 _skip_fields(
@@ -646,7 +646,7 @@ def observe(
     with entering(marker, 4, "ACTION", "screen, assertions and judge"):
         result = evaluate_observation(context, judge)
 
-    # THE NUMBERED STEPS, PER `test_taxonomy.md` SECTION 8. Two entries per
+    # THE NUMBERED STEPS, PER `harness_test_taxonomy.md` SECTION 8. Two entries per
     # step, an action and its verification, named so a collector parses them.
     # Emitted after the fact from what the outcome and the result already
     # carry: the harness computes the ledger and this records it, which keeps
@@ -670,7 +670,7 @@ def _record_steps(case_id: str, outcome: Any, result: Any) -> None:
     """Record every numbered step's two phases against this observation.
 
     Each phase becomes an ``allure.step`` named ``STEP_<NN>_<PHASE>``, which is
-    what `test_taxonomy.md` section 8.2 requires and what a collector reading
+    what `harness_test_taxonomy.md` section 8.2 requires and what a collector reading
     the format already parses. The same lines go to the log, carrying the case
     identifier, the step number, the phase, the outcome and any taxonomy code.
 
@@ -871,7 +871,7 @@ def case_families_from_suite(root: Path) -> dict[str, str]:
     **The link a matrix check has been missing.** T5 compares a matrix row's
     ``families`` against the families of the cases the row names, and it takes
     that mapping as an argument; nothing could build one until a rule set
-    declared its families on 2026-10-04. Harness ``test_taxonomy.md`` sections
+    declared its families on 2026-10-04. Harness ``harness_test_taxonomy.md`` sections
     11.4.2 and 11.8.3.
 
     Args:

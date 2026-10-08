@@ -43,9 +43,9 @@ designs live in `AP-Harness-QC` and are **never copied in**, per `CLAUDE.md`.
 
 | Document | Holds |
 |---|---|
-| `docs/document_register.md` | **This file.** Every tracked document and what it holds, checked against the repository both ways |
+| `docs/model_document_register.md` | **This file.** Every tracked document and what it holds, checked against the repository both ways |
 | `README.md` | **The latest state only.** What the case set is, how to run it, the current figures. Never a history |
-| `docs/running_jobs.md` | How to run each workflow and what each one spends |
+| `docs/model_running_jobs.md` | How to run each workflow and what each one spends |
 | `CLAUDE_LOG.md` | Decisions and their reasoning in date order, written for an external reader |
 
 **`README.md` and `CLAUDE_LOG.md` divide by time, not by topic.** The README says
@@ -70,3 +70,18 @@ drift.
 | Document | Holds |
 |---|---|
 | `tests/fixtures/excerpts/README.md` | What defect each code excerpt carries and how it is verified, so a fixture's purpose is recorded where the fixture is |
+
+## Renamed documents
+
+**Renamed 2026-10-08**, so an open editor tab says which checkout a file
+belongs to (harness `code-style.md` section 7.2). The old names remain in
+`CLAUDE_LOG.md` entries that were true when written.
+
+| Now | Former name |
+|---|---|
+| docs/model_running_jobs.md | was `docs/running_jobs.md` |
+| docs/model_document_register.md | was `docs/document_register.md` |
+
+**`consumer_ci.md` was left alone**, naming this repository's role, which is
+unmistakable without a prefix. `MQC_CAS_UNI_115718` holds that one exemption
+and fails on a second.

@@ -35,7 +35,7 @@ branches:
     require_green: true
 
   # THESE PATTERNS ARE FLOORS, NOT PAIRINGS. Branches are dated now
-  # (ci_pipeline.md section 3C.6), so a stabilization or extend branch naming a
+  # (harness_ci_pipeline.md section 3C.6), so a stabilization or extend branch naming a
   # specific harness branch adds its own LITERAL entry above these when it is
   # cut. First match wins in file order, so the literal takes precedence and
   # merging the branch removes it for free.

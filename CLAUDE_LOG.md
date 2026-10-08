@@ -4085,3 +4085,23 @@ is named for, and `115409` moved with the message it asserts.
 ### State
 
 97 unit passing, 70 graded in replay, pylint exit 0.
+
+## 2026-10-08: Two documents renamed, and one exemption with its reason
+
+`docs/running_jobs.md` and `docs/document_register.md` existed in both
+repositories, and an editor tab shows a filename rather than a checkout. They
+are `model_running_jobs.md` and `model_document_register.md` now.
+
+**`consumer_ci.md` was left alone.** It names this repository's role, which is
+unmistakable without a prefix, and `MQC_CAS_UNI_115718` holds that one
+exemption and fails on a second. The checker lives in the harness and is called
+here with this root, which is the arrangement every other standard already uses.
+
+**`runbook_problems` was reading the wrong repository's filename.** It is called
+here with this root and baked in `docs/harness_running_jobs.md`, so after the
+rename it would have found no runbook and reported no problem. The path is an
+argument now and this repository names its own.
+
+### State
+
+98 unit passing, 70 graded in replay, pylint exit 0.

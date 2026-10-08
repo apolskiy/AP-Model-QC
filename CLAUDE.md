@@ -27,8 +27,8 @@ Read these in the harness, where they are normative:
 | `.claude/rules/code-style.md` | Naming, annotations, docstrings, prose, cross-platform |
 | `.claude/rules/framework-rules.md` | Module separation, the seven gates, the failure taxonomy |
 | `.claude/rules/testing-standards.md` | Test naming, the inventory principle, artifacts |
-| `docs/design/test_taxonomy.md` | The single registry of identifiers, priorities and failure codes |
-| `docs/design/ci_pipeline.md` | The workflows, the credential boundary, branch topology (section 3C) |
+| `docs/design/harness_test_taxonomy.md` | The single registry of identifiers, priorities and failure codes |
+| `docs/design/harness_ci_pipeline.md` | The workflows, the credential boundary, branch topology (section 3C) |
 
 **The mechanical enforcement is shared code, not shared prose.** That is the
 property worth having: a rule restated slightly differently in two places is a
@@ -47,9 +47,9 @@ defect that ships.
 
 ## Read The Register First
 
-**`docs/document_register.md` names every tracked document in this repository and what each holds.** Read it before any documentation work and work through it on any review: it is the only complete list, and `MQC_CAS_UNI_115413` checks it against the repository in both directions.
+**`docs/model_document_register.md` names every tracked document in this repository and what each holds.** Read it before any documentation work and work through it on any review: it is the only complete list, and `MQC_CAS_UNI_115413` checks it against the repository in both directions.
 
-**The harness has its own**, and the two are separate because each repository's documents are its own. Harness `test_taxonomy.md` section 12 records why a reading order was not enough: a design document fell behind while being named in one the whole time.
+**The harness has its own**, and the two are separate because each repository's documents are its own. Harness `harness_test_taxonomy.md` section 12 records why a reading order was not enough: a design document fell behind while being named in one the whole time.
 
 ## What This Repository Owns
 
@@ -75,7 +75,7 @@ consequence of the split rather than a preference.
   are material people copy and adapt; the harness is a tool others depend on and
   takes Apache 2.0 for its patent grant.
 * **The module code is `CAS`**, and identifiers come from the block
-  `115000-115999`, partitioned in the harness `test_taxonomy.md` section 3.2.1.
+  `115000-115999`, partitioned in the harness `harness_test_taxonomy.md` section 3.2.1.
 * **The Allure epic is `AP-Model-QC`**, so a collector reading both repositories
   can tell which produced a result.
 * **`conftest.py` is a delegation**, never a second configuration. Every hook

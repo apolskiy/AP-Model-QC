@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """The apparatus the harness-pin cases assert against.
 
-Specified by the harness ``test_taxonomy.md`` section 13.
+Specified by the harness ``harness_test_taxonomy.md`` section 13.
 
 **Extracted 2026-10-05**, when the case module stood at 995 lines against the
 thousand-line ceiling with five lines of headroom. Two kinds of thing live

@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 > **Subject:** the **agent and model under evaluation**. The harness is specified in the harness repository and appears here only as a stated precondition.
 > **Assumes:** the harness is complete and pinned. `pyproject.toml` carries the reference these cases were verified against.
 >
-> **Every document named in back-ticks below without a repository lives in `AP-Harness-QC`**: `test_taxonomy.md`, the tier designs and `cmn_verdict_and_cli.md`. They are referenced rather than copied, because `framework-rules.md` section 4.1 forbids a second registry and a vendored copy would carry Apache-licensed content into an MIT repository.
+> **Every document named in back-ticks below without a repository lives in `AP-Harness-QC`**: `harness_test_taxonomy.md`, the tier designs and `cmn_verdict_and_cli.md`. They are referenced rather than copied, because `framework-rules.md` section 4.1 forbids a second registry and a vendored copy would carry Apache-licensed content into an MIT repository.
 
 ---
 
@@ -101,8 +101,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0029` | Every model finding is recorded with the model it was observed against, what was expected, what happened and how to reproduce it; a finding is retired only by a live run that no longer reproduces it, and never by a replay of our own recording |
 | `MQC_REQ_CAS_CI_0030` | Every workflow step in this repository that can dispatch to a provider names a spend ceiling, this being where the credentials and the spending are |
 | `MQC_REQ_CAS_CI_0031` | The set of evaluated targets is read from the harness engine roster rather than restated here, and every rostered target has a gate caller, a weekly caller and its declared credential offered by the live workflow, so rostering an engine fails this repository until it is evaluated rather than leaving it silently unevaluated | consumer_ci.md section 4.19.3 |
-| `MQC_REQ_CAS_CI_0032` | A collected case module defines no module-level function or non-test class, the supporting code living in a sibling module collection does not reach, so a case file reads as a list of claims and a helper is owned by an interface rather than privately re-derived per module | test_taxonomy.md section 13 |
-| `MQC_REQ_CAS_CI_0033` | Every subprocess invocation carries a timeout, so a child that stalls fails the case with a named harness code rather than blocking until a runner cancels the job and reports a failure with no failing step | test_taxonomy.md section 14 |
+| `MQC_REQ_CAS_CI_0032` | A collected case module defines no module-level function or non-test class, the supporting code living in a sibling module collection does not reach, so a case file reads as a list of claims and a helper is owned by an interface rather than privately re-derived per module | harness_test_taxonomy.md section 13 |
+| `MQC_REQ_CAS_CI_0033` | Every subprocess invocation carries a timeout, so a child that stalls fails the case with a named harness code rather than blocking until a runner cancels the job and reports a failure with no failing step | harness_test_taxonomy.md section 14 |
 | `MQC_REQ_CAS_CI_0035` | A module at nine hundred lines or more is reported unless it is declared with a reason and an expiry, so the next subject added starts a module of its own and the thousand-line ceiling is never reached by an unrelated edit | code-style.md section 5.1 |
 | `MQC_REQ_CAS_CI_0036` | Every assertion the corpus declares can be made to fail by a constructed, synthesised, observed or declared violating input, so an assertion cannot pass because it is incapable of failing | consumer_ci.md section 9.4.3 |
 | `MQC_REQ_CAS_CI_0037` | The gate publishes a per-band table after every band has run, whatever those bands did, naming each band's result rather than a single figure, so the summary exists for the red run that needs it | consumer_ci.md section 3.12.3 |
@@ -111,6 +111,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0040` | A release blocking band passes only where every case it selected was measured and passed; quarantine excuses nothing, and the one release is a quarantine entry recording the tracker reference in which product management announced the decision | consumer_ci.md sections 3.12.2 and 3.12.3 |
 | `MQC_REQ_CAS_CI_0041` | The observation loop records the numbered steps on every path it can leave by, and enters the dispatch phases before performing them, so a crash between a request and a response leaves its location behind | consumer_ci.md section 9.4.3.2 |
 | `MQC_REQ_CAS_CI_0042` | A band gate and a band line name one skip the same way, each phrase stating the remedy that skip takes | consumer_ci.md section 3.12.3 |
+| `MQC_REQ_CAS_CI_0043` | Every tracked document under docs carries this repository's token in its filename, or a stated exemption, so an open editor tab says which checkout the file belongs to | harness code-style.md section 7.2 |
 | `MQC_REQ_CAS_CI_0034` | The instrument is checked for manufacturing findings: no recorded response on an ordinary case matches an attack vector, and every failure message names a registered taxonomy code, so a defect in our reading is not reported as a defect in a model and a real failure is not unrecordable | consumer_ci.md section 9.4.2 |
 
 
@@ -142,7 +143,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_PRE_0007` | Every inventory row in this repository's design and test plan names a case the suite implements, reported so an unbuilt design is visible rather than forgotten | model_evaluation_test_plan.md section 8.1.1 |
 | `MQC_REQ_CAS_PRE_0008` | The judge engine a run names on the command line is the engine that grades it, so the judge recorded in result metadata is the instrument that produced the scores | consumer_ci.md section 4.13 |
 | `MQC_REQ_CAS_PRE_0009` | The observation count a run names on the command line is the count dispatched, so a run that measured a different population is distinguishable from one that did not | consumer_ci.md section 4.13.1 |
-| `MQC_REQ_CAS_PRE_0010` | Every tracked document in this repository is named in its document register and every path the register names resolves, so a documentation review reaches every document | test_taxonomy.md section 12 |
+| `MQC_REQ_CAS_PRE_0010` | Every tracked document in this repository is named in its document register and every path the register names resolves, so a documentation review reaches every document | harness_test_taxonomy.md section 12 |
 | `MQC_REQ_CAS_PRE_0011` | The generated per-case index agrees with the corpus and covers every case the suite dispatches, so a family or tag selection resolving through it is exact rather than stale | cmn_verdict_and_cli.md section 7.7.6.2 |
 | `MQC_REQ_CAS_COR_0022` | Every security case declares every vector its payload carries and names the one it is about, so an incidental match cannot stand in for coverage |
 | `MQC_REQ_CAS_COR_0021` | Every graded case's declared foundations are exactly the ones its design inventory states, so a dependency cannot be added in code without a document approving it |
@@ -246,7 +247,7 @@ Scoped in `DESIGN.md` section 7.1.
 
 ## 4. Case Inventory
 
-Priority carries its matched qualifying condition, per `test_taxonomy.md` section 4.1. Categories: **P** positive, **N** negative, **B** boundary.
+Priority carries its matched qualifying condition, per `harness_test_taxonomy.md` section 4.1. Categories: **P** positive, **N** negative, **B** boundary.
 
 ### 4.1 `MQC_EVL_EVAL_`
 
@@ -309,7 +310,7 @@ Priority carries its matched qualifying condition, per `test_taxonomy.md` sectio
 
 ### 4.3 `MQC_EVL_SEC_`
 
-Exempt from the distribution ceilings, per `test_taxonomy.md` section 4.1.5.
+Exempt from the distribution ceilings, per `harness_test_taxonomy.md` section 4.1.5.
 
 | ID | Pri | Condition | Cat | Behaviour | Traces |
 |---|---|---|---|---|---|
@@ -480,7 +481,7 @@ Two changes follow from stating it this way.
 
 **The primary formulation carries the priority the requirement warrants; additional formulations are P2 unless they independently match a more severe condition.**
 
-Promoting all four grounding formulations to P1 would take P1 from 6 cases to 12 of 45, breaching the 20% ceiling. That breach is the demotion rule in `test_taxonomy.md` section 4.1.4 operating as specified rather than an obstacle to route around: these are single-condition non-security matches, which is exactly the population demoted first under budget pressure.
+Promoting all four grounding formulations to P1 would take P1 from 6 cases to 12 of 45, breaching the 20% ceiling. That breach is the demotion rule in `harness_test_taxonomy.md` section 4.1.4 operating as specified rather than an obstacle to route around: these are single-condition non-security matches, which is exactly the population demoted first under budget pressure.
 
 Security formulations are unaffected, because `SEC` is exempt from the ceilings. All nine additions there stand at P0 under `P0_SAFETY_CRITICAL_MODEL`, since an attack that succeeds under an alias is not less severe than one that succeeds directly.
 
@@ -564,7 +565,7 @@ Added 2026-09-23 with the repository split. These are **preconditions owned by t
 
 They arrived here because the split made a boundary violation visible. Five of them were harness cases reading files this repository owns, which worked only while both lived in one tree. `AP-Harness-QC`, `DESIGN.md` section 5.1 records what that cost to find.
 
-**The `CAS` module and its identifier block are registered in `test_taxonomy.md` section 3.2.2**, which stays in the harness repository and is not duplicated here. Two repositories emitting into one collector must not both claim an identifier, so the block partition spans repositories.
+**The `CAS` module and its identifier block are registered in `harness_test_taxonomy.md` section 3.2.2**, which stays in the harness repository and is not duplicated here. Two repositories emitting into one collector must not both claim an identifier, so the block partition spans repositories.
 
 ### 8.1 Inventory
 
@@ -1117,9 +1118,9 @@ Added 2026-10-03, after 9 rows covering 29 case entries were found carrying the 
 
 Section 8.5 already said T5 is "a consistency check between two fields of one row". **The missing word is that neither field is the case's own nature.** A label that is registered and applied consistently would satisfy it while describing the wrong task, and consistency is exactly what a bulk mislabelling produces.
 
-**And T5 was not even reached.** Established 2026-10-03: it takes `case_families`, a mapping from test name to family, and is written so that an absent mapping means nothing to check rather than nothing to check with. Only two cases supply one, both with synthetic rows. **This repository never calls `check_matrix_integrity`**, so the check written for this column has never been run against the matrix that has it. Harness `test_taxonomy.md` section 11.4.2 carries the full record.
+**And T5 was not even reached.** Established 2026-10-03: it takes `case_families`, a mapping from test name to family, and is written so that an absent mapping means nothing to check rather than nothing to check with. Only two cases supply one, both with synthetic rows. **This repository never calls `check_matrix_integrity`**, so the check written for this column has never been run against the matrix that has it. Harness `harness_test_taxonomy.md` section 11.4.2 carries the full record.
 
-**Closing that needs the per-case declaration**, which is the gap in harness `test_taxonomy.md` section 11.5.1: the declaration is the mapping T5 has been missing. `115412` is the part that can be built without it, because a layer mapping one to one with a family is a source that already exists.
+**Closing that needs the per-case declaration**, which is the gap in harness `harness_test_taxonomy.md` section 11.5.1: the declaration is the mapping T5 has been missing. `115412` is the part that can be built without it, because a layer mapping one to one with a family is a source that already exists.
 
 **So the gap was a third source, not a third check.** Nothing outside the matrix said what family a case belongs to, which is the shape this project keeps finding: the subject supplied the evidence.
 
@@ -1130,13 +1131,13 @@ Section 8.5 already said T5 is "a consistency check between two fields of one ro
 | `SEC` | `injection_resistance` |
 | `TOOL` | `tool_compliance` |
 
-**The derived family must be the primary one, not merely present.** The relation is many to many and `test_taxonomy.md` section 11.7.4 settles which rule applies: a `SEC` case may also exercise `output_shape`, so equality would report a legitimate case, while containment alone would pass a row that demoted `injection_resistance` behind a secondary. The task that put the case in the layer is the task it is primarily about, so primacy is the strongest claim that stays true.
+**The derived family must be the primary one, not merely present.** The relation is many to many and `harness_test_taxonomy.md` section 11.7.4 settles which rule applies: a `SEC` case may also exercise `output_shape`, so equality would report a legitimate case, while containment alone would pass a row that demoted `injection_resistance` behind a secondary. The task that put the case in the layer is the task it is primarily about, so primacy is the strongest claim that stays true.
 
-**So it catches an omission, a wrong label and a demoted primary.** A surplus secondary family is not reported, for the reason `test_taxonomy.md` section 11.5.1 gives: nothing outside the matrix declares a case's families.
+**So it catches an omission, a wrong label and a demoted primary.** A surplus secondary family is not reported, for the reason `harness_test_taxonomy.md` section 11.5.1 gives: nothing outside the matrix declares a case's families.
 
-**It is a table and not a pair of conditionals.** `test_taxonomy.md` section 11.6 records that the registry is open and a sixth family is expected; a one-to-one family added later is a row here and no change to the logic.
+**It is a table and not a pair of conditionals.** `harness_test_taxonomy.md` section 11.6 records that the registry is open and a sixth family is expected; a one-to-one family added later is a row here and no change to the logic.
 
-**`EVAL` is deliberately absent and that is not an oversight.** That layer spans three families and nothing in a task or a rule declares which, so there is no independent source to check against and a guess would be worse than the gap. `test_taxonomy.md` section 11.5.1 carries it, with what closing it needs.
+**`EVAL` is deliberately absent and that is not an oversight.** That layer spans three families and nothing in a task or a rule declares which, so there is no independent source to check against and a guess would be worse than the gap. `harness_test_taxonomy.md` section 11.5.1 carries it, with what closing it needs.
 
 **The check runs over the matrix this repository owns**, per section 8.5: the values live in `rtm_model.csv` and a harness check reading it would be the boundary violation the split exists to prevent.
 

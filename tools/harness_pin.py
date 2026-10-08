@@ -272,7 +272,7 @@ def head_commit(repository: str, ref: str) -> str:
             usually means the harness does not carry it yet.
     """
     url = f"https://github.com/{repository}.git"
-    # BOUNDED, per the harness `test_taxonomy.md` section 14, and this is the
+    # BOUNDED, per the harness `harness_test_taxonomy.md` section 14, and this is the
     # call that most needed it: a network read over HTTPS, in the resolve job
     # of every gate here. Unbounded, a stalled fetch hangs resolve until the
     # runner cancels the job, which reports `failure` with no failing step.

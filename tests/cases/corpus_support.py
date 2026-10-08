@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """The apparatus the corpus cases assert against.
 
-Specified by the harness ``test_taxonomy.md`` section 13.
+Specified by the harness ``harness_test_taxonomy.md`` section 13.
 
 **Extracted 2026-10-05**, when the case module stood at 969 lines against the
 thousand-line ceiling. The screening walk in particular is a procedure rather
@@ -185,7 +185,7 @@ def assert_every_payload_is_screened(tasks: Any) -> None:
     )
 
 # THE LAYERS THAT MAP TO EXACTLY ONE EVALUATION FAMILY. Data and not a pair of
-# conditionals: `test_taxonomy.md` section 11.6 records that the registry is
+# conditionals: `harness_test_taxonomy.md` section 11.6 records that the registry is
 # open and a sixth family is expected, so a further one-to-one family is a row
 # here. EVAL is deliberately absent, since that layer spans three families and
 # nothing declares which applies (section 11.5.1).

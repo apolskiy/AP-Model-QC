@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """The apparatus the instrument cases assert against, doubles included.
 
-Specified by the harness ``test_taxonomy.md`` section 13.
+Specified by the harness ``harness_test_taxonomy.md`` section 13.
 
 **Extracted 2026-10-05**, when the case module stood at 939 lines. Two kinds of
 thing live here: readers that answer what the designs and the suite declare,

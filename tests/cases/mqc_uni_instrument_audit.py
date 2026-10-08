@@ -397,7 +397,7 @@ class TestMQCAssertionsCanFail:
         inline support code.
 
         Design: ``consumer_ci.md`` section 9.4.3.2, implementing
-        ``test_taxonomy.md`` section 8.
+        ``harness_test_taxonomy.md`` section 8.
 
         Returns:
             None

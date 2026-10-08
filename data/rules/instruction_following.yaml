@@ -22,7 +22,7 @@
 # rather than a new one: bullet ceilings, word ceilings, a JSON schema
 # and a prohibited character are parsers and counters applied to the
 # response, which is `DESIGN.md` section 7.2. Registered 2026-10-04,
-# `test_taxonomy.md` section 11.8.1.
+# `harness_test_taxonomy.md` section 11.8.1.
 - rule_id: MQC_RULE_ins_format_stated
   families: [output_shape]
   priority: 1

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # Case modules still holding their own support code.
 #
-# THE RULE IS IN `test_taxonomy.md` SECTION 13: a collected test module
+# THE RULE IS IN `harness_test_taxonomy.md` SECTION 13: a collected test module
 # holds cases, their fixtures and their constants, and the functions and
 # classes supporting them live in a sibling module collection never reaches.
 #

@@ -191,7 +191,7 @@ def _with_step(result: Any, detail: str) -> str:
 
     **The step is where a reader starts**, naming the phase and the
     code and nothing the model wrote, so the security explainer can
-    print it too. ``test_taxonomy.md`` section 8.
+    print it too. ``harness_test_taxonomy.md`` section 8.
 
     Args:
         result (Any): The :class:`EvaluationResult`.

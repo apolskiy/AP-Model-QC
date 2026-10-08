@@ -299,7 +299,7 @@ class TestMQCOverrideSurfaces:
     # unrelated vectors and put a compound payload ahead of a single one.
     # PROMOTED FROM P1 2026-09-29. `154101` and `154103` are P0 and rest on this,
     # and a foundation cannot be less blocking than what rests on it
-    # (`test_taxonomy.md` section 4.5). The alternative was demoting two
+    # (`harness_test_taxonomy.md` section 4.5). The alternative was demoting two
     # blocking security gates to fix a bookkeeping error, and `SEC` is exempt
     # from the distribution ceilings so promoting costs no functional budget.
     @pytest.mark.base

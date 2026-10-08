@@ -4,7 +4,7 @@
 
 Covers ``MQC_CAS_UNI_115414`` and ``115415``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 8.1 and designed in
-harness ``test_taxonomy.md`` sections 11.7 and 11.8.
+harness ``harness_test_taxonomy.md`` sections 11.7 and 11.8.
 
 **Written 2026-10-04, when the declaration became possible.** Until then
 nothing outside the matrix said what family a case belonged to, so the one
@@ -65,7 +65,7 @@ class TestMQCDeclaredFamilies:
         either is unregistered, and a repeat is refused because it makes the
         primary ambiguous and would count the case twice in a per-family total.
 
-        Design: harness ``test_taxonomy.md`` sections 11.7.2 and 11.8.
+        Design: harness ``harness_test_taxonomy.md`` sections 11.7.2 and 11.8.
 
         Returns:
             None
@@ -133,7 +133,7 @@ class TestMQCDeclaredFamilies:
         reporting one breach while another sits unreported is the half-written
         check this project keeps finding.
 
-        Design: harness ``test_taxonomy.md`` sections 11.4.2 and 11.8.3.
+        Design: harness ``harness_test_taxonomy.md`` sections 11.4.2 and 11.8.3.
 
         Returns:
             None
@@ -230,7 +230,7 @@ class TestMQCDeclaredFamilies:
         legs name the `live` environment and hold three provider keys, so an
         unbounded run here is the one that reaches a real account.
 
-        Design: harness ``ci_pipeline.md`` section 8.2.
+        Design: harness ``harness_ci_pipeline.md`` section 8.2.
 
         Returns:
             None

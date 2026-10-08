@@ -23,7 +23,10 @@ from typing import Final
 import allure
 import pytest
 
-from cmn.code_standards import document_register_problems, registered_documents
+from cmn.document_standards import (
+    document_register_problems,
+    registered_documents,
+)
 from cmn.registries import (
     is_registered_constraint_kind,
     registered_codes,
@@ -395,13 +398,13 @@ class TestMQCCorpus:
         register deliberately names an untracked working log and the paired
         repository's documents.
 
-        Design: ``test_taxonomy.md`` section 12.
+        Design: ``harness_test_taxonomy.md`` section 12.
 
         Returns:
             None
         """
         root = repository_root()
-        register = root / "docs" / "document_register.md"
+        register = root / "docs" / "model_document_register.md"
 
         assert register.is_file(), (
             "the register is absent, so nothing lists what a documentation "
@@ -420,7 +423,7 @@ class TestMQCCorpus:
             f"the register yielded only {len(named)} documents, so the row "
             f"pattern no longer matches the register it is checking"
         )
-        assert "docs/document_register.md" in named, (
+        assert "docs/model_document_register.md" in named, (
             "the register does not name itself, so adding it was not subject "
             "to the rule it introduces"
         )
@@ -447,7 +450,7 @@ class TestMQCCorpus:
         pass a row that demoted ``injection_resistance`` behind a secondary.
 
         Design: ``model_evaluation_test_plan.md`` section 8.5.1 and
-        ``test_taxonomy.md`` sections 11.4.3 and 11.7.4.
+        ``harness_test_taxonomy.md`` sections 11.4.3 and 11.7.4.
 
         Returns:
             None
@@ -551,7 +554,7 @@ class TestMQCCorpus:
         and never implemented.** `consumer_ci.md` section 4.8 described it,
         `mqc_tool_compliance.py` and the test plan both said it permitted their
         rubricless rules, and nothing ran. The reverse inventory check that
-        would have caught it is `OPEN_QUESTIONS.md` section 2.1 and is not
+        would have caught it is `harness_open_questions.md` section 2.1 and is not
         built; this was found by reconciling the inventory by hand before the
         first commit.
 

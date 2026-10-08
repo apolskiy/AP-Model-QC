@@ -17,10 +17,10 @@ paid tier.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 70 graded cases specified |
-| `docs/testing/rtm_model.csv` | 111 requirements, traced |
+| `docs/testing/rtm_model.csv` | 112 requirements, traced |
 | `data/tasks/`, `data/rules/` | **7 corpora, 66 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **97 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **98 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **70 written**: 41 evaluator, 21 security, 8 tool |
@@ -165,8 +165,8 @@ defined by a pair of refs and one pin cannot state a pairing for every branch.
 | `debug-<referent>-<date>` | harness `main` | No |
 
 **Branches are dated and carry a referent**, which is the day they were cut
-from `main` and what the work is. `docs/running_jobs.md` section 0 is the
-procedure; `docs/design/ci_pipeline.md` section 3C.6 is the reasoning.
+from `main` and what the work is. `docs/model_running_jobs.md` section 0 is the
+procedure; `docs/design/harness_ci_pipeline.md` section 3C.6 is the reasoning.
 
 **`extend-` is for cases that need a harness capability that does not exist on
 `main` yet.** That branch is why the pairing cannot be a constant, and it names
@@ -176,7 +176,7 @@ the harness branch carrying its capability in an entry added when it is cut.
 installs that commit.** A commit with no run is not green: absence of a result
 is never a pass. `docs/design/consumer_ci.md` holds the design.
 
-**To start a debug or stabilization run, read `docs/running_jobs.md` instead.**
+**To start a debug or stabilization run, read `docs/model_running_jobs.md` instead.**
 It is the whole operating procedure and it requires no design reading: which
 workflow, which inputs, what comes back, and what to do when something refuses.
 
@@ -201,10 +201,10 @@ cases fixed and move the harness, or the reverse.
 |---|---|
 | Graded cases: `EVAL`, `TOOL`, `SEC` | The four modules and their precondition suites |
 | `model_evaluation_test_plan.md`, `rtm_model.csv` | Every module design, `harness_test_plan.md`, `rtm_harness.csv` |
-| Task data and golden rules | `test_taxonomy.md`, the single registry |
+| Task data and golden rules | `harness_test_taxonomy.md`, the single registry |
 | Recorded fixtures and code excerpts | The CI that gates the harness itself |
 
-**`test_taxonomy.md` is not duplicated here.** It is the single registry of
+**`harness_test_taxonomy.md` is not duplicated here.** It is the single registry of
 identifiers, priorities and failure codes, and `framework-rules.md` section 4.1
 forbids a second one. This repository references it.
 
