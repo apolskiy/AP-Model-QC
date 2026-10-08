@@ -142,12 +142,21 @@ class TestMQCBandGating:
             f"which is a selective passing rate and not a passing rate: "
             f"{message}"
         )
-        assert "7 of 11" in message, (
-            f"the message does not state the selected denominator, so a reader "
-            f"sees a rate without knowing what it is over: {message}"
+        assert "11 selected, 7 executed" in message, (
+            f"the message does not state the selected denominator beside what "
+            f"ran, so a reader sees a rate without knowing what it is over: "
+            f"{message}"
         )
-        assert "4 were not measured" in message, (
-            f"the message does not say how many never ran: {message}"
+        # SKIPPED IS A STATE AND IT CARRIES ITS CAUSE. "Not measured" names no
+        # outcome, and the remedy differs by cause: a dependency skip clears
+        # when the band above it is fixed and one of ours is ours. The project
+        # owner's correction, 2026-10-07.
+        assert "4 skipped behind a higher band failure" in message, (
+            f"the skipped cases are not named as skipped, or their cause is "
+            f"absent, so a reader cannot tell whose defect this is: {message}"
+        )
+        assert "not measured" not in message, (
+            f"the message still reports a non-state: {message}"
         )
 
         # AND A BAND THAT MEASURED EVERYTHING PASSES, or the floor blocks every

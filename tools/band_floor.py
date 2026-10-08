@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Final, Optional
 from xml.etree import ElementTree
 
+from cmn.band_summary import _DEPENDENCY_SKIP
 from cmn.config import load_quarantine_for
 from cmn.verdict import Thresholds
 
@@ -121,12 +122,18 @@ def assess_blocking(
     excused = _quarantined_skips(report, quarantined)
     unmeasured = skipped - excused
     passed = selected - failures - skipped
-    denominator = selected - excused
-    detail = (
-        f"{passed} of {denominator} selected passed, {failures} failed, "
-        f"{unmeasured} were not measured"
-        + (f", {excused} quarantined" if excused else "")
-    )
+    executed = selected - skipped
+
+    # SKIPPED IS A STATE AND IT HAS A CAUSE. "Not measured" names no outcome a
+    # reader can act on, and the remedy differs: a dependency skip clears when
+    # the band above it is fixed, and one of ours is ours. The project owner's
+    # correction, 2026-10-07.
+    counted = [
+        f"{selected} selected", f"{executed} executed",
+        f"{passed} passed", f"{failures} failed",
+    ]
+    counted.extend(_skip_phrases(report, quarantined))
+    detail = ", ".join(counted)
 
     if failures or unmeasured:
         return (
@@ -134,7 +141,48 @@ def assess_blocking(
             f"a release blocking band answers for every case it selected: "
             f"{detail}",
         )
-    return _EXIT_GREEN, f"the blocking band measured and passed everything: {detail}"
+    return (
+        _EXIT_GREEN,
+        f"the blocking band measured and passed everything it selected: {detail}",
+    )
+
+
+def _skip_phrases(report: Path, quarantined: frozenset[str]) -> list[str]:
+    """Return one phrase per kind of skip, naming its cause.
+
+    **A skip is a state and its cause decides the remedy.** A case skipped
+    behind a higher band clears when that band is fixed; one skipped on a
+    fixture or a budget is ours; one quarantined was a decision.
+
+    Args:
+        report (Path): The band's JUnit XML.
+        quarantined (frozenset[str]): The declared identifiers.
+
+    Returns:
+        list[str]: Phrases for the kinds present, in a stable order, and empty
+        where nothing was skipped.
+    """
+    kinds: dict[str, int] = {}
+    for case in ElementTree.parse(report).iter("testcase"):
+        skipped = case.find("skipped")
+        if skipped is None:
+            continue
+        name = str(case.get("name", ""))
+        reason = str(skipped.get("message", ""))
+        if quarantined and any(entry and entry in name for entry in quarantined):
+            kinds["quarantined"] = kinds.get("quarantined", 0) + 1
+        elif _DEPENDENCY_SKIP in reason:
+            key = "skipped behind a higher band failure"
+            kinds[key] = kinds.get(key, 0) + 1
+        else:
+            key = "skipped for a reason of ours"
+            kinds[key] = kinds.get(key, 0) + 1
+    order = (
+        "skipped behind a higher band failure",
+        "skipped for a reason of ours",
+        "quarantined",
+    )
+    return [f"{kinds[key]} {key}" for key in order if key in kinds]
 
 
 def _quarantined_skips(report: Path, quarantined: frozenset[str]) -> int:
