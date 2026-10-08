@@ -21,6 +21,8 @@ Designed in `consumer_ci.md` section 9.4.5.
 
 from typing import Any, Final, Optional
 
+from cmn.steps import ledger, stopped_line
+
 import pytest
 
 
@@ -152,7 +154,7 @@ def failure_detail(result: Any) -> str:
         if not entry.passed
     ]
     if failures:
-        return "; ".join(failures)
+        return _with_step(result, "; ".join(failures))
     if result.score is not None:
         # THE CODE GOES IN THE MESSAGE, per the harness `testing-standards.md`
         # section 4: root-cause class has to be recoverable from the artifact
@@ -162,9 +164,10 @@ def failure_detail(result: Any) -> str:
         # `QC_LLM_RUBRIC_FAILURE` was registered, documented and emitted onto
         # the result; the one place it was missing was the text a reader and the
         # register actually see. `consumer_ci.md` section 9.7.
-        return (
+        return _with_step(
+            result,
             f"QC_LLM_RUBRIC_FAILURE: every assertion passed and the rubric "
-            f"scored {result.score.value} against a threshold it did not clear"
+            f"scored {result.score.value} against a threshold it did not clear",
         )
     # THE THIRD BRANCH CARRIES A CODE AS WELL, for the reason the second one
     # now does: `tools/findings.py` classifies by the code in the message, and
@@ -175,11 +178,31 @@ def failure_detail(result: Any) -> str:
     # returned a result this case cannot interpret: no failing assertion and no
     # score. `QC_HARNESS_PARSER_ERROR` is the registered code for our inability
     # to make sense of something, which is exactly the claim.
-    return (
+    return _with_step(
+        result,
         f"QC_HARNESS_PARSER_ERROR: no assertion failed and no score was "
         f"produced, so this result cannot be interpreted: "
-        f"judged={result.judged}, skipped={result.judge_skipped_reason}"
+        f"judged={result.judged}, skipped={result.judge_skipped_reason}",
     )
+
+
+def _with_step(result: Any, detail: str) -> str:
+    """Return a detail with the step it stopped at appended.
+
+    **The step is where a reader starts**, naming the phase and the
+    code and nothing the model wrote, so the security explainer can
+    print it too. ``test_taxonomy.md`` section 8.
+
+    Args:
+        result (Any): The :class:`EvaluationResult`.
+        detail (str): What the checks found.
+
+    Returns:
+        str: The detail, then the step, where there is one.
+    """
+    line = stopped_line(ledger(None, result))
+    return f"{detail} [{line}]" if line else detail
+
 
 def assert_consistent_pass(results: list[Any], explain: Any = None) -> Any:
     """Refuse disagreement, then refuse failure, and return the first result.
@@ -290,8 +313,13 @@ def redacted_detail(result: Any, lead: str) -> str:
         if not entry.passed
     ]
     if not failures:
-        return (
-            f"no assertion failed, so the case did not pass for another reason: "
-            f"judged={result.judged}, skipped={result.judge_skipped_reason}"
+        return _with_step(
+            result,
+            f"no assertion failed, so the case did not pass for another "
+            f"reason: judged={result.judged}, "
+            f"skipped={result.judge_skipped_reason}",
         )
-    return f"{lead}: " + "; ".join(failures)
+    # THE STEP LINE CARRIES NO PAYLOAD, which is what lets the security
+    # explainer print it: it names the step, the phase and the code, never the
+    # detail, and a claim assertion's detail quotes the model's own sentence.
+    return _with_step(result, f"{lead}: " + "; ".join(failures))

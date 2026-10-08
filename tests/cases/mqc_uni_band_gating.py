@@ -142,7 +142,7 @@ class TestMQCBandGating:
             f"which is a selective passing rate and not a passing rate: "
             f"{message}"
         )
-        assert "11 selected, 7 executed" in message, (
+        assert "11 total, 7 executed" in message, (
             f"the message does not state the selected denominator beside what "
             f"ran, so a reader sees a rate without knowing what it is over: "
             f"{message}"

@@ -18,14 +18,17 @@ decides, and a case cannot quietly spend quota.
 """
 
 import ast
+import logging
 from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Final, Optional
 
+import allure
 import pytest
 
 from cmn.observations import further_observations
+from cmn.steps import ledger, summary as step_summary
 from cmn.pytest_support import corpus_selection
 from cmn.config import (
     load_engines,
@@ -43,6 +46,8 @@ from execution.dispatch import DispatchPlan, DispatchSession, dispatch_case
 from execution.judge_channel import JudgementPlan, judge_channel_from_roster
 from ingestion.cases import build_evaluation_cases
 from ingestion.loaders import load_corpus
+
+logger = logging.getLogger(__name__)
 
 # Recorded responses live beside the corpus they answer, in the repository that
 # owns the data. The harness owns none of it.
@@ -469,7 +474,12 @@ def observe(
     # about a model that was never asked. A missing fixture is the common one
     # before a corpus has been recorded.
     if outcome.taxonomy_code and outcome.taxonomy_code.startswith("QC_HARNESS_"):
-        pytest.skip(f"{outcome.taxonomy_code}: {case.case_id} produced no measurement")
+        # RECORDED BEFORE THE SKIP, because a case that stopped at dispatch is
+        # exactly the one whose later steps nobody can see.
+        _record_steps(case.case_id, outcome, None)
+        pytest.skip(
+            f"{outcome.taxonomy_code}: {case.case_id} produced no measurement"
+        )
 
     task = case.task
     context = ObservationContext(
@@ -508,6 +518,13 @@ def observe(
 
     result = evaluate_observation(context, judge)
 
+    # THE NUMBERED STEPS, PER `test_taxonomy.md` SECTION 8. Two entries per
+    # step, an action and its verification, named so a collector parses them.
+    # Emitted after the fact from what the outcome and the result already
+    # carry: the harness computes the ledger and this records it, which keeps
+    # Allure out of the harness and the rule out of the cases.
+    _record_steps(case.case_id, outcome, result)
+
     # RECORDED FOR THE REPORTING HOOK, which is the only place that knows the
     # case's verdict and so whether to attach the reproduction. Every
     # observation is recorded, passing or failing: the passing ones of a
@@ -519,6 +536,41 @@ def observe(
     )
     return result
 
+
+
+def _record_steps(case_id: str, outcome: Any, result: Any) -> None:
+    """Record every numbered step's two phases against this observation.
+
+    Each phase becomes an ``allure.step`` named ``STEP_<NN>_<PHASE>``, which is
+    what `test_taxonomy.md` section 8.2 requires and what a collector reading
+    the format already parses. The same lines go to the log, carrying the case
+    identifier, the step number, the phase, the outcome and any taxonomy code.
+
+    **A phase that did not run is recorded as such**, because the steps nobody
+    reached are what an early stop hides: more failures in the harness and in
+    the model both sit behind one.
+
+    Args:
+        case_id (str): Which case.
+        outcome (Any): The dispatch outcome, or None where dispatch returned
+            nothing.
+        result (Any): The evaluation result, or None where evaluation never
+            ran.
+
+    Returns:
+        None
+    """
+    entries = ledger(outcome, result)
+    for entry in entries:
+        with allure.step(f"{entry.label} [{entry.outcome}]"):
+            if entry.detail:
+                allure.attach(
+                    entry.detail,
+                    name=f"{entry.label} detail",
+                    attachment_type=allure.attachment_type.TEXT,
+                )
+    for line in step_summary(case_id, entries):
+        logger.info("%s", line)
 
 
 def observation_count(config: Any) -> int:

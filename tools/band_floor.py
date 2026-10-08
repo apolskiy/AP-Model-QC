@@ -129,22 +129,19 @@ def assess_blocking(
     # the band above it is fixed, and one of ours is ours. The project owner's
     # correction, 2026-10-07.
     counted = [
-        f"{selected} selected", f"{executed} executed",
+        f"{selected} total", f"{executed} executed",
         f"{passed} passed", f"{failures} failed",
     ]
     counted.extend(_skip_phrases(report, quarantined))
     detail = ", ".join(counted)
 
+    # THE LINE STATES THE RESULT, not the rule behind it (`code-style.md`
+    # section 7.1). What a blocking band answers for is in `consumer_ci.md`
+    # section 3.12.2, and a failing line names its cause because the cause is
+    # what a reader acts on.
     if failures or unmeasured:
-        return (
-            _EXIT_BELOW_FLOOR,
-            f"a release blocking band answers for every case it selected: "
-            f"{detail}",
-        )
-    return (
-        _EXIT_GREEN,
-        f"the blocking band measured and passed everything it selected: {detail}",
-    )
+        return _EXIT_BELOW_FLOOR, f"{detail}: below the blocking floor"
+    return _EXIT_GREEN, detail
 
 
 def _skip_phrases(report: Path, quarantined: frozenset[str]) -> list[str]:
