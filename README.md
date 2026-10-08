@@ -17,15 +17,16 @@ paid tier.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 70 graded cases specified |
-| `docs/testing/rtm_model.csv` | 109 requirements, traced |
+| `docs/testing/rtm_model.csv` | 111 requirements, traced |
 | `data/tasks/`, `data/rules/` | **7 corpora, 66 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **95 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **97 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **70 written**: 41 evaluator, 21 security, 8 tool |
 | Recorded responses | **851 candidate responses** and **466 judgements**, complete for all four engines. Replays in seconds and costs nothing |
 | Model findings | **14 findings** — openai 8, claude 5, grok 1, gemini 0 — each with a reproduction, an expected result and an observed one, in `config/findings/`. **15 were withdrawn**, every one our own defect rather than the model's, after each open finding was read against its recording (`consumer_ci.md` section 9.4.4) |
+| Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
 ## What Is Measured Against Each Model
 

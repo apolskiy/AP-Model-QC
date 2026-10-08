@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 """How a band's result is gated and how it is reported.
 
-Covers ``MQC_CAS_UNI_115709`` and ``115712``, inventoried in
+Covers ``MQC_CAS_UNI_115709``, ``115712`` and ``115717``, inventoried in
 ``docs/design/consumer_ci.md`` section 4 and designed in sections 3.12.2 and
 3.12.3.
 
@@ -11,10 +11,12 @@ took to 945 lines against the nine-hundred-line runway ceiling. The subject is
 narrower than that module's: not whether a workflow is shaped correctly, but
 what a band is allowed to conclude from what it ran.
 
-**Both cases here answer the same question in different directions.** One says a
-band must publish its result even when the run was red; the other says it may
+**The cases here answer the same question in different directions.** One says a
+band must publish its result even when the run was red; the second says it may
 not call that result a pass when a third of the band never ran. A band reporting
-green at seven of eleven was the defect that produced the second.
+green at seven of eleven was the defect that produced the second. The third
+states the one exception, and that it has to be recorded somewhere a reader can
+go and read it.
 
 A failure here is our defect, so the module carries no priority marker, per the
 harness ``framework-rules.md`` section 3.3.
@@ -188,15 +190,23 @@ class TestMQCBandGating:
             "an undeclared skip was excused, so any skip can leave the "
             "denominator without anybody deciding to"
         )
+        # QUARANTINE DOES NOT EXCUSE A BLOCKING BAND. It exists to stop
+        # spending on a case already known to fail, not to let one release, so
+        # a quarantined P0 or P1 still blocks and any dispensation lives
+        # outside this gate. The project owner's correction, 2026-10-07.
         code, message = assess_blocking(report, frozenset({"154099"}))
-        assert code == 0, (
-            f"a declared quarantine did not leave the denominator, so the one "
-            f"recorded exclusion cannot be used: {message}"
+        assert code != 0, (
+            f"a quarantined case let a release blocking band report green, so "
+            f"quarantine buys a pass rather than saving a run's cost: "
+            f"{message}"
         )
-        assert "1 quarantined" in message, (
-            f"the message hides the exclusion, which is the thing a reader has "
-            f"to be able to audit: {message}"
+        assert "1 skipped as a known failure in quarantine" in message, (
+            f"the message hides the quarantine, which is the thing a reader "
+            f"has to be able to audit: {message}"
         )
+
+        # A RECORDED DISPENSATION IS THE ONE RELEASE, and it names the case
+        # and the reference. `115717` covers it in full.
 
         # A FAILURE STILL FAILS, so this is a floor added rather than one moved.
         report.write_text(
@@ -221,4 +231,79 @@ class TestMQCBandGating:
         assert code == 4, (
             f"an error was reported as a model finding rather than refused: "
             f"{code}, {message}"
+        )
+
+
+class TestMQCBlockerRelease:
+    """The one recorded decision a release blocking band honours."""
+
+    @allure.story("A blocker releases only on a recorded dispensation")
+    def MQC_CAS_UNI_115717_a_blocking_band_releases_only_on_a_recorded_dispensation(
+        self, tmp_path: Any
+    ) -> None:
+        """Quarantine saves a run's cost; a dispensation is what releases.
+
+        **The same report, three answers.** With nothing declared the skip
+        blocks. With the case quarantined it still blocks, because quarantine
+        accepts a finding and not a release. With the tracker reference product
+        management announced the decision in, the band clears and the message
+        carries the case and the reference.
+
+        Design: ``consumer_ci.md`` section 3.12.3, and the harness
+        ``cmn_verdict_and_cli.md`` section 4.6.13 for the field.
+
+        Args:
+            tmp_path (Any): A directory for the report.
+
+        Returns:
+            None
+        """
+        case_id = "MQC_TASK_a::MQC_RULE_r"
+        report = tmp_path / "junit.xml"
+        report.write_text(
+            "<testsuite>"
+            + '<testcase name="MQC_EVL_SEC_154000_alpha"/>' * 10
+            + '<testcase name="MQC_EVL_SEC_154099_MQC_TASK_a::MQC_RULE_r">'
+              '<skipped message="QC_HARNESS_QUARANTINED: parked"/></testcase>'
+            + "</testsuite>",
+            encoding="utf-8",
+        )
+
+        blocked, message = assess_blocking(report)
+        assert blocked != 0, (
+            f"an undeclared skip cleared a release blocking band: {message}"
+        )
+
+        parked, message = assess_blocking(report, frozenset({case_id}))
+        assert parked != 0, (
+            f"quarantine cleared a release blocking band, so it buys a pass "
+            f"rather than saving a run's cost: {message}"
+        )
+
+        released, message = assess_blocking(
+            report, frozenset({case_id}), {case_id: "MQC-914"}
+        )
+        assert released == 0, (
+            f"a recorded dispensation did not release the band: {message}"
+        )
+
+        # AND THE PASS SAYS SO LOUDLY. A green granted this way needs a caveat,
+        # and the project refuses to issue a quiet qualified pass.
+        assert "released on a recorded dispensation" in message, message
+        assert case_id in message, (
+            f"the pass does not name the case it released: {message}"
+        )
+        assert "MQC-914" in message, (
+            f"the pass does not name the reference, so nobody can go and read "
+            f"what was agreed: {message}"
+        )
+
+        # A DISPENSATION FOR ANOTHER CASE RELEASES NOTHING, which is what stops
+        # one decision excusing the next skip that happens along.
+        elsewhere, message = assess_blocking(
+            report, frozenset({case_id}), {"MQC_TASK_z::MQC_RULE_r": "MQC-915"}
+        )
+        assert elsewhere != 0, (
+            f"a dispensation recorded against another case released this one: "
+            f"{message}"
         )

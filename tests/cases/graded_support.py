@@ -28,9 +28,10 @@ import allure
 import pytest
 
 from cmn.observations import further_observations
-from cmn.steps import ledger, summary as step_summary
+from cmn.steps import entering, ledger, summary as step_summary
 from cmn.pytest_support import corpus_selection
 from cmn.config import (
+    load_quarantine_for,
     load_engines,
     packaged_config_root,
     packaged_roster_path,
@@ -386,6 +387,70 @@ _LAYER_BY_RULE: Final[dict[str, str]] = {
     "sec": "SEC", "tul": "TOOL",
 }
 
+def _declared_fields(case: Any, index: int) -> dict[str, Any]:
+    """Return the half of an observation the corpus declares.
+
+    **Shared by a measured case and a skipped one**, because the identity, the
+    band and the traced requirements are properties of the case rather than of
+    what happened to it. A skipped case that reported a different priority from
+    the one it was selected into would leave the band unable to answer for it.
+
+    Args:
+        case (Any): The joined task and rule set.
+        index (int): Which observation this is.
+
+    Returns:
+        dict: Identity and grading metadata.
+    """
+    rules = case.golden_rules
+    return {
+        "case_id": case.case_id,
+        "layer": _LAYER_BY_RULE.get(str(rules.rule_id).split("_")[2], "EVAL"),
+        "observation_index": index,
+        "priority": rules.priority,
+        "priority_conditions": list(rules.priority_conditions),
+        "requirement_ids": list(rules.requirement_ids),
+        # DECLARED BY THE RULE SET, not derived from the layer. The layer
+        # answers for SEC and TOOL because each maps to one family and could
+        # never have answered for EVAL, which spans four. Harness
+        # `test_taxonomy.md` section 11.8.3.
+        "families": tuple(rules.families),
+    }
+
+
+def _skip_fields(
+    case: Any, outcome: Any, index: int, *, reason: str, code: str
+) -> dict[str, Any]:
+    """Return the observation a skipped case contributes to the pass rate.
+
+    **A skip is a non-pass, and the reason decides whether it is a failure**
+    (harness `test_taxonomy.md` section 7.4.1). Recording it is what gives the
+    rate a skip to count: nothing recorded a skipped case, so a band that
+    skipped a third of its cases reported a rate over the rest.
+
+    Args:
+        case (Any): The joined task and rule set.
+        outcome (Any): The dispatch outcome, or None where nothing dispatched.
+        index (int): Which observation this is.
+        reason (str): A registered skip reason.
+        code (str): The taxonomy code naming what stopped it.
+
+    Returns:
+        dict: Fields an :class:`Observation` accepts.
+    """
+    response = getattr(outcome, "response", None)
+    return {
+        **_declared_fields(case, index),
+        "outcome": "skip",
+        "skip_reason": reason,
+        "taxonomy_code": code,
+        "engine": str(getattr(outcome, "engine", "") or ""),
+        "mode": str(getattr(outcome, "mode", "") or ""),
+        "requested_model": str(getattr(response, "requested_model", "") or ""),
+        "resolved_model": str(getattr(response, "resolved_model", "") or ""),
+    }
+
+
 def _measured_fields(case: Any, outcome: Any, result: Any, index: int) -> dict[str, Any]:
     """Return the observation this case produced, ready to record.
 
@@ -404,24 +469,25 @@ def _measured_fields(case: Any, outcome: Any, result: Any, index: int) -> dict[s
     Returns:
         dict: Fields an :class:`Observation` accepts.
     """
-    rules = case.golden_rules
-    layer = _LAYER_BY_RULE.get(str(rules.rule_id).split("_")[2], "EVAL")
     response = getattr(outcome, "response", None)
     codes = list(getattr(result, "taxonomy_codes", ()) or ())
 
+    # A JUDGE THAT DID NOT ANSWER IS NOT A MODEL FAILURE. The model produced a
+    # response; our judgement of it is missing, so the observation is a skip
+    # whose reason leaves the pass rate rather than a fail charged to the
+    # model (harness `test_taxonomy.md` section 7.4.1).
+    if getattr(result, "judge_skipped_reason", "") == _JUDGEMENT_UNAVAILABLE:
+        return _skip_fields(
+            case,
+            outcome,
+            index,
+            reason="environmental",
+            code=codes[0] if codes else "QC_HARNESS_FIXTURE_MISSING",
+        )
+
     return {
-        "case_id": case.case_id,
-        "layer": layer,
-        "observation_index": index,
+        **_declared_fields(case, index),
         "outcome": "pass" if result.passed else "fail",
-        "priority": rules.priority,
-        "priority_conditions": list(rules.priority_conditions),
-        "requirement_ids": list(rules.requirement_ids),
-        # DECLARED BY THE RULE SET, not derived from the layer. The layer
-        # answers for SEC and TOOL because each maps to one family and could
-        # never have answered for EVAL, which spans four. Harness
-        # `test_taxonomy.md` section 11.8.3.
-        "families": tuple(rules.families),
         # THE FIRST CODE, because a record carries one root-cause class and the
         # pipeline reports them in the order it found them. The rest reach the
         # attachment with the assertions that produced them.
@@ -434,6 +500,12 @@ def _measured_fields(case: Any, outcome: Any, result: Any, index: int) -> dict[s
         "duration_kind": str(getattr(outcome, "duration_kind", "measured") or "measured"),
         "score": getattr(result, "score", None),
     }
+
+
+# THE REASON A JUDGEMENT WAS NOT AVAILABLE, matched rather than inferred. The
+# pipeline sets it where the replay store held no judgement for an observation
+# (harness `tier3_evaluation.md` section 6.5).
+_JUDGEMENT_UNAVAILABLE: Final[str] = "judgement_unavailable"
 
 
 def observe(
@@ -460,13 +532,51 @@ def observe(
         Any: The :class:`EvaluationResult`.
     """
     case = case_for(task_id, rule_id)
-    outcome = dispatch_case(
-        case,
-        config.getoption("--engine"),
-        dispatch_plan(config),
-        dispatch_session(config),
-        observation_index=observation_index,
-    )
+
+    # QUARANTINE SAVES THE RUN'S COST, which is what it is for: a case already
+    # known to fail buys nothing by being asked again. Skipped before the
+    # request is formed, so no quota is spent, and the blocking band counts the
+    # skip against the band it was selected into rather than excusing it.
+    # Harness `cmn_verdict_and_cli.md` section 4.6.12.
+    if case.case_id in quarantined_cases(config):
+        # RECORDED BEFORE THE SKIP, carrying `quarantined` as its reason, so the
+        # pass rate counts the failure quarantine declined to pay to measure
+        # again. Released only by a recorded dispensation, harness design
+        # section 4.6.13.
+        record_observation(
+            assemble_observation(
+                _skip_fields(
+                    case,
+                    None,
+                    observation_index,
+                    reason="quarantined",
+                    code="QC_HARNESS_QUARANTINED",
+                ),
+                {},
+            ),
+            None,
+        )
+        pytest.skip(
+            f"QC_HARNESS_QUARANTINED: {case.case_id} is quarantined, so it was "
+            f"not dispatched"
+        )
+
+    # LOGGED ON ENTRY, because the ledger below is computed from a result and a
+    # crash between the request and the response leaves none. A timeout, an
+    # adapter raising, a connection dropping: each would otherwise record
+    # nothing about where the run had reached. `test_taxonomy.md` section 8.
+    marker = f"{case.case_id} observation {observation_index}"
+    with entering(marker, 1, "ACTION", f"engine {config.getoption('--engine')}"):
+        plan = dispatch_plan(config)
+        session = dispatch_session(config)
+    with entering(marker, 2, "ACTION", f"mode {plan.mode}"):
+        outcome = dispatch_case(
+            case,
+            config.getoption("--engine"),
+            plan,
+            session,
+            observation_index=observation_index,
+        )
 
     # A HARNESS EVENT IS A SKIP, NEVER A FAILURE. `framework-rules.md`
     # section 4: a QC_HARNESS_* code says our infrastructure did not produce a
@@ -477,6 +587,22 @@ def observe(
         # RECORDED BEFORE THE SKIP, because a case that stopped at dispatch is
         # exactly the one whose later steps nobody can see.
         _record_steps(case.case_id, outcome, None)
+        # AND THE OBSERVATION, carrying `environmental`: our infrastructure did
+        # not produce a measurement, which is not the model's failure and leaves
+        # the pass rate (harness `test_taxonomy.md` section 7.4.1).
+        record_observation(
+            assemble_observation(
+                _skip_fields(
+                    case,
+                    outcome,
+                    observation_index,
+                    reason="environmental",
+                    code=outcome.taxonomy_code,
+                ),
+                {},
+            ),
+            outcome,
+        )
         pytest.skip(
             f"{outcome.taxonomy_code}: {case.case_id} produced no measurement"
         )
@@ -516,7 +642,8 @@ def observe(
     if judge is None and case.golden_rules.rubric is not None:
         judge = judge_binding(config, config.getoption("--engine"))
 
-    result = evaluate_observation(context, judge)
+    with entering(marker, 4, "ACTION", "screen, assertions and judge"):
+        result = evaluate_observation(context, judge)
 
     # THE NUMBERED STEPS, PER `test_taxonomy.md` SECTION 8. Two entries per
     # step, an action and its verification, named so a collector parses them.
@@ -571,6 +698,38 @@ def _record_steps(case_id: str, outcome: Any, result: Any) -> None:
                 )
     for line in step_summary(case_id, entries):
         logger.info("%s", line)
+
+
+@lru_cache(maxsize=8)
+def _quarantine_for(engine: str) -> frozenset[str]:
+    """Return the case identifiers quarantined for one engine.
+
+    **Cached, because every observation asks.** The file does not change
+    within a run, and reading it per observation would read it hundreds of
+    times.
+
+    Args:
+        engine (str): Which engine this run measures.
+
+    Returns:
+        frozenset[str]: The identifiers, empty where nothing is quarantined.
+    """
+    if not engine:
+        return frozenset()
+    entries = load_quarantine_for(repository_root() / "config", engine)
+    return frozenset(str(entry.case_id) for entry in entries)
+
+
+def quarantined_cases(config: Any) -> frozenset[str]:
+    """Return what this invocation treats as quarantined.
+
+    Args:
+        config (Any): pytest's configuration, for the engine.
+
+    Returns:
+        frozenset[str]: The quarantined case identifiers.
+    """
+    return _quarantine_for(str(config.getoption("--engine") or ""))
 
 
 def observation_count(config: Any) -> int:

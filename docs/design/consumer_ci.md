@@ -564,13 +564,26 @@ foundation that did not hold, a fixture that went stale, a budget that ran out.
 Each of those means the case was not measured, and "not measured" is the one
 answer a release-blocking band may not round to a pass.
 
-##### Quarantine is the only exclusion, and it is a declaration
+##### Nothing is excluded, quarantine included
 
-A quarantined case leaves the denominator because somebody wrote down why, with
-an expiry and an open finding behind it (section 4.14, harness
-`cmn_verdict_and_cli.md` section 4.6). **That is the difference between an
-exclusion and an omission**: one is recorded and reviewable, the other is
-whatever the run happened to skip.
+**Corrected 2026-10-07 by the project owner**, replacing a claim that a
+quarantined case leaves the denominator.
+
+**Quarantine exists to stop spending on a case already known to fail**, not to
+let one release. It is a cost mechanism: the case is skipped because running it
+buys a result somebody already has, and the fix is in progress. A verdict is
+not what it decides.
+
+| Band | A quarantined case |
+|---|---|
+| P2-P4 | Counts against the floor, and the product team decides on release |
+| **P0, P1** | **Blocks.** Any dispensation is far beyond quarantine, lives outside this gate, and is an exception rather than a rule |
+
+**So a blocking band excludes nothing at all**, which makes its floor the
+simplest statement in the project: every case it selected was measured and
+passed, or the band is red. A skip is reported with its cause so a reader knows
+whose defect it is, and a quarantine is reported so it can be audited, but
+neither leaves the denominator.
 
 **Nothing else is excused, including a dependent skipping behind a failed
 foundation.** The temptation is to excuse it because the foundation already
@@ -606,6 +619,39 @@ failure, because an error is our defect and the floor is about the model. That
 distinction is the whole reason the band has a floor at all.
 
 ---
+
+### 3.12.3 The one release, and the three phrases a skip takes
+
+Added 2026-10-08. Section 3.12.2 holds that a blocking band answers for every
+case it selected and that quarantine excuses nothing. **There is exactly one
+exception and it is not quarantine.**
+
+**A recorded dispensation releases the skip and the line names it.** Where the
+quarantine entry carries `release_accepted_in`, product management has announced
+in the tracker that releasing with the finding is acceptable, so the case leaves
+the unmeasured count and the message carries the case and the reference:
+
+```
+Band P0: 11 total, 10 executed, 10 passed, 0 failed, 1 skipped as a known failure in quarantine, 1 released on a recorded dispensation (MQC_TASK_a::MQC_RULE_r per MQC-914)
+```
+
+**An unconfirmed entry cannot carry one**, which the harness decides rather than
+this gate: an entry without an observed date or model is bookkeeping failing, and
+a dispensation on top of that accepts a release against a finding whose expiry
+cannot be evaluated (harness section 4.6.13).
+
+**The three skip phrases are the harness's own**, imported rather than rewritten:
+
+| The line says | The remedy |
+|---|---|
+| `skipped behind a higher band failure` | Fix the foundation |
+| `skipped as a known failure in quarantine` | Fix the finding, or record a decision |
+| `skipped for a reason of ours` | A fixture, a budget or a provider |
+
+**This gate said `1 quarantined` until 2026-10-08**, where the harness band line
+said `skipped as a known failure in quarantine` about the same case. Two names
+for one skip is the drift a single registry exists to prevent, applied to output,
+so the constants are shared.
 
 ## 4. Test Inventory: `MQC_CAS_UNI_`
 
@@ -660,6 +706,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115710` | N | `an_unmeasured_observation_is_not_counted_as_a_failure` |
 | `115711` | N | `a_replay_store_refreshed_in_part_is_reported` |
 | `115712` | N | `a_blocking_band_passing_on_unmeasured_cases_is_reported` |
+| `115717` | P | `a_blocking_band_releases_only_on_a_recorded_dispensation` |
+| `115716` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
 | `115712` | N | `a_subprocess_without_a_timeout_is_reported` |
@@ -674,7 +722,38 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 59 cases, 43 negative, 11 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 61 cases, 44 negative, 12 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+
+**The missing check has now cost something, found 2026-10-08.** Five
+identifiers in this table are each bound to **two** different behaviours, and
+every one of them is implemented twice under two names:
+
+| Identifier | One binding | The other |
+|---|---|---|
+| `115709` | `a_gate_reporting_only_on_green_is_reported` | `a_graded_job_not_naming_its_engine_is_reported` |
+| `115710` | `an_unmeasured_observation_is_not_counted_as_a_failure` | `a_rostered_target_without_a_workflow_or_key_is_reported` |
+| `115711` | `a_replay_store_refreshed_in_part_is_reported` | `a_case_module_holding_support_code_is_reported` |
+| `115712` | `a_blocking_band_passing_on_unmeasured_cases_is_reported` | `a_subprocess_without_a_timeout_is_reported` |
+| `115716` | `an_observation_that_records_no_steps_is_reported` | `an_assertion_that_cannot_fail_is_reported` |
+
+**Nothing failed and nothing will.** The callables differ by their behaviour
+suffix, so pytest collects all ten, the lint patterns accept all ten, and every
+per-row check passes. **This is the exact failure `testing-standards.md` names**
+as the first of its three examples of where a hole hides: an identifier bound
+twice and every per-row check passing.
+
+**What it breaks is the durable record, not the run.** Section 3.2 holds that an
+identifier is assigned once and never reused, so that stored history never
+resolves one value to two behaviours. A collector reading two years of results
+for `115712` finds a subprocess timeout check and a blocking-band floor check
+under one number and cannot tell which moved.
+
+**Fixing it is a decision rather than a repair**, which is why it is recorded
+here and not quietly rebound: both bindings exist and both are shipped, so
+somebody has to choose which keeps the number, and that choice is what stored
+history will be read against. The harness has `MQC_CMN_UNI_112226` for this and
+reads the shipped registers rather than a permitted list; the equivalent here is
+the case this gap earns.
 
 ### 4A. The harness is a dependency, not the directory next door
 
@@ -1563,11 +1642,31 @@ dispatched against a named subset. It is stated rather than left implicit,
 because the alternative is a reader trusting a blanket claim that replay is
 free and being surprised by a bill.
 
-**Whether the judge should itself be replayed is an open design question**, not
-something this section decides. Replaying it would make a replay run fully
-deterministic and fully free, which is what replay is for, and would need a
-second fixture kind keyed by judge engine as well. Recorded here so it is a
-decision on the record rather than a silence.
+#### 6.4.1 Decided 2026-10-08: the judge is replayed, and never for a finding
+
+**This closes the open question this section used to record.** Replaying the
+judge would make a replay run fully deterministic and fully free, which is what
+replay is for, and the judgement store does exactly that. The question was
+whether it should exist at all, and the project owner's decision settles what it
+may be used for rather than whether to build it.
+
+**Replay on both sides measures no model.** Both halves are recordings, so the
+only thing such a run can establish is that our pipeline still reads its own
+fixtures the same way (harness `test_taxonomy.md` section 7.4.2).
+
+| Candidate | Judge | What a result establishes |
+|---|---|---|
+| Fixture | Fixture | **Our code**, against a frozen outcome. Job 1 of the ladder in section 7 |
+| Fixture | Live | **The judge** moved. Job 2 |
+| Live | Live | **The model** moved. Job 3, and the only source of a finding |
+
+**So a finding filed against a vendor cites a live candidate.** That is the rule
+a reader needs, and it is not a restriction on the store: Job 1 is the
+pull-request gate and is meant to be free and deterministic. What is refused is
+reading a number produced that way as a statement about a provider.
+
+**The second fixture kind exists and is keyed separately**, by judge engine as
+well, which is what made Job 2 separable from Job 3 in the first place.
 
 
 ---
@@ -2096,6 +2195,31 @@ one candidate response, so its request carries that response and every
 observation's judgement answers a legitimately different request. The first run
 against real fixtures reported the whole store until that was understood, which
 is the check correcting its own rule.
+
+### 9.4.3.2 The step record is asserted at its call site, not only in its logic
+
+Added 2026-10-07, with the numbered steps `test_taxonomy.md` section 8
+specified and nothing emitted.
+
+**The harness owns the ledger's logic and this repository owns the call.**
+`MQC_CMN_UNI_112336` and `112337` hold what a ledger says; neither can tell
+whether `observe` still asks for one. An edit dropping the call would leave
+both green and the artifacts empty.
+
+**So the call site is read rather than exercised.** `observe` dispatches and
+evaluates against a provider, so a precondition cannot run it; what a
+precondition can do is parse it, which is how this project already checks
+annotations, headers, encodings and inline support code.
+
+| Asserted | Because |
+|---|---|
+| `observe` records the ledger on the measured path | The artifacts are empty without it |
+| It records on the skip path too | A case that stopped at dispatch is exactly the one whose later steps nobody can see |
+| It enters the dispatch phases live | Section 8.1: failure can occur between an action and its verification, so the phase reached is logged before it is left |
+
+**Reading the source is weaker than running it and is what is available.** It
+cannot tell that the lines are correct, only that they are asked for, and the
+harness cases cover the rest.
 
 ### 9.4.4 Every open finding read against its recording, and eleven of twenty-three withdrawn
 

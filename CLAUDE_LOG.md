@@ -3930,3 +3930,128 @@ asks would have waited there indefinitely.
 **Fourteen findings, every one out of five: openai 8, claude 5, grok 1, gemini
 0.** No stale or missing fixture on any engine, and the store answers one
 question per case. 164 preconditions passing, pylint exit 0.
+
+## 2026-10-07: A failure says where it stopped, and what never ran
+
+### The diagnostics a reader asked for
+
+A failing case reported which assertion failed and nothing about where in the
+pipeline it had reached. **An early stop hides every later failure**, in the
+harness and in the model both, so the numbered steps `test_taxonomy.md` section
+8 specified are now emitted: seven per observation, each an action and a
+verification, with the phases that never ran named.
+
+| Where | Carries |
+|---|---|
+| JUnit `<failure>` | The step and phase it stopped at, and what did not run |
+| JUnit `<system-out>` | Every phase, with its outcome and code |
+| Allure | A step entry per phase, with the detail attached |
+
+**Both artifacts, because they have different readers.** Allure is the picture
+for a manager; the people fixing a failure read the JUnit artifact.
+
+**The stopped line carries no payload** by construction, which is what lets the
+security explainer print it: the step, the phase, the outcome and the code,
+never the detail, because a claim assertion's detail quotes the model's own
+sentence.
+
+### Three config choices, each with a reason
+
+`junit_logging = log` and `junit_log_passing_tests = False` put the ledger in
+the artifact and cost nothing on a green case. `log_level = INFO` because
+capture defaults to WARNING and the ledger is not a warning; one case had been
+asserting on every log record and now asserts on its own logger.
+`log_format = %(message)s` because pytest colours the level name and those
+escape bytes land in the XML where a parser meets them.
+
+### Quarantine skips before the request is formed
+
+A quarantined case is no longer dispatched, which is what quarantine is for: a
+case already known to fail buys nothing by being asked again. The blocking band
+counts the skip against the band it was selected into and excuses nothing, so a
+quarantined P0 or P1 still blocks and any dispensation lives outside the gate.
+
+### State
+
+166 passing, pylint exit 0. Fourteen findings unchanged.
+
+## 2026-10-08: A skipped case records what it was, which is what the rate counts
+
+**The accounting lives in the harness and the knowledge lives here.** A skip's
+observation is keyed on a corpus case, so only the code that resolved the case
+can record one: `observe` holds `MQC_TASK_x::MQC_RULE_y` and a pytest hook holds
+a test name.
+
+So the three in-case skip sites each record an observation before skipping:
+
+| The skip | Reason it records | Why |
+|---|---|---|
+| Quarantined, before dispatch | `quarantined` | A known failure we declined to pay to measure again |
+| A `QC_HARNESS_*` dispatch event | `environmental` | Our infrastructure produced no measurement |
+| A judgement the store did not hold | `environmental` | The model answered; our judgement is missing |
+
+**The third used to record a model failure**, which charged four providers for
+our own empty replay store. A judge that did not answer says nothing about a
+model, and the harness treats `environmental` as the one family that leaves the
+pass rate.
+
+### One extraction the change forced
+
+`_measured_fields` and the new `_skip_fields` state the same identity, band and
+traced requirements, so `_declared_fields` holds the half the corpus declares.
+**A skipped case reporting a different priority from the one it was selected
+into would leave the band unable to answer for it**, which is the property the
+blocking-band floor rests on.
+
+### Verified by injection, and it found a second defect
+
+A quarantine entry was written for one corpus case and the band run in replay.
+The observation recorded correctly. The band line then read `1 skipped for a
+reason of ours` about it, which names the wrong remedy: a quarantined case is a
+model finding under repair. Fixed in the harness, where the line is produced.
+
+### Replay on both sides measures no model, and the open question closes
+
+`consumer_ci.md` section 6.4 recorded whether to replay the judge as an open
+design question. The store exists; what was undecided is what a result from it
+may be read as. Both halves replayed establishes only that our pipeline still
+reads its own fixtures the same way, which is Job 1 of the attribution ladder and
+the pull-request gate. **A finding filed against a vendor cites a live
+candidate.**
+
+### The blocking floor gained the release it had been documented to have
+
+Section 4.6.13 specified `release_accepted_in` and said the blocking-band floor
+was its one reader. **The floor read nothing.** It now loads the dispensations
+for the engine, releases a skipped case the reference names, and says so in the
+line:
+
+```
+1 skipped as a known failure in quarantine, 1 released on a recorded dispensation (MQC_TASK_a::MQC_RULE_r per MQC-914)
+```
+
+**A dispensation recorded against another case releases nothing**, which is what
+stops one decision excusing the next skip that happens along, and `115717`
+asserts it.
+
+**The gate and the harness band line disagreed about one skip.** The gate said
+`1 quarantined` where the band line said `skipped as a known failure in
+quarantine`. Two names for one skip is the drift a single registry exists to
+prevent, applied to output, so the constants are imported rather than restated.
+
+### Found while reconciling: five identifiers bound twice
+
+`115709`, `115710`, `115711`, `115712` and `115716` are each bound to two
+different behaviours, in the design table and in the suite. **Nothing failed and
+nothing will**: the callables differ by their behaviour suffix, so all ten are
+collected and every per-row check passes. It is the first of the three examples
+`testing-standards.md` gives of where a hole hides.
+
+**Recorded rather than rebound**, in `consumer_ci.md` section 4 beside the gap
+that allowed it. Both bindings are shipped, so choosing which keeps the number
+is a decision about what stored history resolves to, and the harness equivalent
+`MQC_CMN_UNI_112226` is the check this repository still lacks.
+
+### State
+
+97 unit passing, 70 graded in replay, pylint exit 0.

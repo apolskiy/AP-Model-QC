@@ -20,6 +20,7 @@ A failure here is our defect, so the module carries no priority marker, per the
 harness ``framework-rules.md`` section 3.3.
 """
 
+import ast
 import json
 import re
 from pathlib import Path
@@ -375,4 +376,88 @@ class TestMQCAssertionsCanFail:
             "a case holds recordings answering different requests, so an "
             "escalation reaching the older ones skips the case instead of "
             "measuring it: " + "; ".join(divergent)
+        )
+
+
+    @allure.story("The observation loop still records its steps")
+    def MQC_CAS_UNI_115716_an_observation_that_records_no_steps_is_reported(
+        self,
+    ) -> None:
+        """A fifth way our defect goes unseen: the artifacts arrive empty.
+
+        **The harness owns the ledger's logic and this repository owns the
+        call.** ``MQC_CMN_UNI_112336`` and ``112337`` hold what a ledger says
+        and neither can tell whether ``observe`` still asks for one, so an edit
+        dropping the call would leave both green and every artifact bare.
+
+        **Read rather than run**, because ``observe`` dispatches against a
+        provider. Parsing the call site is what a precondition can do, and it
+        is how this project already checks annotations, headers, encodings and
+        inline support code.
+
+        Design: ``consumer_ci.md`` section 9.4.3.2, implementing
+        ``test_taxonomy.md`` section 8.
+
+        Returns:
+            None
+        """
+        source = (repository_root() / "tests/cases/graded_support.py").read_text(
+            encoding="utf-8"
+        )
+        tree = ast.parse(source)
+        observe = next(
+            (
+                node for node in ast.walk(tree)
+                if isinstance(node, ast.FunctionDef) and node.name == "observe"
+            ),
+            None,
+        )
+        assert observe is not None, (
+            "graded_support.py defines no observe, so this case is checking "
+            "something that moved"
+        )
+
+        called = {
+            node.func.id
+            for node in ast.walk(observe)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+        }
+        assert "_record_steps" in called, (
+            "observe records no step ledger, so every JUnit and Allure "
+            "artifact arrives without the numbered steps section 8 specifies"
+        )
+        assert "entering" in called, (
+            "observe enters no phase before performing it, so a crash between "
+            "the request and the response leaves no location behind, which is "
+            "what section 8.1 requires recorded"
+        )
+
+        # ON BOTH PATHS. A case that stopped at dispatch is exactly the one
+        # whose later steps nobody can see, so the skip path records too.
+        recorded = sum(
+            1 for node in ast.walk(observe)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "_record_steps"
+        )
+        assert recorded >= 2, (
+            f"observe records the ledger {recorded} time(s): the measured path "
+            f"and the skip path each need one, or a case that never reached "
+            f"evaluation reports nothing about where it stopped"
+        )
+
+        # AND THE DISPATCH PHASES ARE ENTERED, not only the evaluation. The
+        # crash this guards happens between a request and a response.
+        entered = {
+            node.args[1].value
+            for node in ast.walk(observe)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "entering"
+            and len(node.args) >= 2
+            and isinstance(node.args[1], ast.Constant)
+        }
+        assert {1, 2} <= entered, (
+            f"the request is formed and sent outside any entered phase, so a "
+            f"timeout there records nothing: entered {sorted(entered)}"
         )

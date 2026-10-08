@@ -39,14 +39,16 @@ from cmn.selection import (
     select_traced_cases,
 )
 from cmn.pytest_support import (
-    arrange_dependencies,
-    enforce_dependencies,
-    record_from_report,
     add_mqc_options,
     configure_invocation,
     label_priority_severity,
+)
+from cmn.dependencies import (
     adopt_prerequisites,
+    arrange_dependencies,
+    enforce_dependencies,
     publish_prerequisites,
+    record_from_report,
 )
 from execution.adapters.registry import credential_variables
 
