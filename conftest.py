@@ -28,6 +28,11 @@ from pathlib import Path
 
 import pytest
 
+from cmn.environments import (
+    deselect_unavailable_environments,
+    is_precondition,
+    refuse_precondition_skips,
+)
 from cmn.band_summary import band_lines, skip_reasons_from
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
@@ -108,6 +113,10 @@ def pytest_collection_modifyitems(
     Returns:
         None
     """
+    # BEFORE EVERY OTHER SELECTOR. A case this environment cannot run
+    # is not this run's to measure, so it leaves the total rather than
+    # reporting a non-outcome inside it (`test_taxonomy.md` 7.5.1).
+    deselect_unavailable_environments(config, items)
     label_priority_severity(items)
     # BEFORE THE ORDERING, because `arrange_dependencies` refuses a suite whose
     # dependencies name no collected base, and a band that had dropped its
@@ -196,6 +205,10 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     """
     del exitstatus
     publish_prerequisites(session.config)
+    # ZERO SKIPS, ENFORCED. A precondition that did not run measured
+    # nothing, and pytest exits 0 on a skip: a unit job reported green
+    # at 99.44% with four of them (`test_taxonomy.md` 7.5.1).
+    refuse_precondition_skips(session)
 
 
 def pytest_terminal_summary(
@@ -222,6 +235,10 @@ def pytest_terminal_summary(
         failed=len(stats.get("failed", [])),
         skip_reasons=skip_reasons_from(stats.get("skipped", [])),
         priority=str(config.getoption("--priority") or ""),
+        preconditions_skipped=sum(
+            1 for report in stats.get("skipped", [])
+            if is_precondition(getattr(report, "nodeid", ""))
+        ),
     )
     for line in lines:
         terminalreporter.write_line(line)

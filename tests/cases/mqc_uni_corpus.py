@@ -11,7 +11,7 @@ loads. Authoring the instruction-following family hit two shape errors no
 schema test could have caught: a wrapper key where the loader wanted a bare
 list, and a flow mapping whose commas YAML read as key separators.
 
-A failure here is our defect rather than a finding about a model, so the module
+A failure here is **not a model finding**, so the module
 carries no priority marker.
 """
 

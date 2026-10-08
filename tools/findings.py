@@ -560,7 +560,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     observed = parse_failures(report)
 
     # A FAILURE CARRYING NO MODEL CODE IS REPORTED, NEVER DROPPED. It is either
-    # our defect, which belongs nowhere near this register, or a message the
+    # an instrument defect, which belongs nowhere near this register, or a
     # reader could not classify, and both are things a person has to see.
     unclassified = sorted(
         case for case, entry in observed.items() if not entry["taxonomy_code"]
@@ -568,7 +568,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     for case in unclassified:
         print(
             f"UNCLASSIFIED {case}: the failure carries no QC_LLM_* or QC_SEC_* "
-            f"code, so it is either our defect or a message this reader does "
+            f"code, so it is either an instrument defect or a message this "
+            f"reader does "
             f"not recognise",
             file=sys.stderr,
         )

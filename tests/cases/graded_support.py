@@ -143,7 +143,8 @@ def case_for(task_id: str, rule_id: str) -> Any:
     Raises:
         KeyError: Naming the pair, when the corpus carries no such case. **A
             graded case naming a pair that does not exist would otherwise
-            report a harness error**, which reads as our defect rather than a
+            report a harness error**, which reads as an instrument defect
+            rather than a
             typo in the test.
     """
     identifier = f"{task_id}::{rule_id}"

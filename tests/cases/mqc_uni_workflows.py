@@ -10,7 +10,7 @@ never sees them and ``.pylintrc`` is not run against them. Their properties are
 therefore asserted here, by reading them, which is the same approach the harness
 takes to its own.
 
-A failure here is our defect, so the module carries no priority marker.
+A failure here is **not a model finding**, so the module carries no priority marker.
 """
 
 import re
@@ -410,7 +410,7 @@ class TestMQCAttributionLadder:
         )
         for line in _graded_invocations(first):
             assert "--mode replay" in line and "--judge-mode live" not in line, (
-                f"the first rung moves more than our own code: {line.strip()}"
+                f"the first rung moves more than the instrument: {line.strip()}"
             )
 
         # RUNG 2 MOVES THE JUDGE AND NOTHING ELSE.
@@ -462,7 +462,7 @@ class TestMQCResolveObligation:
     def MQC_CAS_UNI_115704_a_workflow_installing_an_unresolved_harness_is_reported(
         self,
     ) -> None:
-        """An unverified instrument attributes our defect to the model.
+        """An unverified instrument attributes its own defect to the model.
 
         **Section 3.1 step 3 was written as a property of the gate** because
         the gate was the only workflow at the time, and the weekly ladder was

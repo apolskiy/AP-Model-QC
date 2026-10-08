@@ -83,8 +83,8 @@ is the one thing not in question.
 
 | Workflow | Expected state | What it measures |
 |---|---|---|
-| Harness CI (`AP-Harness-QC`) | **Green** | Our own code. A red here is our defect |
-| Preconditions here (`CAS`, `UNI`) | **Green** | Our corpus and our wiring. A red here is our defect |
+| Harness CI (`AP-Harness-QC`) | **Green** | The instrument's own code. A red here is an instrument defect |
+| Preconditions here (`CAS`, `UNI`) | **Green** | The corpus and the wiring. A red here is an instrument defect |
 | `gate-gemini`, `gate-openai`, `gate-claude`, `gate-grok` | **Red** | A vendor's model against the graded corpus |
 
 **The split is the whole point of two repositories.** A failure has to be

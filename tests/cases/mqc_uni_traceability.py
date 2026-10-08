@@ -17,7 +17,7 @@ about: it is about which harness this repository runs against. The harness keeps
 these checks in a file of this name too, which is the vocabulary rule applied to
 a filename.
 
-A failure here is our defect, so the module carries no priority marker, per the
+A failure here is **not a model finding**, so the module carries no priority marker, per the
 harness ``framework-rules.md`` section 3.3.
 """
 

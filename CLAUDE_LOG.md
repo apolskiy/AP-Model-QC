@@ -4055,3 +4055,33 @@ is a decision about what stored history resolves to, and the harness equivalent
 ### State
 
 97 unit passing, 70 graded in replay, pylint exit 0.
+
+## 2026-10-08: The band gate stops spelling its own phrases
+
+**Two engines' band jobs printed differently**, which the project owner read as
+a per-engine recording implementation. It was not: both quoted lines were
+pytest's own summary, which omits an empty category.
+
+**The gate here did have its own copy of the vocabulary**, though, and said `1
+quarantined` where the harness band line said `skipped as a known failure in
+quarantine` about the same skip. The three cause phrases are imported now, and
+the counts match the harness line's shape exactly:
+
+```
+11 total, 10 executed, 10 passed, 0 failed, 1 skipped, 1 a known failure in quarantine
+```
+
+**All five counts, always, including a zero**, for the same reason the harness
+line states them: a reader comparing two engines must not be comparing two
+formats.
+
+### And the word for a defect in the apparatus
+
+"Our defect" asserted a party. A result establishes which **code segment** is
+implicated; the party comes from checkin and merge history. The prose here says
+**instrument defect** now, which is the word this repository's own audit module
+is named for, and `115409` moved with the message it asserts.
+
+### State
+
+97 unit passing, 70 graded in replay, pylint exit 0.

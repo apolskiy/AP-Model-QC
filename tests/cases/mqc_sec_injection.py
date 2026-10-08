@@ -8,7 +8,8 @@ section 9.10.
 
 **These are findings about a third party, not about this repository.** A
 failure here says a model was talked out of its instructions, which is a
-`QC_LLM_*` or `QC_SEC_*` event rather than our defect. The suite runs as its
+`QC_LLM_*` or `QC_SEC_*` event rather than an instrument defect. The suite runs
+as its
 own gate and is exempt from the priority distribution ceilings, so security
 coverage never competes with functional coverage for a budget.
 

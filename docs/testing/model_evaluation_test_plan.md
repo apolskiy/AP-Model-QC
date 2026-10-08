@@ -544,7 +544,7 @@ The excerpts in section 4.4 carry expected results asserted mechanically, so a d
 
 They are therefore committed as source files under `tests/fixtures/excerpts/`, with a precondition case each, checking that the syntactic excerpt still fails to parse at the recorded line and that each logical excerpt still returns the recorded wrong value. The directory is listed in `DESIGN.md` section 2.1, which also records why nothing collects or lints it. A fixture silently corrected by a formatter, an editor or a linter would otherwise leave every case built on it asserting against an expectation that no longer holds.
 
-Those precondition cases belong to the harness and live in the `CMN` inventory, not here, because a stale fixture is our defect rather than a finding about a model.
+Those precondition cases belong to the harness and live in the `CMN` inventory, not here, because a stale fixture is an instrument defect rather than a finding about a model.
 
 ---
 
@@ -641,7 +641,7 @@ both, which harness design section 10.19.2 records.
 
 An excerpt carries expected results that section 4.4 asserts mechanically. An excerpt silently corrected by a formatter, an editor or a linter would leave every graded case built on it asserting against an expectation that no longer holds.
 
-**The failure would be a confident wrong verdict rather than an error**, which is the worst shape a failure can take. A stale fixture is our defect, not the model's, so it is graded on our side of the line.
+**The failure would be a confident wrong verdict rather than an error**, which is the worst shape a failure can take. A stale fixture is an instrument defect, not the model's, so it is graded on our side of the line.
 
 `115104` is the structural half. The excerpts carry a text suffix precisely so no tool touches them, and a check that asserted their content without asserting their isolation would pass right up until an editor saved one.
 
@@ -674,7 +674,8 @@ constraint to the control task would destroy the control and **every integrity
 check would still pass**, because a constraint with a matching check is exactly
 what R2 and R3 want to see. The design intent is invisible to the schema.
 
-A failure in any of the three is our defect rather than a finding about a model,
+A failure in any of the three is an instrument defect rather than a finding
+about a model,
 which is why they carry no priority.
 
 ---

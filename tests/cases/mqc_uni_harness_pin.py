@@ -11,7 +11,7 @@ They are written separately rather than as one case asserting "not green",
 because a single such case would pass against an implementation that returned
 ``False`` unconditionally.
 
-A failure here is our defect, so the module carries no priority marker, per the
+A failure here is **not a model finding**, so the module carries no priority marker, per the
 harness ``framework-rules.md`` section 3.3.
 """
 

@@ -16,7 +16,7 @@ asserting against an expectation that no longer holds.** The failure would be a
 confident wrong verdict rather than an error.
 
 `MQC_CMN_UNI_10171` through `10173` guard exactly that. They are preconditions
-rather than graded cases, because a stale fixture is our defect.
+rather than graded cases, because a stale fixture is an instrument defect.
 
 ## What each one holds
 

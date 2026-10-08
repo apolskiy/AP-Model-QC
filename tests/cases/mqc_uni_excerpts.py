@@ -13,9 +13,10 @@ records what that cost to find.
 **An excerpt silently corrected by a formatter would produce a confident wrong
 verdict.** Every graded case built on it would assert against an expectation
 that no longer holds, and nothing would raise. That is why the guards are
-preconditions rather than graded cases: a stale fixture is our defect.
+preconditions rather than graded cases: a stale fixture is an instrument
+defect.
 
-A failure here is our defect, so the module carries no priority marker, per
+A failure here is **not a model finding**, so the module carries no priority marker, per
 ``framework-rules.md`` section 3.3.
 """
 

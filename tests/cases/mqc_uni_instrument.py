@@ -19,7 +19,7 @@ thousand-line ceiling. The subject is not the corpus: these ask whether a result
 means what it says, which is a property of the measuring apparatus rather than
 of the data it measures.
 
-A failure here is our defect, so the module carries no priority marker, per the
+A failure here is **not a model finding**, so the module carries no priority marker, per the
 harness ``framework-rules.md`` section 3.3.
 """
 

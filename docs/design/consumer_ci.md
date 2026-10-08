@@ -480,7 +480,7 @@ belongs in the job name rather than in an artifact:
 | Job | A red means | What follows |
 |---|---|---|
 | `lint` | Our code | Fix it |
-| `preconditions, our defect` | **Our harness or corpus.** Nothing was measured | Fix it, blocking |
+| `preconditions, not a model finding` | **Our harness or corpus.** Nothing was measured | Fix it, blocking |
 | `graded P0, release blocking` | A model defect at P0 | Open it, fix before release |
 | `graded P1, release blocking` | A model defect at P1 | Open it, fix before release |
 | `graded P2-P4, pass floor` | The band fell below the floor | Open it, quarantine the case, review sets the date |
@@ -615,7 +615,8 @@ itself.
 
 **A harness error is still fatal there.** The tool refuses when the report is
 missing or unparseable, and when any case reports an `error` rather than a
-failure, because an error is our defect and the floor is about the model. That
+failure, because an error is an instrument defect and the floor is about the
+model. That
 distinction is the whole reason the band has a floor at all.
 
 ---
@@ -2072,7 +2073,7 @@ backticks. The answer was right and our pattern read the formatting.
 |---|---|---|
 | `open` | It reproduces | Nobody |
 | `resolved_upstream` | A live run no longer reproduces it | **The vendor** |
-| **`withdrawn`** | **It was never a defect. Our instrument was wrong** | **Us** |
+| **`withdrawn`** | **It was never a defect. The instrument was wrong** | **The instrument** |
 
 **`resolved_upstream` would have credited the vendor with fixing our regex.**
 That is not a nuance: a published report crediting a vendor for a correction

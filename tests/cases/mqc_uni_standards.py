@@ -15,7 +15,7 @@ Copying the checkers to state that one difference would be two implementations
 of one rule, and the copy would drift toward whichever repository was edited
 less often.
 
-A failure here is our defect, so the module carries no priority marker.
+A failure here is **not a model finding**, so the module carries no priority marker.
 """
 
 from datetime import date

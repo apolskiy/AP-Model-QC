@@ -11,7 +11,7 @@ different companies, so an aggregate over them answers no question anybody
 asks, and the checks here are what keep the separation from quietly collapsing
 back into one job.
 
-A failure here is our defect, so the module carries no priority marker, per the
+A failure here is **not a model finding**, so the module carries no priority marker, per the
 harness ``framework-rules.md`` section 3.3.
 """
 

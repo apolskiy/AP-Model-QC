@@ -18,7 +18,7 @@ green at seven of eleven was the defect that produced the second. The third
 states the one exception, and that it has to be recorded somewhere a reader can
 go and read it.
 
-A failure here is our defect, so the module carries no priority marker, per the
+A failure here is **not a model finding**, so the module carries no priority marker, per the
 harness ``framework-rules.md`` section 3.3.
 """
 
@@ -153,7 +153,7 @@ class TestMQCBandGating:
         # outcome, and the remedy differs by cause: a dependency skip clears
         # when the band above it is fixed and one of ours is ours. The project
         # owner's correction, 2026-10-07.
-        assert "4 skipped behind a higher band failure" in message, (
+        assert "4 skipped, 4 behind a higher band failure" in message, (
             f"the skipped cases are not named as skipped, or their cause is "
             f"absent, so a reader cannot tell whose defect this is: {message}"
         )
@@ -200,7 +200,7 @@ class TestMQCBandGating:
             f"quarantine buys a pass rather than saving a run's cost: "
             f"{message}"
         )
-        assert "1 skipped as a known failure in quarantine" in message, (
+        assert "1 skipped, 1 a known failure in quarantine" in message, (
             f"the message hides the quarantine, which is the thing a reader "
             f"has to be able to audit: {message}"
         )

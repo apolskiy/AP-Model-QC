@@ -16,7 +16,7 @@ and a pass that could never have been a failure. Both are the instrument
 describing itself wrongly, and both reached a ticket page before anything
 caught them.
 
-A failure here is our defect, so the module carries no priority marker, per the
+A failure here is **not a model finding**, so the module carries no priority marker, per the
 harness ``framework-rules.md`` section 3.3.
 """
 
@@ -248,7 +248,7 @@ class TestMQCAssertionsCanFail:
     def MQC_CAS_UNI_115710_an_unmeasured_observation_is_not_counted_as_a_failure(
         self,
     ) -> None:
-        """A third way our defect becomes a finding about somebody's model.
+        """A third way an instrument defect becomes a finding about a model.
 
         **This one arrived on 2026-10-06 and was caught before it shipped.**
         Nine assertions were repaired, and because assertions gate judging,
@@ -355,7 +355,8 @@ class TestMQCAssertionsCanFail:
     ) -> None:
         """Every candidate recording a case holds answers the same request.
 
-        **A fourth way our defect becomes a finding about somebody's model**,
+        **A fourth way an instrument defect becomes a finding about a
+        model**,
         and the quietest of them: observations four and five of one task
         carried a request hash from before a prompt change, and nothing read
         them because the escalation rule drew them only on exactly one
@@ -383,7 +384,7 @@ class TestMQCAssertionsCanFail:
     def MQC_CAS_UNI_115716_an_observation_that_records_no_steps_is_reported(
         self,
     ) -> None:
-        """A fifth way our defect goes unseen: the artifacts arrive empty.
+        """A fifth way an instrument defect goes unseen: empty artifacts.
 
         **The harness owns the ledger's logic and this repository owns the
         call.** ``MQC_CMN_UNI_112336`` and ``112337`` hold what a ledger says

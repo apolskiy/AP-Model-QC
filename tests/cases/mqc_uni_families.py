@@ -11,7 +11,7 @@ nothing outside the matrix said what family a case belonged to, so the one
 check written to compare the two had no second source and abstained silently.
 Harness section 11.4.2 carries what that cost.
 
-A failure here is our defect, so the module carries no priority marker, per
+A failure here is **not a model finding**, so the module carries no priority marker, per
 harness ``framework-rules.md`` section 3.3.
 """
 

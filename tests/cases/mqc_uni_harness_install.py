@@ -14,7 +14,7 @@ engine missing from a roster it never read.
 Separate from ``mqc_uni_harness_pin`` because the question differs: that module
 asks which harness commit may be used, this one asks where the harness is.
 
-A failure here is our defect, so the module carries no priority marker, per the
+A failure here is **not a model finding**, so the module carries no priority marker, per the
 harness ``framework-rules.md`` section 3.3.
 """
 
@@ -389,7 +389,7 @@ class TestMQCBandFloor:
     def MQC_CAS_UNI_115205_an_error_refuses_rather_than_averaging(
         self, tmp_path: Path
     ) -> None:
-        """An error is our defect, and a floor is about the model.
+        """An error is an instrument defect, and a floor is about the model.
 
         Averaging a harness error into a pass rate would let a broken run read
         as a model that nearly cleared the bar, which inverts the distinction
@@ -404,7 +404,7 @@ class TestMQCBandFloor:
         broken = self._report(tmp_path / "error.xml", passed=99, errored=1)
         code, message = assess(broken, floor=0.90)
         assert code == 4, message
-        assert "our defect" in message
+        assert "an instrument defect" in message
 
         # AND A REPORT THAT IS NOT THERE REFUSES TOO. A band producing none
         # measured nothing, and a rate over an empty denominator reads as a

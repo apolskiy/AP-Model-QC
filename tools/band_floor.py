@@ -15,7 +15,8 @@ case is an observation not passing, and an exit status cannot see one. claude
 band P1 reported success at seven of eleven, four blocking cases having skipped
 behind failed foundations.
 
-**A harness error is still fatal.** An ``error`` in the report is our defect and
+**A harness error is still fatal.** An ``error`` in the report is an
+instrument defect and
 the floor is a statement about the model, so a band carrying one refuses rather
 than being averaged. That distinction is the reason the band has a floor at all.
 
@@ -116,7 +117,7 @@ def assess_blocking(
         return (
             _EXIT_REFUSED,
             f"{errors} case(s) reported an error rather than a failure, which "
-            f"is our defect and not a measurement of a model",
+            f"is an instrument defect and not a measurement of a model",
         )
     if not selected:
         return (
@@ -142,9 +143,12 @@ def assess_blocking(
     # reader can act on, and the remedy differs: a dependency skip clears when
     # the band above it is fixed, and one of ours is ours. The project owner's
     # correction, 2026-10-07.
+    # ALL FIVE, ALWAYS, INCLUDING A ZERO, which is the shape the harness band
+    # line states for the same reason: a reader comparing two engines must not
+    # be comparing two formats (harness `code-style.md` section 7.1).
     counted = [
         f"{selected} total", f"{executed} executed",
-        f"{passed} passed", f"{failures} failed",
+        f"{passed} passed", f"{failures} failed", f"{skipped} skipped",
     ]
     counted.extend(_skip_phrases(report, quarantined))
     if released:
@@ -188,18 +192,18 @@ def _skip_phrases(report: Path, quarantined: frozenset[str]) -> list[str]:
         if _QUARANTINE_SKIP in reason or (
             quarantined and any(entry and entry in name for entry in quarantined)
         ):
-            key = "skipped as a known failure in quarantine"
+            key = "a known failure in quarantine"
         elif _DEPENDENCY_SKIP in reason:
-            key = "skipped behind a higher band failure"
+            key = "behind a higher band failure"
         else:
-            key = "skipped for a reason of ours"
+            key = "for a reason of ours"
         kinds[key] = kinds.get(key, 0) + 1
     # THE SAME THREE PHRASES THE HARNESS BAND LINE USES, so a band's own line
     # and this gate cannot name one skip two ways (`code-style.md` section 7.1).
     order = (
-        "skipped behind a higher band failure",
-        "skipped as a known failure in quarantine",
-        "skipped for a reason of ours",
+        "behind a higher band failure",
+        "a known failure in quarantine",
+        "for a reason of ours",
     )
     return [f"{kinds[key]} {key}" for key in order if key in kinds]
 
@@ -282,7 +286,8 @@ def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
         return (
             _EXIT_REFUSED,
             f"{errors} case(s) reported an error rather than a failure, which is "
-            f"our defect: a floor is a statement about the model and this band "
+            f"an instrument defect: a floor is a statement about the model and "
+            f"this band "
             f"did not measure one",
         )
 
