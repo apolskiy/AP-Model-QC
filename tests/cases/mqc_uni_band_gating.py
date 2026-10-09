@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: MIT
 """How a band's result is gated and how it is reported.
 
-Covers ``MQC_CAS_UNI_115709``, ``115712`` and ``115717``, inventoried in
+Covers ``MQC_CAS_UNI_115709``, ``115712``, ``115717`` and ``115720``,
+inventoried in
 ``docs/design/consumer_ci.md`` section 4 and designed in sections 3.12.2 and
 3.12.3.
 
@@ -30,6 +31,8 @@ harness ``framework-rules.md`` section 3.3.
 #   115712  a_blocking_band_passing_on_unmeasured_cases_is_reported
 # TestMQCBlockerRelease
 #   115717  a_blocking_band_releases_only_on_a_recorded_dispensation
+# TestMQCFloorReporting
+#   115720  a_floor_step_skipped_on_a_red_band_is_reported
 # ------------------------------------------------------------ end of cases
 
 from typing import Any
@@ -316,4 +319,60 @@ class TestMQCBlockerRelease:
         assert elsewhere != 0, (
             f"a dispensation recorded against another case released this one: "
             f"{message}"
+        )
+
+
+class TestMQCFloorReporting:
+    """Every band assesses its floor, including the band that failed."""
+
+    @allure.story("The band that failed is the one these counts are for")
+    def MQC_CAS_UNI_115720_a_floor_step_skipped_on_a_red_band_is_reported(
+        self,
+    ) -> None:
+        """A floor step without `always()` reports nothing when it matters.
+
+        **The band that has failures is the one whose counts a reader needs.**
+        A floor step takes GitHub's default condition, `success()`, so a
+        failing pytest step in the same job skips it: on claude, P0 printed no
+        counts because P0 was red, while P1 printed `11 total, 7 executed, 7
+        passed, 0 failed, 4 skipped` on the same run. Same workflow, same
+        engine, two different logs.
+
+        Design: harness ``cmn_verdict_and_cli.md`` section 7.11.2.
+
+        Returns:
+            None
+        """
+        workflow = _load("gate-target.yml")
+        assessed: dict[str, str] = {}
+        for name, job in _jobs(workflow).items():
+            for step in job.get("steps") or []:
+                if "band_floor" not in str(step.get("run", "")):
+                    continue
+                assessed[name] = str(step.get("if", ""))
+
+        assert assessed, (
+            "no job assesses a band against its floor, so a band could report "
+            "a pass on cases it never measured"
+        )
+
+        unconditional = {
+            name: condition for name, condition in assessed.items()
+            if "always()" not in condition
+        }
+        assert not unconditional, (
+            f"{len(unconditional)} floor step(s) take GitHub's default "
+            f"condition, so the band that failed is the one that prints no "
+            f"counts: {', '.join(sorted(unconditional))}"
+        )
+
+        # EVERY GRADED BAND HAS ONE. A band with no floor step answers for
+        # nothing, which is the defect `115712` reports from the other side.
+        graded = {
+            name for name in _jobs(workflow)
+            if name.startswith("graded-")
+        }
+        assert graded <= set(assessed), (
+            f"{len(graded - set(assessed))} graded band(s) assess no floor: "
+            f"{', '.join(sorted(graded - set(assessed)))}"
         )

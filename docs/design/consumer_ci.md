@@ -710,6 +710,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115717` | P | `a_blocking_band_releases_only_on_a_recorded_dispensation` |
 | `115718` | N | `a_document_naming_no_repository_is_reported` |
 | `115719` | N | `a_case_block_disagreeing_with_its_module_is_reported` |
+| `115720` | N | `a_floor_step_skipped_on_a_red_band_is_reported` |
 | `115716` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -725,7 +726,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 63 cases, 46 negative, 12 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 64 cases, 47 negative, 12 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check has now cost something, found 2026-10-08.** Five
 identifiers in this table are each bound to **two** different behaviours, and

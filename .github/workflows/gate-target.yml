@@ -165,7 +165,7 @@ jobs:
   # `framework-rules.md` section 3.1 exists to separate and that the verdict
   # keeps apart as exit 3 against exit 1, and one job name collapsed them.
   preconditions:
-    name: preconditions, our defect (${{ matrix.os }})
+    name: preconditions, not a model finding (${{ matrix.os }})
     needs: [resolve, lint]
     strategy:
       fail-fast: false
@@ -281,6 +281,11 @@ jobs:
       # way this goes: a reader deciding what to do needs the counts, and a
       # step that fails before publishing them hides them.
       - name: Band P0 answered for everything it selected
+        # ALWAYS, BECAUSE THE BAND THAT FAILED IS THE ONE THESE COUNTS ARE FOR.
+        # Without this the step is skipped whenever the band's pytest step
+        # fails, so P0 printed no counts on the engine whose P0 was red while
+        # P1 printed them on the same run. Design section 7.11.2.
+        if: always()
         shell: bash
         run: |
           python tools/band_floor.py reports/junit_mqc_p0.xml \
@@ -382,6 +387,11 @@ jobs:
       # way this goes: a reader deciding what to do needs the counts, and a
       # step that fails before publishing them hides them.
       - name: Band P1 answered for everything it selected
+        # ALWAYS, BECAUSE THE BAND THAT FAILED IS THE ONE THESE COUNTS ARE FOR.
+        # Without this the step is skipped whenever the band's pytest step
+        # fails, so P0 printed no counts on the engine whose P0 was red while
+        # P1 printed them on the same run. Design section 7.11.2.
+        if: always()
         shell: bash
         run: |
           python tools/band_floor.py reports/junit_mqc_p1.xml \
@@ -456,10 +466,15 @@ jobs:
             --junitxml=reports/junit_mqc_p2_p4.xml \
             --alluredir=reports/allure-results
 
-      # REFUSES ON AN ERROR RATHER THAN AVERAGING IT. An error is our defect and
+      # REFUSES ON AN ERROR RATHER THAN AVERAGING IT. An error is an instrument
       # a floor is a statement about the model, so a band carrying one exits 4
       # instead of being scored.
       - name: Compare the band against its pass floor
+        # ALWAYS, BECAUSE THE BAND THAT FAILED IS THE ONE THESE COUNTS ARE FOR.
+        # Without this the step is skipped whenever the band's pytest step
+        # fails, so P0 printed no counts on the engine whose P0 was red while
+        # P1 printed them on the same run. Design section 7.11.2.
+        if: always()
         run: python tools/band_floor.py reports/junit_mqc_p2_p4.xml
 
       - uses: actions/upload-artifact@v6

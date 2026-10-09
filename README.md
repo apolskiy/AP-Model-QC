@@ -17,10 +17,10 @@ paid tier.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 70 graded cases specified |
-| `docs/testing/rtm_model.csv` | 113 requirements, traced |
+| `docs/testing/rtm_model.csv` | 114 requirements, traced |
 | `data/tasks/`, `data/rules/` | **7 corpora, 66 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **99 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **100 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **70 written**: 41 evaluator, 21 security, 8 tool |
