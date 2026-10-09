@@ -33,7 +33,7 @@ from cmn.environments import (
     is_precondition,
     refuse_precondition_skips,
 )
-from cmn.band_summary import band_lines, skip_reasons_from
+from cmn.band_summary import result_lines, skipped_cases_from
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
 from cmn.selection import (
@@ -235,11 +235,23 @@ def pytest_terminal_summary(
     """
     del exitstatus
     stats = getattr(terminalreporter, "stats", {}) or {}
-    lines = band_lines(
+    lines = result_lines(
         passed=len(stats.get("passed", [])),
         failed=len(stats.get("failed", [])),
-        skip_reasons=skip_reasons_from(stats.get("skipped", [])),
+        skips=skipped_cases_from(stats.get("skipped", [])),
         priority=str(config.getoption("--priority") or ""),
+        # THE ENGINE ONLY WHERE ONE WAS MEASURED. `--engine` carries a
+        # default, so a precondition run reported "on gemini" about a run
+        # that contacted nothing. A graded case having run is the signal.
+        engine=(
+            str(config.getoption("--engine", "") or "")
+            if any(
+                not is_precondition(getattr(report, "nodeid", ""))
+                for outcome in ("passed", "failed", "skipped")
+                for report in stats.get(outcome, [])
+            )
+            else ""
+        ),
         preconditions_skipped=sum(
             1 for report in stats.get("skipped", [])
             if is_precondition(getattr(report, "nodeid", ""))

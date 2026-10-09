@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Final, Optional
 from xml.etree import ElementTree
 
-from cmn.band_summary import _DEPENDENCY_SKIP, _QUARANTINE_SKIP
+from cmn.band_summary import _QUARANTINE_SKIP, skip_detail_lines
 from cmn.config import load_quarantine_for
 from cmn.quarantine import released_by_dispensation
 from cmn.verdict import Thresholds
@@ -150,62 +150,57 @@ def assess_blocking(
         f"{selected} total", f"{executed} executed",
         f"{passed} passed", f"{failures} failed", f"{skipped} skipped",
     ]
-    counted.extend(_skip_phrases(report, quarantined))
+    causes = _skip_causes(report, quarantined)
     if released:
         counted.append(
             f"{len(released)} released on a recorded dispensation "
             f"({'; '.join(released)})"
         )
-    detail = ", ".join(counted)
+    # THE COUNTS FIRST, THEN ONE LINE PER CAUSE. A reader needs the shape of
+    # the band before its reasons (harness design section 7.11.3).
+    # ONE FACT PER LINE. The verdict after a cause carrying its own colon
+    # put two in one sentence, which `code-style.md` section 7 refuses,
+    # and a reader scanning for the counts had to parse past the reasons.
+    detail = "\n".join([", ".join(counted), *causes])
 
     # THE LINE STATES THE RESULT, not the rule behind it (`code-style.md`
     # section 7.1). What a blocking band answers for is in `consumer_ci.md`
     # section 3.12.2, and a failing line names its cause because the cause is
     # what a reader acts on.
     if failures or unmeasured:
-        return _EXIT_BELOW_FLOOR, f"{detail}: below the blocking floor"
+        return _EXIT_BELOW_FLOOR, f"{detail}\nbelow the blocking floor"
     return _EXIT_GREEN, detail
 
 
-def _skip_phrases(report: Path, quarantined: frozenset[str]) -> list[str]:
-    """Return one phrase per kind of skip, naming its cause.
+def _skip_causes(report: Path, quarantined: frozenset[str]) -> list[str]:
+    """Return one line per distinct skip cause, from the shared enumeration.
 
-    **A skip is a state and its cause decides the remedy.** A case skipped
-    behind a higher band clears when that band is fixed; one skipped on a
-    fixture or a budget is ours; one quarantined was a decision.
+    **One implementation, two callers.** The harness band line and this gate
+    described the same skips in their own words until 2026-10-09, and the gate's
+    words were the vaguer: "for a reason of ours" covered nineteen codes taking
+    five different remedies (harness design section 7.11.3).
 
     Args:
         report (Path): The band's JUnit XML.
-        quarantined (frozenset[str]): The declared identifiers.
+        quarantined (frozenset[str]): The declared identifiers, which supply a
+            code for a case skipped before its message could carry one.
 
     Returns:
-        list[str]: Phrases for the kinds present, in a stable order, and empty
-        where nothing was skipped.
+        list[str]: One line per cause, empty where nothing was skipped.
     """
-    kinds: dict[str, int] = {}
+    skips: list[tuple[str, str]] = []
     for case in ElementTree.parse(report).iter("testcase"):
         skipped = case.find("skipped")
         if skipped is None:
             continue
-        name = str(case.get("name", ""))
         reason = str(skipped.get("message", ""))
-        if _QUARANTINE_SKIP in reason or (
-            quarantined and any(entry and entry in name for entry in quarantined)
+        name = str(case.get("name", ""))
+        if not reason.strip().startswith("QC_") and quarantined and any(
+            entry and entry in name for entry in quarantined
         ):
-            key = "a known failure in quarantine"
-        elif _DEPENDENCY_SKIP in reason:
-            key = "behind a higher band failure"
-        else:
-            key = "for a reason of ours"
-        kinds[key] = kinds.get(key, 0) + 1
-    # THE SAME THREE PHRASES THE HARNESS BAND LINE USES, so a band's own line
-    # and this gate cannot name one skip two ways (`code-style.md` section 7.1).
-    order = (
-        "behind a higher band failure",
-        "a known failure in quarantine",
-        "for a reason of ours",
-    )
-    return [f"{kinds[key]} {key}" for key in order if key in kinds]
+            reason = f"{_QUARANTINE_SKIP}: declared for this engine"
+        skips.append((name, reason))
+    return skip_detail_lines(skips)
 
 
 def _released_skips(report: Path, dispensed: dict[str, str]) -> list[str]:

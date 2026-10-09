@@ -34,10 +34,10 @@ from pathlib import Path
 from typing import Optional
 from xml.etree import ElementTree
 
-from cmn.band_summary import band_lines, band_table
+from cmn.band_summary import band_table, result_lines
 
 
-def counts_from(report: Path) -> tuple[int, int, list[str]]:
+def counts_from(report: Path) -> tuple[int, int, list[tuple[str, str]]]:
     """Return passed, failed and each skip's reason from a JUnit report.
 
     **A case carrying neither failure, error nor skip passed.** JUnit records
@@ -47,20 +47,25 @@ def counts_from(report: Path) -> tuple[int, int, list[str]]:
         report (Path): The JUnit XML a run wrote.
 
     Returns:
-        tuple: Passed count, failed count, and one reason per skipped case.
+        tuple: Passed count, failed count, and one ``(case, reason)`` pair per
+        skipped case. **The pair rather than the reason alone**, because a skip
+        is reported on its own line against the case it belongs to (harness
+        design section 7.11.3).
     """
     passed = failed = 0
-    reasons: list[str] = []
+    skips: list[tuple[str, str]] = []
     for case in ElementTree.parse(report).getroot().iter("testcase"):
         skipped = case.find("skipped")
         if skipped is not None:
-            reasons.append(str(skipped.get("message", "")))
+            skips.append(
+                (str(case.get("name", "")), str(skipped.get("message", "")))
+            )
             continue
         if case.find("failure") is not None or case.find("error") is not None:
             failed += 1
             continue
         passed += 1
-    return passed, failed, reasons
+    return passed, failed, skips
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -109,9 +114,9 @@ def main(argv: Optional[list[str]] = None) -> int:
             print(line)
         return 0
 
-    for band, passed, failed, reasons in measured:
-        lines = band_lines(
-            passed=passed, failed=failed, skip_reasons=reasons, priority=band,
+    for band, passed, failed, skips in measured:
+        lines = result_lines(
+            passed=passed, failed=failed, skips=skips, priority=band,
         )
         for line in lines or ["This band selected nothing."]:
             print(line)

@@ -166,7 +166,8 @@ class TestMQCBandGating:
         # outcome, and the remedy differs by cause: a dependency skip clears
         # when the band above it is fixed and one of ours is ours. The project
         # owner's correction, 2026-10-07.
-        assert "4 skipped, 4 behind a higher band failure" in message, (
+        assert "skipped: 4" in message or "4 skipped" in message, message
+        assert message.count("QC_HARNESS_DEPENDENCY_UNMET") == 4, (
             f"the skipped cases are not named as skipped, or their cause is "
             f"absent, so a reader cannot tell whose defect this is: {message}"
         )
@@ -213,7 +214,7 @@ class TestMQCBandGating:
             f"quarantine buys a pass rather than saving a run's cost: "
             f"{message}"
         )
-        assert "1 skipped, 1 a known failure in quarantine" in message, (
+        assert "QC_HARNESS_QUARANTINED, a known failure in quarantine" in message, (
             f"the message hides the quarantine, which is the thing a reader "
             f"has to be able to audit: {message}"
         )
