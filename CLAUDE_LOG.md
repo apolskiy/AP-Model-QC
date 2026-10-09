@@ -4105,3 +4105,22 @@ argument now and this repository names its own.
 ### State
 
 98 unit passing, 70 graded in replay, pylint exit 0.
+
+## 2026-10-08: Every test module here lists its own cases
+
+A generated block between the docstring and the imports, grouped by class in
+source order, written by the harness's `tools/refresh_case_summaries.py` with
+`--root` pointed here. 22 modules, 168 cases.
+
+**One implementation and one format**, so a reader moving between the two
+repositories reads one shape. `MQC_CAS_UNI_115719` compares each block against
+the module it sits in, in both directions: a case added without refreshing
+fails, and a block naming a deleted case fails.
+
+**It is a comment and not part of the docstring.** The docstring is authored
+prose and this is generated, so mixing them would put a generator inside the one
+place the project reads as specification.
+
+### State
+
+99 unit passing, 70 graded in replay, pylint exit 0.

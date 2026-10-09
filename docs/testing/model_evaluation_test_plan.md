@@ -112,6 +112,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0041` | The observation loop records the numbered steps on every path it can leave by, and enters the dispatch phases before performing them, so a crash between a request and a response leaves its location behind | consumer_ci.md section 9.4.3.2 |
 | `MQC_REQ_CAS_CI_0042` | A band gate and a band line name one skip the same way, each phrase stating the remedy that skip takes | consumer_ci.md section 3.12.3 |
 | `MQC_REQ_CAS_CI_0043` | Every tracked document under docs carries this repository's token in its filename, or a stated exemption, so an open editor tab says which checkout the file belongs to | harness code-style.md section 7.2 |
+| `MQC_REQ_CAS_CI_0044` | Every test module here carries a generated block naming the cases it holds, in the same format the harness writes, and a block disagreeing with its module fails the run | harness testing-standards.md, A Test Module Lists The Cases It Holds |
 | `MQC_REQ_CAS_CI_0034` | The instrument is checked for manufacturing findings: no recorded response on an ordinary case matches an attack vector, and every failure message names a registered taxonomy code, so a defect in our reading is not reported as a defect in a model and a real failure is not unrecordable | consumer_ci.md section 9.4.2 |
 
 
