@@ -267,9 +267,13 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
         traced = len(list(csv.DictReader(handle)))
 
     return [
+        # THE COUNT IS CHECKED AND THE PROSE IS NOT. The pattern demanded
+        # "all passing", so a README could not state the truth on a day when
+        # one case was red: the check compelled a false claim about an outcome
+        # it never measured. It reads the figure and leaves the words alone.
         (
             "preconditions",
-            r"\*\*(\d+) cases, all passing\*\*",
+            r"\*\*(\d+) cases, [^*]+\*\*",
             inventoried_precondition_count(root),
         ),
         ("requirements", r"\| (\d+) requirements, traced \|", traced),

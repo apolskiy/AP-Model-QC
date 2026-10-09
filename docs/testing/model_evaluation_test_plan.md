@@ -114,6 +114,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0043` | Every tracked document under docs carries this repository's token in its filename, or a stated exemption, so an open editor tab says which checkout the file belongs to | harness code-style.md section 7.2 |
 | `MQC_REQ_CAS_CI_0044` | Every test module here carries a generated block naming the cases it holds, in the same format the harness writes, and a block disagreeing with its module fails the run | harness testing-standards.md, A Test Module Lists The Cases It Holds |
 | `MQC_REQ_CAS_CI_0045` | Every graded band assesses itself against its floor and prints its counts whatever its test step did, so the band that failed is not the one that reports nothing | harness cmn_verdict_and_cli.md section 7.11.2 |
+| `MQC_REQ_CAS_CI_0046` | Every rostered engine has a recorded response for every P0 and P1 case, and a missing one fails the precondition gate rather than being declared | consumer_ci.md section 3.12.4 |
 | `MQC_REQ_CAS_CI_0034` | The instrument is checked for manufacturing findings: no recorded response on an ordinary case matches an attack vector, and every failure message names a registered taxonomy code, so a defect in our reading is not reported as a defect in a model and a real failure is not unrecordable | consumer_ci.md section 9.4.2 |
 
 

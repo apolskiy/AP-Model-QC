@@ -654,6 +654,83 @@ said `skipped as a known failure in quarantine` about the same case. Two names
 for one skip is the drift a single registry exists to prevent, applied to output,
 so the constants are shared.
 
+### 3.12.4 A replay-backed blocking band needs a recording for every case
+
+Added 2026-10-09 at the project owner's instruction: **every P0 and P1 case is
+measured against a live agent and recorded, if replays are to be used at all.**
+
+**A missing recording is an absence the floor cannot distinguish from a
+refusal.** Claude had no recording for seven security cases, so three skipped in
+P0 and four in P1, the blocking floor refused both bands, and the gate was red
+for a reason that says nothing about claude:
+
+```
+skipped 1 of 4: MQC_EVL_SEC_154104_resists_base64_obfuscated_override, QC_HARNESS_FIXTURE_MISSING, no recorded response for this engine
+```
+
+| | claude | gemini | grok | openai |
+|---|---|---|---|---|
+| Recorded pairs | **63** | 70 | 70 | 70 |
+
+**The gap was invisible until CI reported it as a skip**, which is late and
+reads as a result. Nothing compared the corpus against the recordings, so a
+blocking band could be built on an absence.
+
+#### The rule
+
+**Every rostered engine has a recording for every P0 and P1 case.** A blocking
+band is the one place where an unmeasured case is never acceptable: the floor
+tolerates no skip there, so a band missing a recording cannot pass and the run
+is red on our gap rather than on a model.
+
+**A lower band is not held to it.** P2 to P4 are governed by a pass floor rather
+than by answering for everything, so a missing recording there costs coverage
+and does not block, and `QC_HARNESS_FIXTURE_MISSING` already says so on the line.
+
+#### It fails the run, and is not declarable
+
+**Corrected 2026-10-09 before it shipped.** The first draft of this section put
+the seven known gaps in a `config/recording_gaps.yaml` with a reason and an
+expiry, on the precedent `config/module_runway.yaml` sets, so the gate would
+stay green while the recordings were made.
+
+**The project owner refused it, and the reason is the whole point of the
+check:** if it is not caught in CI it will not be selected, so it will never get
+recorded and never get executed. **A declared gap is a silent gap**, and a
+silent gap is worse than a red gate.
+
+That is not true of the precedents, which is why they are declarable and this is
+not:
+
+| Declared elsewhere | Why a declaration is safe there |
+|---|---|
+| A module past the runway ceiling | The module still runs; the entry defers a split |
+| A flag with no case naming it | The flag still works; the entry defers a test |
+| **A missing recording** | **The case does not run at all.** Nothing else will ever report it |
+
+**So it fails, at the precondition gate.** That is earlier than the band report
+and more actionable: a precondition failure exits 3, names the pairs, and blocks
+the graded bands, which is correct because a blocking band built on an absence
+establishes nothing anyway. Claude's P0 and P1 were already red for this; they
+are now red one stage earlier with a message a reader can act on.
+
+**And the red is not a finding about a provider.** Exit 3 means nothing
+trustworthy was measured, which is exactly the state: the remedy is a live
+recording run, not a ticket.
+
+#### What the seven may turn out to be
+
+All seven are injection or task-substitution prompts. **A provider refusing one
+is a result, not an absence**: the dispatch records the refusal and the case is
+measured. So the live run distinguishes two things the gap currently hides,
+which is the reason to run it rather than to reason about it:
+
+| What the run finds | What it means |
+|---|---|
+| A response, recorded | The gap was ours and is closed |
+| A refusal, recorded | Also closed, and the refusal is the measurement |
+| Nothing recordable | A finding about this provider on these prompts |
+
 ## 4. Test Inventory: `MQC_CAS_UNI_`
 
 Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
@@ -711,6 +788,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115718` | N | `a_document_naming_no_repository_is_reported` |
 | `115719` | N | `a_case_block_disagreeing_with_its_module_is_reported` |
 | `115720` | N | `a_floor_step_skipped_on_a_red_band_is_reported` |
+| `115721` | N | `a_blocking_case_with_no_recording_is_reported` |
+| `115722` | N | `a_recording_check_that_compares_nothing_is_reported` |
 | `115716` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -726,7 +805,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 64 cases, 47 negative, 12 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 66 cases, 49 negative, 12 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check has now cost something, found 2026-10-08.** Five
 identifiers in this table are each bound to **two** different behaviours, and
