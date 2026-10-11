@@ -13,7 +13,7 @@ that establishes nothing about anybody.
 **It fails rather than being declarable.** A case that is not selected is never
 recorded and never executed, so a tolerated gap is a permanent one: the project
 owner's instruction of 2026-10-09, which refused the declaration file this
-check was first drafted with (`consumer_ci.md` section 3.12.4).
+check was first drafted with (`consumer_ci.md` section 3.12.6).
 
 A failure here is **not a model finding**, so the module carries no priority
 marker, per the harness ``framework-rules.md`` section 3.3.
@@ -65,7 +65,7 @@ class TestMQCRecordingCoverage:
         there costs coverage and does not block, and the band line already says
         `QC_HARNESS_FIXTURE_MISSING, no recorded response for this engine`.
 
-        Design: ``consumer_ci.md`` section 3.12.4.
+        Design: ``consumer_ci.md`` section 3.12.6.
 
         Returns:
             None
@@ -105,7 +105,7 @@ class TestMQCRecordingCoverage:
         the check says so when it finds nothing, which is the vacuity the
         instrument audit exists to prevent.
 
-        Design: ``consumer_ci.md`` section 3.12.4.
+        Design: ``consumer_ci.md`` section 3.12.6.
 
         Returns:
             None

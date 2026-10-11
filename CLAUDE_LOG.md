@@ -4157,3 +4157,83 @@ verified by removing P0's and watching it name `graded-p0`.
 ### State
 
 100 unit passing, 70 graded in replay, pylint exit 0.
+
+## 2026-10-09: One band definition, and a band that reported running nothing
+
+**Three band jobs became one composite action.** `.github/actions/band` takes
+the band, the priority, the report stem and whether the floor is blocking. Each
+job keeps its own checkout, setup and install, which are conventional and are
+not what drifted.
+
+```yaml
+- name: Band P0
+  uses: ./.github/actions/band
+  with:
+    band: P0
+    priority: "0"
+    report: p0
+    engine: ${{ inputs.engine }}
+    blocking: "true"
+```
+
+**P2-P4 becomes P2, P3 and P4 when a band selects more than a thousand cases**,
+and that is three callers with no change to the definition. `115725` reports a
+band job above the ceiling, counting from the shipped corpus rather than from a
+figure stored beside it.
+
+### The collapse found a band reporting an emptiness about 51 cases
+
+The P2-P4 step summary read `junit_mqc_p2p4.xml` where the run writes
+`junit_mqc_p2_p4.xml`, and so did the overall table. `tools/band_report.py`
+treated the missing file as an empty band:
+
+```
+No report at reports/junit_mqc_p2p4.xml, so that band ran nothing.   exit 0
+```
+
+**So the overall gate summary has been missing its P2-P4 row**, and the band's
+own summary has been asserting an absence as a result. A report asked for and
+not there is refused now, at exit 4, because an absence is not an emptiness.
+
+### And my own removal corrupted the workflow before a case caught it
+
+Deleting the leftover summary step, I matched a two-space indent and found the
+step's own continuation line, so the `- name:` line went and the body merged
+into the previous step. **`115724` caught it**, by asserting that no band writes
+the procedure out beside calling the definition.
+
+### State
+
+105 of 106 passing, 70 graded in replay, pylint exit 0. The one failure is
+`115721`, naming claude's seven missing recordings.
+
+## 2026-10-10: Five identifiers rebound, and the check that should have caught them
+
+`115709` through `115712` and `115716` were each bound to two behaviours, in the
+inventory and in the suite. The older binding kept the number:
+
+```
+115709 -> a_graded_job_not_naming_its_engine        (10-03) keeps it
+          a_gate_reporting_only_on_green            (10-06) -> 115727
+115710 -> a_rostered_target_without_a_workflow_or_key (10-05) keeps it
+          an_unmeasured_observation_is_not_counted  (10-06) -> 115728
+115711 -> a_case_module_holding_support_code        (10-05) keeps it
+          a_replay_store_refreshed_in_part          (10-07) -> 115729
+115712 -> a_subprocess_without_a_timeout           (10-05) keeps it
+          a_blocking_band_passing_on_unmeasured     (10-07) -> 115730
+115716 -> an_assertion_that_cannot_fail            (10-06) keeps it
+          an_observation_that_records_no_steps      (10-08) -> 115731
+```
+
+**Rebound by full callable name, not by number.** A bare replace would have
+moved the binding that keeps the number too, since both carry it.
+
+**`115732` is the check this repository lacked**, in both directions. It and
+`115723` moved into `mqc_uni_registers.py`, which the 900-line runway forced out
+of `mqc_uni_corpus.py`: that module is about what the corpus contains and this
+one about whether the registers describing it are self-consistent.
+
+### State
+
+106 of 107 passing, pylint exit 0. The one failure is `115721`, claude's seven
+missing recordings.

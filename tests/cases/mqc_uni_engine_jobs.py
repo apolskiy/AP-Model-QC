@@ -34,6 +34,7 @@ from tests.cases.graded_support import engine_roster
 from tests.cases.workflow_support import (
     WORKFLOWS,
     graded_invocations,
+    repository_root as _repository_root,
     jobs,
     load,
 )
@@ -144,7 +145,7 @@ def _band_problems(graded: dict[str, Any]) -> list[str]:
     """
     problems: list[str] = []
     for job_name, job in jobs(graded).items():
-        for body in graded_invocations(job):
+        for body in graded_invocations(job, _repository_root()):
             if "inputs.engine" not in body:
                 problems.append(
                     f"{_GATE}:{job_name} names its engine literally rather "
@@ -154,7 +155,7 @@ def _band_problems(graded: dict[str, Any]) -> list[str]:
             if "upload-artifact" not in str(step.get("uses") or ""):
                 continue
             name = str(((step.get("with") or {}).get("name")) or "")
-            if name and "inputs.engine" not in name and graded_invocations(job):
+            if name and "inputs.engine" not in name and graded_invocations(job, _repository_root()):
                 problems.append(
                     f"{_GATE}:{job_name} uploads {name!r}, which is not keyed "
                     f"by the engine, so two targets share a name"

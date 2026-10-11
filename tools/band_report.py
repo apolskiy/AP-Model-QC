@@ -31,6 +31,7 @@ Usage::
 import argparse
 import sys
 from pathlib import Path
+from typing import Final
 from typing import Optional
 from xml.etree import ElementTree
 
@@ -68,6 +69,11 @@ def counts_from(report: Path) -> tuple[int, int, list[tuple[str, str]]]:
     return passed, failed, skips
 
 
+# A REPORT ASKED FOR AND NOT THERE. 4 is the project's refusal code: the
+# tool could not answer, as against answering that a band was empty.
+_EXIT_NO_REPORT: Final[int] = 4
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     """Print the band line for one report.
 
@@ -101,10 +107,19 @@ def main(argv: Optional[list[str]] = None) -> int:
     measured: list[tuple[str, int, int, list[str]]] = []
     for report, band in zip(parsed.report, bands):
         if not report.is_file():
-            print(f"No report at {report}, so that band ran nothing.")
-            continue
-        passed, failed, reasons = counts_from(report)
-        measured.append((band, passed, failed, reasons))
+            # AN ABSENCE IS NOT AN EMPTINESS. This said "that band ran
+            # nothing" and exited 0, so a filename mismatch made P2-P4 report
+            # an empty band while it ran 51 cases and left it out of the
+            # overall table entirely. A report that was asked for and is not
+            # there means the run did not produce what it was meant to.
+            print(
+                f"QC_HARNESS_PARSER_ERROR: no report at {report}, so this "
+                f"cannot say what that band did; a band that ran nothing "
+                f"writes a report saying so"
+            )
+            return _EXIT_NO_REPORT
+        passed, failed, skips = counts_from(report)
+        measured.append((band, passed, failed, skips))
 
     if not measured:
         return 0

@@ -603,9 +603,15 @@ decision is read from.
 
 **The two can disagree, and that is worth knowing rather than hiding.** A run
 skipping under a tenth of its blocking cases is verdict-green and band-red. The
-band is the stricter statement and the gate follows it; whether
-`priority_skip_ceiling` should fall to zero for consistency is a verdict
-decision and is recorded as an open question rather than taken here.
+band is the stricter statement and the gate follows it.
+
+**The open question this section carried is closed, 2026-10-08.** It asked
+whether `priority_skip_ceiling` should fall to zero for consistency. The answer
+is that the threshold is gone: V4 is retired, because a skip counts as a failure
+in the pass rate and V1 already fails a run on one blocking-band observation
+that does not pass, so a rate could only fire after something stricter already
+had (harness `harness_test_taxonomy.md` section 7.4.1.0). The band floor is now
+the only statement about a blocking band answering for what it selected.
 
 **P2-P4 is the only band where a failure is not automatically fatal**, so it is
 the only one needing a pass rate. `tools/band_floor.py` reads the band's JUnit
@@ -621,7 +627,7 @@ distinction is the whole reason the band has a floor at all.
 
 ---
 
-### 3.12.3 The one release, and the three phrases a skip takes
+### 3.12.5 The one release, and how a skip names its cause
 
 Added 2026-10-08. Section 3.12.2 holds that a blocking band answers for every
 case it selected and that quarantine excuses nothing. **There is exactly one
@@ -654,7 +660,7 @@ said `skipped as a known failure in quarantine` about the same case. Two names
 for one skip is the drift a single registry exists to prevent, applied to output,
 so the constants are shared.
 
-### 3.12.4 A replay-backed blocking band needs a recording for every case
+### 3.12.6 A replay-backed blocking band needs a recording for every case
 
 Added 2026-10-09 at the project owner's instruction: **every P0 and P1 case is
 measured against a live agent and recorded, if replays are to be used at all.**
@@ -731,6 +737,82 @@ which is the reason to run it rather than to reason about it:
 | A refusal, recorded | Also closed, and the refusal is the measurement |
 | Nothing recordable | A finding about this provider on these prompts |
 
+### 3.12.7 One band definition, taking the band as a parameter
+
+Added 2026-10-09 at the project owner's instruction, after three hand-written
+copies of one procedure drifted three separate ways.
+
+**The three band jobs differ in four values and nothing else:**
+
+| | P0 | P1 | P2-P4 |
+|---|---|---|---|
+| `--priority` | `0` | `1` | `2,3,4` |
+| Report name | `p0` | `p1` | `p2_p4` |
+| Carry in, carry out | none, to P1 | from P0, to P2-P4 | from P1, none |
+| Floor | `--blocking` | `--blocking` | pass floor |
+
+Everything else was the same prose written out three times: the pytest
+invocation, the step-summary block, the floor call, the artifact upload.
+
+#### What the copies cost, which is the argument for collapsing them
+
+| Drift | Consequence |
+|---|---|
+| The floor step took GitHub's default condition | The band that **failed** printed no counts, on all three |
+| P2-P4 ran floor before summary | Violating the reason P0 and P1 state for the opposite order |
+| Two terminal hooks decided the deselected count separately | One repository dropped it and the other did not |
+
+**None of those was a decision.** Each was a copy, and a copy diverges toward
+whichever instance somebody edited last.
+
+#### A composite action, so the band is an argument
+
+`.github/actions/band/action.yml` takes the four values as inputs and holds the
+pytest invocation, the step summary and the floor. Each band job keeps its own
+checkout, Python setup and install, because those are conventional, a reader
+expects to see them, and they are not what drifted.
+
+**pytest stays invoked by Actions rather than wrapped.** The project owner named
+the per-test listing as extremely useful, and a composite action's `run:` step
+appears in the log with its own header exactly as a job's does. A Python wrapper
+would have nested that output under a step named for the wrapper.
+
+#### Which is what makes a band split a caller change
+
+**The bands will not stay three.** As the corpus grows, `P2-P4` becomes P2, P3
+and P4 as separate jobs, splitting on the band when the cases selected for one
+exceed **1000**. With the band as a parameter that is three callers instead of
+one, and **no change to the definition at all**.
+
+```yaml
+- uses: ./.github/actions/band
+  with:
+    band: P3
+    priority: "3"
+    report: p3
+```
+
+**One threshold rather than a runway and a ceiling.** `code-style.md` section
+5.1 gives a module both, because the hard limit fires on an unrelated prose edit
+at the worst moment. A band job cannot: its size changes only when somebody adds
+a case, which is the moment to notice, so a single figure is enough.
+
+**Why 1000 and not a smaller number.** A band job is one checkout, one install
+and one pytest invocation, and the install dominates until the case count is
+large. Splitting earlier would multiply a fixed cost to shorten something that
+is not the bottleneck.
+
+#### The numbering here has a gap, and it stays
+
+**`3.12.4` is retired.** It briefly named the recording section now at `3.12.6`,
+and `CLAUDE_LOG.md` entries cite it at that meaning. A number is not reused for
+the reason `harness_test_taxonomy.md` section 3.2 gives about identifiers: a
+reader of stored history would resolve it to the wrong thing.
+
+**`3.12.2` and `3.12.3` are out of order and stay that way.** Three
+requirements cite `3.12.3` as the reporting job, and renumbering to tidy the
+sequence would break citations to buy nothing.
+
 ## 4. Test Inventory: `MQC_CAS_UNI_`
 
 Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
@@ -780,17 +862,22 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115206` | N | `the_candidate_engine_reaches_the_plan_the_channel_uses` |
 | `115602` | N | `a_collected_test_named_in_no_matrix_row_is_reported` |
 | `115708` | N | `a_workflow_emitting_one_mandated_artifact_is_reported` |
-| `115709` | N | `a_gate_reporting_only_on_green_is_reported` |
-| `115710` | N | `an_unmeasured_observation_is_not_counted_as_a_failure` |
-| `115711` | N | `a_replay_store_refreshed_in_part_is_reported` |
-| `115712` | N | `a_blocking_band_passing_on_unmeasured_cases_is_reported` |
+| `115727` | N | `a_gate_reporting_only_on_green_is_reported` |
+| `115728` | N | `an_unmeasured_observation_is_not_counted_as_a_failure` |
+| `115729` | N | `a_replay_store_refreshed_in_part_is_reported` |
+| `115730` | N | `a_blocking_band_passing_on_unmeasured_cases_is_reported` |
 | `115717` | P | `a_blocking_band_releases_only_on_a_recorded_dispensation` |
 | `115718` | N | `a_document_naming_no_repository_is_reported` |
 | `115719` | N | `a_case_block_disagreeing_with_its_module_is_reported` |
 | `115720` | N | `a_floor_step_skipped_on_a_red_band_is_reported` |
 | `115721` | N | `a_blocking_case_with_no_recording_is_reported` |
 | `115722` | N | `a_recording_check_that_compares_nothing_is_reported` |
-| `115716` | N | `an_observation_that_records_no_steps_is_reported` |
+| `115723` | N | `a_stated_inventory_disagreeing_with_rows_is_reported` |
+| `115724` | N | `a_band_job_not_using_the_shared_definition_is_reported` |
+| `115725` | N | `a_band_job_above_its_case_ceiling_is_reported` |
+| `115726` | P | `a_command_behind_a_local_uses_is_read` |
+| `115732` | N | `an_identifier_bound_twice_is_reported` |
+| `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
 | `115712` | N | `a_subprocess_without_a_timeout_is_reported` |
@@ -805,40 +892,58 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 66 cases, 49 negative, 12 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository has no equivalent. Recorded as an open question rather than left as a silence. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 71 cases, 53 negative, 13 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
-**The missing check has now cost something, found 2026-10-08.** Five
-identifiers in this table are each bound to **two** different behaviours, and
-every one of them is implemented twice under two names:
+**The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
+Five identifiers in this table were each bound to **two** different behaviours,
+and every one was implemented twice under two names.
 
-| Identifier | One binding | The other |
-|---|---|---|
-| `115709` | `a_gate_reporting_only_on_green_is_reported` | `a_graded_job_not_naming_its_engine_is_reported` |
-| `115710` | `an_unmeasured_observation_is_not_counted_as_a_failure` | `a_rostered_target_without_a_workflow_or_key_is_reported` |
-| `115711` | `a_replay_store_refreshed_in_part_is_reported` | `a_case_module_holding_support_code_is_reported` |
-| `115712` | `a_blocking_band_passing_on_unmeasured_cases_is_reported` | `a_subprocess_without_a_timeout_is_reported` |
-| `115716` | `an_observation_that_records_no_steps_is_reported` | `an_assertion_that_cannot_fail_is_reported` |
+**Nothing failed and nothing would have.** The callables differ by their
+behaviour suffix, so pytest collected all ten, the lint patterns accepted all
+ten, and every per-row check passed. **This is the exact failure
+`testing-standards.md` names** as the first of its three examples of where a
+hole hides: an identifier bound twice and every per-row check passing.
 
-**Nothing failed and nothing will.** The callables differ by their behaviour
-suffix, so pytest collects all ten, the lint patterns accept all ten, and every
-per-row check passes. **This is the exact failure `testing-standards.md` names**
-as the first of its three examples of where a hole hides: an identifier bound
-twice and every per-row check passing.
+**What it broke is the durable record, not the run.** Section 3.2 holds that an
+identifier is assigned once and never reused, so stored history never resolves
+one value to two behaviours. A collector reading two years of results for
+`115712` would find a subprocess-timeout check and a blocking-band floor check
+under one number and could not tell which moved.
 
-**What it breaks is the durable record, not the run.** Section 3.2 holds that an
-identifier is assigned once and never reused, so that stored history never
-resolves one value to two behaviours. A collector reading two years of results
-for `115712` finds a subprocess timeout check and a blocking-band floor check
-under one number and cannot tell which moved.
+#### The older binding keeps the number
 
-**Fixing it is a decision rather than a repair**, which is why it is recorded
-here and not quietly rebound: both bindings exist and both are shipped, so
-somebody has to choose which keeps the number, and that choice is what stored
-history will be read against. The harness has `MQC_CMN_UNI_112226` for this and
-reads the shipped registers rather than a permitted list; the equivalent here is
-the case this gap earns.
+**The project owner's rule, and it minimises what moves.** The older binding has
+by definition more results stored under that number, so keeping it rebinds the
+shorter history. Each date below is the commit that introduced the callable.
 
-### 4A. The harness is a dependency, not the directory next door
+| Number | Keeps it | First seen | Rebound to | First seen |
+|---|---|---|---|---|
+| `115709` | `a_graded_job_not_naming_its_engine_is_reported` | 2026-10-03 | `115727` `a_gate_reporting_only_on_green_is_reported` | 2026-10-06 |
+| `115710` | `a_rostered_target_without_a_workflow_or_key_is_reported` | 2026-10-05 | `115728` `an_unmeasured_observation_is_not_counted_as_a_failure` | 2026-10-06 |
+| `115711` | `a_case_module_holding_support_code_is_reported` | 2026-10-05 | `115729` `a_replay_store_refreshed_in_part_is_reported` | 2026-10-07 |
+| `115712` | `a_subprocess_without_a_timeout_is_reported` | 2026-10-05 | `115730` `a_blocking_band_passing_on_unmeasured_cases_is_reported` | 2026-10-07 |
+| `115716` | `an_assertion_that_cannot_fail_is_reported` | 2026-10-06 | `115731` `an_observation_that_records_no_steps_is_reported` | 2026-10-08 |
+
+**The rule was applied without exception.** The owner allowed one, for a
+qualitative impact, and none of the five has any: every rebound case is younger
+than the one it collided with, by between one and three days, and in each pair
+both bindings are checks of this repository's own instrument rather than claims
+about a model. Nothing downstream distinguishes them except the number.
+
+**`115730` carries the most citations and moved anyway.** It is named by three
+requirements and by section 3.12.2's prose, where `115712` had been the
+blocking-band floor case. Keeping the heavily cited binding would have been the
+convenient answer and the wrong one: convenience is not the ground the rule
+stands on, and the record a collector reads is.
+
+#### And the check this repository lacked
+
+`MQC_CAS_UNI_115732` reads this repository's shipped register and its collected
+suite and reports an identifier bound twice in either. The harness has
+`MQC_CMN_UNI_112226` and reads its own registers the same way; the asymmetry is
+what let five collisions accumulate unnoticed for a week.
+
+## 4A. The harness is a dependency, not the directory next door
 
 Added 2026-09-28, from the first CI run in which a judged case was replayable.
 
@@ -1444,7 +1549,7 @@ comparing against a stale copy of a reader reports about the copy.
 |---|---|
 | `evaluate-engine.yml` | The ladder, taking the engine as an input |
 | `evaluate-<engine>-weekly.yml` | One caller per engine, each with its own concurrency group and no cron |
-| `mqc_uni_engine_jobs.py` | `115709`, and the three helpers that read the topology |
+| `mqc_uni_engine_jobs.py` | `115709` and `115710`, and the three helpers that read the topology |
 | `workflow_support.py` | The readers both case modules share |
 
 ### 4.19 A gate workflow per target, because a workflow run still aggregates

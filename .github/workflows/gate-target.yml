@@ -244,52 +244,16 @@ jobs:
           python -m pip install --quiet \
             "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
           python -m pip install --quiet --no-deps --editable "."
-      - name: Band P0, both sides replayed
-        shell: bash
-        run: |
-          pytest -m "evaluator or tool or sec" \
-            --engine ${{ inputs.engine }} \
-            --mode replay \
-            --priority 0 \
-            --carry-outcomes reports/carry.json \
-            --junitxml=reports/junit_mqc_p0.xml \
-            --alluredir=reports/allure-results
-
-      - name: Band P0 result, in the band's own terms
-        if: always()
-        shell: bash
-        run: |
-          # THE BAND'S OWN DENOMINATOR. pytest's last line reports what it
-          # declined to run, and the deselected count is every precondition
-          # plus the other bands: no rate divides into it. Harness
-          # `cmn_verdict_and_cli.md` section 7.11.
-          #
-          # READ FROM THE REPORT, NOT PIPED FROM THE RUN. Piping would make the
-          # band step's exit status that of the last command in the pipeline.
-          {
-            echo "### Band P0, release blocking on ${{ inputs.engine }}, ${{ matrix.os }}"
-            echo ""
-            python -m tools.band_report reports/junit_mqc_p0.xml --priority 0
-            echo ""
-          } >> "$GITHUB_STEP_SUMMARY"
-      # EVERY CASE THE BAND SELECTED, not every case it managed to run. pytest
-      # exits zero on a run that skipped half of what it collected, so the band
-      # reported success at seven of eleven on claude with four blocking cases
-      # unmeasured. `consumer_ci.md` section 3.12.2.
-      #
-      # AFTER THE SUMMARY STEP, so the figures reach the job summary whichever
-      # way this goes: a reader deciding what to do needs the counts, and a
-      # step that fails before publishing them hides them.
-      - name: Band P0 answered for everything it selected
-        # ALWAYS, BECAUSE THE BAND THAT FAILED IS THE ONE THESE COUNTS ARE FOR.
-        # Without this the step is skipped whenever the band's pytest step
-        # fails, so P0 printed no counts on the engine whose P0 was red while
-        # P1 printed them on the same run. Design section 7.11.2.
-        if: always()
-        shell: bash
-        run: |
-          python tools/band_floor.py reports/junit_mqc_p0.xml \
-            --blocking --engine ${{ inputs.engine }}
+      # ONE DEFINITION, TAKING THE BAND AS A PARAMETER. Three copies of
+      # this procedure drifted three ways; design section 3.12.7.
+      - name: Band P0
+        uses: ./.github/actions/band
+        with:
+          band: P0
+          priority: "0"
+          report: p0
+          engine: ${{ inputs.engine }}
+          blocking: "true"
 
       - name: Carry the outcomes to P1
         if: always()
@@ -349,53 +313,16 @@ jobs:
           name: carry-after-p0-${{ inputs.engine }}-${{ matrix.os }}
           path: reports/
 
-      - name: Band P1, both sides replayed
-        shell: bash
-        run: |
-          pytest -m "evaluator or tool or sec" \
-            --engine ${{ inputs.engine }} \
-            --mode replay \
-            --priority 1 \
-            --carry-outcomes reports/carry.json \
-            --junitxml=reports/junit_mqc_p1.xml \
-            --alluredir=reports/allure-results
-
-      - name: Band P1 result, in the band's own terms
-        if: always()
-        shell: bash
-        run: |
-          # THE BAND'S OWN DENOMINATOR. pytest's last line reports what it
-          # declined to run, and the deselected count is every precondition
-          # plus the other bands: no rate divides into it. Harness
-          # `cmn_verdict_and_cli.md` section 7.11.
-          #
-          # READ FROM THE REPORT, NOT PIPED FROM THE RUN. Piping would make the
-          # band step's exit status that of the last command in the pipeline.
-          {
-            echo "### Band P1, release blocking on ${{ inputs.engine }}, ${{ matrix.os }}"
-            echo ""
-            python -m tools.band_report reports/junit_mqc_p1.xml --priority 1
-            echo ""
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      # EVERY CASE THE BAND SELECTED, not every case it managed to run. pytest
-      # exits zero on a run that skipped half of what it collected, so the band
-      # reported success at seven of eleven on claude with four blocking cases
-      # unmeasured. `consumer_ci.md` section 3.12.2.
-      #
-      # AFTER THE SUMMARY STEP, so the figures reach the job summary whichever
-      # way this goes: a reader deciding what to do needs the counts, and a
-      # step that fails before publishing them hides them.
-      - name: Band P1 answered for everything it selected
-        # ALWAYS, BECAUSE THE BAND THAT FAILED IS THE ONE THESE COUNTS ARE FOR.
-        # Without this the step is skipped whenever the band's pytest step
-        # fails, so P0 printed no counts on the engine whose P0 was red while
-        # P1 printed them on the same run. Design section 7.11.2.
-        if: always()
-        shell: bash
-        run: |
-          python tools/band_floor.py reports/junit_mqc_p1.xml \
-            --blocking --engine ${{ inputs.engine }}
+      # ONE DEFINITION, TAKING THE BAND AS A PARAMETER. Three copies of
+      # this procedure drifted three ways; design section 3.12.7.
+      - name: Band P1
+        uses: ./.github/actions/band
+        with:
+          band: P1
+          priority: "1"
+          report: p1
+          engine: ${{ inputs.engine }}
+          blocking: "true"
 
       - name: Carry the outcomes to P2-P4
         if: always()
@@ -454,56 +381,26 @@ jobs:
       # THE STEP DOES NOT GATE, THE FLOOR DOES. This is the only band where a
       # failure is not automatically fatal, so pytest reports and the next step
       # decides. Design section 3.12.2.
-      - name: Band P2-P4, both sides replayed
-        continue-on-error: true
-        shell: bash
-        run: |
-          pytest -m "evaluator or tool or sec" \
-            --engine ${{ inputs.engine }} \
-            --mode replay \
-            --priority 2,3,4 \
-            --carry-outcomes reports/carry.json \
-            --junitxml=reports/junit_mqc_p2_p4.xml \
-            --alluredir=reports/allure-results
-
-      # REFUSES ON AN ERROR RATHER THAN AVERAGING IT. An error is an instrument
-      # a floor is a statement about the model, so a band carrying one exits 4
-      # instead of being scored.
-      - name: Compare the band against its pass floor
-        # ALWAYS, BECAUSE THE BAND THAT FAILED IS THE ONE THESE COUNTS ARE FOR.
-        # Without this the step is skipped whenever the band's pytest step
-        # fails, so P0 printed no counts on the engine whose P0 was red while
-        # P1 printed them on the same run. Design section 7.11.2.
-        if: always()
-        run: python tools/band_floor.py reports/junit_mqc_p2_p4.xml
+      # ONE DEFINITION, TAKING THE BAND AS A PARAMETER. Three copies of
+      # this procedure drifted three ways; design section 3.12.7.
+      - name: Band P2-P4
+        uses: ./.github/actions/band
+        with:
+          band: P2-P4
+          priority: "2,3,4"
+          report: p2_p4
+          engine: ${{ inputs.engine }}
+          blocking: "false"
 
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: >-
             ${{ needs.resolve.outputs.gated == 'true'
-                && format('mqc-reports-cases-p2p4-replay-{0}-{1}', inputs.engine, matrix.os)
-                || format('scratch-ungated-cases-p2p4-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
+                && format('mqc-reports-cases-p2_p4-replay-{0}-{1}', inputs.engine, matrix.os)
+                || format('scratch-ungated-cases-p2_p4-{0}-{1}-{2}', inputs.engine, matrix.os, github.run_id) }}
           path: reports/
           retention-days: 90
-
-      - name: Bands P2 to P4 result, in their own terms
-        if: always()
-        shell: bash
-        run: |
-          # THE BAND'S OWN DENOMINATOR. pytest's last line reports what it
-          # declined to run, and the deselected count is every precondition
-          # plus the other bands: no rate divides into it. Harness
-          # `cmn_verdict_and_cli.md` section 7.11.
-          #
-          # READ FROM THE REPORT, NOT PIPED FROM THE RUN. Piping would make the
-          # band step's exit status that of the last command in the pipeline.
-          {
-            echo "### Bands P2 to P4, pass floor on ${{ inputs.engine }}, ${{ matrix.os }}"
-            echo ""
-            python -m tools.band_report reports/junit_mqc_p2p4.xml --priority 2,3,4
-            echo ""
-          } >> "$GITHUB_STEP_SUMMARY"
 
   # THE BAND TABLE, AFTER EVERY BAND. A release question is answered by the
   # blocking bands, so the gate's own summary states each one and marks the
@@ -561,7 +458,7 @@ jobs:
             python -m tools.band_report --overall \
               collected/junit_mqc_p0.xml \
               collected/junit_mqc_p1.xml \
-              collected/junit_mqc_p2p4.xml \
+              collected/junit_mqc_p2_p4.xml \
               --priority 0 --priority 1 --priority 2,3,4
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"

@@ -48,6 +48,7 @@ from tests.cases.workflow_support import (
     load as _load,
     needs as _needs,
     run_lines as _run_lines,
+    repository_root as _repository_root,
     selects_a_graded_marker as _selects_a_graded_marker,
 )
 
@@ -204,7 +205,7 @@ def _graded_or_gated(job: dict[str, Any]) -> bool:
         the graded ones: a precondition run against an unestablished harness
         costs runner time and reports a result nobody can rely on.
     """
-    return any("pytest" in line for line in _run_lines(job))
+    return any("pytest" in line for line in _run_lines(job, _repository_root()))
 
 
 @allure.epic("AP-Model-QC")
@@ -360,7 +361,7 @@ class TestMQCAttributionLadder:
             f"{workflow}:{name}": job
             for workflow, loaded in reached.items()
             for name, job in _jobs(loaded).items()
-            if _graded_invocations(job)
+            if _graded_invocations(job, _repository_root())
         }
         assert graded_jobs, (
             "the gate grades nothing, so the payoff of the judge fixture was "
@@ -372,7 +373,7 @@ class TestMQCAttributionLadder:
                 f"job {name!r} grades from environment "
                 f"{job.get('environment')!r}, which exists to hold secrets"
             )
-            for line in _graded_invocations(job):
+            for line in _graded_invocations(job, _repository_root()):
                 assert "--mode replay" in line, (
                     f"job {name!r} grades without replaying the candidate, "
                     f"which spends quota on every push: {line.strip()}"
@@ -427,13 +428,13 @@ class TestMQCAttributionLadder:
             f"so the precondition deciding whether to spend now needs approval "
             f"to answer"
         )
-        for line in _graded_invocations(first):
+        for line in _graded_invocations(first, _repository_root()):
             assert "--mode replay" in line and "--judge-mode live" not in line, (
                 f"the first rung moves more than the instrument: {line.strip()}"
             )
 
         # RUNG 2 MOVES THE JUDGE AND NOTHING ELSE.
-        judged = _graded_invocations(jobs[_RUNGS[1]])
+        judged = _graded_invocations(jobs[_RUNGS[1]], _repository_root())
         assert judged, "the judge rung grades nothing"
         for line in judged:
             assert "--mode replay" in line, (
@@ -458,7 +459,10 @@ class TestMQCAttributionLadder:
         # has one, not only in this one.
         for workflow in sorted(_WORKFLOWS.glob("*.yml")):
             for name, job in _jobs(_load(workflow.name)).items():
-                if not any("--mode live" in line for line in _run_lines(job)):
+                if not any(
+                    "--mode live" in line
+                    for line in _run_lines(job, _repository_root())
+                ):
                     continue
                 assert job.get("environment") == _ENVIRONMENT, (
                     f"{workflow.name} job {name!r} dispatches live outside the "
@@ -500,7 +504,7 @@ class TestMQCResolveObligation:
         for workflow in sorted(_WORKFLOWS.glob("*.yml")):
             jobs = _jobs(_load(workflow.name))
             for name, job in jobs.items():
-                for line in _run_lines(job):
+                for line in _run_lines(job, _repository_root()):
                     if _HARNESS_PACKAGE not in line:
                         continue
                     installs += 1
@@ -552,7 +556,10 @@ class TestMQCResolveObligation:
             jobs = _jobs(_load(workflow.name))
             spending = {
                 name for name, job in jobs.items()
-                if any("--mode live" in line for line in _run_lines(job))
+                if any(
+                    "--mode live" in line
+                    for line in _run_lines(job, _repository_root())
+                )
             }
             if not spending:
                 continue
@@ -697,7 +704,7 @@ class TestMQCRefusalReachesTheRun:
             jobs = _jobs(_load(workflow.name))
             resolvers = {
                 name for name, job in jobs.items()
-                if any(_RESOLVER in line for line in _run_lines(job))
+                if any(_RESOLVER in line for line in _run_lines(job, _repository_root()))
             }
             if not resolvers:
                 continue
@@ -762,7 +769,8 @@ class TestMQCRefusalReachesTheRun:
         source = (_WORKFLOWS / _DEBUG).read_text(encoding="utf-8")
 
         resolving = [
-            line for job in jobs.values() for line in _run_lines(job)
+            line for job in jobs.values()
+            for line in _run_lines(job, _repository_root())
             if _RESOLVER in line
         ]
         assert resolving, f"{_DEBUG} resolves nothing, so it pins nothing"

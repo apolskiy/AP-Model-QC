@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: MIT
 """Whether a result from this suite means what it says.
 
-Covers ``MQC_CAS_UNI_115713``, ``115714`` and ``115716``, inventoried in
+Covers ``MQC_CAS_UNI_115713``, ``115714``, ``115716``, ``115728``,
+``115729`` and ``115731``, inventoried in
 ``docs/design/consumer_ci.md`` section 4 and designed in sections 9.4.2 and
 9.4.3.
 
@@ -28,9 +29,9 @@ harness ``framework-rules.md`` section 3.3.
 #   115714  a_failure_message_without_a_taxonomy_code_is_reported
 # TestMQCAssertionsCanFail
 #   115716  an_assertion_that_cannot_fail_is_reported
-#   115710  an_unmeasured_observation_is_not_counted_as_a_failure
-#   115711  a_replay_store_refreshed_in_part_is_reported
-#   115716  an_observation_that_records_no_steps_is_reported
+#   115728  an_unmeasured_observation_is_not_counted_as_a_failure
+#   115729  a_replay_store_refreshed_in_part_is_reported
+#   115731  an_observation_that_records_no_steps_is_reported
 # ------------------------------------------------------------ end of cases
 
 import ast
@@ -258,7 +259,7 @@ class TestMQCAssertionsCanFail:
 
 
     @allure.story("A recording gap is not a disagreement")
-    def MQC_CAS_UNI_115710_an_unmeasured_observation_is_not_counted_as_a_failure(
+    def MQC_CAS_UNI_115728_an_unmeasured_observation_is_not_counted_as_a_failure(
         self,
     ) -> None:
         """A third way an instrument defect becomes a finding about a model.
@@ -363,7 +364,7 @@ class TestMQCAssertionsCanFail:
 
 
     @allure.story("A store refreshed in part names the half left behind")
-    def MQC_CAS_UNI_115711_a_replay_store_refreshed_in_part_is_reported(
+    def MQC_CAS_UNI_115729_a_replay_store_refreshed_in_part_is_reported(
         self,
     ) -> None:
         """Every candidate recording a case holds answers the same request.
@@ -394,7 +395,7 @@ class TestMQCAssertionsCanFail:
 
 
     @allure.story("The observation loop still records its steps")
-    def MQC_CAS_UNI_115716_an_observation_that_records_no_steps_is_reported(
+    def MQC_CAS_UNI_115731_an_observation_that_records_no_steps_is_reported(
         self,
     ) -> None:
         """A fifth way an instrument defect goes unseen: empty artifacts.

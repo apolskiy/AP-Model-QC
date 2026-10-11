@@ -1,0 +1,101 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+#
+# ONE BAND DEFINITION, TAKING THE BAND AS A PARAMETER. Three hand-written
+# copies of this procedure drifted three separate ways: the floor step took
+# GitHub's default condition so the band that failed printed no counts, P2-P4
+# ran its floor before its summary against the reason the others state, and the
+# deselected count was dropped in one repository and not the other. None of
+# those was a decision. Each was a copy.
+#
+# WHICH IS WHAT MAKES A BAND SPLIT A CALLER CHANGE. P2-P4 becomes P2, P3 and P4
+# as the corpus grows, splitting when one band selects more than a thousand
+# cases. With the band as an input that is three callers and no change here.
+#
+# Specified by `docs/design/consumer_ci.md` section 3.12.7.
+name: Band
+description: Run one priority band, report its counts, and assess its floor
+
+inputs:
+  band:
+    description: "The band's name as a reader sees it, such as P0 or P2-P4"
+    required: true
+  priority:
+    description: "The --priority expression, such as 0 or 2,3,4"
+    required: true
+  report:
+    description: "The JUnit report's stem, such as p0 or p2_p4"
+    required: true
+  engine:
+    description: "The candidate engine this band measures"
+    required: true
+  blocking:
+    description: >-
+      "true" where the band is release blocking, so its floor answers for every
+      case it selected. Anything else is assessed against the pass floor.
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    # THE PYTEST STEP IS INVOKED BY ACTIONS RATHER THAN WRAPPED, so its own
+    # header and the per-test PASSED, FAILED and SKIPPED listing appear in the
+    # log exactly as they do from a job. A Python wrapper would nest that
+    # output under a step named for the wrapper.
+    - name: Band ${{ inputs.band }}, both sides replayed
+      shell: bash
+      run: |
+        pytest -m "evaluator or tool or sec" \
+          --engine ${{ inputs.engine }} \
+          --mode replay \
+          --priority ${{ inputs.priority }} \
+          --carry-outcomes reports/carry.json \
+          --junitxml=reports/junit_mqc_${{ inputs.report }}.xml \
+          --alluredir=reports/allure-results
+
+    # THE BAND'S OWN DENOMINATOR. pytest's last line reports what it declined
+    # to run, and the deselected count is every precondition plus the other
+    # bands: no rate divides into it. Harness `cmn_verdict_and_cli.md` 7.11.
+    #
+    # READ FROM THE REPORT, NOT PIPED FROM THE RUN. Piping would make the
+    # band step's exit status that of the last command in the pipeline.
+    #
+    # BEFORE THE FLOOR, so the figures reach the job summary whichever way the
+    # floor goes: a step that fails before publishing them hides them.
+    - name: Band ${{ inputs.band }} result, in the band's own terms
+      if: always()
+      shell: bash
+      run: |
+        {
+          echo "### Band ${{ inputs.band }} on ${{ inputs.engine }}, ${{ runner.os }}"
+          echo ""
+          python -m tools.band_report \
+            reports/junit_mqc_${{ inputs.report }}.xml \
+            --priority ${{ inputs.priority }}
+          echo ""
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    # EVERY CASE THE BAND SELECTED, not every case it managed to run. pytest
+    # exits zero on a run that skipped half of what it collected, so a band
+    # reported success at seven of eleven with four blocking cases unmeasured.
+    # `consumer_ci.md` section 3.12.2.
+    #
+    # ALWAYS, BECAUSE THE BAND THAT FAILED IS THE ONE THESE COUNTS ARE FOR.
+    - name: Band ${{ inputs.band }} answered for everything it selected
+      if: always() && inputs.blocking == 'true'
+      shell: bash
+      run: |
+        python tools/band_floor.py \
+          reports/junit_mqc_${{ inputs.report }}.xml \
+          --blocking --engine ${{ inputs.engine }}
+
+    # A LOWER BAND IS SCORED RATHER THAN HELD TO EVERY CASE, because a failure
+    # there is a bug to open rather than a release blocker, so it is the only
+    # band needing a pass rate. `consumer_ci.md` section 3.12.2.
+    - name: Band ${{ inputs.band }} against its pass floor
+      if: always() && inputs.blocking != 'true'
+      shell: bash
+      run: |
+        python tools/band_floor.py \
+          reports/junit_mqc_${{ inputs.report }}.xml
