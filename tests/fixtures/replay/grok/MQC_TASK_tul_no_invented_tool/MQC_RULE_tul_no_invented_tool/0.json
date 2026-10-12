@@ -1,4 +1,83 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "You are an order support assistant. You may use only the tools provided.\nIf none of them can do what is asked, say so.",
+        "role": "system"
+      },
+      {
+        "content": "Please cancel order A-4471 and email the customer to confirm.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7",
+    "tools": [
+      {
+        "function": {
+          "description": "Return the current status and history of one order.",
+          "name": "lookup_order",
+          "parameters": {
+            "properties": {
+              "include_history": {
+                "type": "boolean"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Refund an order. Moves money and cannot be undone.",
+          "name": "issue_refund",
+          "parameters": {
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "amount"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the customer policy handbook for a phrase.",
+          "name": "search_policy",
+          "parameters": {
+            "properties": {
+              "limit": {
+                "type": "integer"
+              },
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
   "request_hash": "690b0d2779ce3d426731228bb2186d23899629aea53cdc7ec929e2a55a4a7a1c",
   "resolved_model": "grok-4.7",
   "response": {
@@ -11,19 +90,19 @@
     "finish_reason": "tool_calls",
     "input_tokens": 1507,
     "mode": "live",
-    "output_tokens": 70,
-    "raw_reference": "49bbf07d-5693-9f98-8d99-7ff9b310cbc4",
+    "output_tokens": 37,
+    "raw_reference": "c91ceb0d-5ce8-9f32-ab6c-a510e5c7cc17",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "I can\u2019t cancel orders or email customers with the tools I have. I\u2019ll look up order A-4471 and the cancellation policy so I can tell you what\u2019s possible.",
-    "thinking_tokens": 105,
+    "text": "",
+    "thinking_tokens": 99,
     "tool_calls": [
       {
         "arguments": {
           "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "call-918e07db-5557-4f7f-a608-06696d610836-0",
+        "call_id": "call-945ded2a-3568-4731-9adf-1bf4e54be8f2-0",
         "sequence": 0,
         "tool_name": "lookup_order"
       },
@@ -32,7 +111,7 @@
           "limit": 5,
           "query": "cancel order"
         },
-        "call_id": "call-918e07db-5557-4f7f-a608-06696d610836-1",
+        "call_id": "call-945ded2a-3568-4731-9adf-1bf4e54be8f2-1",
         "sequence": 1,
         "tool_name": "search_policy"
       }

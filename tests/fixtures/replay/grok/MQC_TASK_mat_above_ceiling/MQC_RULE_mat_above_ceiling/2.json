@@ -1,22 +1,39 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_resume_ninety>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nInfrastructure: Docker, Kubernetes, Terraform, Ansible, Helm.\nStreaming: Kafka.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "7c4b695103636fe8e31aa3a552e4fcf2bf2acfa4e7183585f49cb04a279f4c4b",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 0,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 7858,
+    "duration_ms": 11309,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1436,
     "mode": "live",
-    "output_tokens": 79,
-    "raw_reference": "47c08844-f0eb-9816-8d87-64f2b7f04465",
+    "output_tokens": 84,
+    "raw_reference": "80fda09f-1faf-9016-9627-24bea335510e",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 90% (9/10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nMissing: GraphQL.\n\nThat is at or above 85%, so the threshold is met. Nice-to-haves do not change the outcome.",
-    "thinking_tokens": 769,
+    "text": "**Mandatory match: 90% (9 of 10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nNot matched: GraphQL.\n\n90% is at or above 85%, so the mandatory set decides the outcome. The nice-to-have set does not change it.",
+    "thinking_tokens": 739,
     "tool_calls": []
   }
 }

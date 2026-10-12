@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_open_enum>\nRequired: PostgreSQL, Redis or similar databases.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_candidate_mysql>\nData stores: MySQL.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "State whether the candidate meets the requirement below, and say whether\nyou matched a named item or judged something equivalent.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "eebf2ad22c6ebe0168d606f61091264dc7594aae8b05a797e82d9abed75d9797",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_mat_open_enumeration::MQC_RULE_mat_open_enumeration",
-    "duration_ms": 3792,
+    "duration_ms": 5473,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1311,
     "mode": "live",
     "output_tokens": 31,
-    "raw_reference": "b6edcb22-161b-9a3d-89eb-d9e39a62edb4",
+    "raw_reference": "da88a1a3-ed6e-922f-ab45-18e04579df6a",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The candidate meets the requirement by equivalence, not by a named match. MySQL is not PostgreSQL or Redis, but it is a similar relational database.",
-    "thinking_tokens": 278,
+    "text": "Yes. The candidate meets the requirement by equivalence: MySQL is a similar relational database to PostgreSQL, not a named match for PostgreSQL or Redis.",
+    "thinking_tokens": 303,
     "tool_calls": []
   }
 }

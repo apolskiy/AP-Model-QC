@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_AGGREGATE_CHECKABLE": {
-        "rationale": "Both totals (255 orders and 87,400 revenue) are completely correct and are presented alongside the full table showing the row values that make up those sums, allowing immediate verification.",
+        "rationale": "Both totals are correct, and the response explicitly includes the individual row values that sum to each total, making them directly verifiable.",
         "score": 5
       }
     }
   },
-  "request_hash": "fc0ab3343e599a4b199b7827305e9052ba90250a56e4f4503e430937a9168e34"
+  "request_hash": "820ae1de5883880bf2a591528a10aea645f1ff0d095e1e5af2ed2a75116d290f"
 }

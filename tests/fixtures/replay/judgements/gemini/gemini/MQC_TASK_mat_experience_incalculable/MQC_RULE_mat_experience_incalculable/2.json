@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The response asks for the missing years of backend engineering experience, states the concrete consequence of not providing the number, and explicitly notes that the omission alone can decide the outcome (leading to automatic disqualification or being screened out immediately because the 8-year requirement cannot be verified).",
+        "rationale": "The candidate asks for the missing figure, explains the concrete consequence of not including it (inability to verify the 8-year requirement), and explicitly states that this omission alone can decide the outcome (leading to automatic disqualification or filtering out).",
         "score": 5
       }
     }
   },
-  "request_hash": "11bfc661f77e4ac121775f9ebca83005f1202140ebb330595e8c4008ce695e5c"
+  "request_hash": "4b292b659871db7aa7e3491c08ed6de93d10b30327bff4f0c12686a5ee143f90"
 }

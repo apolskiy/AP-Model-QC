@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_release_note_measured>\nRelease 4.3 makes four changes. The export job now completes in\nunder 30 seconds. The login page was restyled. The importer accepts\nfiles up to 2 GB. The help link points to the new documentation.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Summarise the release note below as a bulleted list.\n\nUse at most three bullets. Keep every sentence to at most twelve words.\nPut every change that states a measurable quantity first. Do not use em\ndashes or en dashes anywhere in your answer.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "862777d5d51bd27928718583badf64133efc6bc0cb7baf41db734a694404230f",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_ins_combined::MQC_RULE_ins_combined",
-    "duration_ms": 10197,
+    "duration_ms": 16685,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1358,
     "mode": "live",
-    "output_tokens": 37,
-    "raw_reference": "4305fcc0-56d9-952e-a4dd-8ca48bf1f7bc",
+    "output_tokens": 39,
+    "raw_reference": "2497abf3-d322-983e-a6d3-08396306cb81",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "- The export job now completes in under 30 seconds.\n- The importer accepts files up to 2 GB.\n- The login page was restyled and help links to new documentation.",
-    "thinking_tokens": 1077,
+    "text": "- The export job now completes in under 30 seconds.\n- The importer accepts files up to 2 GB.\n- The login page was restyled. The help link points to new documentation.",
+    "thinking_tokens": 1075,
     "tool_calls": []
   }
 }

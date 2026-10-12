@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_NO_DEGRADATION": {
-        "rationale": "The summary successfully incorporates all four updates from the source document across the three bullets without omitting any details or degrading the content quality to satisfy the constraints.",
+        "rationale": "The candidate conveys all key details from the source document across the three bullets without sacrificing clarity or completeness, making it just as informative as single-constraint summaries.",
         "score": 5
       }
     }
   },
-  "request_hash": "e57b45a704c5540478047a206cadbc2f901203c333999616e52d226278feed76"
+  "request_hash": "8fbb1e2c6e0a522dd15ea9f8691dfad3064dabd4770f34b763eee06ee012780a"
 }

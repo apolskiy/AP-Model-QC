@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate asks for the missing figure, outlines the concrete consequence (failure to meet the 8-year minimum baseline qualification), and explains that this omission alone can decide the outcome (being automatically screened out or rejected by recruiters/ATS).",
+        "rationale": "The response asks for the missing figure, details the concrete consequences of omitting it (e.g., ATS filters and recruiter scanning), and clearly explains that this omission alone can decide the outcome (the application risks being automatically filtered out or passed over for failing to demonstrate the 8-year threshold).",
         "score": 5
       }
     }
   },
-  "request_hash": "f48935a03719c651baecb6c3656dce4d221781e19908e1a4e2295e36498b89d0"
+  "request_hash": "81151eea945cd5f10eeca90c0039e8016f7c5d349b28e78552bab037303dd322"
 }

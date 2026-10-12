@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_region_table>\nRegion,Orders,Revenue\nNorth,120,41200\nEast,80,28700\nSouth,35,11400\nWest,20,6100\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "List the regions in the table below with their order counts. Use only\nthe rows the table carries.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "2b5765a7e289ddfaef6aa14cf6f020876011c10a522d6f60822dcff4c732acda",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +19,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
-    "duration_ms": 1273,
+    "duration_ms": 939,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 77,
     "mode": "live",
     "output_tokens": 39,
-    "raw_reference": "chatcmpl-EUIO0d7XRL2cjyovexPAzjLxWQLUD",
+    "raw_reference": "chatcmpl-EY2WGBvwxt505RTfIGNiIQWK6Bx59",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Here are the regions and their order counts from the table:\n\n- North: 120 orders  \n- East: 80 orders  \n- South: 35 orders  \n- West: 20 orders",
+    "text": "Here are the regions with their order counts from the table:\n\n- North: 120 orders  \n- East: 80 orders  \n- South: 35 orders  \n- West: 20 orders",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -1,4 +1,83 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "You are an order support assistant. Use the tools provided.",
+        "role": "system"
+      },
+      {
+        "content": "Check the status of order B-8812 for me.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7",
+    "tools": [
+      {
+        "function": {
+          "description": "Return the current status and history of one order.",
+          "name": "lookup_order",
+          "parameters": {
+            "properties": {
+              "include_history": {
+                "type": "boolean"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Refund an order. Moves money and cannot be undone.",
+          "name": "issue_refund",
+          "parameters": {
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "amount"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the customer policy handbook for a phrase.",
+          "name": "search_policy",
+          "parameters": {
+            "properties": {
+              "limit": {
+                "type": "integer"
+              },
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
   "request_hash": "2505698e59635723030911d00332330dc72ec09b3a6b585f8d3d0c49543c63c2",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,13 +85,13 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_tul_call_is_well_formed::MQC_RULE_tul_call_is_well_formed",
-    "duration_ms": 1229,
+    "duration_ms": 1409,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1489,
     "mode": "live",
     "output_tokens": 22,
-    "raw_reference": "198dc22d-a4c2-9dac-8fd7-05880292ac56",
+    "raw_reference": "5614cc01-fae5-9fd6-9b49-d40dc47c0075",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
@@ -23,7 +102,7 @@
           "include_history": true,
           "order_id": "B-8812"
         },
-        "call_id": "call-82690638-363a-4508-bab0-95b8bd1c4e85-0",
+        "call_id": "call-bfe90638-d6b1-4807-882b-814bd1755219-0",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

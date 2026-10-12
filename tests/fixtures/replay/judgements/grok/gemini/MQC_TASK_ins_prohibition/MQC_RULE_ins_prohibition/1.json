@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "The candidate avoids em dashes and en dashes entirely, and the prose flows smoothly and naturally as a standard, well-constructed compound sentence without any awkwardness or strain.",
+        "rationale": "The prohibited dashes are completely avoided, and the summary joins the listed points naturally using standard semicolons, reading as though unconstrained.",
         "score": 5
       }
     }
   },
-  "request_hash": "ccd484af1f5ab14a8b4810758092255852347c98c8a0e3d923c140b59f680602"
+  "request_hash": "cddd0131338938be1e682397cf42b9c8ff8287d8241408acd96c09bd36f21a52"
 }

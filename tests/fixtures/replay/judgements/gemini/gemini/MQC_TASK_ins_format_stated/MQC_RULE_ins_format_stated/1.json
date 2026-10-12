@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_SUMMARY_FAITHFUL": {
-        "rationale": "The candidate summary faithfully captures all three defects closed in the release note without omissions, unsupported additions, or shifts in emphasis.",
+        "rationale": "The summary accurately captures all three defect fixes described in the release note without adding, omitting, or reweighting any details.",
         "score": 5
       }
     }
   },
-  "request_hash": "5de16fc04f0cd234970d9662250bc59b0d14fad6530a5f005e38a57da9f46525"
+  "request_hash": "6b6ed0d805ca9137ebfe558411f2be8b33bb0048d96ddede740d5326bf42a11e"
 }

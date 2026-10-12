@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_no_dates>\nBackend engineering across transactional services, most recently a\nsettlement pipeline handling 40,000 orders a day. Previously worked on\npayment reconciliation and inventory systems.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "ca34bdb681b310e265e4f4d27571a2d2122e7dbbf6d1647d1bb4a9c53c68e6e2",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +23,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 2001,
+    "duration_ms": 1138,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 122,
     "mode": "live",
-    "output_tokens": 97,
-    "raw_reference": "chatcmpl-EUIYRV0poZRwZ4vK9VObT7f5l0UX4",
+    "output_tokens": 68,
+    "raw_reference": "chatcmpl-EY2l6DENEbcUYilpZ5mQVoJz180FJ",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "To tailor your summary to the job posting, I need to know your total years of backend engineering experience.\n\nNot providing this information can cost you the opportunity: many recruiters filter candidates based on explicit experience requirements. Explicitly stating you meet (or exceed) the \"8 years of backend engineering experience\" threshold will ensure your application isn't overlooked.\n\nCould you please let me know the total number of years you've worked as a backend engineer? Once I have that, I\u2019ll rewrite your summary accordingly.",
+    "text": "Your summary does not currently specify the number of years of backend engineering experience, which is a requirement for this role (8 years). Please provide the total years of backend engineering experience you have.\n\nNot including this figure may result in your application being overlooked, as it will not clearly demonstrate that you meet the minimum experience requirement stated in the posting.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

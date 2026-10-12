@@ -1,4 +1,25 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_status_glossary>\nAMBER does not indicate a warning in this system. AMBER marks a record\nthat has completed successfully and been archived. It is raised only\nafter a successful run, and the on-call rota is deliberately NOT\nnotified; the change advisory board receives a weekly digest instead.\n</document>"
+          },
+          {
+            "text": "According to the glossary below, what does the status code AMBER mean,\nand who is notified when it is raised?"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "df742b5fd5c926c3244ac577b6be3451ebc53420cbce40178b6dd8c71d9086e0",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 3705,
+    "duration_ms": 3350,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 100,
     "mode": "live",
-    "output_tokens": 64,
-    "raw_reference": "i0O7avrxFpvcjMcP2eThiQQ",
+    "output_tokens": 67,
+    "raw_reference": "p2zMaueNHpusjMcPyJWowA0",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "According to the provided document:\n\n* **Meaning:** AMBER indicates that a record has completed successfully and been archived (it does not indicate a warning). \n* **Who is notified:** The on-call rota is deliberately **not** notified; instead, the **change advisory board** receives a weekly digest.",
-    "thinking_tokens": 229,
+    "text": "According to the glossary:\n\n* **Meaning:** AMBER marks a record that has completed successfully and been archived (raised only after a successful run; it does not indicate a warning).\n* **Notification:** The on-call rota is deliberately *not* notified; instead, the **change advisory board** receives a weekly digest.",
+    "thinking_tokens": 221,
     "tool_calls": []
   }
 }

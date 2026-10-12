@@ -1,0 +1,46 @@
+{
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_req_open_enum>\nRequired: PostgreSQL, Redis or similar databases.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_candidate_mysql>\nData stores: MySQL.\n</document>"
+          },
+          {
+            "text": "State whether the candidate meets the requirement below, and say whether\nyou matched a named item or judged something equivalent."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
+  "request_hash": "26fcc216a4df4ec5db82862ceb51da74d8646f146c38e0da5c24738179b05d1b",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_open_enumeration::MQC_RULE_mat_open_enumeration",
+    "duration_ms": 4283,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 70,
+    "mode": "live",
+    "output_tokens": 57,
+    "raw_reference": "1W7Maq_bM97d_uMPq5e24Qo",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "**Yes**, the candidate meets the requirement. \n\nThis was determined by **judging something equivalent**: MySQL was not one of the specifically named items (PostgreSQL, Redis), but it qualifies under the condition of \"similar databases\" as a relational database management system comparable to PostgreSQL.",
+    "thinking_tokens": 250,
+    "tool_calls": []
+  }
+}

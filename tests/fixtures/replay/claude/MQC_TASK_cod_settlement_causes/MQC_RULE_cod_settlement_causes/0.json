@@ -1,4 +1,26 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "The function below settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "ec30176d206ad3f9edaa8bdde604de2b8e48d6aeb23d81461fb36b6cb8ea2013",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +28,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
-    "duration_ms": 20659,
+    "duration_ms": 18042,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 443,
     "mode": "live",
-    "output_tokens": 1959,
-    "raw_reference": "msg_011CfmoyXDeNeeRCeNUMXPo7",
+    "output_tokens": 1896,
+    "raw_reference": "msg_011CfwmdhR4XP49xDtfLkasM",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "# Defects in `settle_order`\n\n## What each production call does today\n\n| Call | Returns | Should return |\n|---|---|---|\n| `SAVE30` | `-10.0` | `50` |\n| `SAVE90` | `-70.0` | `0` |\n| `NOPE` | **raises `KeyError`** | `80` |\n| `SAVE20`, `SAVE30` | `0.0` | `30` |\n\n## Defect 1: It computes the discount, not the price after discount\n\n```python\namount_owed = total_amount * discount / 100 - coupon_sum\n```\n\n**Cause:** `total_amount * discount / 100` is the *size of the discount* (20 on a 100 basket). It is not what the customer pays after the discount. The code then subtracts the coupon from that discount figure. That mixes a \"money saved\" quantity with a \"money owed\" quantity. This is why every result is far too low or negative.\n\n**Should do:** Subtract the percentage discount from the total. The discount is a percentage *of the total*, so compute it from `total_amount`, then subtract coupons as currency:\n\n```\nowed = total - total * pct / 100 - coupon_sum\n```\n\n## Defect 2: Only the first coupon is applied\n\n```python\ncoupon_sum = coupon_lookup[coupon_codes[0]]\n```\n\n**Cause:** Indexing `[0]` reads only the first code and ignores the rest. In call 4, `SAVE30` is silently dropped. A related issue is that an empty `coupon_codes` list raises `IndexError`.\n\n**Should do:** Look up every code and sum the values. An empty list should give a sum of 0.\n\n## Defect 3: An unrecognised coupon aborts the settlement\n\n**Cause:** `coupon_lookup[code]` uses subscript access, which raises `KeyError` for a missing key. In call 3, `\"NOPE\"` is not in the lookup, so the whole settlement fails. The requirement says this must not happen.\n\n**Should do:** Treat an unknown code as worth 0, for example with `coupon_lookup.get(code, 0)`. Optionally log or report it, but continue settling.\n\n## Defect 4: No floor at zero\n\n**Cause:** Nothing stops coupons from exceeding the remaining amount. Even with the formula fixed, call 2 gives 100 \u2212 20 \u2212 90 = \u221210. Without a floor, the system would owe the customer money.\n\n**Should do:** Clamp the result with `max(0, ...)`, unless the business explicitly wants refunds or store credit.\n\n## Minor issues\n\n- **Float arithmetic for money:** `/ 100` produces floats (`20.0`), which can cause rounding errors with currency. Use `Decimal` or integer minor units such as cents.\n- **Unknown tier:** `DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for an unexpected tier. None of these calls trigger it, but decide whether that should fail loudly or default to no discount.\n\n## Corrected version\n\n```python\nfrom decimal import Decimal\n\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    total = Decimal(str(total_amount))\n\n    # Percentage discount, computed as a fraction of the total\n    pct = Decimal(DISCOUNT_BY_TIER[account_tier])\n    discount_amount = total * pct / 100\n\n    # Currency coupons: sum all codes, unknown codes count as 0\n    coupon_sum = sum(\n        (Decimal(str(coupon_lookup.get(code, 0))) for code in coupon_codes),\n        Decimal(0),\n    )\n\n    amount_owed = total - discount_amount - coupon_sum\n    return max(Decimal(0), amount_owed)\n```\n\nThis gives `50`, `0`, `80` and `30` for the four production calls.\n\n**Assumption on ordering:** I applied the percentage to the original total, then subtracted coupons, because the spec says the discount is a percentage *of the total*. If the business intends coupons to come off first, with the percentage applied to the remainder, call 1 would give 56 instead of 50. That rule should be confirmed explicitly.",
+    "text": "# Defects in `settle_order`\n\n## Defect 1: It returns the discount, not the price after discount\n\n**Cause:** `total_amount * discount / 100` is the *value of the discount* (20 on a 100 basket), not the amount left to pay (80). The coupon is then subtracted from that discount value instead of from the price. Every result is therefore wrong, not just the edge cases.\n\n**Fix:** Subtract the discount from the total, then subtract the coupons:\n`total_amount - total_amount * discount / 100 - coupon_sum`\n\nThe units are consistent: the percentage becomes a currency amount before the currency-valued coupon is subtracted.\n\n## Defect 2: Only the first coupon is ever applied\n\n**Cause:** `coupon_lookup[coupon_codes[0]]` reads only index 0. Any other codes are silently ignored. A related cause: an empty `coupon_codes` list raises `IndexError` and stops the settlement.\n\n**Fix:** Sum the values of all supplied codes. An empty list should mean no coupon value is applied.\n\n## Defect 3: An unrecognised coupon code crashes the settlement\n\n**Cause:** `coupon_lookup[code]` is a hard dictionary lookup. A missing key raises `KeyError`, which violates the rule that an unknown code must not stop a settlement.\n\n**Fix:** Treat an unknown code as worth 0, e.g. `coupon_lookup.get(code, 0)`. Ideally, also log or report it so it isn't invisible.\n\n## Defect 4: The amount owed can go negative\n\n**Cause:** Nothing bounds the result. Once Defect 1 is fixed, coupons larger than the discounted price still produce a negative amount owed. That would mean paying the customer.\n\n**Fix:** Floor the result at 0: `max(0, ...)`.\n\n## The production calls\n\n| Call | Current result | Cause | Correct result |\n|---|---|---|---|\n| `SAVE30` | 20 \u2212 30 = **\u221210** | Defect 1 | 100 \u2212 20 \u2212 30 = **50** |\n| `SAVE90` | 20 \u2212 90 = **\u221270** | Defects 1 and 4 | 100 \u2212 20 \u2212 90 = \u221210, floored to **0** |\n| `NOPE` | **KeyError**, settlement aborted | Defect 3 | 100 \u2212 20 \u2212 0 = **80** |\n| `SAVE20`, `SAVE30` | 20 \u2212 20 = **0** (SAVE30 ignored) | Defects 1 and 2 | 100 \u2212 20 \u2212 20 \u2212 30 = **30** |\n\n## Corrected function\n\n```python\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount_pct = DISCOUNT_BY_TIER[account_tier]\n    discounted_total = total_amount - total_amount * discount_pct / 100   # percentage -> currency\n    coupon_sum = sum(coupon_lookup.get(code, 0) for code in coupon_codes)  # all codes; unknown = 0\n    return max(0, discounted_total - coupon_sum)                           # never negative\n```\n\n## Related issues worth deciding on\n\n- **Unknown tier:** `DISCOUNT_BY_TIER[account_tier]` also raises `KeyError` for an unknown tier. You should decide whether that should fail loudly or fall back to a discount of 0.\n- **Duplicate codes:** `[\"SAVE30\", \"SAVE30\"]` would apply the coupon twice. Deduplicate with `set(coupon_codes)` if codes are single-use.\n- **Currency precision:** for real money, use `Decimal` rather than floats to avoid rounding errors.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

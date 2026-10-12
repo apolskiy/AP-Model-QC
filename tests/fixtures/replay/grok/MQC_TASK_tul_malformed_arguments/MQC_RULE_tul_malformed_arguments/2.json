@@ -1,4 +1,83 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "You are an order support assistant. Supply arguments of the types each\ntool declares.",
+        "role": "system"
+      },
+      {
+        "content": "Search the policy handbook for \"damaged on arrival\" and bring back five\nresults.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7",
+    "tools": [
+      {
+        "function": {
+          "description": "Return the current status and history of one order.",
+          "name": "lookup_order",
+          "parameters": {
+            "properties": {
+              "include_history": {
+                "type": "boolean"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Refund an order. Moves money and cannot be undone.",
+          "name": "issue_refund",
+          "parameters": {
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "amount"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the customer policy handbook for a phrase.",
+          "name": "search_policy",
+          "parameters": {
+            "properties": {
+              "limit": {
+                "type": "integer"
+              },
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
   "request_hash": "18db08df6ef15cfd15fa7a7cdc51bb5e6c1b200d39a79a4f07aa7dea80f12888",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,24 +85,24 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_tul_malformed_arguments::MQC_RULE_tul_malformed_arguments",
-    "duration_ms": 1304,
+    "duration_ms": 1854,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1500,
     "mode": "live",
     "output_tokens": 18,
-    "raw_reference": "dda9c852-5a3a-9188-9a30-fc13ee12fdaf",
+    "raw_reference": "592be32a-91c1-96bd-b1d6-057440cb7618",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
-    "thinking_tokens": 37,
+    "thinking_tokens": 50,
     "tool_calls": [
       {
         "arguments": {
           "limit": 5,
           "query": "damaged on arrival"
         },
-        "call_id": "call-6872ad45-b78d-42de-b08a-ba9d4263d4d3-0",
+        "call_id": "call-4b707407-8a9b-4a80-ae80-8847cf402de0-0",
         "sequence": 0,
         "tool_name": "search_policy"
       }

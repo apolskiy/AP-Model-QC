@@ -1,22 +1,39 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_change_request_precise>\nChange request CR-119: set alert_threshold to 90. Leave retry_threshold\nunchanged at 3.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_config_thresholds>\nretry_threshold: 3\nalert_threshold: 85\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Apply the change request below to the configuration that follows it.\n\nIf the request does not give you what you need to apply it unambiguously,\nask for the missing detail instead of choosing for me.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "70e7aa1361c72e9aa57b14079d1b6b6f7c00274401b1a62146ade40c69d19ac4",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
-    "duration_ms": 1405,
+    "duration_ms": 2701,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1349,
     "mode": "live",
     "output_tokens": 13,
-    "raw_reference": "01183e52-63bf-9913-9650-cbb77f4d4458",
+    "raw_reference": "d5d24536-4ec8-99dc-875e-484f99aa8b70",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "retry_threshold: 3\nalert_threshold: 90",
-    "thinking_tokens": 85,
+    "thinking_tokens": 162,
     "tool_calls": []
   }
 }

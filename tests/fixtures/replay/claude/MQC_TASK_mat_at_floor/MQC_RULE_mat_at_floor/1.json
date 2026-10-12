@@ -1,4 +1,30 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_resume_at_floor>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nInfrastructure: Docker, Kubernetes, Terraform, Ansible.\nObservability: Grafana, Prometheus.\nOther: technical writing, mentoring, public speaking.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Assess the candidate against the posting below. A numbered requirement that\nlists several items counts as one requirement, credited in proportion to how\nmany of those items the candidate shows. Report the mandatory match\npercentage. If it lands between 78 and 84 percent, also report the combined\nfigure over all requirements and proceed only if that reaches 85 percent.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "df7ce2a7496b62f701dd48801b9658164ec60c25adc8e23cb5593e9716e976bf",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +32,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 11641,
+    "duration_ms": 10249,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 430,
     "mode": "live",
-    "output_tokens": 1215,
-    "raw_reference": "msg_011CfcZPna1ebNgRBAU7qATQ",
+    "output_tokens": 1105,
+    "raw_reference": "msg_011CfwnXSXoksL6hm1tfimxd",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "# Candidate Assessment\n\n## Mandatory Requirements (10)\n\n| # | Requirement | Evidence in r\u00e9sum\u00e9 | Credit |\n|---|---|---|---|\n| 1 | Python | Languages: Python | 1.0 |\n| 2 | SQL | Languages: SQL | 1.0 |\n| 3 | Linux administration | Platform: Linux administration | 1.0 |\n| 4 | Git | Platform: Git | 1.0 |\n| 5 | REST API design | Services: REST API design | 1.0 |\n| 6 | Unit testing | Services: unit testing | 1.0 |\n| 7 | CI pipelines | Services: CI pipelines | 1.0 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Docker, Kubernetes, Terraform, Ansible (Helm is missing) | 0.8 (4 of 5) |\n| 9 | Kafka | Not shown | 0.0 |\n| 10 | GraphQL | Not shown | 0.0 |\n\n**Mandatory match: 7.8 / 10 = 78%**\n\nThis is exactly the lower edge of the 78\u201384% band. I read \"between 78 and 84\" as including 78, so the combined check applies.\n\n## Combined Figure (all 15 requirements)\n\n| # | Nice-to-have | Evidence | Credit |\n|---|---|---|---|\n| 11 | Grafana | Observability: Grafana | 1.0 |\n| 12 | Prometheus | Observability: Prometheus | 1.0 |\n| 13 | Technical writing | Other: technical writing | 1.0 |\n| 14 | Mentoring | Other: mentoring | 1.0 |\n| 15 | Public speaking | Other: public speaking | 1.0 |\n\nNice-to-have: 5 / 5.\n\n**Combined: (7.8 + 5) / 15 = 12.8 / 15 \u2248 85.3%**\n\n## Result\n\nThe combined figure reaches 85%, so the candidate passes and can **proceed**.\n\n## Caveats\n\n- **Boundary reading:** The outcome depends on 78% counting as \"between 78 and 84.\" If the band excludes 78, the combined check doesn't apply. The instructions also don't say what happens below the band, so the result would be unclear. It's worth confirming whether the band is inclusive.\n- **Narrow margin:** The candidate clears 85% by about 0.3 points. Showing Helm would raise the mandatory score to 80% and the combined score to about 86.7%.\n- **Gaps to probe in interview:** Kafka, GraphQL, and Helm are the only missing mandatory items. Kafka and GraphQL account for the entire mandatory shortfall apart from Helm.",
+    "text": "# Candidate Assessment\n\n## Mandatory Requirements\n\n| # | Requirement | Candidate Shows | Credit |\n|---|---|---|---|\n| 1 | Python | Yes | 1.0 |\n| 2 | SQL | Yes | 1.0 |\n| 3 | Linux administration | Yes | 1.0 |\n| 4 | Git | Yes | 1.0 |\n| 5 | REST API design | Yes | 1.0 |\n| 6 | Unit testing | Yes | 1.0 |\n| 7 | CI pipelines | Yes | 1.0 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | 4 of 5 (no Helm) | 0.8 |\n| 9 | Kafka | No | 0.0 |\n| 10 | GraphQL | No | 0.0 |\n\n**Mandatory match: 7.8 / 10 = 78%**\n\nThis is exactly at the lower boundary of the 78\u201384% band. I read \"between 78 and 84\" as inclusive, so the combined check applies.\n\n## Combined Figure (all 15 requirements)\n\n| # | Nice-to-have | Candidate Shows | Credit |\n|---|---|---|---|\n| 11 | Grafana | Yes | 1.0 |\n| 12 | Prometheus | Yes | 1.0 |\n| 13 | Technical writing | Yes | 1.0 |\n| 14 | Mentoring | Yes | 1.0 |\n| 15 | Public speaking | Yes | 1.0 |\n\n**Combined match: (7.8 + 5) / 15 = 12.8 / 15 \u2248 85.3%**\n\n## Outcome\n\n**Proceed.** The combined figure (85.3%) meets the 85% threshold.\n\n## Caveats\n\n- **The result hinges on two narrow margins.** The mandatory score sits exactly on the 78% boundary, and the combined score clears 85% by only 0.3 points.\n- **Under an exclusive reading of \"between,\"** 78% would fall outside the band and the combined check would not apply. Your instructions don't say what happens below 78%, but presumably the candidate would not proceed. You may want to confirm the intended reading.\n- **Gaps to probe in interview:** Kafka and GraphQL are both mandatory and absent from the resume. Helm is also missing, which is a smaller gap since the candidate already uses Kubernetes.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

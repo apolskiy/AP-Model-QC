@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OPEN_EQUIVALENCE": {
+        "rationale": "The response accepts MySQL as satisfying the requirement, explicitly flags it as judged equivalent rather than a named match, and names the category by identifying it as a relational database management system comparable to PostgreSQL.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e57c78a59617ecc99458d8f63eb7f7fab251313205aaac9e5052023eaf0b87ba"
+}

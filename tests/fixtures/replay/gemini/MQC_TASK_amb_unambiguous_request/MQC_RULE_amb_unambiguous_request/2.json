@@ -1,4 +1,28 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_change_request_precise>\nChange request CR-119: set alert_threshold to 90. Leave retry_threshold\nunchanged at 3.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_config_thresholds>\nretry_threshold: 3\nalert_threshold: 85\n</document>"
+          },
+          {
+            "text": "Apply the change request below to the configuration that follows it.\n\nIf the request does not give you what you need to apply it unambiguously,\nask for the missing detail instead of choosing for me."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "27126746b2a82fb338b45f9bb0878d977e5a18f059c1e3e07aec2f1342f6e5c9",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
-    "duration_ms": 2305,
+    "duration_ms": 5079,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 116,
     "mode": "live",
-    "output_tokens": 19,
-    "raw_reference": "Iiy7ap_UIILrz7IP2JTc6AM",
+    "output_tokens": 18,
+    "raw_reference": "JWrMasnFOPXP-8YPvc7_gAM",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "```yaml\nretry_threshold: 3\nalert_threshold: 90\n```",
-    "thinking_tokens": 190,
+    "thinking_tokens": 132,
     "tool_calls": []
   }
 }

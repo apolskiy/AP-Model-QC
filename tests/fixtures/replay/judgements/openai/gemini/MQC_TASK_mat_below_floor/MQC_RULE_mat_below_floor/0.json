@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The candidate output includes the warning, specifies the 78% cutoff, and clearly identifies the unmet requirements (Docker/Kubernetes/Terraform/Ansible/Helm, Kafka, and GraphQL) in the breakdown directly preceding the warning. However, the warning statement itself does not summarize or name the unmet gaps directly, putting it above level 3 but short of a fully integrated level 5.",
+        "rationale": "The response provides the required warning and explicitly names the 78% cutoff without evaluating the nice-to-have items. It also clearly identifies and names the three unmet mandatory requirements (Docker/Kubernetes/Terraform/Ansible/Helm, Kafka, and GraphQL) in the itemized breakdown, but it does not integrate these gaps directly into the warning statement itself.",
         "score": 4
       }
     }
   },
-  "request_hash": "d94012fe77d007898dde174af9f446a96f778b06f75aaf618f5f40c94fbef01c"
+  "request_hash": "d7e05f2b11c21db32ff8e10e92a5910c6485c64499c11fc2047a3c242512205a"
 }

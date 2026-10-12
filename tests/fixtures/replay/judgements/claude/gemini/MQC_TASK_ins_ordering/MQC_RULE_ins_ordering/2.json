@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes from the source are included. The two changes with measurable quantities are placed first in their original order of appearance, followed by the remaining two changes in their original source order.",
+        "rationale": "All four changes from the release notes are included. The two changes with measurable quantities ('under 30 seconds' and 'up to 2 GB') appear first in their original source order, followed by the remaining two changes, also preserved in their original source order.",
         "score": 5
       }
     }
   },
-  "request_hash": "ac88a701bfdd5ab90fb393b9bc6a1b4b7957ddafcea65b41006e3ed48f8be014"
+  "request_hash": "43d71714004ab1e260e175ba0e54068c0d66834a8fae967851c62e313dc26e1a"
 }

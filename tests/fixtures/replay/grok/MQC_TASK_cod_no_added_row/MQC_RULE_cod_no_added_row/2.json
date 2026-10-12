@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_region_table>\nRegion,Orders,Revenue\nNorth,120,41200\nEast,80,28700\nSouth,35,11400\nWest,20,6100\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "List the regions in the table below with their order counts. Use only\nthe rows the table carries.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "6626b6a54fbfcb5452970a1b22eeca065bcdb83c36b7c156e1b644a0dd08bc63",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,16 +19,16 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
-    "duration_ms": 2199,
+    "duration_ms": 2006,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1311,
     "mode": "live",
-    "output_tokens": 23,
-    "raw_reference": "8a694e12-e225-9ef6-89c3-81670bb480c0",
+    "output_tokens": 19,
+    "raw_reference": "8d0619f9-80cf-97cf-8e65-cf40fdd67db5",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "North: 120 orders  \nEast: 80 orders  \nSouth: 35 orders  \nWest: 20 orders",
+    "text": "North: 120  \nEast: 80  \nSouth: 35  \nWest: 20",
     "thinking_tokens": 104,
     "tool_calls": []
   }

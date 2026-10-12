@@ -1,4 +1,28 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_summary_states_fifteen>\nBackend engineering: 15+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>"
+          },
+          {
+            "text": "Rewrite the candidate summary below to match the posting requirement.\n\nWhere the summary states years of experience, reproduce that statement\nunchanged. Do not recalculate it and do not restate it in another form."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "c020e592e30c021512dba7adca754d798e8b32846386b49105b85091262b721c",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_stated::MQC_RULE_mat_experience_stated",
-    "duration_ms": 4664,
+    "duration_ms": 7625,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 118,
     "mode": "live",
     "output_tokens": 29,
-    "raw_reference": "Li-7ao76ONadz7IP1tHiwAw",
+    "raw_reference": "g2_MavbYIpic_uMP95SR0Ao",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "15+ years of backend engineering experience building transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
-    "thinking_tokens": 935,
+    "thinking_tokens": 885,
     "tool_calls": []
   }
 }

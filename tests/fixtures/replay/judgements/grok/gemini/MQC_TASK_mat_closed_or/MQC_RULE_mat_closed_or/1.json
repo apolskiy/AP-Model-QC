@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The candidate output provides the correct figure (100%) and explicitly names the 'or' connector (pointing out that the requirement is disjunctive) to explain why satisfying any single item meets the requirement in full.",
+        "rationale": "The candidate output gives the correct figure of 100% and explicitly identifies the 'or' connector (disjunctive requirement) to explain why having any single listed language fully satisfies the requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "150f868efd162b6b5057f7c358983288069552d9923c266fa09f3b18f8bcadbe"
+  "request_hash": "b4a584fb8b8ed5c28c2cb1ef919790b748c0fa975b376764622c845ecfb8d7d7"
 }

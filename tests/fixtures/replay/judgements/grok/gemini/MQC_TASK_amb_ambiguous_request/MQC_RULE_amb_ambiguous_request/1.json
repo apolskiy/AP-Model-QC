@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The candidate clearly names both missing details (which threshold and what value) and even lists the specific threshold candidates from the config. However, it does not explicitly state what it will do once the information is provided, falling just short of the level 5 anchor.",
+        "rationale": "The candidate clearly names both missing details (which specific threshold to change and what the new value should be), exceeding level 3. However, it does not state what it will do once that information is provided, falling just short of the level 5 requirement.",
         "score": 4
       }
     }
   },
-  "request_hash": "5e88c1e1fc7548dd3b2aa57a5c4522b4a95eb44e76d19300c234331927bb40a5"
+  "request_hash": "00e1c8eb92f43557ca8667134a60c410b2085d06c62ed29c350a290f3433ea40"
 }

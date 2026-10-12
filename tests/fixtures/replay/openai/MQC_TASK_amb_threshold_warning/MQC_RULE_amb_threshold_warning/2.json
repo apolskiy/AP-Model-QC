@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_availability_week>\nMeasured availability: 99.1 percent.\nIncidents this week: one lasting 12 minutes, one lasting 41 minutes.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Using the readings below, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "2e0f0b24b82ab54e17323b4109628ace5f47da2e2a8aee1af1f4dc79f3d1bd21",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +19,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 2125,
+    "duration_ms": 2158,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 110,
     "mode": "live",
-    "output_tokens": 108,
-    "raw_reference": "chatcmpl-EUIMnt8xR7YYipuhsoJodSESyUdpk",
+    "output_tokens": 144,
+    "raw_reference": "chatcmpl-EY2Uhe6lnd2vXr7IJf63ItzOgdWoS",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Warning: The **availability gate was not met**.  \n- Required: \u226599.5%  \n- Actual: 99.1% (**0.4% below the requirement**)\n\n**Weekly Availability Summary**\n\n- Measured availability: 99.1%\n- Number of incidents: 2  \n  - Incident 1 duration: 12 minutes  \n  - Incident 2 duration: 41 minutes  \n\nBoth incidents were under the 60-minute threshold. However, the overall availability was below the required 99.5%.",
+    "text": "**Warning:** Availability gate not met.\n\n- **Gate 1:** Measured availability is **99.1%**, which is **0.4% below** the required 99.5%.  \n- **Gate 2:** No single incident exceeded 60 minutes (incidents were 12 minutes and 41 minutes), so this gate is met.\n\n---\n\n**Weekly Availability Summary:**\n\n- **Measured Availability:** 99.1%\n- **Total Incidents:** 2\n  - 1 incident lasting 12 minutes\n  - 1 incident lasting 41 minutes\n\n**Note:** Availability this week fell below the required 99.5% threshold. Please review incidents for root causes and mitigation.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

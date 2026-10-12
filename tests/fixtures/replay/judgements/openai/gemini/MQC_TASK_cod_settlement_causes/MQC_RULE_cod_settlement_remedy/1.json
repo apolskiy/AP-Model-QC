@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate clearly identifies the missing coupon issue, explicitly states that unrecognised/missing coupons should be treated as zero-value, and shows how settlement proceeds using `coupon_lookup.get(code, 0)`.",
+        "rationale": "The candidate clearly explains that an unrecognised coupon code should not stop settlement and should be treated as contributing a value of 0, explicitly showing how to implement this using `coupon_lookup.get(code, 0)`.",
         "score": 5
       }
     }
   },
-  "request_hash": "eb0d5cd1d3389da70668d3631ef3022ee40d78409aebecd555e73aa1e39510f6"
+  "request_hash": "ad2bb5183920be4453b178567120c54ca8d730984e1698d305cf9436c573af5f"
 }

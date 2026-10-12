@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_AGGREGATE_CHECKABLE": {
-        "rationale": "Both totals (255 orders and 87,400 revenue) are mathematically correct, but they are stated as bare numbers without displaying the individual row values that were summed.",
+        "rationale": "Both the total orders (255) and total revenue ($87,400) are correct, but they are presented as bare figures without the row values that make up the sum.",
         "score": 3
       }
     }
   },
-  "request_hash": "3ad5b284e53563c66dfe9c2427f247b5a39e1d1d58d83130420e4f846478e71a"
+  "request_hash": "253abd66129eff3f874cce666d71f9c7c3a2bfebe12faafd3179ab6e5e5d1941"
 }

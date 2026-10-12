@@ -12,13 +12,18 @@ ticket meant two lookups per finding and three more for an inconsistency.
 | Source | Supplies |
 |---|---|
 | ``config/findings/<engine>.yaml`` | The claim, the taxonomy code, expected and actual |
-| ``data/tasks/*.yaml`` | The prompt, the constraints and the context documents |
-| ``tests/fixtures/replay/<engine>/`` | Every recorded observation's text |
+| ``data/tasks/*.yaml`` | The constraints, and the fallback where a
+  recording predates the stored request |
+| ``tests/fixtures/replay/<engine>/`` | **The request as sent**, and every
+  recorded observation's text |
 
-**The request is reconstructed, not recorded.** A fixture stores a
-``request_hash`` and never the prompt, so the prompt here comes from the corpus
-the run dispatched. That is the same text by construction, and the hash is what
-proves a replay is answering the same request.
+**The request is recorded, not reconstructed**, since 2026-10-11
+(``consumer_ci.md`` section 9.5.3). It used to come from the corpus, which shows
+what the case *declares* rather than what the adapter *composed*: the system
+instruction, the message roles, the ordering and the model identity are the same
+only while the adapter is correct, and that is the thing a reader is checking.
+**A recording that predates the field says so** rather than falling back to the
+corpus and presenting it as the call.
 
 **Every observation is shown, not just one.** An inconsistency finding is a
 claim about variance, and a single transcript cannot carry it: three passes out
@@ -39,6 +44,7 @@ from typing import Any, Final, Optional
 import yaml
 
 from evaluation.assertions import run_assertions
+from execution.adapters.registry import reproduction_snippet
 from tests.cases.graded_support import case_for, case_rules_from_suite
 
 _DEFAULT_OUT: Final[Path] = Path("reports") / "tickets"
@@ -176,6 +182,79 @@ def recorded_observations(root: Path, engine: str, task: str, rule: str) -> list
     return texts
 
 
+def recorded_request(
+    root: Path, engine: str, task: str, rule: str
+) -> Optional[dict[str, Any]]:
+    """Return the request a recording stored, or None where it stored none.
+
+    **Observation 0 is enough.** The fixture key is the pair and the
+    observation index, and the request is identical across a pair's
+    observations by construction: the hash is computed from it and locates
+    every one of them.
+
+    Args:
+        root (Path): The repository root.
+        engine (str): The engine whose recording to read.
+        task (str): The task identifier.
+        rule (str): The rule set identifier.
+
+    Returns:
+        Optional[dict]: The composed request as sent, or None where the pair
+        was never recorded or the recording predates the field
+        (``tier2_execution.md`` section 7.13).
+    """
+    folder = root / "tests" / "fixtures" / "replay" / engine / task / rule
+    if not folder.is_dir():
+        return None
+    for source in sorted(folder.glob("*.json"), key=lambda path: path.name):
+        try:
+            payload = json.loads(source.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        stored = payload.get("request")
+        if isinstance(stored, dict):
+            return stored
+    return None
+
+
+def _message_texts(request: dict[str, Any]) -> list[tuple[str, str]]:
+    """Return the role and text of each message in a composed request.
+
+    **Provider-agnostic, because the shape differs per adapter.** One sends
+    ``messages`` with ``role`` and ``content``, another sends ``contents`` with
+    ``parts``, and a system instruction may be a top-level field or a message.
+
+    Args:
+        request (dict): The composed request.
+
+    Returns:
+        list[tuple]: Each role paired with its text, in the order sent.
+    """
+    found: list[tuple[str, str]] = []
+    system = request.get("system") or request.get("system_instruction")
+    if isinstance(system, str) and system.strip():
+        found.append(("system", system))
+    for key in ("messages", "contents"):
+        entries = request.get(key)
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            role = str(entry.get("role") or key)
+            content = entry.get("content", entry.get("parts", ""))
+            if isinstance(content, str):
+                found.append((role, content))
+            elif isinstance(content, list):
+                joined = "\n".join(
+                    str(piece.get("text", piece)) if isinstance(piece, dict)
+                    else str(piece)
+                    for piece in content
+                )
+                found.append((role, joined))
+    return found
+
+
 def _request_block(task: Optional[dict[str, Any]]) -> str:
     """Return the request as a ticket shows it.
 
@@ -310,19 +389,55 @@ def _diagnosis(entry: dict[str, Any]) -> str:
     return _sentence(actual)
 
 
-def _input_block(task: Optional[dict[str, Any]]) -> list[str]:
-    """Return the prompt as sent, with what was supplied alongside it.
+def _input_block(
+    task: Optional[dict[str, Any]],
+    request: Optional[dict[str, Any]] = None,
+    engine: str = "",
+) -> list[str]:
+    """Return the request as sent, reading the recording where there is one.
+
+    **The recording is preferred over the corpus** (``consumer_ci.md`` section
+    9.5.3): the corpus shows what the case declares and the recording shows
+    what the provider received, and a ticket must not ask a vendor to trust our
+    composer.
 
     Args:
-        task (Optional[dict]): The task definition.
+        task (Optional[dict]): The task definition, the fallback source.
+        request (Optional[dict]): The composed request the recording stored.
+        engine (str): The engine, for the adapter that declares how its
+            recorded call is re-issued.
 
     Returns:
-        list[str]: Markdown lines.
+        list[str]: Markdown lines. **The readable text and then the exact
+        call**, because a reviewer reads the prompt and a vendor pastes the
+        request, and those are two different needs.
     """
+    if request is not None:
+        out = ["**Input**", "", "_As recorded, the call the provider received._", ""]
+        model = request.get("model")
+        if model:
+            out.extend([f"*Model requested:* `{model}`", ""])
+        for role, body in _message_texts(request):
+            out.extend([f"*{role.capitalize()}*", "", "```",
+                        str(body).rstrip(), "```", ""])
+        snippet = reproduction_snippet(engine, request) if engine else ""
+        if snippet:
+            out.extend([
+                "<details><summary>Reproduce it: the recorded call, runnable"
+                "</summary>", "",
+                "```python", snippet, "```", "", "</details>", "",
+            ])
+        return out
+
     if task is None:
         return ["**Input**", "", "_The task could not be resolved._", ""]
 
-    out = ["**Input**", ""]
+    out = [
+        "**Input**", "",
+        "_This recording predates the stored request, so the text below is the "
+        "corpus the run dispatched rather than the call itself. Re-record to "
+        "replace it (`tier2_execution.md` section 7.13.2)._", "",
+    ]
     system = str(task.get("system_instruction") or "").strip()
     if system:
         out.extend(["*System instruction*", "", "```", system, "```", ""])
@@ -419,6 +534,7 @@ def _section(
     case = str(entry.get("case", ""))
     task_id, rule_id = pairs.get(case, ("", ""))
     responses = recorded_observations(root, engine, task_id, rule_id)
+    request = recorded_request(root, engine, task_id, rule_id)
     task = tasks.get(task_id)
 
     out = [
@@ -430,7 +546,7 @@ def _section(
     diagnosis = _diagnosis(entry)
     if diagnosis:
         out.extend([f"**Diagnosis:** {diagnosis}", ""])
-    out.extend(_input_block(task))
+    out.extend(_input_block(task, request, engine))
     out.extend(_output_block(
         engine, entry, responses,
         observation_outcomes(task_id, rule_id, responses),

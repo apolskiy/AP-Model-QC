@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_LIFETIME_IS_ENFORCEABLE": {
-        "rationale": "The candidate explicitly recommends bounds on coupon lifetimes (such as policy-based expiration windows like 30 or 90 days and a valid_from/expires_at boundary) and clearly defines what data the lookup must carry (specifically an absolute, timezone-aware UTC expires_at and valid_from timestamp in a record/dataclass) for the check to be enforceable.",
+        "rationale": "The candidate explicitly recommends an enforceable bound (an absolute expiry timestamp set at issuance, checked against server time) and details exactly what the lookup must carry (mapping the code to a record containing fields like `expires_at`) to enforce this check.",
         "score": 5
       }
     }
   },
-  "request_hash": "6e92d6f8efe46e7ac3cc979193652e0063800537de93d935442d02fafd92181c"
+  "request_hash": "46803234855ef7c3baaa2d764ecc929c72c5b57983af5aada1b2d2837a34dad1"
 }

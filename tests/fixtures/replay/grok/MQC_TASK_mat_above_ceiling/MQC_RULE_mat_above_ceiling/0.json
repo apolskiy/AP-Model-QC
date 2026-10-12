@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_resume_ninety>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nInfrastructure: Docker, Kubernetes, Terraform, Ansible, Helm.\nStreaming: Kafka.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "7c4b695103636fe8e31aa3a552e4fcf2bf2acfa4e7183585f49cb04a279f4c4b",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 6800,
+    "duration_ms": 9234,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1436,
     "mode": "live",
-    "output_tokens": 160,
-    "raw_reference": "d8196ac2-3520-91f1-932c-9716fe8536af",
+    "output_tokens": 76,
+    "raw_reference": "31c16160-1efc-9600-ac80-2dd53778c68c",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 90% (9/10).** That meets the 85% bar, so the candidate passes on mandatory requirements alone. Nice-to-haves do not change the outcome.\n\n| # | Mandatory requirement | Resume |\n|---|---|---|\n| 1 | Python | Match |\n| 2 | SQL | Match |\n| 3 | Linux administration | Match |\n| 4 | Git | Match |\n| 5 | REST API design | Match |\n| 6 | Unit testing | Match |\n| 7 | CI pipelines | Match |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Match |\n| 9 | Kafka | Match |\n| 10 | GraphQL | No match |\n\n**Gap:** GraphQL is not on the resume.",
-    "thinking_tokens": 630,
+    "text": "**Mandatory match: 90% (9/10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nGap: GraphQL.\n\n90% is at or above 85%, so the nice-to-have set does not affect the outcome.",
+    "thinking_tokens": 643,
     "tool_calls": []
   }
 }

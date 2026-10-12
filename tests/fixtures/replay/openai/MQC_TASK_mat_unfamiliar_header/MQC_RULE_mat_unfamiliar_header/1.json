@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_odd_headers>\nWhat you will need on day one.\n1. Python.\n2. SQL.\n\nWhat would make you stand out.\n3. Grafana.\n4. Technical writing.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "The posting below groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "c07650420f0e3b8fa522a31e01fc37f6f6aebb0e92a29ff06c51e6ecbbce72bf",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +19,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 2347,
+    "duration_ms": 2074,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 92,
     "mode": "live",
-    "output_tokens": 201,
-    "raw_reference": "chatcmpl-EUIYfXOjmZXs0jzeCI9gBCulGm6lt",
+    "output_tokens": 202,
+    "raw_reference": "chatcmpl-EY2lbp7Ocy7rIY5tQ7V6pj2OBhX7l",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Let's break down the document:\n\n**Header:** What you will need on day one.\n- **Requirements listed:** 1. Python. 2. SQL.\n- **Interpretation:** The phrase \"will need on day one\" implies these are necessary from the very start\u2014**mandatory** requirements.\n\n**Header:** What would make you stand out.\n- **Requirements listed:** 3. Grafana. 4. Technical writing.\n- **Interpretation:** The phrase \"would make you stand out\" suggests these are not required, but are additional skills that would differentiate you from other candidates\u2014**optional** requirements.\n\n**Summary Table:**\n\n| Header                           | Mandatory or Optional? | How the header indicates this      |\n|-----------------------------------|-----------------------|------------------------------------|\n| What you will need on day one     | Mandatory             | \"will need\" signals necessity      |\n| What would make you stand out     | Optional              | \"would make you stand out\" implies extra, not required |",
+    "text": "Certainly! Here\u2019s an analysis of the headers in your posting:\n\n---\n\n**Header 1:**  \n*What you will need on day one.*  \n- **Are the requirements under it mandatory or optional?**  \n  **Mandatory.**\n- **Evidence from the header:**  \n  The phrase \"will need\" implies that these are essential requirements to have from the first day (i.e., mandatory).\n\n  **Requirements listed:**  \n  1. Python  \n  2. SQL  \n\n---\n\n**Header 2:**  \n*What would make you stand out.*  \n- **Are the requirements under it mandatory or optional?**  \n  **Optional (Nice-to-have).**\n- **Evidence from the header:**  \n  The phrase \"would make you stand out\" means these are not required, but possessing them is advantageous and would distinguish a candidate. This suggests they are optional or preferred qualifications.\n\n  **Requirements listed:**  \n  3. Grafana  \n  4. Technical writing  \n\n---",
     "thinking_tokens": 0,
     "tool_calls": []
   }

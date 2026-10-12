@@ -1,4 +1,30 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_resume_seventy>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nObservability: Grafana, Prometheus.\nOther: technical writing, mentoring, public speaking.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it falls below 78 percent, warn me and name that cutoff, and\ndo not evaluate the nice-to-have requirements at all.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "94e1b14cb6ed8ea9fa503b1bd403bc490a7eafabb0e4df8fdf006ba56ba1ab80",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +32,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 8845,
+    "duration_ms": 8966,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 358,
     "mode": "live",
-    "output_tokens": 730,
-    "raw_reference": "msg_011CfcZSbhk5viBiTUNptbRa",
+    "output_tokens": 692,
+    "raw_reference": "msg_011CfwnaR1cKc2x8TL3GQUn5",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "# Mandatory Requirements Assessment\n\n| # | Requirement | Candidate | Evidence |\n|---|---|---|---|\n| 1 | Python | \u2705 Met | Languages: Python |\n| 2 | SQL | \u2705 Met | Languages: SQL |\n| 3 | Linux administration | \u2705 Met | Platform: Linux administration |\n| 4 | Git | \u2705 Met | Platform: Git |\n| 5 | REST API design | \u2705 Met | Services: REST API design |\n| 6 | Unit testing | \u2705 Met | Services: unit testing |\n| 7 | CI pipelines | \u2705 Met | Services: CI pipelines |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | \u274c Not met | None of the five tools appear |\n| 9 | Kafka | \u274c Not met | Not listed |\n| 10 | GraphQL | \u274c Not met | Not listed |\n\n**Mandatory match: 7 of 10 = 70%**\n\nItem 8 is scored as one requirement because the posting numbers it that way. If each of its five tools counted separately, the match would be 7 of 14, or 50%. The outcome is the same either way.\n\n---\n\n## \u26a0\ufe0f Warning: Below the 78% Cutoff\n\nThe candidate's mandatory match of **70%** is below your **78% cutoff**.\n\nThe gaps are all in containerization and infrastructure-as-code (item 8), event streaming (Kafka), and GraphQL. The candidate is strong in core programming, platform, and service fundamentals, but lacks the infrastructure and integration stack the role requires.\n\n**Nice-to-have requirements were not evaluated**, as you instructed.",
+    "text": "# Candidate Assessment: Mandatory Requirements\n\n**Mandatory match: 7 of 10 = 70%**\n\n| # | Requirement | Match |\n|---|---|---|\n| 1 | Python | \u2705 |\n| 2 | SQL | \u2705 |\n| 3 | Linux administration | \u2705 |\n| 4 | Git | \u2705 |\n| 5 | REST API design | \u2705 |\n| 6 | Unit testing | \u2705 |\n| 7 | CI pipelines | \u2705 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | \u274c (none listed) |\n| 9 | Kafka | \u274c |\n| 10 | GraphQL | \u274c |\n\n**Counting note:** Item 8 groups five separate tools under one number. I counted it as one requirement, which gives 70%. If each tool counts separately, there are 14 requirements, and the candidate matches 7 of them (50%). The result is the same either way, because the candidate has none of the five tools.\n\n## \u26a0\ufe0f Warning: Below Cutoff\n\nThe mandatory match of **70% is below your 78% cutoff**. The candidate covers the core development fundamentals (items 1\u20137) but lists no containerization, orchestration, infrastructure-as-code, Kafka, or GraphQL experience.\n\nAs you instructed, I have not evaluated the nice-to-have requirements.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

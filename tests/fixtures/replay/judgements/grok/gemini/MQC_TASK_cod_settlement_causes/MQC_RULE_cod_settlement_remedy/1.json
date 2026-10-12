@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate clearly states that an unrecognized code should contribute zero and allow settlement to proceed (yielding 80 for the standard basket with code NOPE). It also explicitly shows how to achieve this using `coupon_lookup.get(code, 0)`.",
+        "rationale": "The candidate clearly states that an unrecognized code should not crash the process, explicitly specifying that unrecognized codes should be skipped / treated as 0 and that settlement should proceed.",
         "score": 5
       }
     }
   },
-  "request_hash": "0abcac93ec28505a353bbf10ec1f8730dddaf89ae572ddda713a09111632ab95"
+  "request_hash": "5cf51d4b39df898b2a1281f2db03c386f0b0367c70b2afd581163d909ba45053"
 }

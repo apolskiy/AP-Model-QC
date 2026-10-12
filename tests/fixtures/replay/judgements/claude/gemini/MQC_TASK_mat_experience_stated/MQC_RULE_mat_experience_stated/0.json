@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The original figure ('15+ years') is preserved verbatim, and the summary is effectively rewritten into professional copy targeting the backend engineering posting.",
+        "rationale": "The years-of-experience figure ('15+ years') is preserved verbatim from the original summary without alteration or recalculation, and the rewritten text is polished into a professional summary specifically targeting the backend engineering requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "e20751bd21390d1ae90e8c5d3a84e2b4590df263f8236c247c4f94ddeff2dc0f"
+  "request_hash": "4a1fafd15f543da49c420e5b4a403979dcbdeffb56582a79b95e3e91c167c9ec"
 }

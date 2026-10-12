@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_CEILING_PROCEEDS": {
-        "rationale": "The candidate output correctly identifies that the candidate proceeds with a 90% match and explicitly states that the nice-to-have qualifications do not affect the outcome.",
-        "score": 5
+        "rationale": "The response correctly identifies the 90% mandatory match and recommends proceeding without unnecessarily bringing up the optional/nice-to-have qualifications. However, it does not explicitly state that the optional set does not bear on the outcome, placing it between Level 3 and Level 5.",
+        "score": 4
       }
     }
   },
-  "request_hash": "21383bd4a0622ee0bdaee82e0c7ca29a59b25e324c4391c1ed78b4aca1c0062a"
+  "request_hash": "5313de016743d66263da7b1dba6e2e1c639c0a2eda8d440a3cf518e55848e1c0"
 }

@@ -1,4 +1,28 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_resume_at_floor>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nInfrastructure: Docker, Kubernetes, Terraform, Ansible.\nObservability: Grafana, Prometheus.\nOther: technical writing, mentoring, public speaking.\n</document>"
+          },
+          {
+            "text": "Assess the candidate against the posting below. A numbered requirement that\nlists several items counts as one requirement, credited in proportion to how\nmany of those items the candidate shows. Report the mandatory match\npercentage. If it lands between 78 and 84 percent, also report the combined\nfigure over all requirements and proceed only if that reaches 85 percent."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "ed2f408fc6b56316d829e0d3544059c5eb2a13abf19a1d7acdb56b58d39ff21a",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 6252,
+    "duration_ms": 10256,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 275,
     "mode": "live",
-    "output_tokens": 403,
-    "raw_reference": "-fi-aoOwLZfh-sAPla6fsQk",
+    "output_tokens": 482,
+    "raw_reference": "J2_MaqfsEoWm1MkP3KrxgQs",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Requirement Evaluation\n\n#### Mandatory Requirements (1\u201310)\n1. **Python:** Met (1/1)\n2. **SQL:** Met (1/1)\n3. **Linux administration:** Met (1/1)\n4. **Git:** Met (1/1)\n5. **REST API design:** Met (1/1)\n6. **Unit testing:** Met (1/1)\n7. **CI pipelines:** Met (1/1)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Partially met (4 of 5 items: Docker, Kubernetes, Terraform, Ansible) (0.8/1)\n9. **Kafka:** Not met (0/1)\n10. **GraphQL:** Not met (0/1)\n\n* **Mandatory Points:** 7.8 / 10  \n* **Mandatory Match Percentage:** **78%**\n\n---\n\n#### Nice-to-Have Requirements (11\u201315)\n11. **Grafana:** Met (1/1)\n12. **Prometheus:** Met (1/1)\n13. **Technical writing:** Met (1/1)\n14. **Mentoring:** Met (1/1)\n15. **Public speaking:** Met (1/1)\n\n* **Nice-to-Have Points:** 5 / 5\n\n---\n\n### Combined Evaluation & Decision\n\nSince the mandatory match percentage is **78%** (landing within the 78%\u201384% range), the combined figure over all requirements is evaluated:\n\n* **Total Points:** 12.8 / 15  \n* **Combined Match Percentage:** **85.33%**\n\nBecause the combined match reaches the 85% threshold (85.33% \u2265 85%), **proceed** with the candidate.",
-    "thinking_tokens": 1311,
+    "text": "### Assessment Breakdown\n\n#### 1. Mandatory Requirements (Items 1\u201310)\n1. **Python:** Met (1.0 / 1.0)\n2. **SQL:** Met (1.0 / 1.0)\n3. **Linux administration:** Met (1.0 / 1.0)\n4. **Git:** Met (1.0 / 1.0)\n5. **REST API design:** Met (1.0 / 1.0)\n6. **Unit testing:** Met (1.0 / 1.0)\n7. **CI pipelines:** Met (1.0 / 1.0)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Partially Met \u2014 candidate shows 4 of the 5 tools (missing Helm) (0.8 / 1.0)\n9. **Kafka:** Not met (0.0 / 1.0)\n10. **GraphQL:** Not met (0.0 / 1.0)\n\n* **Mandatory Score:** 7.8 / 10  \n* **Mandatory Match Percentage:** **78.0%**\n\n---\n\n#### 2. Nice-to-Have Requirements (Items 11\u201315)\nSince the mandatory match percentage lands in the 78% to 84% range, we evaluate all 15 requirements:\n\n11. **Grafana:** Met (1.0 / 1.0)\n12. **Prometheus:** Met (1.0 / 1.0)\n13. **Technical writing:** Met (1.0 / 1.0)\n14. **Mentoring:** Met (1.0 / 1.0)\n15. **Public speaking:** Met (1.0 / 1.0)\n\n* **Nice-to-Have Score:** 5.0 / 5  \n* **Total Combined Score:** 12.8 / 15  \n* **Combined Match Percentage:** **85.33%**\n\n---\n\n### Conclusion\nThe combined match percentage is **85.33%**, which reaches the required 85% threshold. Therefore, **proceed** with the candidate.",
+    "thinking_tokens": 983,
     "tool_calls": []
   }
 }

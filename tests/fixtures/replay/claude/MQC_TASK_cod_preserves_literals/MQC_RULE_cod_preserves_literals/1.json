@@ -1,4 +1,26 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_excerpt_top_scorers_syntactic>\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True\n    return ranked[:limit]\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "The excerpt below does not parse. Correct the syntax and return the\ncorrected function, changing nothing else: keep every literal, key and\nargument exactly as written.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "7b1cce33fe1d41bed80f92d4cd4c1a4384b52e323d2644f96fd19d54d04deaa3",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +28,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_literals::MQC_RULE_cod_preserves_literals",
-    "duration_ms": 2780,
+    "duration_ms": 2421,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 142,
     "mode": "live",
-    "output_tokens": 109,
-    "raw_reference": "msg_011CfcYVnJh3xtjq1Ljq7N68",
+    "output_tokens": 115,
+    "raw_reference": "msg_011CfwmCg2Xg9WQVt55EbgFo",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "The `sorted(...)` call was missing its closing parenthesis. Here is the corrected function:\n\n```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",
+    "text": "The `sorted(...)` call was missing its closing parenthesis. Adding it is the only change:\n\n```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",
     "thinking_tokens": 0,
     "tool_calls": []
   }

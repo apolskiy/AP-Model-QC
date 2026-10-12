@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response clearly identifies the independent causes of the defects (the inverted percentage calculation, direct dictionary indexing causing KeyError, single-element indexing of coupon_codes, and lack of a zero floor) rather than merely listing the output values. It provides the specific remedy for each cause and keeps them cleanly separated.",
+        "rationale": "The response identifies the distinct, independent root causes of the defects (the inverted discount arithmetic, direct dictionary lookup failing on invalid codes, single-element indexing ignoring multiple coupons/empty lists, and lack of lower-bound clamping for negative balances). It keeps each cause clearly separated and provides an appropriate remedy for each.",
         "score": 5
       }
     }
   },
-  "request_hash": "e614e910dc2f629638ace0102d72cad6c0ac396ead71ecf3b4fc121067feb4a6"
+  "request_hash": "75969f821f03086fb1476d8d60b4e456ad239813a1b25299afb3f32e5bcdbb55"
 }

@@ -1,4 +1,25 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_no_years>\nBackend engineering across transactional services, most recently a\nsettlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_employment_dates>\nBackend Engineer, Northwind Systems, 2011 to 2018.\nSenior Backend Engineer, Corvus Data, 2018 to present.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nThe summary does not state years of experience. Where you derive the figure\nfrom employment dates, state the requirement minimum with a plus rather than\nthe full calculated total.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "6c2ef7a9972e82f52c9ef8290645b4b2b8c7d9c44b7e4472f3c629e4bedebdf8",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +27,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
-    "duration_ms": 1083,
+    "duration_ms": 1168,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 164,
     "mode": "live",
-    "output_tokens": 29,
-    "raw_reference": "chatcmpl-EUIYB6VpIVkvzXxy2ZVe46OCmlOS9",
+    "output_tokens": 30,
+    "raw_reference": "chatcmpl-EY2kTjNAutVaF812rzbm8AwyQzEt2",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Backend engineer with 8+ years of experience across transactional services, most recently working on a settlement pipeline handling 40,000 orders a day.",
+    "text": "Backend engineer with 8+ years of experience across transactional services, most recently building and maintaining a settlement pipeline handling 40,000 orders a day.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

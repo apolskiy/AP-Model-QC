@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_no_dates>\nBackend engineering across transactional services, most recently a\nsettlement pipeline handling 40,000 orders a day. Previously worked on\npayment reconciliation and inventory systems.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "ca34bdb681b310e265e4f4d27571a2d2122e7dbbf6d1647d1bb4a9c53c68e6e2",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +23,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 1513,
+    "duration_ms": 1222,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 122,
     "mode": "live",
-    "output_tokens": 65,
-    "raw_reference": "chatcmpl-EUIYP7mERKawpA3cQrXCB4S3kq9uY",
+    "output_tokens": 70,
+    "raw_reference": "chatcmpl-EY2kpw1S2Yono8tm232VhBpHV6yga",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "To tailor your summary to the job posting, I need to know how many years of backend engineering experience you have. \n\nNot supplying this figure could result in your application being overlooked or rejected by recruiters and automated systems that filter for required experience levels. Please provide your years of backend engineering experience so I can revise your summary effectively.",
+    "text": "The job posting requires 8 years of backend engineering experience. Your current summary does not state or allow me to calculate your years of experience.\n\nPlease provide the number of years you've worked in backend engineering. Omitting this information may cause your application to be filtered out by automated screening tools or overlooked by recruiters who use years of experience as a key criterion.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The response clearly asks for the figure, explains the concrete consequence of omitting it (failing to demonstrate meeting the required 8-year bar), and explicitly states that this omission alone can decide the outcome (failing the screen outright / being rejected before anyone reads the rest).",
+        "rationale": "The candidate asks for the missing years of experience, states concrete consequences of omitting the figure, and explicitly notes that the omission alone can decide the outcome (characterizing it as a hard screen where the application can be filtered out before being read or assumed under the bar).",
         "score": 5
       }
     }
   },
-  "request_hash": "eb97de648fa495c0ed4a0bab6437cd63995c0d36afe23fcfbdcb569a7681cf8b"
+  "request_hash": "38c50a2d68dee9d4cd6ee0184476e53c2dcbc652aa08f3f531f1e1c21c77a96a"
 }

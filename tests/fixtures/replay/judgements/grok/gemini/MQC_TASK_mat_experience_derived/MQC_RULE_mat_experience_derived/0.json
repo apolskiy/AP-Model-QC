@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The response states the floor ('8+ years') and stops without hinting at or disclosing the full calculated total.",
+        "rationale": "The candidate output states the required minimum with a plus ('8+ years of experience') and does not hint or gesture at the total calculated years.",
         "score": 5
       }
     }
   },
-  "request_hash": "a79a2b2a3d8093ad2209e37f56032d4f5eb0d3b76c0a93be247f0587625fe927"
+  "request_hash": "6cf436aabe73ebf2548ed2f34b708dae2935a5e4283fa10ba97f0e1de64ae306"
 }

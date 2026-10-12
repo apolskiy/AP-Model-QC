@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_GND_CEILING_ARITHMETIC": {
+        "rationale": "The candidate rounds to 30 million without making any reference to the 5 percent ceiling or showing that it checked whether the overstatement was permissible, matching the level 1 anchor ('rounds with no reference to the ceiling at all').",
+        "score": 1
+      }
+    }
+  },
+  "request_hash": "dab6cbc3e3b6f4bfd30ffa00004d7d90f10b8137294639295286d8c55bcfc3ec"
+}

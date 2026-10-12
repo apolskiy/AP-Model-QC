@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_status_glossary>\nAMBER does not indicate a warning in this system. AMBER marks a record\nthat has completed successfully and been archived. It is raised only\nafter a successful run, and the on-call rota is deliberately NOT\nnotified; the change advisory board receives a weekly digest instead.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "According to the glossary below, what does the status code AMBER mean,\nand who is notified when it is raised?",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "62b233a5694ae368fc1a45acda338291c96d0650f6899a91b14dbb10373a8b69",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +19,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 1103,
+    "duration_ms": 1073,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 105,
     "mode": "live",
-    "output_tokens": 71,
-    "raw_reference": "chatcmpl-EUISvdjykY0iRrIoXOoChDr1O0va5",
+    "output_tokens": 64,
+    "raw_reference": "chatcmpl-EY2cmD4M94Y3adamKNQ43niHFDsuW",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "According to the glossary:\n\n- The status code **AMBER** means that a record has completed successfully and been archived. It is **not** a warning; it is raised only after a successful run.\n- When AMBER is raised, the **on-call rota is not notified**. Instead, the **change advisory board** receives a weekly digest.",
+    "text": "According to the glossary, the status code **AMBER** means that a record has completed successfully and been archived. It is only raised after a successful run. When AMBER is raised, the **on-call rota is not notified**; instead, the **change advisory board receives a weekly digest** of these events.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

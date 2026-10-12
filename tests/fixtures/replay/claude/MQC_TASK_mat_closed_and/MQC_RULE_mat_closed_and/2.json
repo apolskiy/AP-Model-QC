@@ -1,4 +1,30 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_req_closed_and>\nRequired: Docker, Kubernetes.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_candidate_docker>\nContainers and orchestration: Docker.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "State what percentage of the requirement below the candidate meets, and\nshow how you arrived at it.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "17b60773051abcad1cb19791d87533bd9a916f5570c94edbe4a83ab1466780b6",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +32,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 6394,
+    "duration_ms": 7030,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 103,
     "mode": "live",
-    "output_tokens": 489,
-    "raw_reference": "msg_011CfcZHMvGeUKBxvKU6EwzN",
+    "output_tokens": 619,
+    "raw_reference": "msg_011CfwnQNJNBoJznZZwLhnSn",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "The candidate meets **50%** of the requirement by item count, but **does not satisfy it** as a whole.\n\n**How I got there**\n\n1. **Requirement (DOC_req_closed_and):** \"Required: Docker, Kubernetes.\" Both skills are mandatory, so this is a closed AND list of 2 items.\n2. **Candidate (DOC_candidate_docker):** \"Containers and orchestration: Docker.\"\n3. **Item-by-item check:**\n   - **Docker:** Met. It is listed explicitly.\n   - **Kubernetes:** Not met. It is not mentioned. The heading \"Containers and orchestration\" might suggest orchestration experience, but the only tool named is Docker. Docker isn't Kubernetes, so the heading alone doesn't count as evidence.\n4. **Calculation:** 1 of 2 items met, so 1 \u00f7 2 = **50%**, assuming both skills count equally.\n\n**Caveat:** Because both skills are *required* (AND), the candidate **fails** the requirement on a strict pass/fail basis. In that case, compliance is effectively 0%. The 50% figure only describes partial coverage. The gap is Kubernetes.",
+    "text": "**The candidate meets 50% of the requirement by item count, but does not satisfy the requirement as a whole.**\n\n**How I got there**\n\n1. **The requirement** (DOC_req_closed_and): \"Required: Docker, Kubernetes.\" This lists two skills. Both are marked \"Required,\" so I read it as Docker AND Kubernetes, not either one.\n\n2. **The candidate's evidence** (DOC_candidate_docker): \"Containers and orchestration: Docker.\"\n\n3. **Item-by-item check:**\n\n| Required skill | Evidence in candidate document | Met? |\n|---|---|---|\n| Docker | Listed explicitly | \u2705 Yes |\n| Kubernetes | Not mentioned | \u274c No |\n\n4. **Calculation:** 1 of 2 items met. 1 \u00f7 2 = **50%**.\n\n**Caveats**\n\n- **Equal weighting is an assumption.** The requirement gives no relative importance. If Kubernetes counts for more (it is often the harder skill to find), the effective coverage would be below 50%.\n- **Pass/fail view:** Because both skills are required, the candidate fails this requirement outright. As a binary check, the score is **0%** (not met). The 50% figure measures partial coverage only.\n- **The candidate's heading doesn't count as Kubernetes evidence.** The heading says \"Containers and orchestration,\" but the only tool listed is Docker. Docker by itself is a container tool, not an orchestrator. I didn't infer Kubernetes, Docker Swarm, or any other orchestration experience that isn't stated.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response is written in exactly three fluent, well-structured sentences that summarize the report while smoothly incorporating every revenue figure without awkwardness or listing.",
+        "rationale": "The response is composed of exactly three sentences that carry every required figure accurately while reading smoothly as a coherent summary rather than a list.",
         "score": 5
       }
     }
   },
-  "request_hash": "41fb6b5fbce8c9b264057fca94d31a009cc2aba5b9329d49b7ff043c125f50a5"
+  "request_hash": "03e5dc277f118996dd6068e86c978fd9f995e1dfbce48bf4d403ea17a6af61d6"
 }

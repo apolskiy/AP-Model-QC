@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_INCALCULABLE_COST": {
+        "rationale": "The candidate asks for the real figure, explains the concrete consequence of omitting it (cannot meet the hard requirement), and explicitly states that this omission alone can decide the outcome (likely to be screened out).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5c10cd5ac405b14e3cf91466e3c3f78de7a69c87edeef59ec35ef0dcfb492e73"
+}

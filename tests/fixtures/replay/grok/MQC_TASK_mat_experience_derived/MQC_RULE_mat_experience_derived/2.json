@@ -1,4 +1,25 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_no_years>\nBackend engineering across transactional services, most recently a\nsettlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_employment_dates>\nBackend Engineer, Northwind Systems, 2011 to 2018.\nSenior Backend Engineer, Corvus Data, 2018 to present.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nThe summary does not state years of experience. Where you derive the figure\nfrom employment dates, state the requirement minimum with a plus rather than\nthe full calculated total.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "5ed7ff1a73634632529bb0ad1e65e023252c93a58dfd2155a5c85416c8b4535b",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
-    "duration_ms": 3309,
+    "duration_ms": 4966,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1394,
     "mode": "live",
-    "output_tokens": 27,
-    "raw_reference": "577053be-8237-97ce-a243-7ef808cfd844",
+    "output_tokens": 24,
+    "raw_reference": "92353810-562b-9fb7-8e4e-9b3c29864d76",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Backend engineer with 8+ years of experience across transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
-    "thinking_tokens": 269,
+    "text": "8+ years of backend engineering across transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
+    "thinking_tokens": 401,
     "tool_calls": []
   }
 }

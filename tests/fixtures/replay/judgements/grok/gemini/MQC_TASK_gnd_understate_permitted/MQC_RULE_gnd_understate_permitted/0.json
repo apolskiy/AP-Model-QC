@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_FLOOR_USEFUL": {
-        "rationale": "The candidate provides 28.7 million, which is exactly at the sourced figure for EMEA revenue, and explicitly states that it matches the stated amount.",
+        "rationale": "The candidate provides 28.7 million, which is exactly at the sourced figure for EMEA revenue, and explicitly states that the report gives this exact figure as the supported floor.",
         "score": 5
       }
     }
   },
-  "request_hash": "8e02c29054ce2ecdce99c77fbf37761148bded7e3545680bb6105678532936a1"
+  "request_hash": "7d10466deff43f22592e929441cdbe8267fb41f12084e9b202bd230e46fa74e8"
 }

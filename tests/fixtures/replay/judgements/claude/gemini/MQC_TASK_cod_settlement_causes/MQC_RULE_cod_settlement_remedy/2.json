@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate explicitly identifies that an unrecognised coupon code should contribute nothing/zero (e.g. using `coupon_lookup.get(code, 0)` or skipping it) while ensuring settlement proceeds without aborting, showing call 3 evaluating to 80 - 0 = 80.",
+        "rationale": "The candidate clearly identifies that an unrecognized coupon code must not halt settlement, explicitly specifies that unknown codes should contribute zero, and explains how to implement this (e.g., using coupon_lookup.get(code, 0)).",
         "score": 5
       }
     }
   },
-  "request_hash": "4d5af76785be7836d37d4c807840976c0d25d4578753a396486d39572cf460ea"
+  "request_hash": "4f3437515ebd7aadb0a3adc05661b501b8995dde0b6ef7d6137bdd919fcb4896"
 }

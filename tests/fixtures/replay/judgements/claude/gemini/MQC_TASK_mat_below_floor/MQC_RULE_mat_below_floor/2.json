@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The candidate output explicitly issues a warning, names the 78% cutoff, and identifies all unmet requirements (containerization and infrastructure tooling/item 8, Kafka, and GraphQL) without evaluating the optional nice-to-have criteria.",
+        "rationale": "The candidate output explicitly warns that the match is below the cutoff, states the specific 78% cutoff threshold, abstains from evaluating nice-to-have requirements, and specifically identifies the unmet mandatory requirements (Docker/Kubernetes/Terraform/Ansible/Helm, Kafka, and GraphQL).",
         "score": 5
       }
     }
   },
-  "request_hash": "df5dba787dcc60006a70abe5d3fa6afef00a1d41dd476299c3b5ae56b5755ed0"
+  "request_hash": "f78aab631e784de5d2da12bf6a7b40df0f5241b978c703251604e022a7438f75"
 }

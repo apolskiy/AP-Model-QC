@@ -3,14 +3,14 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_MISCOMPUTATION": {
-        "rationale": "The candidate clearly explains the discount-versus-price miscomputation in exact detail rather than being vague, showing that customers are charged 20%/30% instead of 80%/70%. However, it stops short of Level 5 because it does not explicitly state who loses money (i.e., the merchant/store).",
+        "rationale": "The response clearly and precisely identifies the miscomputation between computing the discount amount versus the discounted price/amount owed, but falls short of level 5 because it does not explicitly state who loses money.",
         "score": 4
       },
       "C_COD_TIERS_UNCHANGED": {
-        "rationale": "The candidate leaves the module's 20% and 30% discount tiers intact and uses them accurately in worked examples, clearly distinguishing the discount percentage from the remainder (70% and 80%) owed by the customer.",
+        "rationale": "The candidate leaves the module's stated tiers (20 and 30) intact and accurately distinguishes the discount (20) from the remaining percentage owed (80) when working through the numeric example.",
         "score": 5
       }
     }
   },
-  "request_hash": "ccf70d44ec2302f8dd74de042527b2b3cfc5d862241f666d3a7edde0818c48bf"
+  "request_hash": "40b63a729cf5000280c5bfa971ef0031601bdcce1d7768f3ecf0e9b49b9d0d3a"
 }

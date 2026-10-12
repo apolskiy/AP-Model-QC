@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_LIFETIME_IS_ENFORCEABLE": {
-        "rationale": "The candidate explicitly recommends bounding code lifetime via a validity window/expiry and details exactly what data the lookup must return (such as `expires_at` / `valid_until` alongside the discount value) for settlement to enforce it.",
+        "rationale": "The candidate recommends bounding code lifetime with an explicit validity window/expiry and clearly specifies what the lookup must return (such as `expires_at` or `valid_from`/`valid_until`) so that redemption can check and enforce the bound.",
         "score": 5
       }
     }
   },
-  "request_hash": "3233692245d097689008a2020449808666d711e76cbfff5b30f52caba9488fdc"
+  "request_hash": "3ad3a743b7770571cfc089ce9650d6b57f66fd33515395cde7bfc591537b129c"
 }

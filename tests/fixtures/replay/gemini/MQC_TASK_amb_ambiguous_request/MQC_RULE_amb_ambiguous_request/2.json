@@ -1,4 +1,28 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_change_request_vague>\nChange request CR-118: raise the threshold, the current one is too low\nand support has complained twice this month.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_config_thresholds>\nretry_threshold: 3\nalert_threshold: 85\n</document>"
+          },
+          {
+            "text": "Apply the change request below to the configuration that follows it.\n\nIf the request does not give you what you need to apply it unambiguously,\nask for the missing detail instead of choosing for me."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "ee2964c16d92970a3a12706306d5b518820ab5b76b5f4b6362f5919d1ca8d6c6",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
-    "duration_ms": 3060,
+    "duration_ms": 3268,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 116,
     "mode": "live",
-    "output_tokens": 59,
-    "raw_reference": "DCy7avf0GNKh1MkPwfjL-QY",
+    "output_tokens": 58,
+    "raw_reference": "D2rMaqekD4_cjMcP0d-UwQ8",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "To apply this change request unambiguously, please provide the following missing details:\n\n1. **Which threshold** needs to be raised (`retry_threshold` or `alert_threshold`)?\n2. **What is the new target value** (or the specific amount it should be increased by)?",
-    "thinking_tokens": 270,
+    "text": "The change request does not provide enough information to update the configuration unambiguously. Please provide the following missing details:\n\n1. **Which threshold** needs to be raised (`retry_threshold` or `alert_threshold`)?\n2. **What new value** should it be set to?",
+    "thinking_tokens": 309,
     "tool_calls": []
   }
 }

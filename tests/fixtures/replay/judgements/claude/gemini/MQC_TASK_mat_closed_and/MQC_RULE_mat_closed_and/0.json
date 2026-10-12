@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_AND_REASONING": {
-        "rationale": "The candidate provides the correct figure (50%) along with clear mathematical working, and explicitly identifies Kubernetes as the missing item/gap.",
+        "rationale": "The response provides the correct figure (50%) with clear step-by-step working and explicitly identifies Kubernetes as the missing gap.",
         "score": 5
       }
     }
   },
-  "request_hash": "29a6a0e5eba644f157fb932f660f0a89942f2423ce2c49498b6e1cdc30eb6fc2"
+  "request_hash": "412ec1b39e2a755dba49e4513811c1c65d7d02f2bb42e525c6e2424e3ffa413e"
 }

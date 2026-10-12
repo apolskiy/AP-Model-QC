@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The candidate output issues the warning, explicitly cites the 78 percent cutoff, and does not evaluate the optional requirements. While the warning paragraph itself does not name the unmet requirements (Kafka, GraphQL, and the infrastructure stack) to directly turn the warning into actionable advice, the candidate clearly identified these three specific gaps as 'Not found' in the itemized evaluation immediately preceding the warning. This clearly exceeds Level 3 but falls short of the full Level 5 integration.",
-        "score": 4
+        "rationale": "The candidate provides a warning that names the 78% cutoff, but the warning itself does not name the unmet mandatory requirements (Kafka, GraphQL, and the infrastructure line) or turn the refusal into actionable advice, matching level 3.",
+        "score": 3
       }
     }
   },
-  "request_hash": "9d7ad972b713c78d6380758cede9633f4ba3c0604da1d0d142c224a4d1bd7959"
+  "request_hash": "fb02c41a0ccf6780e9c8322223e98dad4abbb013025ffbf17679a941a88b9643"
 }

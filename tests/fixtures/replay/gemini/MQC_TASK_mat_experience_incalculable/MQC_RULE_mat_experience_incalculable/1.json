@@ -1,4 +1,28 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_summary_no_dates>\nBackend engineering across transactional services, most recently a\nsettlement pipeline handling 40,000 orders a day. Previously worked on\npayment reconciliation and inventory systems.\n</document>"
+          },
+          {
+            "text": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "c98a8a9ec141c433b9c20ffe8d420306eaaef07cfe538772c1e5061fda33cde5",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 3338,
+    "duration_ms": 6552,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 161,
-    "raw_reference": "XS-7avjGM-y2_PUP_7Ww6AE",
+    "output_tokens": 163,
+    "raw_reference": "s2_MarHpM6zUjMcPxuGx2Qc",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The provided summary does not state or allow calculation of the candidate's total years of backend engineering experience. \n\n**Could you please provide the candidate's total years of backend engineering experience?**\n\n### The cost of not supplying this figure:\n* **Immediate ATS/Recruiter Screening Disqualification:** The job posting explicitly mandates **8 years** of backend engineering experience. Without a concrete figure or timeframe, automated applicant tracking systems (ATS) and initial recruiter screens will flag the profile as lacking the minimum required qualifications, leading to a high likelihood of immediate rejection.\n* **Risk of Misrepresentation:** Fabricating the 8-year figure in the rewrite without confirmation risks misrepresenting the candidate's background, which can cause disqualification or offer rescission later during background checks or technical interviews.",
-    "thinking_tokens": 295,
+    "text": "To properly align the candidate's summary with the posting requirement, **how many years of backend engineering experience does the candidate have?**\n\n### The cost of not supplying this figure:\n* **Immediate ATS/Screening Disqualification:** Automated Applicant Tracking Systems (ATS) and initial recruiter screens typically filter specifically for the hard prerequisite (\"8+ years\"). Without a concrete number or timeline, the resume is likely to be automatically rejected before reaching a hiring manager.\n* **Risk of Misrepresentation:** If we simply insert \"8+ years\" without verifying the true figure, the candidate risks failing employment verification or technical depth expectations during the interview process, potentially burning the opportunity with the company. \n\nOnce you provide the exact number, I will integrate it seamlessly into a high-impact summary tailored to the role.",
+    "thinking_tokens": 391,
     "tool_calls": []
   }
 }

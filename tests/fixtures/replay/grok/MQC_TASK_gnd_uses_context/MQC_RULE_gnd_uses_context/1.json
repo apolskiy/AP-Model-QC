@@ -1,22 +1,35 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_status_glossary>\nAMBER does not indicate a warning in this system. AMBER marks a record\nthat has completed successfully and been archived. It is raised only\nafter a successful run, and the on-call rota is deliberately NOT\nnotified; the change advisory board receives a weekly digest instead.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "According to the glossary below, what does the status code AMBER mean,\nand who is notified when it is raised?",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "47d3c562fdb188fcd9aff2de94aa97ce1e178be96e705c2fe523b47a6b2e9090",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 3069,
+    "duration_ms": 3019,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1338,
     "mode": "live",
-    "output_tokens": 59,
-    "raw_reference": "8d5eda71-1672-9c93-8849-f1220750026f",
+    "output_tokens": 58,
+    "raw_reference": "95d5adbf-8165-9901-bfb5-a855b6bd9ae5",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "According to the glossary, **AMBER** does not mean a warning. It marks a record that has completed successfully and been archived, and it is raised only after a successful run.\n\nThe on-call rota is deliberately **not** notified. The change advisory board receives a weekly digest instead.",
-    "thinking_tokens": 186,
+    "text": "According to the glossary, **AMBER** does not mean a warning. It marks a record that completed successfully and has been archived. It is raised only after a successful run.\n\nThe on-call rota is deliberately **not** notified. The change advisory board receives a weekly digest instead.",
+    "thinking_tokens": 211,
     "tool_calls": []
   }
 }

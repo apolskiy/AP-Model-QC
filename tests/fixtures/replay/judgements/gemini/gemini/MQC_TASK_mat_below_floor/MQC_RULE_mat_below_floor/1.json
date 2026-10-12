@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The candidate provides a warning and names the 78% cutoff threshold, but the warning itself does not name the unmet mandatory requirements (Docker/K8s/Terraform/Ansible/Helm, Kafka, and GraphQL) to make the refusal actionable advice.",
-        "score": 3
+        "rationale": "The response includes a clear warning that names the 78% cutoff threshold, and it explicitly identifies the three unmet mandatory requirements (Docker/K8s/Terraform/Ansible/Helm, Kafka, and GraphQL) in the assessment breakdown above. However, the warning text itself does not integrate these gaps into actionable advice, placing the response between Level 3 and Level 5.",
+        "score": 4
       }
     }
   },
-  "request_hash": "03b85dbcc8a8097051fd499b5a358612ebfc8834bbcbaaa16c7d4f8d37266cb3"
+  "request_hash": "850ed88d0964c0406e39e09aa5b1cdbeb47e989a335ec7eb70d247e0824b3890"
 }

@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_release_gate_spec>\nRelease gate specification.\nA build is promoted when line coverage is at or above 82 percent.\nBuilds below that figure are held for review.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Summarise the release gate below in one sentence. State the coverage\nthreshold exactly as the specification states it.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "dc79302e00d5be8ee84febb99d0db98ebbb788730165a60d7edc19347b6840df",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,13 +19,13 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_preserves_threshold::MQC_RULE_cod_preserves_threshold",
-    "duration_ms": 1865,
+    "duration_ms": 3493,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1308,
     "mode": "live",
     "output_tokens": 24,
-    "raw_reference": "4beeb9d7-f7f4-99a4-9665-5f33b2b19587",
+    "raw_reference": "59894fd3-6b12-9ace-8bfb-8480759469ea",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "A build is promoted when line coverage is at or above 82 percent; builds below that figure are held for review.",

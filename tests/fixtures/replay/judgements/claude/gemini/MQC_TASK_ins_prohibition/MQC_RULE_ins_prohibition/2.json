@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "Em dashes and en dashes are completely avoided, and the resulting prose reads smoothly, clearly, and naturally without any strained phrasing.",
+        "rationale": "The prohibited em and en dashes are completely avoided, and the summary reads completely naturally and fluently without any strained or awkward constructions.",
         "score": 5
       }
     }
   },
-  "request_hash": "40b75e45db352b9725535e489f31aed5177200f6635f13fc2269791763eb9923"
+  "request_hash": "038ccf62b752baa731b008cf5494b4254ef01277f3599c861af58d9a0bdaf3ce"
 }

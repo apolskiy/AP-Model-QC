@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Summarise the quarterly report below in three sentences.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "d9b0c1702e6f14f36193d26567737314043236dbaa4b6363d496aedb925efafc",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +19,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 966,
+    "duration_ms": 1253,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 118,
     "mode": "live",
-    "output_tokens": 54,
-    "raw_reference": "chatcmpl-EUIOLYMkiQGlgrKlYauQyJO1YiPTg",
+    "output_tokens": 56,
+    "raw_reference": "chatcmpl-EY2WfJqUUpwYTJiSYZCnguYbqqK4I",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "In Q3, North America recorded 41.2 million in revenue. EMEA recorded 28.7 million, Japan recorded 11.4 million, and Australia recorded 6.1 million. Total revenue across these four regions was 87.4 million.",
+    "text": "In Q3, North America recorded 41.2 million in revenue, while EMEA recorded 28.7 million. Japan and Australia recorded 11.4 million and 6.1 million, respectively. Total revenue across these four regions was 87.4 million.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

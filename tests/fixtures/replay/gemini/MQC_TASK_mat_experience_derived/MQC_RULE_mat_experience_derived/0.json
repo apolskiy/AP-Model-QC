@@ -1,4 +1,31 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_summary_no_years>\nBackend engineering across transactional services, most recently a\nsettlement pipeline handling 40,000 orders a day.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_employment_dates>\nBackend Engineer, Northwind Systems, 2011 to 2018.\nSenior Backend Engineer, Corvus Data, 2018 to present.\n</document>"
+          },
+          {
+            "text": "Rewrite the candidate summary below to match the posting requirement.\n\nThe summary does not state years of experience. Where you derive the figure\nfrom employment dates, state the requirement minimum with a plus rather than\nthe full calculated total."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "0c0d5b74eee82239fed1df63d2752c0d4cd95835f18dbff8d859aefc6c071ae2",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +33,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
-    "duration_ms": 2686,
+    "duration_ms": 4028,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 167,
     "mode": "live",
-    "output_tokens": 27,
-    "raw_reference": "Ri-7aqKjFICw_PUP98eEWA",
+    "output_tokens": 28,
+    "raw_reference": "lW_Maq7SJ9-V_uMPmIWFyQs",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "8+ years of backend engineering experience across transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
-    "thinking_tokens": 416,
+    "thinking_tokens": 413,
     "tool_calls": []
   }
 }

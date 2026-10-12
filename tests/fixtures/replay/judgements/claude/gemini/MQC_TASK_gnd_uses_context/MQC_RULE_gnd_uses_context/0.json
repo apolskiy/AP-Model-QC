@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_CONTEXT_FIDELITY": {
-        "rationale": "The response accurately details the meaning of AMBER according to the glossary (completed successfully and archived) and correctly identifies the notification specifics, explicitly noting that the on-call rota is not notified and that the change advisory board receives a weekly digest instead.",
+        "rationale": "The candidate accurately explains both what AMBER means and who is notified, explicitly noting that the on-call rota is deliberately not notified and that the change advisory board receives a weekly digest instead.",
         "score": 5
       }
     }
   },
-  "request_hash": "0ab608fc2a955bc80cf7e9726d9958a394e70f8491cfa11285deb420c34205e0"
+  "request_hash": "beb8d33747f06fc8cdcdf1dc5699952b00a65dc2390e9c64180feb6d94c6058d"
 }

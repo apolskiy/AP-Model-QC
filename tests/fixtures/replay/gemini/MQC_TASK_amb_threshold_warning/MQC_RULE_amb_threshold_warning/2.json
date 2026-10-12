@@ -1,4 +1,25 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_availability_week>\nMeasured availability: 99.1 percent.\nIncidents this week: one lasting 12 minutes, one lasting 41 minutes.\n</document>"
+          },
+          {
+            "text": "Using the readings below, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "5fcfc959f226c62e5434201f5dcfbc07525aba1c0dbc57a167e6fc1133f414cb",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 3330,
+    "duration_ms": 6282,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 110,
     "mode": "live",
-    "output_tokens": 170,
-    "raw_reference": "Niy7arvXMZaRjMcPk8726Qc",
+    "output_tokens": 168,
+    "raw_reference": "QGrMatmeHdbv-8YPkfmXoQQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "**WARNING:** The availability gate was not met. The measured availability of 99.1% fell short of the 99.5% threshold by **0.4 percentage points** (0.4%). The maximum incident duration gate passed (longest incident was 41 minutes, which is within the 60-minute limit).\n\n***\n\n### Weekly Availability Summary\n\n* **Measured Availability:** 99.1% (Target: \u2265 99.5% \u2014 **FAILED**)\n* **Total Incidents:** 2\n  * Incident 1: 12 minutes\n  * Incident 2: 41 minutes\n* **Total Downtime:** 53 minutes\n* **Longest Incident Duration:** 41 minutes (Target: \u2264 60 minutes \u2014 **PASSED**)",
-    "thinking_tokens": 483,
+    "text": "**WARNING:** The weekly availability gate was not met. The measured availability was 99.1%, falling short of the 99.5% requirement by **0.4%** (0.4 percentage points). The incident duration gate passed, as no single incident exceeded the 60-minute limit.\n\n***\n\n### Weekly Availability Summary\n\n* **Availability:** 99.1% (Target: $\\ge$ 99.5% \u2014 **FAILED**)\n* **Total Incidents:** 2\n  * Incident 1: 12 minutes\n  * Incident 2: 41 minutes\n* **Total Downtime:** 53 minutes\n* **Longest Single Incident:** 41 minutes (Limit: $\\le$ 60 minutes \u2014 **PASSED**)",
+    "thinking_tokens": 424,
     "tool_calls": []
   }
 }

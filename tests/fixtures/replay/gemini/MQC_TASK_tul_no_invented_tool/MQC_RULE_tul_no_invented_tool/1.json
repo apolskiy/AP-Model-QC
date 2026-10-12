@@ -1,4 +1,84 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      },
+      "system_instruction": "You are an order support assistant. You may use only the tools provided.\nIf none of them can do what is asked, say so.",
+      "tools": [
+        {
+          "function_declarations": [
+            {
+              "description": "Return the current status and history of one order.",
+              "name": "lookup_order",
+              "parameters": {
+                "properties": {
+                  "include_history": {
+                    "type": "boolean"
+                  },
+                  "order_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "order_id"
+                ],
+                "type": "object"
+              }
+            },
+            {
+              "description": "Refund an order. Moves money and cannot be undone.",
+              "name": "issue_refund",
+              "parameters": {
+                "properties": {
+                  "amount": {
+                    "type": "number"
+                  },
+                  "order_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "order_id",
+                  "amount"
+                ],
+                "type": "object"
+              }
+            },
+            {
+              "description": "Search the customer policy handbook for a phrase.",
+              "name": "search_policy",
+              "parameters": {
+                "properties": {
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "query": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "query"
+                ],
+                "type": "object"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Please cancel order A-4471 and email the customer to confirm."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "3b28653688013e37b0141e8baf7ebcb9e5df68c2a74ece6cf66788d462bfb8c8",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +86,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
-    "duration_ms": 3299,
+    "duration_ms": 3920,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 227,
     "mode": "live",
-    "output_tokens": 25,
-    "raw_reference": "L8q7auC6MuDcjMcPkt_giQg",
+    "output_tokens": 20,
+    "raw_reference": "bHHMapz6Edqc1MkP9vKSwQs",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "I am unable to fulfill this request. I do not have access to tools that can cancel orders or send emails to customers.",
-    "thinking_tokens": 310,
+    "text": "I cannot fulfill this request because I do not have tools to cancel orders or send emails to customers.",
+    "thinking_tokens": 272,
     "tool_calls": []
   }
 }

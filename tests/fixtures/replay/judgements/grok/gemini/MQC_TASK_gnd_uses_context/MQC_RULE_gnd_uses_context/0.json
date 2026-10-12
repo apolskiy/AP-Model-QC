@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_CONTEXT_FIDELITY": {
-        "rationale": "The response accurately defines the meaning of AMBER according to the glossary and explicitly notes that the on-call rota is not notified, mentioning the weekly digest received by the change advisory board instead.",
+        "rationale": "Both parts of the question are answered completely and accurately using the context document, explicitly noting that the on-call rota is not notified and that the change advisory board receives a weekly digest instead.",
         "score": 5
       }
     }
   },
-  "request_hash": "70d234c9a7dc4d030d06f2b6e185ec2f299a779b2cff85524af2c9bf9a9a63d4"
+  "request_hash": "35869336f5e93b4edc2ab864f4acaa26cacd421c987de5d1894bf9d2614bc335"
 }

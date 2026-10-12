@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_THRESHOLD_SENSE": {
-        "rationale": "The candidate output preserves the exact figure (82 percent) as well as the exact comparison phrase 'at or above'.",
+        "rationale": "The exact figure (82 percent) and the precise condition 'at or above' are fully preserved in the candidate output.",
         "score": 5
       }
     }
   },
-  "request_hash": "d4b70b21761e14d6a76a10db0020016842059e73572539124c8dd381604eed92"
+  "request_hash": "c8abd264a3c5042299cb81164705138933b042d45e0ede5598a54c3981e06b67"
 }

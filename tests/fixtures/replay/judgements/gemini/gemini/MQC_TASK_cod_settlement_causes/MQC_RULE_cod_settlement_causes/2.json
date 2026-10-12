@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response identifies each independent cause of failure in the arithmetic and logic (inverted percentage calculation, KeyError on missing lookup, hardcoded single-coupon indexing, and lack of clamping to zero) and provides the remedy for each, keeping them completely distinct rather than simply listing function return values.",
+        "rationale": "The response identifies the distinct independent causes of error (the percentage calculation computing the discount amount rather than the remaining balance, direct dictionary lookup failing on missing keys, hardcoded indexing ignoring additional coupons, and lack of lower-bound clamping against negative amounts) along with the specific remedy for each, keeping them completely separate.",
         "score": 5
       }
     }
   },
-  "request_hash": "0567aeb7ab2f810165bdee066d636d845ccbfa2b35291558c925050b4f1f28e0"
+  "request_hash": "17b70525eea50de2eeab8003e2be95aac1a66597d1911da62724dea4f0988f64"
 }

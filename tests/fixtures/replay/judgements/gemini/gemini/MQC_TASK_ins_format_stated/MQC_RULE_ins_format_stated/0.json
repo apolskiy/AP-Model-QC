@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_SUMMARY_FAITHFUL": {
-        "rationale": "The candidate summary captures all three reported defect resolutions accurately without omitting any details, adding extraneous claims, or altering the emphasis of the source text.",
+        "rationale": "The summary faithfully represents every change from the release note without adding, omitting, or distorting any details. The emphasis and scope match the original text completely.",
         "score": 5
       }
     }
   },
-  "request_hash": "981f6a906fee9af7970fdf5dbba0acfe39260b06cdf240b8991b39dab4a5852f"
+  "request_hash": "0ecfcaf01fb5f3ff9916c521b06ccc3b95023269e5b26324dbb424b259d2a6d5"
 }

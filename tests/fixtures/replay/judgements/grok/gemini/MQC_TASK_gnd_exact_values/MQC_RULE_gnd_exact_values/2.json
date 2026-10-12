@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response comprises exactly three readable, grammatically cohesive sentences that naturally incorporate all five revenue figures from the source text without awkward placement or reading like a bare list.",
+        "rationale": "The response successfully compresses the report into exactly three grammatically fluent sentences while incorporating every figure accurately without awkward placement or resorting to a bare list.",
         "score": 5
       }
     }
   },
-  "request_hash": "25173ef651b713f2748d27e81ed91b0eadcafe1f5d6c2a90ef2342cbf2a7d208"
+  "request_hash": "7ae88a6bc7b6f775b6d593bd259e29fbd86292a43a81e04ef5ae685fe11d7684"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_CAUSE": {
-        "rationale": "The candidate correctly identifies line 2 as carrying the error and explicitly names the unclosed parenthesis in the sorted(...) call.",
+        "rationale": "The response correctly identifies line 2 as the source of the error and explicitly names the unclosed parenthesis on the call to sorted.",
         "score": 5
       }
     }
   },
-  "request_hash": "1aea857c0fdd84182361eb5f2894302cbd032f0f920a358c84aaea251aee2d8e"
+  "request_hash": "0341146d95016b288a12444bc88dd58fee6b9ff9202fcedf57a178c54605767b"
 }

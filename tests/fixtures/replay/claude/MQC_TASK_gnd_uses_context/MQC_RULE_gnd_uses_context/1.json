@@ -1,4 +1,26 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_status_glossary>\nAMBER does not indicate a warning in this system. AMBER marks a record\nthat has completed successfully and been archived. It is raised only\nafter a successful run, and the on-call rota is deliberately NOT\nnotified; the change advisory board receives a weekly digest instead.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "According to the glossary below, what does the status code AMBER mean,\nand who is notified when it is raised?",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "67297374074db0f73e1f9776c372b3fab3ae349185588d6b85580b6e2eca34a8",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +28,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 4178,
+    "duration_ms": 2706,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 144,
     "mode": "live",
-    "output_tokens": 254,
-    "raw_reference": "msg_011CfcYxydpzUz8fBce7K6Pj",
+    "output_tokens": 196,
+    "raw_reference": "msg_011CfwmwJuyQStFZY7pjTC92",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "In this system, **AMBER** means a record has **completed successfully and been archived**. It is not a warning, and it is raised only after a successful run.\n\n**Who is notified:**\n- The **on-call rota is deliberately not notified**.\n- The **change advisory board** receives a **weekly digest** that includes these records, rather than an immediate alert.\n\nThis differs from the common convention where amber means a warning, so it's worth keeping in mind when reading dashboards or alerts in this system. (Also, the glossary appears above your question rather than below it, but I've assumed DOC_status_glossary is the one you meant.)",
+    "text": "According to the glossary, **AMBER** marks a record that has **completed successfully and been archived**. Despite what the color might suggest, it is not a warning. It is raised only after a successful run.\n\n**Notification:** The on-call rota is deliberately **not** notified when AMBER is raised. Instead, the **change advisory board** receives a **weekly digest**.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

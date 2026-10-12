@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response consists of exactly three well-crafted sentences that smoothly incorporate every figure from the source document, reading as a cohesive summary rather than a bare list.",
+        "rationale": "The response consists of exactly three well-crafted sentences that smoothly integrate all five figures from the source text into a coherent, natural summary rather than reading as a bare list.",
         "score": 5
       }
     }
   },
-  "request_hash": "126dff427df6eafcbf6ec31d59f3cc99085c8f0e1752ee98cc6c18dd8502265e"
+  "request_hash": "4ca641c3949cb73ccf4c9881012824d85218665e68e415cc735f591177aa5e67"
 }

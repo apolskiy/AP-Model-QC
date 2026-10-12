@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_DISCARD": {
-        "rationale": "The candidate correctly states the return value (the rows scoring 10 and 90, in that order) and explicitly explains that sorted() builds and returns a new list which is thrown away immediately because it is not assigned to anything.",
+        "rationale": "The candidate correctly states the return value (the rows scoring 10 and 90, in that order) and explicitly explains that sorted() creates a new list without mutating the original, which is not assigned to anything and therefore thrown away.",
         "score": 5
       }
     }
   },
-  "request_hash": "e9a307e690c708029149df1fa80d071cf2ab6d352ac052570db3d4f9c85e0892"
+  "request_hash": "ebc53c0ec9f3b7f3ac6194bee6eb6d9652523e2ce8f7fb6881fd2d73911b4cfe"
 }

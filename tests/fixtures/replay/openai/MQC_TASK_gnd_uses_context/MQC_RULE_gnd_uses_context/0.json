@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_status_glossary>\nAMBER does not indicate a warning in this system. AMBER marks a record\nthat has completed successfully and been archived. It is raised only\nafter a successful run, and the on-call rota is deliberately NOT\nnotified; the change advisory board receives a weekly digest instead.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "According to the glossary below, what does the status code AMBER mean,\nand who is notified when it is raised?",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "62b233a5694ae368fc1a45acda338291c96d0650f6899a91b14dbb10373a8b69",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +19,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 1015,
+    "duration_ms": 1185,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 105,
     "mode": "live",
-    "output_tokens": 53,
-    "raw_reference": "chatcmpl-EUISjl4qhsRki5wO1WOBbuUaSYzAd",
+    "output_tokens": 74,
+    "raw_reference": "chatcmpl-EY2cV3NFJw0wcQN4sBCPUQNSX3WFC",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "According to the glossary, the status code **AMBER** means that a record has completed successfully and has been archived. When AMBER is raised, the **on-call rota is NOT notified**; instead, the **change advisory board receives a weekly digest**.",
+    "text": "According to the glossary, the status code **AMBER** means that a record has completed successfully and has been archived. It is only raised after a successful run and does **not** indicate a warning in this system.\n\nWhen AMBER is raised, the on-call rota is **not** notified. Instead, the change advisory board receives a weekly digest about these events.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

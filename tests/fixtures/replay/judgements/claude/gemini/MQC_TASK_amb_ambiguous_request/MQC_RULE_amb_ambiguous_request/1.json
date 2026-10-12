@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The candidate clearly names both missing details (which specific threshold needs changing and what new value to set it to) and states what it will do once that information is provided ('I'll make the change').",
+        "rationale": "The candidate clearly identifies both missing details (which threshold to modify and what the new value should be) and explicitly states what action it will take once that information is provided ('I'll apply it and return the updated config').",
         "score": 5
       }
     }
   },
-  "request_hash": "c7613cf6f06ce477321ddc2f1fd10f112cb977c53b876c70f85965abe25a7924"
+  "request_hash": "9f7a1c1297279a3a2f28632e04ebfd4bdbe45acd4f8d112cd21a5a4b65f45414"
 }

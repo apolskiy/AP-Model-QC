@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The candidate output includes a clear warning that names the 78% cutoff and refrains from evaluating the nice-to-have requirements. However, the warning itself does not name the specific unmet requirements (the gaps: Kafka, GraphQL, and the infrastructure line), exactly matching the Level 3 descriptor.",
-        "score": 3
+        "rationale": "The candidate output includes the warning, specifies the 78% cutoff, and clearly identifies the unmet requirements (Docker/K8s/Terraform/Ansible/Helm, Kafka, and GraphQL) in the itemized evaluation above the warning. However, it does not explicitly integrate those gaps into the warning itself as actionable advice, placing it between level 3 and level 5.",
+        "score": 4
       }
     }
   },
-  "request_hash": "5c94b63a7b94ad66a40bc30817234609254f331e0e6ec5664434d55d1ad2e10a"
+  "request_hash": "45c34336e2142432ab964e0ee4f9cf2397d9e494afc632a040f6786f4ed6d6cf"
 }

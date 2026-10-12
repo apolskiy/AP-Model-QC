@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OPEN_EQUIVALENCE": {
-        "rationale": "The candidate response explicitly accepts MySQL, clearly flags it as a judged equivalence rather than a named match, and identifies the relevant category (relational database) to explain why.",
+        "rationale": "The candidate accepts the equivalence, explicitly flags it as judged equivalent/similar rather than a named match, and identifies the relevant category ('databases' under 'or similar databases').",
         "score": 5
       }
     }
   },
-  "request_hash": "a0cebb084aae4a3ddb419505cb1fb66a9898457cc800f8e6c7a257910e0b56ba"
+  "request_hash": "e3e19d5d4842c67d1f33e81d3a280873b62d7c49145171c8743b7bc4c28443dc"
 }

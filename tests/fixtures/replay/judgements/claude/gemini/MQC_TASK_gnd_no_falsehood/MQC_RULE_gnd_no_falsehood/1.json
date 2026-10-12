@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The candidate provides the correct percentage (47.1%) and explicitly names and provides both figures it derives from: North America revenue (41.2 million) and Total revenue (87.4 million), showing the calculation clearly.",
+        "rationale": "The percentage share is correct (about 47.1%) and the candidate explicitly provides the two figures from which it is derived (41.2 million of 87.4 million).",
         "score": 5
       }
     }
   },
-  "request_hash": "f17e463eac3ef0f253a0b2f167c1b252643d7f3f791355aee96f213db9f95105"
+  "request_hash": "bb0b8f0ead4c8b72d58f5950b1f89af1ce440cc8eafa27d3ee3be78bbe510bc1"
 }

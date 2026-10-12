@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The candidate preserved the years-of-experience statement verbatim ('15+ years building transactional services'). However, the rewrite makes only minor grammatical tweaks to the original summary and adds very little targeting toward the posting.",
-        "score": 3
+        "rationale": "The original statement of experience ('15+ years building transactional services') was preserved verbatim without alteration or recalculation, and the rewrite actively targets the job posting's requirement of 8 years of backend engineering experience.",
+        "score": 5
       }
     }
   },
-  "request_hash": "dbdecd77752877559009a7848090239fc3088084dc362ee946bbff0d52b78ff9"
+  "request_hash": "fa2d287a6dc66be9181c07ad7ed32ff63b4fd19629d714f2fbf66dac83b70699"
 }

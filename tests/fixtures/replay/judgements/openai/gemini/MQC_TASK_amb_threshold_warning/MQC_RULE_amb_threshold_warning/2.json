@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_WARNS_ONLY_WHERE_DUE": {
-        "rationale": "The candidate clearly names the availability gate as the one that failed, provides the exact margin by which it fell short (0.4% below requirement), and explicitly confirms that the incident gate held (both incidents were under the 60-minute threshold).",
+        "rationale": "The candidate clearly names the availability gate as the one that failed, provides the exact margin (0.4% below the 99.5% requirement), and explicitly states that the incident duration gate held.",
         "score": 5
       }
     }
   },
-  "request_hash": "4587238659e5a4cbb3580bcb1a3e84dff31e17357c5a142caf407f1912f1f52e"
+  "request_hash": "5b6d42c863a1b568cf86f6b9cdc415658b24ac9f7fd4d1a0db5f72498f598f89"
 }

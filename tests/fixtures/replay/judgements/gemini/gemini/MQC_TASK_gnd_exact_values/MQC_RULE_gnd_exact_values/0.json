@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response consists of exactly three cohesive, natural sentences that incorporate every figure accurately without reading like a bare list or placing any figure awkwardly.",
+        "rationale": "The response is structured into exactly three coherent sentences that read as a natural summary rather than a list. It leads with the overarching total revenue in sentence one, groups North America and EMEA in sentence two, and seamlessly incorporates Japan and Australia in sentence three, successfully conveying every figure without awkward phrasing.",
         "score": 5
       }
     }
   },
-  "request_hash": "6dfbb51b293bbf6330a2d4615ee3cccb90233aa57670c694f9b5f5cab4e76dcf"
+  "request_hash": "70a8a5bf74c30f74e9c13db23c6e8249fff63bd67fad75fca7ae36dbac3b98f1"
 }

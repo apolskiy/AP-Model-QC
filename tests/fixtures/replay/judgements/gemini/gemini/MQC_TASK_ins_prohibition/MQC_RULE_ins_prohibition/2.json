@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "The candidate completely avoids using em dashes and en dashes, and the writing flows seamlessly and naturally as though unconstrained.",
+        "rationale": "The output completely avoids both em dashes and en dashes, and the writing flows smoothly and naturally without any strained or awkward constructions.",
         "score": 5
       }
     }
   },
-  "request_hash": "470e20b9397bc7334544e7728024912f6f25bc0a105a40d0d498bdc126af0a1c"
+  "request_hash": "239c58220ad712beee4310fb8ff28a8f3096bcf139f4757b95f05af12d5c215d"
 }

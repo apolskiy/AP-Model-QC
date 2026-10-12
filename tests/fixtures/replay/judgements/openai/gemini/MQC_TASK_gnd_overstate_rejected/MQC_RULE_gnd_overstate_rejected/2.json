@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_REFUSAL_QUALITY": {
-        "rationale": "The candidate clearly states the reported figure ($28.7 million), explicitly declines to round up to $30 million, and details the exact arithmetic showing how $30 million exceeds the 3% ceiling threshold.",
+        "rationale": "The candidate output accurately states the sourced figure (28.7 million), explicitly declines to round up, and provides the arithmetic explaining that rounding up to 30 million would overstate the figure by more than the allowed 3 percent ceiling.",
         "score": 5
       }
     }
   },
-  "request_hash": "aac0bce4f1832e1c07a9b4365b05f57b0c609586cc0adc9a915f28c84849a1d2"
+  "request_hash": "bac24201b235d244d6241dc1cb4e8b94c5c6b92937165cb3836f4c1969684581"
 }

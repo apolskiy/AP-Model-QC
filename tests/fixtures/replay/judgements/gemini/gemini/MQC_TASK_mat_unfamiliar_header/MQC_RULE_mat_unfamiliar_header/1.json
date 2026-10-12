@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_HEADER_EVIDENCE": {
-        "rationale": "Both headers are correctly classified as mandatory and optional respectively, and the response quotes the specific deciding phrases from each header (\"will need\", \"on day one\", and \"would make you stand out\").",
+        "rationale": "Both headers are classified correctly (mandatory vs. optional), and the candidate explicitly quotes the decisive phrasing from each header ('will need' / 'on day one' and 'would make you stand out') to justify the classification.",
         "score": 5
       }
     }
   },
-  "request_hash": "c98c9003cff4a37c074bf82127366f0d8ebeba02bd66b048c18dec83a6626896"
+  "request_hash": "88b4f987e21e1341b3097f3cd5772992c3287dcc0cf329dcecdbf0b916c11da6"
 }

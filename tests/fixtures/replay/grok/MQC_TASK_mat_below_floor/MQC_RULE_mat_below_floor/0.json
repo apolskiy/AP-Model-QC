@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_resume_seventy>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nObservability: Grafana, Prometheus.\nOther: technical writing, mentoring, public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it falls below 78 percent, warn me and name that cutoff, and\ndo not evaluate the nice-to-have requirements at all.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "3dbbc0d643314bf13eb285a282966ece30b02f86bcce4c085bb566d0e151edf2",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 4713,
+    "duration_ms": 5632,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1444,
     "mode": "live",
-    "output_tokens": 84,
-    "raw_reference": "50814f0c-0c57-991f-bf44-7d63ae5a274e",
+    "output_tokens": 32,
+    "raw_reference": "46b75aa4-b3b9-9419-9aac-9f4a25ce58c6",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 70% (7 of 10).**\n\nThat is below the **78 percent** cutoff. Warning: the candidate does not meet the mandatory bar.\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines.  \nMissing: Docker, Kubernetes, Terraform, Ansible, Helm; Kafka; GraphQL.\n\nNice-to-have requirements were not evaluated.",
-    "thinking_tokens": 437,
+    "text": "Mandatory match: 70% (7 of 10).\n\nThat is below the 78 percent cutoff. Nice-to-have requirements were not evaluated.",
+    "thinking_tokens": 420,
     "tool_calls": []
   }
 }

@@ -1,4 +1,25 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>"
+          },
+          {
+            "text": "Using the quarterly report below, state which single region contributed\nthe largest share of total revenue, and give that share as a percentage\nof the total."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "5294794c08050ba04a45bcae85ec2c64aa90df7e3f0b280de0a6f1a171518ece",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
-    "duration_ms": 2783,
+    "duration_ms": 4173,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 106,
     "mode": "live",
-    "output_tokens": 49,
-    "raw_reference": "EUO7auHmDqrTjMcP2K3S8AM",
+    "output_tokens": 43,
+    "raw_reference": "amvMapr7PKPH1MkP697TIA",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the report, **North America** contributed the largest share of total revenue. \n\nIts share was approximately **47.14%** of the total (41.2 million out of 87.4 million).",
-    "thinking_tokens": 340,
+    "text": "Based on the report, **North America** contributed the largest share of total revenue, accounting for approximately **47.14%** (41.2 million out of 87.4 million).",
+    "thinking_tokens": 346,
     "tool_calls": []
   }
 }

@@ -1,4 +1,25 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_posting_odd_headers>\nWhat you will need on day one.\n1. Python.\n2. SQL.\n\nWhat would make you stand out.\n3. Grafana.\n4. Technical writing.\n</document>"
+          },
+          {
+            "text": "The posting below groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "7a0c06a79fcee871e4f6c2aceff21c83e752c26829410dd3cfcf10fc26cce1b9",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 3288,
+    "duration_ms": 5681,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 90,
     "mode": "live",
-    "output_tokens": 149,
-    "raw_reference": "ZS-7atm7EN2p1MkP08Lo8AY",
+    "output_tokens": 148,
+    "raw_reference": "y2_Matr2NcOw1MkP2ZKvmA8",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the document, here is the breakdown for each header:\n\n* **\"What you will need on day one.\"**\n  * **Status:** **Mandatory**\n  * **Why:** The phrase **\"will need\"** expresses a strict necessity, and **\"on day one\"** indicates that these skills are baseline requirements you must already possess upon starting the job.\n\n* **\"What would make you stand out.\"**\n  * **Status:** **Optional** (preferred / \"nice-to-have\")\n  * **Why:** The conditional phrase **\"would make you stand out\"** indicates that these skills are not strictly required, but rather bonus qualifications that give an applicant a competitive edge.",
-    "thinking_tokens": 334,
+    "text": "Based on the document, here is the breakdown for each header:\n\n1. **\"What you will need on day one.\"**\n   * **Status:** Mandatory.\n   * **Reasoning:** The phrase **\"will need\"** indicates a strict requirement or necessity, and specifying **\"on day one\"** shows that these skills are non-negotiable prerequisites expected immediately upon starting the role.\n\n2. **\"What would make you stand out.\"**\n   * **Status:** Optional (preferred / nice-to-have).\n   * **Reasoning:** The phrase **\"would make you stand out\"** signifies qualities that provide a competitive advantage or bonus value rather than baseline requirements for the job.",
+    "thinking_tokens": 369,
     "tool_calls": []
   }
 }

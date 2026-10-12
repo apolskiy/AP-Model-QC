@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "The module below redeems coupon codes by looking them up. Nothing in\nit limits how long a code stays redeemable, so every code ever issued\nremains valid indefinitely.\n\nRecommend how the design should bound a code's lifetime, and say what\nthe lookup would have to carry for that bound to be enforceable.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "a5b5aa841b8de182823ea16da5cacc3fafe6cb8576c2ba263277c54d759ec801",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +19,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 3185,
+    "duration_ms": 2153,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 170,
     "mode": "live",
-    "output_tokens": 338,
-    "raw_reference": "chatcmpl-EUISOzAtOFSgJrkglLO37IxnYerGn",
+    "output_tokens": 222,
+    "raw_reference": "chatcmpl-EY2c8mD4bm8tyr1U8v3GDiVMKtLGP",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "To **bound a coupon code's lifetime**, the design should associate each code with validity information\u2014typically an *expiration date* (or a redeem-by timestamp), possibly also an activation/start date. This allows the system to reject codes that have expired or are not yet valid.\n\n**Recommended changes:**\n\n1. **Define validity period for each coupon code.**\n   - When issuing a coupon, specify its expiration date (and, if necessary, its activation/start date).\n\n2. **Coupon lookup data must include this validity information.**\n   - Instead of having `coupon_lookup` map each code to just its value, have it map to a data structure holding both the value and the expiration/validity period.\n\n   For example:\n   ```python\n   coupon_lookup = {\n       \"ABC123\": {\"value\": 15, \"expires\": \"2024-12-31\"},\n       \"XYZ999\": {\"value\": 10, \"starts\": \"2024-07-01\", \"expires\": \"2024-08-01\"},\n   }\n   ```\n\n3. **Enforce the validity period on lookup.**\n   - When redeeming, check the current date against the code's validity period. Only allow redemption if today is between `starts` (if present) and `expires`.\n\n**In summary:**\n- **Bound:** Coupon code must have a validity window: start and/or expiration date.\n- **Lookup carries:** Each code's value **and** its validity window (in the form of timestamps or date strings).\n\nThis approach enables the business to control for how long a coupon remains valid and allows the lookup/redeem logic to enforce this bound.",
+    "text": "**Recommendation: Bound Coupon Code Lifetime**\n\nTo *bound a code's lifetime*, each coupon code needs an **expiration policy**. The system should *store an expiration date or time window* with each code. When redeeming, the system must check that the code has not expired.\n\n**Changes to Lookup (for enforceability):**\n\n- **Store:** Each code in `coupon_lookup` (or in whatever backing store) should be paired not only with its discount/redeem amount but also an **expiration date or timestamp**.\n    - For example:  \n      `coupon_lookup = { ... \"CODE1\": {\"amount\": 10, \"expires\": datetime(2024,7,1)}, ... }`\n- **Check:** Before redeeming, the redemption logic must check that the current time is less than the `expires` for the given code.\n\n**Summary:**  \nTo bound a code's lifetime, each code's data must carry an **expiration field** (typically a timestamp or date), and the lookup/redeem code must verify the code is unexpired at time of use.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

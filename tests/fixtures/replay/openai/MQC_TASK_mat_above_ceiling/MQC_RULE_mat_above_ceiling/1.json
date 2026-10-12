@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_resume_ninety>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nInfrastructure: Docker, Kubernetes, Terraform, Ansible, Helm.\nStreaming: Kafka.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "2f8971019359432c1015b3e2a29e04899f955c1451bcc649eda6839f3ea2d7e9",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +23,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 2216,
+    "duration_ms": 1545,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 208,
     "mode": "live",
-    "output_tokens": 318,
-    "raw_reference": "chatcmpl-EUIWTDnBcsU64EIDolHY1647IuAMx",
+    "output_tokens": 154,
+    "raw_reference": "chatcmpl-EY2ilvzxX2PNQTLKJgJEJrqgQNSFs",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Assessment of Candidate Against Posting**\n\n**Mandatory Requirements in Posting:**  \n1. Python  \n2. SQL  \n3. Linux administration  \n4. Git  \n5. REST API design  \n6. Unit testing  \n7. CI pipelines  \n8. Docker, Kubernetes, Terraform, Ansible, Helm  \n9. Kafka  \n10. GraphQL  \n\n**Candidate's Skills (from Resume):**  \n- Python  \n- SQL  \n- Linux administration  \n- Git  \n- REST API design  \n- Unit testing  \n- CI pipelines  \n- Docker, Kubernetes, Terraform, Ansible, Helm  \n- Kafka  \n\n**Comparison Table:**\n\n| # | Requirement                             | Candidate Has? |\n|---|-----------------------------------------|:-------------:|\n| 1 | Python                                 | Yes           |\n| 2 | SQL                                    | Yes           |\n| 3 | Linux administration                   | Yes           |\n| 4 | Git                                    | Yes           |\n| 5 | REST API design                        | Yes           |\n| 6 | Unit testing                           | Yes           |\n| 7 | CI pipelines                           | Yes           |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Yes   |\n| 9 | Kafka                                  | Yes           |\n|10 | GraphQL                                | No            |\n\n**Matched Requirements:** 9 / 10  \n**Mandatory Match Percentage:** 90%\n\n**Conclusion:**  \nThe candidate matches 90% of the mandatory requirements (9 out of 10). This meets the threshold (\u226585%). Proceed. The nice-to-have set does not affect the outcome.",
+    "text": "**Assessment**\n\n**Mandatory Requirements (10 items):**\n\n1. Python \u2013 **Matched**\n2. SQL \u2013 **Matched**\n3. Linux administration \u2013 **Matched**\n4. Git \u2013 **Matched**\n5. REST API design \u2013 **Matched**\n6. Unit testing \u2013 **Matched**\n7. CI pipelines \u2013 **Matched**\n8. Docker, Kubernetes, Terraform, Ansible, Helm \u2013 **Matched**\n9. Kafka \u2013 **Matched**\n10. GraphQL \u2013 **Not matched**\n\n**Number matched:** 9 out of 10  \n**Match percentage:** 90%\n\n**Conclusion:**  \nThe candidate matches 90% of the mandatory requirements, which exceeds the 85% threshold. Proceeding as instructed. The nice-to-have set does not affect the outcome.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

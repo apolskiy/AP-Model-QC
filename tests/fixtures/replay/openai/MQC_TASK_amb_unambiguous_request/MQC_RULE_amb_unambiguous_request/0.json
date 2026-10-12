@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_change_request_precise>\nChange request CR-119: set alert_threshold to 90. Leave retry_threshold\nunchanged at 3.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_config_thresholds>\nretry_threshold: 3\nalert_threshold: 85\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Apply the change request below to the configuration that follows it.\n\nIf the request does not give you what you need to apply it unambiguously,\nask for the missing detail instead of choosing for me.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "881267e4b537588f70c6c3a0cd5bf7469080a5a4d1dd936609f668b5428abea5",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +23,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
-    "duration_ms": 1597,
+    "duration_ms": 2423,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 115,
     "mode": "live",
-    "output_tokens": 29,
-    "raw_reference": "chatcmpl-EUIM7uDXh0GRcEh1NedOPguuBr8XB",
+    "output_tokens": 35,
+    "raw_reference": "chatcmpl-EY2U3VOI1YBJpM3rZFKLn9lc0nOeF",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Here is the updated configuration after applying Change Request CR-119:\n\n```yaml\nretry_threshold: 3\nalert_threshold: 90\n```",
+    "text": "Here is the updated configuration with the change request applied:\n\n<document id=DOC_config_thresholds>\nretry_threshold: 3\nalert_threshold: 90\n</document>",
     "thinking_tokens": 0,
     "tool_calls": []
   }

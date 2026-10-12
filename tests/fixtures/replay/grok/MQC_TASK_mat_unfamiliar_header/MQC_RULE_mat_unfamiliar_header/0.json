@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_odd_headers>\nWhat you will need on day one.\n1. Python.\n2. SQL.\n\nWhat would make you stand out.\n3. Grafana.\n4. Technical writing.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "The posting below groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "2eb318edfc608407f95898cc544415cbdf9867338483823fc5c4362855884b56",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 2958,
+    "duration_ms": 4622,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1325,
     "mode": "live",
-    "output_tokens": 82,
-    "raw_reference": "e7cd2e0a-8f58-98e2-96a5-a09cdbc7a8f4",
+    "output_tokens": 69,
+    "raw_reference": "cbd915ed-526e-9403-a365-3dfaf3f3a7d0",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**\"What you will need on day one.\" \u2014 mandatory.**  \n\"Will need\" states a requirement, and \"on day one\" means those skills are expected from the start (Python, SQL).\n\n**\"What would make you stand out.\" \u2014 optional.**  \n\"Would make you stand out\" describes differentiators that help you stand out, not must-haves (Grafana, technical writing).",
-    "thinking_tokens": 168,
+    "text": "**\"What you will need on day one.\"** \u2014 mandatory. \"Will need\" states a requirement, and \"on day one\" means you must already have it when you start.\n\n**\"What would make you stand out.\"** \u2014 optional. \"Would make you stand out\" describes a differentiator, not something you must have.",
+    "thinking_tokens": 201,
     "tool_calls": []
   }
 }

@@ -1,4 +1,26 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_excerpt_api>\nimport httpx\n\ndef fetch_profile(client, user_id):\n    response = client.get(f\"/users/{user_id}\")\n    return response.json()\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Describe what the function below does, naming only the calls and\nattributes that appear in it.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "6b940c4f9efa41873b13fc10ecfe4f7cf6b78469ddad7dbea68e76b64bd4875f",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +28,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
-    "duration_ms": 5749,
+    "duration_ms": 7101,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 99,
     "mode": "live",
-    "output_tokens": 462,
-    "raw_reference": "msg_011CfcYPAgQB2hpvV97mLsez",
+    "output_tokens": 585,
+    "raw_reference": "msg_011Cfwm46cdYA1g4TqsADpU9",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "I don't see a function after your message, so I'm assuming you mean `fetch_profile` from the document above.\n\n```python\ndef fetch_profile(client, user_id):\n    response = client.get(f\"/users/{user_id}\")\n    return response.json()\n```\n\n1. **Parameters:** It takes a `client` and a `user_id`.\n2. **Request:** It calls `client.get(...)` with a path built by an f-string, `f\"/users/{user_id}\"`. For example, a `user_id` of `42` produces the path `/users/42`.\n3. **Result:** It stores the return value of `client.get` in `response`.\n4. **Return value:** It calls `response.json()` and returns the result.\n\nThe only calls in the function are `client.get` and `response.json`. The only attributes accessed are `get` on `client` and `json` on `response`.\n\nThe module imports `httpx`, but the function never references `httpx` directly. It simply uses whatever `client` object it receives.\n\nIf you meant a different function, please paste it and I'll describe that one instead.",
+    "text": "I don't see a function after your message, but the excerpt above contains one, `fetch_profile`. Here's what it does:\n\n```python\ndef fetch_profile(client, user_id):\n    response = client.get(f\"/users/{user_id}\")\n    return response.json()\n```\n\n1. **Takes two arguments:** `client`, an object used to make HTTP requests, and `user_id`, the identifier of the user to look up.\n2. **Builds the request path:** It uses an f-string to insert `user_id` into the path `/users/{user_id}`. For example, `user_id = 42` produces `/users/42`.\n3. **Sends a GET request:** It calls `client.get(...)` with that path and stores the result in `response`. The path is relative, so `client` presumably has a base URL configured.\n4. **Parses and returns the body:** It calls `response.json()` to decode the response body as JSON and returns the result, typically a dictionary representing the user's profile.\n\nSome things the function doesn't do:\n- It never checks the response status, so error responses such as 404 or 500 are parsed and returned like successful ones, as long as their bodies are valid JSON.\n- If the body isn't valid JSON, the `response.json()` call raises an exception.\n- The module imports `httpx`, but the function never references it. It relies entirely on whatever `client` object the caller passes in.\n\nIf you meant a different function, paste it and I'll describe that one.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_availability_week>\nMeasured availability: 99.1 percent.\nIncidents this week: one lasting 12 minutes, one lasting 41 minutes.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Using the readings below, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "2e0f0b24b82ab54e17323b4109628ace5f47da2e2a8aee1af1f4dc79f3d1bd21",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +19,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 2219,
+    "duration_ms": 1276,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 110,
     "mode": "live",
-    "output_tokens": 148,
-    "raw_reference": "chatcmpl-EUIMXj96GkWa2GhWQs2kfZXdUzU5i",
+    "output_tokens": 114,
+    "raw_reference": "chatcmpl-EY2UYcTh3w2B9SlVNXsE0NFKYMeLp",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Warning: Both gates were not met this week.\n\n- **Availability Gate**: The measured availability was **99.1%**, which is **0.4% below** the required minimum of 99.5%.\n- **Incident Duration Gate**: Both incidents (12 minutes and 41 minutes) were **under** the 60-minute maximum; **this gate was met**.\n\n**Summary (with warning):**  \nThis week\u2019s measured availability was 99.1%, below the required 99.5% threshold. There were two incidents, lasting 12 minutes and 41 minutes respectively, neither exceeding the maximum allowed duration of 60 minutes. Please note that overall availability fell short of requirements by 0.4%.",
+    "text": "Warning: The availability did not meet the required gates.\n\n- The measured availability this week was 99.1%, which is below the minimum requirement of 99.5% (gap: \u20130.4%).\n- No single incident exceeded 60 minutes (the longest was 41 minutes), so the incident duration gate was met.\n\n**Weekly Availability Summary**\n\n- Measured availability: 99.1%\n- Number of incidents: 2\n  - 12 minutes\n  - 41 minutes\n\nAction may be required to address the failed availability threshold.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

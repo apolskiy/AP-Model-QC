@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_WARNS_ONLY_WHERE_DUE": {
-        "rationale": "The candidate clearly warned about the availability gate failure, precisely stated the margin (0.4% below required), and explicitly confirmed that the incident duration gate held (longest incident 41 minutes vs 60-minute limit).",
+        "rationale": "The candidate clearly warns that Gate 1 (Availability) failed, specifies the exact margin of failure (0.4% below the 99.5% requirement), and explicitly states that Gate 2 (incident duration) passed/held.",
         "score": 5
       }
     }
   },
-  "request_hash": "fade45dc560fdcdceb35ae227b0b8533fdccb381d84f28be337a2d6cf0f7c5c0"
+  "request_hash": "d03a404a2bd82b23f40cfa4f223cce099432f8d8814563f9ab4018fe67deb035"
 }

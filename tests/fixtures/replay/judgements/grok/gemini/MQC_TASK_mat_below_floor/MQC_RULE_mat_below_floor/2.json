@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The candidate output warns that the score is below the 78% cutoff and states that nice-to-have requirements were not evaluated, but it does not specify which mandatory requirements were unmet (Kafka, GraphQL, and the infrastructure line).",
+        "rationale": "The response includes a warning and mentions the 78 percent cutoff, but it does not specify any of the unmet mandatory requirements (Kafka, GraphQL, and the infrastructure tools).",
         "score": 3
       }
     }
   },
-  "request_hash": "ce6da3837115228e8076e937d3518ce0a8809bcd8fcbbb713a44d85bff9c9075"
+  "request_hash": "2c336c01658b1725f6f7907c1ad7be1e025ffaefea23100a771bcfa01b336b5e"
 }

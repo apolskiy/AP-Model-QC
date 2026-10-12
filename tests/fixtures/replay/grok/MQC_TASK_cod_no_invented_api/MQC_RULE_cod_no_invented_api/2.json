@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_excerpt_api>\nimport httpx\n\ndef fetch_profile(client, user_id):\n    response = client.get(f\"/users/{user_id}\")\n    return response.json()\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Describe what the function below does, naming only the calls and\nattributes that appear in it.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "6b71f3408dfaa2406effe4dbd0dde7b4f66c52e61a10c77f311ab544d107af68",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
-    "duration_ms": 3737,
+    "duration_ms": 3457,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1312,
     "mode": "live",
-    "output_tokens": 42,
-    "raw_reference": "16a28f8b-4c04-9190-928a-1aa5b5ac57b6",
+    "output_tokens": 29,
+    "raw_reference": "09ead1fa-b422-9a28-bafc-0e7b4701ffb4",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function `fetch_profile` takes `client` and `user_id`, calls `client.get` with `f\"/users/{user_id}\"`, and returns the result of `response.json()`.",
-    "thinking_tokens": 295,
+    "text": "`fetch_profile` calls `client.get` with the path `/users/{user_id}`, then returns the result of `response.json()`.",
+    "thinking_tokens": 206,
     "tool_calls": []
   }
 }

@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_resume_at_floor>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nInfrastructure: Docker, Kubernetes, Terraform, Ansible.\nObservability: Grafana, Prometheus.\nOther: technical writing, mentoring, public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate against the posting below. A numbered requirement that\nlists several items counts as one requirement, credited in proportion to how\nmany of those items the candidate shows. Report the mandatory match\npercentage. If it lands between 78 and 84 percent, also report the combined\nfigure over all requirements and proceed only if that reaches 85 percent.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "5e377e352f8c1e404fd739ac4070c31177e029e860d451fe30a66b109430f8bd",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 12001,
+    "duration_ms": 23545,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1483,
     "mode": "live",
-    "output_tokens": 151,
-    "raw_reference": "5eabeba8-1d7c-9baa-ae3c-20fa73c50b43",
+    "output_tokens": 173,
+    "raw_reference": "c2e0a592-b0f3-9630-b8ff-d02513929142",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 78%.**\n\nThat falls in the 78\u201384% band, so the combined figure is also required.\n\n**Combined match (all 15 requirements): 85.3% (12.8/15).** That meets the 85% bar.\n\nCredit:\n- Mandatory 1\u20137: full (Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines).\n- Mandatory 8: 4/5 (Docker, Kubernetes, Terraform, Ansible; Helm missing).\n- Mandatory 9\u201310: none (Kafka, GraphQL missing).\n- Nice-to-have 11\u201315: full (Grafana, Prometheus, technical writing, mentoring, public speaking).",
-    "thinking_tokens": 1045,
+    "text": "**Mandatory match: 78%.** Combined match: **85.3%** (12.8/15). Combined reaches 85%, so the assessment proceeds.\n\n**Mandatory (7.8/10)**  \n1. Python \u2014 met  \n2. SQL \u2014 met  \n3. Linux administration \u2014 met  \n4. Git \u2014 met  \n5. REST API design \u2014 met  \n6. Unit testing \u2014 met  \n7. CI pipelines \u2014 met  \n8. Docker, Kubernetes, Terraform, Ansible, Helm \u2014 4/5 (Helm not shown)  \n9. Kafka \u2014 not shown  \n10. GraphQL \u2014 not shown  \n\n**Nice to have (5/5)**  \nGrafana, Prometheus, technical writing, mentoring, and public speaking are all shown.\n\n**Gaps:** Kafka, GraphQL, and Helm. Everything else on the posting is covered.",
+    "thinking_tokens": 1528,
     "tool_calls": []
   }
 }

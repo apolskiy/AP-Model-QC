@@ -1,4 +1,30 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_req_closed_and>\nRequired: Docker, Kubernetes.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_candidate_docker>\nContainers and orchestration: Docker.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "State what percentage of the requirement below the candidate meets, and\nshow how you arrived at it.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "17b60773051abcad1cb19791d87533bd9a916f5570c94edbe4a83ab1466780b6",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +32,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 6513,
+    "duration_ms": 6590,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 103,
     "mode": "live",
-    "output_tokens": 629,
-    "raw_reference": "msg_011CfcZFwS5rXgudMDJ4Rfpf",
+    "output_tokens": 580,
+    "raw_reference": "msg_011CfwnNjNqS1Xtn6bUh3g2s",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "# Requirement Coverage: 50%, but the Requirement Is Not Met\n\n## How I arrived at it\n\n**1. What the requirement asks for**\nDOC_req_closed_and says: *\"Required: Docker, Kubernetes.\"* That is two required items, and both are needed.\n\n**2. What the candidate shows**\nDOC_candidate_docker says: *\"Containers and orchestration: Docker.\"*\n\n| Required item | Evidence in candidate document | Met? |\n|---|---|---|\n| Docker | Explicitly listed | \u2705 Yes |\n| Kubernetes | Not mentioned | \u274c No |\n\n**3. The calculation**\n1 item met \u00f7 2 items required = **50%**\n\n## Why 50% is not a pass\n\nThe requirement is a closed \"and\" list, so it is satisfied only if **every** item is present. Measured item by item, the candidate covers 50%. Measured against the requirement as a whole, the candidate **does not meet it**, because Kubernetes is missing.\n\n## Why I did not credit Kubernetes\n\nThe candidate's heading mentions \"orchestration,\" and Kubernetes is an orchestration tool. However, the only tool actually listed under that heading is Docker. The heading describes a category, not a skill, so I did not assume Kubernetes experience from it. If the candidate has used Kubernetes, or Docker Swarm or another orchestrator, you would need to confirm that directly.",
+    "text": "# Result: 50% of the listed items, but the requirement as a whole is not met\n\n## Step 1: Break down the requirement\n\nDOC_req_closed_and says: \"Required: Docker, Kubernetes.\"\n\nThat gives two items, and both are required:\n1. Docker\n2. Kubernetes\n\n## Step 2: Check the candidate against each item\n\nDOC_candidate_docker says: \"Containers and orchestration: Docker.\"\n\n| Required item | Evidence in candidate document | Met? |\n|---|---|---|\n| Docker | \"Docker\" is explicitly listed | \u2705 Yes |\n| Kubernetes | Not mentioned anywhere | \u274c No |\n\nThe heading \"Containers and orchestration\" might suggest orchestration experience, but the only tool listed under it is Docker. A category label is not evidence of Kubernetes, so I don't count it.\n\n## Step 3: Calculate\n\n- Items met: 1\n- Items required: 2\n- 1 \u00f7 2 \u00d7 100 = **50%**\n\n## Step 4: Interpret\n\nThe 50% figure measures partial coverage. But the requirement is a closed list of required items that must all be present, so on a strict pass/fail reading the candidate **does not meet the requirement**. The gap is Kubernetes. The candidate would need to show Kubernetes experience to satisfy it fully.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The candidate output includes a clear warning, explicitly names the 78% cutoff, and specifically details the unmet mandatory requirements (Docker, Kubernetes, Terraform, Ansible, Helm, Kafka, and GraphQL) while omitting the nice-to-have section.",
+        "rationale": "The candidate output explicitly warns that the mandatory match is below the 78% cutoff, omits evaluation of the optional requirements, and specifically names all unmet requirements (containers/infrastructure-as-code, Kafka, and GraphQL).",
         "score": 5
       }
     }
   },
-  "request_hash": "06e27aa6d7f475030c6b9a237866cd8fc349f4a9cd7ba75604b564b41f7d1a17"
+  "request_hash": "94050c2b25f60bc16375fd4b4ac4b6558f725264aca0a83e7865577b59d76965"
 }

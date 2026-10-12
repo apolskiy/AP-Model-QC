@@ -1,4 +1,25 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_excerpt_top_scorers_syntactic>\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True\n    return ranked[:limit]\n</document>"
+          },
+          {
+            "text": "The excerpt below does not parse. Correct the syntax and return the\ncorrected function, changing nothing else: keep every literal, key and\nargument exactly as written."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "6791aaf32e3914daac83f511ec50b24f8e56a21849dd43399a4c392540efd2e5",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_literals::MQC_RULE_cod_preserves_literals",
-    "duration_ms": 2166,
+    "duration_ms": 3632,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 92,
     "mode": "live",
     "output_tokens": 43,
-    "raw_reference": "wEK7atiINaCvjMcPmoOfuAQ",
+    "raw_reference": "92rMasCVMcXh_uMPyN6L8Ak",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",
-    "thinking_tokens": 198,
+    "thinking_tokens": 149,
     "tool_calls": []
   }
 }

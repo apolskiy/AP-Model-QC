@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_release_note>\nRelease 4.2 closes three reported defects. The importer no longer\ndrops a trailing column when a file ends without a newline. The\nscheduler retries a failed job twice before reporting it. The audit\nlog records the account that performed a deletion.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Summarise the release note below as a bulleted list.\n\nUse at most three bullets. Keep every sentence to at most twelve words.\nBegin each bullet with a capital letter and write it as a complete\nsentence with a subject and a verb.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "20b7c0a27e501a601adb903674f693b49fabc3cf21d7d17c35b080aee813fbd4",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_complete_sentence",
-    "duration_ms": 7610,
+    "duration_ms": 6963,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1356,
     "mode": "live",
-    "output_tokens": 33,
-    "raw_reference": "33bc7a39-2f7f-9f9e-a79c-7e995746772d",
+    "output_tokens": 35,
+    "raw_reference": "ae5f6fe8-bcf8-9edf-bb6b-e9d43ddb1c18",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "- The importer keeps trailing columns when files lack newlines.\n- The scheduler retries failed jobs twice before reporting them.\n- The audit log records the account performing a deletion.",
-    "thinking_tokens": 1034,
+    "text": "- The importer keeps a trailing column without a newline.\n- The scheduler retries a failed job twice before reporting it.\n- The audit log records the account that performed a deletion.",
+    "thinking_tokens": 421,
     "tool_calls": []
   }
 }

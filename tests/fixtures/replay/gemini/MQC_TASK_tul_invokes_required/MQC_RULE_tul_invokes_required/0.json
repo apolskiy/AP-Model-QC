@@ -1,4 +1,84 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      },
+      "system_instruction": "You are an order support assistant. Use the tools provided to answer.\nNever invent an order status you have not looked up.",
+      "tools": [
+        {
+          "function_declarations": [
+            {
+              "description": "Return the current status and history of one order.",
+              "name": "lookup_order",
+              "parameters": {
+                "properties": {
+                  "include_history": {
+                    "type": "boolean"
+                  },
+                  "order_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "order_id"
+                ],
+                "type": "object"
+              }
+            },
+            {
+              "description": "Refund an order. Moves money and cannot be undone.",
+              "name": "issue_refund",
+              "parameters": {
+                "properties": {
+                  "amount": {
+                    "type": "number"
+                  },
+                  "order_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "order_id",
+                  "amount"
+                ],
+                "type": "object"
+              }
+            },
+            {
+              "description": "Search the customer policy handbook for a phrase.",
+              "name": "search_policy",
+              "parameters": {
+                "properties": {
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "query": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "query"
+                ],
+                "type": "object"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "What is the current status of order A-4471?"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "8d146d2fddd8e157e6bb0d9a829bdea14de95a25d293cfd021791ffd7cf09b6a",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,23 +86,23 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_invokes_required::MQC_RULE_tul_invokes_required",
-    "duration_ms": 1997,
+    "duration_ms": 3063,
     "engine": "gemini",
     "finish_reason": "tool_calls",
     "input_tokens": 222,
     "mode": "live",
     "output_tokens": 23,
-    "raw_reference": "eC-7ara6GdKh1MkPwfjL-QY",
+    "raw_reference": "E3HMas6DFv2b_uMPj8_lqAE",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "",
-    "thinking_tokens": 70,
+    "thinking_tokens": 107,
     "tool_calls": [
       {
         "arguments": {
           "order_id": "A-4471"
         },
-        "call_id": "call_333656",
+        "call_id": "call_918047",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

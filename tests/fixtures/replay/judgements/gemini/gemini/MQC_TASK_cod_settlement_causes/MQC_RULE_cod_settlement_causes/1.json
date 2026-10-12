@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly diagnoses each independent defect in the function (the discount arithmetic calculating the reduction rather than the post-discount balance, unhandled KeyError on unrecognised coupons, ignoring multiple coupons by indexing only index 0, and failing to clamp negative balances). For each independent cause, it explains the underlying issue and provides the correct remedy.",
+        "rationale": "The candidate clearly identifies the independent causes behind the bugs (inverted discount arithmetic, direct dictionary lookup causing KeyErrors, indexing only the first coupon element, and unclamped subtraction leading to negative amounts) and provides the correct remedy for each while keeping them distinct.",
         "score": 5
       }
     }
   },
-  "request_hash": "c3dd2a7c9e6e99b7d26068fa8279ab476141d3d3d7528c038effb6b216d7cd07"
+  "request_hash": "65cf1607188547736c343c5a8b6f2be6bbd4a9904ad5773a4a24f6974f547494"
 }

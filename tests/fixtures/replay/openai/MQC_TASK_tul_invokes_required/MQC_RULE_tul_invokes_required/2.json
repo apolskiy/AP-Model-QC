@@ -1,4 +1,83 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "You are an order support assistant. Use the tools provided to answer.\nNever invent an order status you have not looked up.",
+        "role": "system"
+      },
+      {
+        "content": "What is the current status of order A-4471?",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1",
+    "tools": [
+      {
+        "function": {
+          "description": "Return the current status and history of one order.",
+          "name": "lookup_order",
+          "parameters": {
+            "properties": {
+              "include_history": {
+                "type": "boolean"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Refund an order. Moves money and cannot be undone.",
+          "name": "issue_refund",
+          "parameters": {
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "amount"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the customer policy handbook for a phrase.",
+          "name": "search_policy",
+          "parameters": {
+            "properties": {
+              "limit": {
+                "type": "integer"
+              },
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
   "request_hash": "3157af21ea991f5aea2fdd8913c943a9e8e91ecccaa701bcaddbe2cf79cd3524",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,13 +85,13 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_invokes_required::MQC_RULE_tul_invokes_required",
-    "duration_ms": 1216,
+    "duration_ms": 1073,
     "engine": "openai",
     "finish_reason": "tool_calls",
     "input_tokens": 148,
     "mode": "live",
     "output_tokens": 23,
-    "raw_reference": "chatcmpl-EUIZr5M4fkoDUYOtt0A6r1AG7CiLR",
+    "raw_reference": "chatcmpl-EY2n8CSt6jqFBiCmBViDP4AqEzJJC",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
     "text": "",
@@ -23,7 +102,7 @@
           "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "call_HPuKjHbljql7aRS2eZMefaD2",
+        "call_id": "call_0tWhIBtg9FVec6jaEwM2HSmO",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

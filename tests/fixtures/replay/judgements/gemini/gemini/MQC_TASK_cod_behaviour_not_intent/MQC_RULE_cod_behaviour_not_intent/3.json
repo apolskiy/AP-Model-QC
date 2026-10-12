@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_NAMES_THE_DISCARD": {
+        "rationale": "The response correctly identifies the return value (the rows scoring 10 and 90 in their original input order) and explicitly explains that sorted() returns a new list that is discarded because it is never assigned to a variable.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "d7d057377ef3fe9dbea40429049e589291367535ea1f074aa4a841c874ed112b"
+}

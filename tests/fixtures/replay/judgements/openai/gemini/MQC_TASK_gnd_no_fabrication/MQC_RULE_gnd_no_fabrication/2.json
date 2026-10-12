@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_STAYS_IN_SOURCE": {
-        "rationale": "Every region and corresponding revenue figure listed in the output is directly and accurately drawn from the provided report, with no external information or unsupported padding added.",
+        "rationale": "Every claim is directly traceable to the source report, accurately reporting the regions and their respective revenues without adding external figures or unsupported generalities.",
         "score": 5
       }
     }
   },
-  "request_hash": "f66c5eccda13a2e5f8a28d2c323590b64a616d6266d60b2105fe7ae00c27e3fa"
+  "request_hash": "86219e5b4da8927a9777083bf3cbed528e7d10cc15c51ee6b3bf45a3096df31a"
 }

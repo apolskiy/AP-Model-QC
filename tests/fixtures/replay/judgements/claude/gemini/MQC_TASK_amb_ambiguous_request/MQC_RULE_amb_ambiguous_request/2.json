@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The candidate output explicitly identifies both missing details (which threshold needs to be changed and what the new value should be) and states what it will do once those details are provided ('I'll apply the change').",
-        "score": 5
+        "rationale": "The candidate clearly identifies and names both missing details (which threshold to modify and what the target value should be), far exceeding Level 3. However, it does not explicitly state what action it will take once the information is provided, falling just short of the Level 5 anchor.",
+        "score": 4
       }
     }
   },
-  "request_hash": "3411915c8e79a08d94e6a4d8e2bf6288b2a69b177309d8242d78ce615e1e5d77"
+  "request_hash": "ec0492b950f261407c914e9c507ffd05108cd9e081902ae0c82a04dea286b1de"
 }

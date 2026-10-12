@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Review the function below and list every defect you find. For each,\nsay what goes wrong and who is affected.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
-    "duration_ms": 45855,
+    "duration_ms": 51078,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1455,
     "mode": "live",
-    "output_tokens": 557,
-    "raw_reference": "ea1511c7-aa07-98e2-afe5-f958bf40392e",
+    "output_tokens": 452,
+    "raw_reference": "aa5949fb-3f10-9b72-814e-64dac1b23c58",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math is wrong, and several inputs crash checkout. Against the 100-unit calls, the first two succeed but charge the wrong amount; the third raises.\n\n1. **Discount percent is treated as the amount due.** `total_amount * discount / 100 - coupon_sum` charges the discount slice, not the remainder. A 20% standard discount on 100 becomes 20 before the coupon, not 80. Premium (30) is charged *more* than standard (20), so the tier benefit is inverted. **Affected:** every buyer is undercharged; premium buyers are treated worse than standard; the merchant loses the sale price.\n\n2. **Those two successful production calls return the wrong money.** `(\"standard\", 100, [\"SAVE30\"], \u2026)` returns **-10**, not 50. `(\"standard\", 100, [\"SAVE20\"], \u2026)` returns **0**, not 60. There is no floor at zero, so a large coupon becomes a credit/refund. **Affected:** the buyer (windfall or a stuck negative charge) and the merchant (lost revenue, bad ledger entries).\n\n3. **Only the first coupon is applied.** `coupon_sum` reads `coupon_codes[0]` and never sums the list. Extra codes are silently ignored. **Affected:** buyers who stack coupons do not get the discount the argument list implies.\n\n4. **Unknown coupon crashes.** `coupon_lookup[coupon_codes[0]]` raises `KeyError` when the code is missing. The third call, `[\"NOPE\"]` against `{\"SAVE30\": 30}`, does this. **Affected:** the buyer (checkout dies instead of a rejected-coupon error) and whoever operates the service (unhandled exception).\n\n5. **Unknown tier crashes.** `DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for anything other than `\"standard\"` or `\"premium\"`. **Affected:** buyers on any other tier, and the service.\n\n6. **No coupons crashes.** `coupon_codes[0]` raises `IndexError` on an empty list. **Affected:** buyers checking out without a coupon.\n\n7. **Money is a binary float.** `/` yields a float, so totals can be off by fractions of a unit. **Affected:** buyers and finance (penny drift, reconciliation mismatches).\n\n8. **No validation of amount or coupon value.** Negative totals, non-numeric values, or a coupon larger than the discounted total are not rejected. Combined with (1) and (2), that either throws `TypeError` mid-checkout or posts a negative amount owed. **Affected:** the buyer, the merchant, and downstream billing.",
-    "thinking_tokens": 3055,
+    "text": "The settlement math is wrong, and invalid inputs crash checkout. Against the 100-unit calls, standard customers are billed \u221210, 0, or not at all.\n\n1. **Discount percent is applied as the amount due, not as a reduction.** `total_amount * discount / 100` treats 20 as \u201ccharge 20%,\u201d not \u201ctake 20% off.\u201d A standard 100-unit basket becomes 20 before coupons; a premium basket would become 30, so premium pays more than standard. Customers are undercharged (premium relatively overcharged versus standard), and the merchant loses most of the sale.\n\n2. **The coupon is subtracted from that already-wrong figure, and the result is not floored.** `amount_owed = total_amount * discount / 100 - coupon_sum` can go negative. `[\"SAVE30\"]` returns \u221210; `[\"SAVE20\"]` returns 0 instead of a positive balance near 60\u201380. Customers can be credited or zeroed out; payments and accounting break; the merchant eats the loss.\n\n3. **Only the first coupon is used.** `coupon_codes[0]` ignores every later code, despite the plural argument and the name `coupon_sum`. Stacked coupons never add up. Customers who hold more than one code are shorted; anyone relying on a true sum gets a partial discount.\n\n4. **Unknown coupon codes raise `KeyError`.** `[\"NOPE\"]` with lookup `{\"SAVE30\": 30}` crashes instead of rejecting the code. That customer cannot check out; support sees a production exception.\n\n5. **No coupons crash as well.** An empty `coupon_codes` hits `IndexError` on `[0]`. Customers without a code cannot settle.\n\n6. **Unknown tiers crash.** Any `account_tier` other than `\"standard\"` or `\"premium\"` raises `KeyError` on `DISCOUNT_BY_TIER`. Those accounts cannot check out.\n\n7. **Money is computed with binary float division.** `/` yields a float, so totals can be off by fractions of a unit. Customers can be mis-charged by rounding dust; finance cannot reconcile exactly.",
+    "thinking_tokens": 2249,
     "tool_calls": []
   }
 }

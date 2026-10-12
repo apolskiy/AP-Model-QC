@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_no_dates>\nBackend engineering across transactional services, most recently a\nsettlement pipeline handling 40,000 orders a day. Previously worked on\npayment reconciliation and inventory systems.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "0a5e4719528f58020097094c31ad7e3fd61c0c718a60473a5fff5fc1c1dd4925",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 5721,
+    "duration_ms": 5707,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1355,
     "mode": "live",
-    "output_tokens": 86,
-    "raw_reference": "e868be8d-540d-9226-be08-06bb7412ec19",
+    "output_tokens": 75,
+    "raw_reference": "6bdc0f6a-0269-96d4-a8d7-6f53f8037fe4",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Years of experience are neither stated nor calculable from the summary, so I can\u2019t rewrite it to match an 8-year requirement without inventing that figure.\n\nSend the actual years (or start/end dates I can calculate from).\n\nNot supplying it means the summary cannot honestly satisfy the posting. I won\u2019t insert \u201c8 years,\u201d and a version that omits tenure will still fail a requirement that is explicitly years-based.",
-    "thinking_tokens": 402,
+    "text": "I can\u2019t rewrite the summary to match \u201c8 years of backend engineering experience\u201d \u2014 the years aren\u2019t stated, and nothing in the text lets me calculate them.\n\nSend the actual years (and how you want them sourced, e.g. \u201c2016\u20132024\u201d). Without that figure, any rewrite either leaves the requirement unmatched or invents a number the source doesn\u2019t support.",
+    "thinking_tokens": 234,
     "tool_calls": []
   }
 }

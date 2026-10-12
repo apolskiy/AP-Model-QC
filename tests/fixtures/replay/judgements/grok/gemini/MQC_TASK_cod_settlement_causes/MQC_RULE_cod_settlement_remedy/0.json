@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate recognizes that an unknown code should not crash the settlement process and notes that it should not yield a discount ('skip it instead of crashing, and do not invent a discount for it'). However, it falls short of Level 5 because it hedges between proceeding ('skip it') and halting/failing ('reject', 'a deliberate validation failure'), and does not explicitly specify how the code should handle it (e.g., using `.get(code, 0)` or guarding membership during accumulation).",
-        "score": 4
+        "rationale": "The candidate explicitly notes that unrecognised codes should be skipped and contribute 0, explaining that a bad code must not prevent later valid codes from being summed, and that settlement proceeds with the tier discount applied.",
+        "score": 5
       }
     }
   },
-  "request_hash": "7c4e5455aa1a6ccd7ce1002aa1329bfc94e464da5b1d0da6f146dc6c5fa9b302"
+  "request_hash": "96276d4f8b3fafe56e7e11da5ef9fd4dedff0c923fc384a6303eafaac4911466"
 }

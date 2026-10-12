@@ -3,14 +3,14 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_MISCOMPUTATION": {
-        "rationale": "The response explicitly identifies the discount-versus-price miscomputation with exact formulas and numbers, but it does not explicitly name who loses money (the business/seller), falling just short of the level 5 anchor.",
+        "rationale": "The response clearly identifies the core issue as computing the discount amount rather than the discounted price and walks through the numerical consequences for customer billing. However, it stops short of a full level 5 because it does not explicitly state who loses money (i.e., that the business/merchant loses money due to massive undercharging).",
         "score": 4
       },
       "C_COD_TIERS_UNCHANGED": {
-        "rationale": "The response keeps the module's stated tiers and percentages intact (standard: 20%, premium: 30%) and clearly distinguishes the discount amount from the remainder when walking through an example.",
+        "rationale": "The candidate retains the stated discount percentages (standard 20%, premium 30%) without alterations and correctly distinguishes between the discount amount and the remainder/discounted total in its worked example.",
         "score": 5
       }
     }
   },
-  "request_hash": "6fc5111809a8864ca01ed200b9a18c0fdeb548c33ddbe875aeccc70e31f0e651"
+  "request_hash": "f3c66265299269e244446f6aaf8c7644c84cac983395b40291ebb6b0f3e4966a"
 }

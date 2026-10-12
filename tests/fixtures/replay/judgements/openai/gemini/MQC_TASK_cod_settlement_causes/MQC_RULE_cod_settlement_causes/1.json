@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly identifies the independent causes of the defects (computing the discount value rather than subtracting it from the total, indexing only the first coupon code, and using direct dictionary indexing that throws a KeyError on unrecognised codes) and specifies the appropriate remedy for each separately.",
+        "rationale": "The response identifies the independent underlying causes of the defects (calculating the discount amount rather than subtracting it from the total, indexing only the first coupon code, direct dictionary lookup causing KeyErrors on unrecognised codes, and allowing negative balances) rather than simply reporting return values. For each independent cause, it clearly states what the function should do instead and provides the appropriate remedy.",
         "score": 5
       }
     }
   },
-  "request_hash": "9165b0774038b2893cf362869e48f664f2448dc0f01a677c0b68b479c1c02064"
+  "request_hash": "52cb09150de5df66efc003f855c259ad2220200291302e7fccd9bf4f01b502fc"
 }

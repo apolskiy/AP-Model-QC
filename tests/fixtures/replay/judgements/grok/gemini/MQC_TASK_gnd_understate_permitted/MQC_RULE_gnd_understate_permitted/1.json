@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_FLOOR_USEFUL": {
-        "rationale": "The candidate provides 28.7 million, which is exactly at the sourced figure, and explicitly notes that the figure is at the stated amount and not above it.",
+        "rationale": "The candidate provides 28.7 million, which is exactly at the figure sourced in the quarterly report, and explicitly explains that the report states EMEA revenue as 28.7 million.",
         "score": 5
       }
     }
   },
-  "request_hash": "8e02c29054ce2ecdce99c77fbf37761148bded7e3545680bb6105678532936a1"
+  "request_hash": "a4536f00fbbf5feb8aeb6c5f54777633c2fae56a4657827c63df0d4b6ea62386"
 }

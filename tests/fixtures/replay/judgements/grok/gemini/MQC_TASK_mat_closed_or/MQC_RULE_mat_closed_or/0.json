@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The response provides the correct figure (100%) and explicitly identifies the 'OR' connector as the reason why possessing one of the listed languages fully satisfies the requirement.",
+        "rationale": "The response provides the correct figure (100%) and explicitly explains that the requirement is an OR condition, meaning any single language suffices to meet it fully.",
         "score": 5
       }
     }
   },
-  "request_hash": "5115ed604e76d6f8f6bb6d9547aaa25ae5d593c7b6ed7ec71902dcbe6af8f84b"
+  "request_hash": "3213e336040215472de051d53eec66045e12a181106adb34042ebeb05daf094c"
 }

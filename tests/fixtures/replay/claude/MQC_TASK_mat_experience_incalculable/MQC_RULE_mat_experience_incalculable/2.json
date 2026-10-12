@@ -1,4 +1,30 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_summary_no_dates>\nBackend engineering across transactional services, most recently a\nsettlement pipeline handling 40,000 orders a day. Previously worked on\npayment reconciliation and inventory systems.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "9809ea568cf71a531007f32d4f0c016cae10c9e3b03d351f5295770d509d4b46",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +32,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 9920,
+    "duration_ms": 8943,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 181,
     "mode": "live",
-    "output_tokens": 762,
-    "raw_reference": "msg_011CfcZaQtbCBtfxrp2G7KQM",
+    "output_tokens": 685,
+    "raw_reference": "msg_011Cfwnma96yQrGczhv5XBL5",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "## I need one figure from you\n\n**How many years of backend engineering experience do you have?** The summary has no years, dates, or role durations, so I can't state or calculate the figure, and I won't guess.\n\n### What it costs to leave it out\n\n- **The requirement is a number, and the summary has no number.** \"8 years of backend engineering experience\" is a threshold. A recruiter checking it will look for a figure, find none, and may assume you fall short.\n- **Automated screening may filter you out.** Many applicant tracking systems match years of experience against the posting's minimum.\n- **The current content can't fill the gap.** Three areas of work suggest breadth but say nothing about duration. That could mean three years or twelve.\n- **You'd lose your strongest match.** If you have 8+ years, stating it up front hits the exact requirement. Leaving it out turns a clear pass into a judgment call.\n\n### Draft ready for the figure\n\n> Backend engineer with **[X] years** of experience building transactional services. Most recently built and operated a settlement pipeline processing 40,000 orders per day. Previous work spans payment reconciliation and inventory systems.\n\nIf X is 8 or more, this meets the requirement as written. If it's under 8, tell me and I'll rework the summary to lead with scale and scope rather than tenure.\n\n### If you'd rather not give a figure\n\n> Backend engineer specializing in high-volume transactional systems. Most recently built and operated a settlement pipeline processing 40,000 orders per day, with prior work across payment reconciliation and inventory systems.\n\nThis version reads well, but it doesn't address the 8-year requirement, which carries the risks above.",
+    "text": "I can't finish this rewrite yet. The summary has no years and no dates to calculate them from. The posting's one stated requirement is **8 years of backend engineering experience**, and I won't fill in a number that isn't in your material.\n\n**How many years of backend engineering experience do you have?** A start year for your first backend role works too.\n\n**What leaving it out costs:**\n- **Automated filters.** Applicant tracking systems often screen on years of experience. A summary without a number may be filtered out before anyone reads it.\n- **Recruiter skims.** Screeners check for the stated requirement first. With no number, they may assume you fall short, or move on rather than dig through your work history.\n- **Weaker framing.** The 40,000-orders-a-day figure shows scale. Paired with years, it would also show sustained depth, which is what an 8-year requirement is screening for.\n- **No way to show you exceed it.** If you have more than 8 years, the summary can't say so.\n\n**Draft once you give me the figure:**\n\n> Backend engineer with **[X] years** of experience building transactional services. Most recently built and ran a settlement pipeline processing 40,000 orders a day. Earlier work spans payment reconciliation and inventory systems.\n\n**Fallback if you'd rather not state years:**\n\n> Backend engineer specializing in transactional services. Most recently built and ran a settlement pipeline processing 40,000 orders a day. Earlier work spans payment reconciliation and inventory systems.\n\nThis version doesn't address the requirement. It leaves the reader to work out your years from the dates in your work history, so those dates need to be clear and easy to find.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

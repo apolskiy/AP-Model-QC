@@ -1,4 +1,30 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_resume_seventy>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nObservability: Grafana, Prometheus.\nOther: technical writing, mentoring, public speaking.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it falls below 78 percent, warn me and name that cutoff, and\ndo not evaluate the nice-to-have requirements at all.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "94e1b14cb6ed8ea9fa503b1bd403bc490a7eafabb0e4df8fdf006ba56ba1ab80",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +32,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 7818,
+    "duration_ms": 7290,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 358,
     "mode": "live",
-    "output_tokens": 699,
-    "raw_reference": "msg_011CfcZRrdePVpzhP11Mvc3p",
+    "output_tokens": 717,
+    "raw_reference": "msg_011CfwnZbojQjmujUakZR79D",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "# Mandatory Requirements Assessment\n\n| # | Requirement | R\u00e9sum\u00e9 evidence | Match |\n|---|---|---|---|\n| 1 | Python | Languages: Python | \u2705 |\n| 2 | SQL | Languages: SQL | \u2705 |\n| 3 | Linux administration | Platform: Linux administration | \u2705 |\n| 4 | Git | Platform: Git | \u2705 |\n| 5 | REST API design | Services: REST API design | \u2705 |\n| 6 | Unit testing | Services: unit testing | \u2705 |\n| 7 | CI pipelines | Services: CI pipelines | \u2705 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | None of the five tools are listed | \u274c |\n| 9 | Kafka | Not listed | \u274c |\n| 10 | GraphQL | Not listed | \u274c |\n\n**Mandatory match: 7 of 10 = 70%**\n\nItem 8 bundles five separate tools. If each is counted on its own, the match falls to 7 of 14 = 50%. The conclusion is the same either way.\n\n## \u26a0\ufe0f Warning: Below the 78% Cutoff\n\nThe candidate's 70% mandatory match is below your **78% cutoff**. The gaps are in containerization and infrastructure-as-code (Docker, Kubernetes, Terraform, Ansible, Helm), event streaming (Kafka), and GraphQL.\n\nAs you instructed, the nice-to-have requirements (items 11\u201315) were **not evaluated**.",
+    "text": "# Candidate Assessment: Mandatory Requirements\n\n**Mandatory match: 7 of 10 (70%)**\n\n| # | Requirement | Status |\n|---|---|---|\n| 1 | Python | \u2705 Met |\n| 2 | SQL | \u2705 Met |\n| 3 | Linux administration | \u2705 Met |\n| 4 | Git | \u2705 Met |\n| 5 | REST API design | \u2705 Met |\n| 6 | Unit testing | \u2705 Met |\n| 7 | CI pipelines | \u2705 Met |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | \u274c Not met (none listed) |\n| 9 | Kafka | \u274c Not met |\n| 10 | GraphQL | \u274c Not met |\n\n**Note on counting:** Item 8 groups five separate tools. If each tool counts as its own requirement, there are 14 mandatory items and the match drops to 7 of 14 (50%). The conclusion is the same either way.\n\n## \u26a0\ufe0f Warning: Below Cutoff\n\nThe candidate's 70% mandatory match falls **below the 78% cutoff**. As instructed, I did not evaluate the nice-to-have requirements.\n\n**Key gaps:** The resume shows no experience with containers and infrastructure-as-code (Docker, Kubernetes, Terraform, Ansible, Helm), event streaming (Kafka), or GraphQL.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

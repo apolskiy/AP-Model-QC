@@ -1,0 +1,39 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_no_dates>\nBackend engineering across transactional services, most recently a\nsettlement pipeline handling 40,000 orders a day. Previously worked on\npayment reconciliation and inventory systems.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
+  "request_hash": "0a5e4719528f58020097094c31ad7e3fd61c0c718a60473a5fff5fc1c1dd4925",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
+    "duration_ms": 6644,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1355,
+    "mode": "live",
+    "output_tokens": 97,
+    "raw_reference": "ade85165-7cb8-9882-bb66-302d1baef796",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The summary does not state years of experience, and with no dates it cannot be calculated. I will not insert \u201c8 years\u201d to match the posting.\n\nSend the real figure (or start/end dates) and I will rewrite the summary to match the requirement without inventing tenure.\n\nLeaving it out costs a hard screen fail: the posting requires 8 years of backend engineering, and a summary that never states that number will not clear a recruiter or ATS check for the requirement.",
+    "thinking_tokens": 356,
+    "tool_calls": []
+  }
+}

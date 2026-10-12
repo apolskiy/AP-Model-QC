@@ -3,14 +3,14 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_MISCOMPUTATION": {
-        "rationale": "The candidate clearly and specifically explains the discount-versus-price error (computing the discount amount instead of subtracting it from the total), far exceeding the vague description in Level 3. However, it does not explicitly state who loses money, falling short of the Level 5 anchor.",
+        "rationale": "The candidate clearly explains the exact miscomputation (calculating the discount amount rather than the discounted price, charging $20 instead of $80), which well exceeds level 3's vague identification, but it stops short of level 5 by not explicitly identifying who loses money as a result.",
         "score": 4
       },
       "C_COD_TIERS_UNCHANGED": {
-        "rationale": "The response keeps the module's discount percentages intact (standard: 20%, premium: 30%) and uses them correctly in a worked example, clearly distinguishing the discount amount from the remainder/discounted total.",
+        "rationale": "The candidate leaves the tier percentages intact, applies the 20% standard tier correctly in an example, and clearly distinguishes the discount amount ($20) from the remainder/amount owed ($80).",
         "score": 5
       }
     }
   },
-  "request_hash": "5901f1572725c995e3e5823164d0fa2125a6f294e4e3cfe5068f2d210944ea82"
+  "request_hash": "3704591f276d3cfec5d4145450a679902bce240c251b424474c926f51ef1663b"
 }

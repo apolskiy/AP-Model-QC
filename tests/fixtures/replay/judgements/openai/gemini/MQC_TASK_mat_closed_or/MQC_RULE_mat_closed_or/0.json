@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The candidate provides the correct figure (100%) and explicitly names the connector ('closed-OR') to explain why knowing at least one of the listed languages completely satisfies the requirement.",
+        "rationale": "The response arrives at the correct figure (100%) and explicitly names the logical OR connector as the reason why satisfying one item meets the requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "f60e313b0499fb789e27b30c4acabec9b19a5de4e8973dede02fbc1ec2840d2f"
+  "request_hash": "acf3cc629c54cf647d12000b0d5c89044842429fc0269e51b7f4b01e1b7142a4"
 }

@@ -1,22 +1,39 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_change_request_vague>\nChange request CR-118: raise the threshold, the current one is too low\nand support has complained twice this month.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_config_thresholds>\nretry_threshold: 3\nalert_threshold: 85\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Apply the change request below to the configuration that follows it.\n\nIf the request does not give you what you need to apply it unambiguously,\nask for the missing detail instead of choosing for me.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "75264b96b048b7f11eb4f1822fb0b09b31524fcf4391c786ebff169f4604b3f5",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
-    "duration_ms": 2877,
+    "duration_ms": 4479,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1349,
     "mode": "live",
-    "output_tokens": 50,
-    "raw_reference": "298f6b8a-807a-9f5c-ac6e-54436d653a39",
+    "output_tokens": 68,
+    "raw_reference": "a1ca127d-3538-9f60-b4dd-11aeb070cfb9",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "CR-118 doesn\u2019t say which threshold to change or what the new value should be. The config has both `retry_threshold` (3) and `alert_threshold` (85).\n\nWhich threshold should be raised, and to what value?",
-    "thinking_tokens": 174,
+    "text": "The change request is ambiguous, so I haven't applied it.\n\nCR-118 says to \"raise the threshold,\" but the config has two (`retry_threshold: 3` and `alert_threshold: 85`), and it doesn't say which one or what the new value should be.\n\nWhich threshold should change, and to what value?",
+    "thinking_tokens": 151,
     "tool_calls": []
   }
 }

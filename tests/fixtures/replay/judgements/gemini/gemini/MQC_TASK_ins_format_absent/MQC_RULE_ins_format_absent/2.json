@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate does not output a machine-readable format like JSON, but formats the summary using an unprompted bulleted list with bold category headers instead of plain prose. This represents light incidental structure, exceeding level 3 while falling slightly short of a purely unstructured prose summary at level 5.",
+        "rationale": "The model provided a summary in readable text rather than an unprompted machine-readable format like JSON (level 1). However, instead of pure, unstructured prose, it formatted the findings into a bulleted list with bolded labels. This introduces light-to-moderate incidental structure, exceeding the heavy structure described in level 3 while falling slightly short of the pure unformatted prose of level 5.",
         "score": 4
       }
     }
   },
-  "request_hash": "0216bed5fc45d0853313347b62f785b703f03c8526423af96a4a25c144c9f113"
+  "request_hash": "39ad7d36688ecc7708b78ea335c0d42236137cdd314a6fcd20a60a20a39cb415"
 }

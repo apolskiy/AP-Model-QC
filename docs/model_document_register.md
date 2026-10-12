@@ -46,12 +46,19 @@ designs live in `AP-Harness-QC` and are **never copied in**, per `CLAUDE.md`.
 | `docs/model_document_register.md` | **This file.** Every tracked document and what it holds, checked against the repository both ways |
 | `README.md` | **The latest state only.** What the case set is, how to run it, the current figures. Never a history |
 | `docs/model_running_jobs.md` | How to run each workflow and what each one spends |
+| `CHANGELOG.md` | **What changed, when and why**, newest first. Added 2026-10-12: a README change carries an entry here in the same change, because the README is historyless by design (harness `code-style.md` section 7.4) |
 | `CLAUDE_LOG.md` | Decisions and their reasoning in date order, written for an external reader |
 
-**`README.md` and `CLAUDE_LOG.md` divide by time, not by topic.** The README says
-what is true now and the log says how it became true and what was learned on the
-way. A reader wanting the current figures should not have to read history to
-find them.
+**The three divide by time and by purpose, not by topic.** The README says what
+is true now, the changelog says what moved and when, and the log says how it
+became true and what was learned on the way. A reader wanting the current
+figures should not have to read history to find them, and a reader wanting to
+know when a figure moved should not have to read a narrative.
+
+**The changelog and the log are not duplicates.** An entry records the change;
+the log records the reasoning, the alternatives rejected and what the defect
+cost. `CHANGELOG.md` begins on 2026-10-12 and points at `CLAUDE_LOG.md` for
+what came before, rather than restating it, because a second copy drifts.
 
 ## Governance
 

@@ -1,0 +1,43 @@
+{
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_excerpt_top_scorers_logical>\ndef top_scorers(entries, limit):\n    sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return entries[:limit]\n</document>"
+          },
+          {
+            "text": "State what the function below returns when called with rows scoring\n10, 90 and 50 and a limit of two. Describe what it does, not what it\nappears intended to do."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
+  "request_hash": "3645e7639a29b17e9a68a292c633822ee0516998aa181350ee524b2e11af0646",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
+    "duration_ms": 6807,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 99,
+    "mode": "live",
+    "output_tokens": 200,
+    "raw_reference": "q2rMavLUOPKc1MkP9e_M-Ao",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "When called with rows scoring 10, 90, and 50 (in that order) and a limit of 2, the function returns a list containing the **first two rows in their original order: the rows scoring 10 and 90**.\n\n### What the function actually does:\n1. **Discards the sorted result:** It calls Python's built-in `sorted()` function, which creates and returns a *new* sorted list. Because this return value is never assigned to a variable (or returned), the sorted result is immediately discarded.\n2. **Leaves the original list untouched:** The `sorted()` function does not modify the input list in place (unlike `entries.sort()`). As a result, `entries` remains in its original, unsorted order.\n3. **Slices the original list:** It returns `entries[:limit]`, which simply takes the first `limit` items from the original, unmodified list.",
+    "thinking_tokens": 497,
+    "tool_calls": []
+  }
+}

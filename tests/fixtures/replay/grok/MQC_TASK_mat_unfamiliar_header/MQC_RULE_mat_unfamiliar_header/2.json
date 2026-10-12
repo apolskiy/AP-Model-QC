@@ -1,22 +1,35 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_odd_headers>\nWhat you will need on day one.\n1. Python.\n2. SQL.\n\nWhat would make you stand out.\n3. Grafana.\n4. Technical writing.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "The posting below groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "2eb318edfc608407f95898cc544415cbdf9867338483823fc5c4362855884b56",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 2605,
+    "duration_ms": 3997,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1325,
     "mode": "live",
-    "output_tokens": 55,
-    "raw_reference": "45a683b5-ef85-9551-b954-44121cebedfe",
+    "output_tokens": 70,
+    "raw_reference": "0034dc96-0573-9c05-8c26-af7cf9ad4c04",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**\"What you will need on day one.\"** \u2014 mandatory. \"Will need\" states these as required from the start.\n\n**\"What would make you stand out.\"** \u2014 optional. \"Would make you stand out\" frames these as differentiators, not requirements.",
-    "thinking_tokens": 170,
+    "text": "**\u201cWhat you will need on day one.\u201d \u2014 mandatory.**  \n\u201cWill need\u201d states a requirement, and \u201con day one\u201d means it must already be in place when you start.\n\n**\u201cWhat would make you stand out.\u201d \u2014 optional.**  \n\u201cWould make you stand out\u201d describes a differentiator, not something you must have.",
+    "thinking_tokens": 175,
     "tool_calls": []
   }
 }

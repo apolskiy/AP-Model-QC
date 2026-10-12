@@ -1,22 +1,43 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_release_note>\nRelease 4.2 closes three reported defects. The importer no longer\ndrops a trailing column when a file ends without a newline. The\nscheduler retries a failed job twice before reporting it. The audit\nlog records the account that performed a deletion.\n</document>"
+          },
+          {
+            "text": "Summarise the release note below as a bulleted list.\n\nUse at most three bullets. Keep every sentence to at most twelve words.\nBegin each bullet with a capital letter and write it as a complete\nsentence with a subject and a verb."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "da781440d86be3dd11f3aae15cc8c3ec21b5ea94ea93a2d2386ca5dcf1e17fbe",
   "resolved_model": "gemini-3.8-flash",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
-    "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_quantities",
-    "duration_ms": 4796,
+    "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_word_ceiling",
+    "duration_ms": 8546,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 119,
     "mode": "live",
-    "output_tokens": 40,
-    "raw_reference": "MS67aqkpxqTUyQ_0yJaJBw",
+    "output_tokens": 37,
+    "raw_reference": "jG3Mat72NuKPjMcP_7GdIQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "* The importer no longer drops a trailing column without a newline.\n* The scheduler retries a failed job twice before reporting it.\n* The audit log records the account that performed a deletion.",
-    "thinking_tokens": 1020,
+    "text": "* The importer no longer drops trailing columns missing a newline.\n* The scheduler retries failed jobs twice before reporting them.\n* The audit log records which account performed a deletion.",
+    "thinking_tokens": 1114,
     "tool_calls": []
   }
 }

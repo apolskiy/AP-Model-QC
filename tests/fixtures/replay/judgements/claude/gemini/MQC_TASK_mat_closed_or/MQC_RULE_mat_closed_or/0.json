@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The candidate provides the correct figure (100%) and explicitly names the connector 'or', explaining that it means satisfying any one of the listed languages suffices to meet the requirement.",
+        "rationale": "The candidate provides the correct figure (100%) and explicitly names the 'or' connector, explaining that it makes the requirement a single condition satisfied by any one of the three options.",
         "score": 5
       }
     }
   },
-  "request_hash": "357cdd1b88cb887bbc3032a5f379159854bebe56ce064a4df1548c81d54acfc9"
+  "request_hash": "adac1b905ba1d413fc68a344cdca8107c1ede3913afeb882f09a6cfd82eddde1"
 }

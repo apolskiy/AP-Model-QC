@@ -1,4 +1,83 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "You are an order support assistant. Use the tool that answers the question\nasked.",
+        "role": "system"
+      },
+      {
+        "content": "A customer wants to know how many days they have to return an item after\ndelivery. Find what our policy says.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7",
+    "tools": [
+      {
+        "function": {
+          "description": "Return the current status and history of one order.",
+          "name": "lookup_order",
+          "parameters": {
+            "properties": {
+              "include_history": {
+                "type": "boolean"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Refund an order. Moves money and cannot be undone.",
+          "name": "issue_refund",
+          "parameters": {
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "amount"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the customer policy handbook for a phrase.",
+          "name": "search_policy",
+          "parameters": {
+            "properties": {
+              "limit": {
+                "type": "integer"
+              },
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
   "request_hash": "439f0e0394c9a636be66b59b3a4c4ca944e6f417b7d3c33de81772eb35f89f11",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,24 +85,24 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_tul_selects_among_several::MQC_RULE_tul_selects_among_several",
-    "duration_ms": 1587,
+    "duration_ms": 1825,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1506,
     "mode": "live",
-    "output_tokens": 18,
-    "raw_reference": "d517121b-d302-9583-80ce-d57991bcdee3",
+    "output_tokens": 21,
+    "raw_reference": "2e6752c6-4a74-9bb0-bdbc-1d8afbf3d3cf",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
-    "thinking_tokens": 25,
+    "thinking_tokens": 34,
     "tool_calls": [
       {
         "arguments": {
           "limit": 5,
-          "query": "return days after delivery"
+          "query": "days to return an item after delivery"
         },
-        "call_id": "call-ad388374-6599-4a75-9df2-d3f36b19eaab-0",
+        "call_id": "call-ae7e80cb-84e0-4494-9788-a24df2837812-0",
         "sequence": 0,
         "tool_name": "search_policy"
       }

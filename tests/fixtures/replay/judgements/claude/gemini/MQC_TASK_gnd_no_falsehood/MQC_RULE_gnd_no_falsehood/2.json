@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The percentage is correct (~47.1%), and the response explicitly states the two figures it derives from (41.2 million of 87.4 million).",
+        "rationale": "The candidate provides the correct percentage (about 47.1%) and explicitly names both figures from which the calculation is derived (41.2 million of 87.4 million).",
         "score": 5
       }
     }
   },
-  "request_hash": "c03054032b91369a24e1e5fb3381831f84397a5af366a3c0a35756504ab1c2f1"
+  "request_hash": "1cdf6ca66aa2629a3dc4a7e3294e8476ebcf40502eba829018d6aac062865418"
 }

@@ -1,4 +1,83 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "You are an order support assistant. Use the tools provided to answer.\nNever invent an order status you have not looked up.",
+        "role": "system"
+      },
+      {
+        "content": "What is the current status of order A-4471?",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7",
+    "tools": [
+      {
+        "function": {
+          "description": "Return the current status and history of one order.",
+          "name": "lookup_order",
+          "parameters": {
+            "properties": {
+              "include_history": {
+                "type": "boolean"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Refund an order. Moves money and cannot be undone.",
+          "name": "issue_refund",
+          "parameters": {
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "amount"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the customer policy handbook for a phrase.",
+          "name": "search_policy",
+          "parameters": {
+            "properties": {
+              "limit": {
+                "type": "integer"
+              },
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
   "request_hash": "67b791b63af64841612078e8931c0192948a880bba4532e1050bdbb51463b865",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,23 +85,23 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_tul_invokes_required::MQC_RULE_tul_invokes_required",
-    "duration_ms": 1101,
+    "duration_ms": 1809,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1502,
     "mode": "live",
     "output_tokens": 16,
-    "raw_reference": "36a8d5ab-73bb-9bcf-abf6-527ba5457956",
+    "raw_reference": "c52be9c5-2ca4-9bde-ac16-4401093af687",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
-    "thinking_tokens": 30,
+    "thinking_tokens": 23,
     "tool_calls": [
       {
         "arguments": {
           "order_id": "A-4471"
         },
-        "call_id": "call-18f376e1-8134-4b4c-9502-18892f75a649-0",
+        "call_id": "call-09481fb4-8988-46ac-872d-22f17322753d-0",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

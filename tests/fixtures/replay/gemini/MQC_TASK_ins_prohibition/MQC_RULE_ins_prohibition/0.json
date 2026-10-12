@@ -1,4 +1,25 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_release_note>\nRelease 4.2 closes three reported defects. The importer no longer\ndrops a trailing column when a file ends without a newline. The\nscheduler retries a failed job twice before reporting it. The audit\nlog records the account that performed a deletion.\n</document>"
+          },
+          {
+            "text": "Summarise the release note below in two sentences.\n\nDo not use em dashes or en dashes anywhere in your answer. Use a colon,\na semicolon or a comma instead, or split the sentence."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "bb95c0b725f8e58bbf522f6eeec37257b42d18bf3882508bc29e0a92391879a6",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_prohibition::MQC_RULE_ins_prohibition",
-    "duration_ms": 4447,
+    "duration_ms": 5426,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 109,
     "mode": "live",
-    "output_tokens": 51,
-    "raw_reference": "VS67arLdBKbK_uMPg7C4mA8",
+    "output_tokens": 53,
+    "raw_reference": "L27Mau-nOIWu9MoP25aF-A8",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Release 4.2 resolves three reported defects across the importer, scheduler, and audit logging systems. This update prevents dropped trailing columns in files lacking a final newline, retries failed jobs twice before reporting them, and logs the user account responsible for deletions.",
-    "thinking_tokens": 610,
+    "text": "Release 4.2 resolves three reported defects. It ensures the importer does not drop a trailing column when a file lacks a newline, directs the scheduler to retry a failed job twice before reporting it, and records the account responsible for a deletion in the audit log.",
+    "thinking_tokens": 621,
     "tool_calls": []
   }
 }

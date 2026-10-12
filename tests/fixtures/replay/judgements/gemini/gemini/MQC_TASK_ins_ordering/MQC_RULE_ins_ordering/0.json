@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes are included. The two changes with measurable quantities appear first in their source order, followed by the two remaining changes in their source order.",
+        "rationale": "All four changes from the source document are included. The two changes with measurable quantities ('under 30 seconds' and 'up to 2 GB') appear first in their original order of appearance, followed by the two non-measurable changes in their original order of appearance.",
         "score": 5
       }
     }
   },
-  "request_hash": "7475a71876ec8783a7807a9ae96a74cd91c1433aedb2b52a8f3d4fb9eecd3181"
+  "request_hash": "a9bd1765cbe2828c87c64a3548eea1f301903dc5b83382ac1f2376029bb78903"
 }

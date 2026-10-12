@@ -1,4 +1,26 @@
 {
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_availability_week>\nMeasured availability: 99.1 percent.\nIncidents this week: one lasting 12 minutes, one lasting 41 minutes.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Using the readings below, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
   "request_hash": "355d4427fc5bd3d262b5416742212319c4550d0154f02a79b1750cc7e693bd46",
   "resolved_model": "claude-opus-5-5",
   "response": {
@@ -6,16 +28,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 9287,
+    "duration_ms": 7658,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 160,
     "mode": "live",
-    "output_tokens": 711,
-    "raw_reference": "msg_011CfcYJpSsUTqPc1iS4rDKG",
+    "output_tokens": 650,
+    "raw_reference": "msg_011CfwkyJoy39C6n2XwS8XKy",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "# Weekly Availability Summary\n\n**\u26a0\ufe0f Warning: the availability gate failed.**\n\n- **Availability gate failed.** Measured availability was **99.1%** against a threshold of **\u2265 99.5%**, a shortfall of **0.4 percentage points**.\n- **Incident-duration gate passed.** The longest incident was **41 minutes** against a limit of **60 minutes**, leaving 19 minutes of margin.\n\n## Summary\n\n| Metric | Result | Gate | Status |\n|---|---|---|---|\n| Availability | 99.1% | \u2265 99.5% | \u274c Failed (\u22120.4 pts) |\n| Longest single incident | 41 min | \u2264 60 min | \u2705 Passed |\n| Incident count | 2 | \u2014 | \u2014 |\n| Total incident time | 53 min (12 + 41) | \u2014 | \u2014 |\n\n## Note on the numbers\n\nThe two incidents don't fully account for the measured availability:\n\n- A 99.1% week implies about **91 minutes** of downtime (0.9% of 10,080 minutes).\n- The listed incidents total only **53 minutes**.\n- That leaves roughly **38 minutes unaccounted for**. Possible causes include unlogged incidents, partial degradation counted against availability, or a measurement window other than a full calendar week.\n\nEven the 53 logged minutes alone would put availability at about **99.47%**, which is still below the 99.5% gate. The availability failure holds either way, but it's worth checking where the extra downtime came from.",
+    "text": "# Weekly Availability Summary\n\n**\u26a0\ufe0f Warning: The availability gate failed.**\n\n- **Availability gate failed:** Measured availability was **99.1%** against a minimum of **99.5%**, a shortfall of **0.4 percentage points**.\n- **Incident duration gate passed:** The longest incident lasted **41 minutes**, which is **19 minutes** under the 60-minute limit.\n\n## Summary\n\n| Metric | Value | Threshold | Status |\n|---|---|---|---|\n| Availability | 99.1% | \u2265 99.5% | \u274c Failed (\u22120.4 pts) |\n| Longest single incident | 41 min | \u2264 60 min | \u2705 Passed (19 min margin) |\n| Incident count | 2 | \u2014 | \u2014 |\n| Total incident downtime | 53 min (12 + 41) | \u2014 | \u2014 |\n\n## Note on a Discrepancy\n\nThe two figures don't fully match. Over a 7-day week (10,080 minutes), 99.1% availability means about **91 minutes** of unavailability. The two logged incidents total only **53 minutes**, which leaves about **38 minutes** unaccounted for. Possible causes:\n\n- unlogged or short incidents below a reporting threshold\n- partial degradation counted against availability but not logged as an incident\n- a measurement window other than a full calendar week\n\nIt's worth reconciling this before the summary goes out. If the incident log is incomplete, the incident gate result could change.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

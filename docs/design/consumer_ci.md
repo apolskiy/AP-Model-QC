@@ -877,6 +877,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115725` | N | `a_band_job_above_its_case_ceiling_is_reported` |
 | `115726` | P | `a_command_behind_a_local_uses_is_read` |
 | `115732` | N | `an_identifier_bound_twice_is_reported` |
+| `115733` | P | `a_ticket_input_is_the_recorded_request_not_the_corpus` |
+| `115734` | N | `an_unresolved_or_duplicated_citation_is_reported` |
+| `115735` | N | `a_readme_without_a_changelog_is_reported` |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -892,7 +895,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 71 cases, 53 negative, 13 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 74 cases, 55 negative, 14 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2742,6 +2745,66 @@ from one of them.
 population. It is what a reader checks after deciding the finding is real, not
 what they read first.
 
+### 9.5.3 Input is the recorded request, not a reconstruction of it
+
+Changed 2026-10-11 at the project owner's instruction. `ticket_report.py` said
+so in its own docstring: "the request is reconstructed, not recorded. A fixture
+stores a `request_hash` and never the prompt, so the prompt here comes from the
+corpus."
+
+**A ticket must not ask a vendor to trust our composer.** Reading the prompt
+from the corpus shows what the case *defines*, and what a provider received is
+what the adapter *composed* from it: the system instruction, the message roles,
+the ordering and the model identity. Those are the same only while the adapter
+is correct, which is the thing a reader is trying to check.
+
+| | From the corpus | From the recording |
+|---|---|---|
+| Shows | What the case declares | **What was sent** |
+| Depends on | Our composer being right | Nothing |
+| Carries the model identity and message roles | No | **Yes** |
+
+The harness now stores the composed request in each fixture
+(`tier2_execution.md` section 7.13), so the Input block reads it.
+
+**Where a recording predates the field the ticket says so.** It does not
+silently fall back to the corpus and present it as the call, because a
+reconstruction labelled as the request is the defect this section removes. The
+remedy is a recording run, and the ticket names it.
+
+#### 9.5.3.1 A runnable snippet rather than a `curl`, because of what is recorded
+
+The project owner asked for the simplest reproduction: "why not the curl
+request. or direct api request. Kiss principle applies." The principle is
+right and `curl` is the wrong target, for a reason the recording makes plain.
+
+**What is recorded is the SDK call, not the HTTP body.** The composed request is
+the keyword arguments an adapter passes to a provider's client, and those differ
+from the wire format by provider:
+
+| Engine | Stored keys | Equal to the wire body |
+|---|---|---|
+| openai, grok | `messages`, `model` | Yes |
+| claude | `max_tokens`, `messages`, `model`, `output_config` | Nearly; `output_config` is an SDK parameter |
+| gemini | `contents`, `model`, `config.automatic_function_calling.disable` | **No. That field has no wire form at all** |
+
+So a `curl` would mean reconstructing each provider's wire format by hand, which
+is the "trust our composer" problem section 9.5.3 exists to remove, and for
+gemini it would be **actively wrong**: a hand-built body would run with
+automatic function calling enabled and could answer differently from the call it
+claims to reproduce.
+
+**The stored dict is the argument list, so passing it through reconstructs
+nothing.** `reproduction_snippet` prints the import, the client construction and
+the call with the recorded arguments, and it is one paste and one run. The
+client reads its own environment variable, named in a comment, so **no
+credential appears in a ticket**.
+
+**An adapter declares its own form** and the shared protocol declares it once
+for every engine speaking it, which is where
+`harness_extensibility_standard.md` section 9 puts provider knowledge. An
+adapter declaring none emits no reproduction rather than a wrong one.
+
 ### 9.4 Only a live run can detect an upstream fix
 
 **This is the part that is easy to get wrong.** Replay replays our own recorded
@@ -2765,7 +2828,7 @@ for; a finding is an observation about a model that was true when it was made,
 so it keeps its `observed_model` and gains a second observation rather than
 losing the first.
 
-### 9.5 What the register does not try to be
+### 9.6 What the register does not try to be
 
 | Not this | Why |
 |---|---|

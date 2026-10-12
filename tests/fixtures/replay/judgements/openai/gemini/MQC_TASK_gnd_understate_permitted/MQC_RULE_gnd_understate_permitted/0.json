@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_FLOOR_USEFUL": {
-        "rationale": "The response identifies 28.7 million as the conservative floor, which is exactly at the figure stated in the report, and explicitly references the report as its basis.",
+        "rationale": "The candidate provides a conservative floor of 28.7 million, which is exactly at the sourced figure reported for EMEA, and explicitly explains this choice.",
         "score": 5
       }
     }
   },
-  "request_hash": "8780317d477f095f0ef269d81fcce076343a418db24a2ff313cb8fe4088ec4dc"
+  "request_hash": "617d6acbd02f62d899b313acd9560898d843a6837e81c5ce3420b2370c2bcf84"
 }

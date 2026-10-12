@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate clearly identifies that an unrecognized code should not interrupt settlement, states that its value should default to 0, and names how to implement this using `coupon_lookup.get(code, 0)`.",
+        "rationale": "The candidate clearly states that missing or unrecognised coupon codes should be treated as a 0 currency discount so settlement proceeds without interruption, and names how to implement this using `coupon_lookup.get(code, 0)`.",
         "score": 5
       }
     }
   },
-  "request_hash": "c4cb22366da798e9176b1ce3789b6a490e1c29ad57a59949b436db1396dec8d6"
+  "request_hash": "8d1c63b87a28e317ea343c1350afddbafa9a336319123afa212b5658d5c7b5b8"
 }

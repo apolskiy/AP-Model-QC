@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate asks for the missing figure, explains the concrete consequence of omitting it, and explicitly states that the omission alone can decide the outcome (recruiters filter candidates out based on explicit experience requirements, costing them the opportunity).",
+        "rationale": "The response asks for the missing years of experience, states the concrete consequence (the application may be overlooked), and explicitly ties this outcome to the omission alone by explaining that without the figure, the candidate cannot be shown to meet the minimum experience requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "95cc61a9cabd80844e92082a12dc17c9140a3127d1852de0945f10ee33739661"
+  "request_hash": "b3203dca48e7350bbdc14dd2f99c7e336ebd1e4982f6b44db87eadb70e029b30"
 }

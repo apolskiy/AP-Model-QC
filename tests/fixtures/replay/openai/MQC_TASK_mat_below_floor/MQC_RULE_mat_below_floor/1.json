@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_resume_seventy>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nObservability: Grafana, Prometheus.\nOther: technical writing, mentoring, public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it falls below 78 percent, warn me and name that cutoff, and\ndo not evaluate the nice-to-have requirements at all.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "fe25b946958e72c853aa3b263e6611e8f94d65f8cb5f4fa8077b2ccdab0e5332",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +23,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 1958,
+    "duration_ms": 1703,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 216,
     "mode": "live",
-    "output_tokens": 164,
-    "raw_reference": "chatcmpl-EUIXKqXyP1GL3meJgyHeSz745V6L1",
+    "output_tokens": 214,
+    "raw_reference": "chatcmpl-EY2jjRhIajdwQdfhw063Sac5b3uTt",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Mandatory Requirements from Posting:**\n\n1. Python \u2014 **Matched**\n2. SQL \u2014 **Matched**\n3. Linux administration \u2014 **Matched**\n4. Git \u2014 **Matched**\n5. REST API design \u2014 **Matched**\n6. Unit testing \u2014 **Matched**\n7. CI pipelines \u2014 **Matched**\n8. Docker, Kubernetes, Terraform, Ansible, Helm \u2014 **Not Matched**\n9. Kafka \u2014 **Not Matched**\n10. GraphQL \u2014 **Not Matched**\n\n**Total Mandatory Requirements:** 10  \n**Matched:** 7  \n**Match Percentage:** (7/10) \u00d7 100 = **70%**\n\n---\n\n**Warning:** The candidate\u2019s match percentage is **70%**, which falls below the required cutoff of 78%.  \n**Nice-to-have requirements are not evaluated.**",
+    "text": "Assessment Report\n\n**Mandatory Requirements from Posting:**\n1. Python\n2. SQL\n3. Linux administration\n4. Git\n5. REST API design\n6. Unit testing\n7. CI pipelines\n8. Docker, Kubernetes, Terraform, Ansible, Helm\n9. Kafka\n10. GraphQL\n\n**Candidate (Resume) Matches:**  \n1. Python \u2705  \n2. SQL \u2705  \n3. Linux administration \u2705  \n4. Git \u2705  \n5. REST API design \u2705  \n6. Unit testing \u2705  \n7. CI pipelines \u2705  \n8. Docker, Kubernetes, Terraform, Ansible, Helm \u274c  \n9. Kafka \u274c  \n10. GraphQL \u274c  \n\n**Summary:**  \n- **Total mandatory requirements:** 10  \n- **Matches:** 7 out of 10  \n- **Match percentage:** 70%  \n\n**Result:**  \n**WARNING:** Mandatory match percentage is 70%, which is below the cutoff of 78%.  \n**Per your instructions, I will not evaluate the nice-to-have requirements.**",
     "thinking_tokens": 0,
     "tool_calls": []
   }

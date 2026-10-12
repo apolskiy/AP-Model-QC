@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_CEILING_PROCEEDS": {
-        "rationale": "The response accurately identifies the 90% match, proceeds cleanly, and explicitly notes that the nice-to-haves do not change the outcome.",
+        "rationale": "The candidate output accurately calculates the mandatory match percentage (90%), proceeds, and explicitly notes that the nice-to-have set does not affect the outcome.",
         "score": 5
       }
     }
   },
-  "request_hash": "f3a3abe0bf5ad7ab02da8da804bc0ce5e0580471d97049f7b629aa0a7b14cf03"
+  "request_hash": "2af970427a176050f2b816bc10daae6599f534219b3a115f223bf748e090d40f"
 }

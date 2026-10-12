@@ -1,4 +1,28 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_resume_seventy>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nObservability: Grafana, Prometheus.\nOther: technical writing, mentoring, public speaking.\n</document>"
+          },
+          {
+            "text": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it falls below 78 percent, warn me and name that cutoff, and\ndo not evaluate the nice-to-have requirements at all."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "b08dd51940b11fbc0fb4a0b03bb6c8b9c7728fbe07d5dcd08c993942044611fc",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 3832,
+    "duration_ms": 4331,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 234,
     "mode": "live",
-    "output_tokens": 171,
-    "raw_reference": "9i67aqq-FZeX1MkP7bbZ0Ak",
+    "output_tokens": 155,
+    "raw_reference": "SW_Mao-TMZWq1MkPgPSUgQY",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Mandatory Requirements Assessment\n\n1. **Python:** Met  \n2. **SQL:** Met  \n3. **Linux administration:** Met  \n4. **Git:** Met  \n5. **REST API design:** Met  \n6. **Unit testing:** Met  \n7. **CI pipelines:** Met  \n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Not met  \n9. **Kafka:** Not met  \n10. **GraphQL:** Not met  \n\n**Mandatory Match Percentage:** **70%** (7 out of 10 requirements met)\n\n---\n\n\u26a0\ufe0f **WARNING:** The candidate's mandatory match score is **70%**, which falls below the mandatory cutoff threshold of **78%**. As instructed, the nice-to-have requirements have not been evaluated.",
-    "thinking_tokens": 589,
+    "text": "### Assessment Summary\n\n**Mandatory Requirements Match:**\n* **Python:** Met\n* **SQL:** Met\n* **Linux administration:** Met\n* **Git:** Met\n* **REST API design:** Met\n* **Unit testing:** Met\n* **CI pipelines:** Met\n* **Docker, Kubernetes, Terraform, Ansible, Helm:** Not met\n* **Kafka:** Not met\n* **GraphQL:** Not met\n\n**Mandatory Match Percentage:** 70% (7 out of 10 requirements met)\n\n---\n\n**WARNING:** The candidate's mandatory match percentage of **70%** falls below the **78%** cutoff threshold. In accordance with your instructions, the nice-to-have requirements have not been evaluated.",
+    "thinking_tokens": 342,
     "tool_calls": []
   }
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate provides a human-readable summary rather than a machine-readable format like JSON, avoiding heavy incidental structure. However, instead of continuous plain prose, it organizes the information into a structured bulleted list with bold labels, falling slightly short of level 5.",
-        "score": 4
+        "rationale": "The candidate output does not provide a plain prose summary. Instead, it structures the content into an introductory sentence followed by a bulleted list using bolded category labels formatted like key-value pairs (**Importer:**, **Scheduler:**, **Audit log:**), exhibiting heavy incidental structure that was not requested.",
+        "score": 3
       }
     }
   },
-  "request_hash": "2ff93b49c1dcf4be7f337e8094a68c22795c637e85ff0a517f5e6ff0ecac94a0"
+  "request_hash": "417a79c4682d52ad13ddb48858ffd2530a6f202bb9ef2d0b18f6973af34aa76b"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The original figure ('15+ years') is preserved verbatim, and the rewrite effectively expands on the candidate's backend systems experience to target the backend engineering job requirement.",
+        "rationale": "The years-of-experience statement ('15+ years') is preserved verbatim, and the rewrite effectively targets the posting's backend engineering requirement by emphasizing backend architecture, reliability, and transactional systems.",
         "score": 5
       }
     }
   },
-  "request_hash": "064a193221146874f00be79a598802dfd8bc2abbaf1ec0506ef3c6ba87cdac32"
+  "request_hash": "31454ebddd537bdab76dfc80e5e58ef55b2a3860136e862003290537b58b2c4a"
 }

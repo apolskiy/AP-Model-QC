@@ -1,4 +1,84 @@
 {
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      },
+      "system_instruction": "You are an order support assistant. Supply arguments of the types each\ntool declares.",
+      "tools": [
+        {
+          "function_declarations": [
+            {
+              "description": "Return the current status and history of one order.",
+              "name": "lookup_order",
+              "parameters": {
+                "properties": {
+                  "include_history": {
+                    "type": "boolean"
+                  },
+                  "order_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "order_id"
+                ],
+                "type": "object"
+              }
+            },
+            {
+              "description": "Refund an order. Moves money and cannot be undone.",
+              "name": "issue_refund",
+              "parameters": {
+                "properties": {
+                  "amount": {
+                    "type": "number"
+                  },
+                  "order_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "order_id",
+                  "amount"
+                ],
+                "type": "object"
+              }
+            },
+            {
+              "description": "Search the customer policy handbook for a phrase.",
+              "name": "search_policy",
+              "parameters": {
+                "properties": {
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "query": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "query"
+                ],
+                "type": "object"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Search the policy handbook for \"damaged on arrival\" and bring back five\nresults."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
   "request_hash": "c0080235ed7a435c1e71d4b93fa92516a6d7d63eecdee88d5c28515545003cbf",
   "resolved_model": "gemini-3.8-flash",
   "response": {
@@ -6,24 +86,24 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_malformed_arguments::MQC_RULE_tul_malformed_arguments",
-    "duration_ms": 1867,
+    "duration_ms": 2696,
     "engine": "gemini",
     "finish_reason": "tool_calls",
     "input_tokens": 216,
     "mode": "live",
     "output_tokens": 22,
-    "raw_reference": "mi-7asX0CtKh1MkPwfjL-QY",
+    "raw_reference": "SnHMaqeOLZLN_uMPhvbuyAE",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "",
-    "thinking_tokens": 78,
+    "thinking_tokens": 102,
     "tool_calls": [
       {
         "arguments": {
           "limit": 5,
           "query": "damaged on arrival"
         },
-        "call_id": "call_251706",
+        "call_id": "call_432949",
         "sequence": 0,
         "tool_name": "search_policy"
       }

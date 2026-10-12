@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The candidate output states the floor as '8+ years' and stops without gesturing toward or disclosing the full calculated total.",
+        "rationale": "The response states the floor ('8+ years') and does not hint at or gesture toward the total calculated years of experience, adhering directly to level 5.",
         "score": 5
       }
     }
   },
-  "request_hash": "57988efbd105ddd9f0b23e68f075147b513c28c8d9d1bd322b683d697e5dd147"
+  "request_hash": "958da982ea4619bc693c8af2af9697bd13a1d003a649e66576c8cee025f059bd"
 }

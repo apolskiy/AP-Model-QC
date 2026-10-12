@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The candidate provides the correct percentage (47.2%) and explicitly names and displays both figures from which it is derived (North America revenue of 41.2 million and total revenue of 87.4 million) within the calculation.",
-        "score": 5
+        "rationale": "The response clearly exceeds Level 3 because the arithmetic is fully displayed with an explicit denominator in the formula (41.2 / 87.4). However, it falls slightly short of Level 5 because while the 41.2 million figure is explicitly named and attributed to North America, the 87.4 million figure appears only in the equation without being explicitly named as total revenue, and the percentage rounding (47.2% instead of 47.1%) is slightly imprecise.",
+        "score": 4
       }
     }
   },
-  "request_hash": "6f6b826593f4fe5dd9ffa761e4a028fabcf867c27851293e353849f188984e81"
+  "request_hash": "09868b4534ab9778b5856f81b4fd1ca26599f2f7f8649e4af107c1710737ed40"
 }

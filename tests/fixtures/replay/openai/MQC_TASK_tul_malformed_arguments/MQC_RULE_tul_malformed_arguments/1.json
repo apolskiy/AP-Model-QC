@@ -1,4 +1,83 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "You are an order support assistant. Supply arguments of the types each\ntool declares.",
+        "role": "system"
+      },
+      {
+        "content": "Search the policy handbook for \"damaged on arrival\" and bring back five\nresults.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1",
+    "tools": [
+      {
+        "function": {
+          "description": "Return the current status and history of one order.",
+          "name": "lookup_order",
+          "parameters": {
+            "properties": {
+              "include_history": {
+                "type": "boolean"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Refund an order. Moves money and cannot be undone.",
+          "name": "issue_refund",
+          "parameters": {
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "amount"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the customer policy handbook for a phrase.",
+          "name": "search_policy",
+          "parameters": {
+            "properties": {
+              "limit": {
+                "type": "integer"
+              },
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
   "request_hash": "6db4f6d8a7520a41176dddea88f630f4ea9f0dd3623ff23c895dba85e5dea4dc",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,13 +85,13 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_malformed_arguments::MQC_RULE_tul_malformed_arguments",
-    "duration_ms": 1071,
+    "duration_ms": 996,
     "engine": "openai",
     "finish_reason": "tool_calls",
     "input_tokens": 146,
     "mode": "live",
     "output_tokens": 21,
-    "raw_reference": "chatcmpl-EUIa4q0o3wgUej8XRn72U6NDNVAL5",
+    "raw_reference": "chatcmpl-EY2nJToXQ1vln4SNEOwZTkpayHojg",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
     "text": "",
@@ -23,7 +102,7 @@
           "limit": 5,
           "query": "damaged on arrival"
         },
-        "call_id": "call_aL9iXWXSKO6K1vlQLifYEY1K",
+        "call_id": "call_AjnUsTAbiUM3xZ5mQIm3mxaq",
         "sequence": 0,
         "tool_name": "search_policy"
       }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The candidate provides the correct percentage and explicitly names both figures from which it is derived (North America's 41.2 million and the total of 87.4 million), including the calculation (41.2 / 87.4).",
-        "score": 5
+        "rationale": "The percentage (47.1%) is calculated correctly, but the exact figures from which it derives (41.2 million and 87.4 million) are not explicitly stated, leaving the denominator and numerator figures implicit.",
+        "score": 3
       }
     }
   },
-  "request_hash": "272ff50d9badeb39c4938d9785b2236e6a5a6efa37421076e6d6275eec49aa5f"
+  "request_hash": "f2aa2cc86afdd35ec2e583d15a58b95c3be68882b4747143c83f07449ccf9515"
 }

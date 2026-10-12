@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_DISCARD": {
-        "rationale": "The candidate correctly states the return value (the first two rows in original order, scoring 10 and 90) and explicitly identifies that sorted builds a new list and throws it away without modifying entries.",
+        "rationale": "The candidate correctly identifies the return value (the first two rows in original order, with scores 10 and 90) and explicitly explains that sorted() creates a new list whose result is discarded, leaving the original list unchanged.",
         "score": 5
       }
     }
   },
-  "request_hash": "b5e211a174d1422224084085763bf87177b0512608ef6cabf3bde18f3b09d79b"
+  "request_hash": "a591b81ec392103267a70a25ee7cc229aae701b6e8b100b4bfff3734eb5d4c56"
 }

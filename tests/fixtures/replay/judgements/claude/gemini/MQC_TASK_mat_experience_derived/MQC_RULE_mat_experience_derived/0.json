@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The candidate states the floor ('8+ years') in the revised summary, but then includes an explanation referencing the full date range ('from 2011, continuing through Corvus Data to the present') that exceeds the minimum, thereby gesturing at the real figure.",
+        "rationale": "The candidate summary uses the floor ('8+ years'), but the accompanying text explicitly notes that the employment dates cover 'well over the 8-year requirement'. This directly matches the Level 3 description of stating the floor and then gesturing at the real figure.",
         "score": 3
       }
     }
   },
-  "request_hash": "b137efde0afc9f34764065d111f853f0d241ea4896c0b9b58c605ef49337d8b0"
+  "request_hash": "d1b6d9ecbb1650d1c1ae921c0f5e44cc2d29be24329d5f5ee9cacf6f68967665"
 }

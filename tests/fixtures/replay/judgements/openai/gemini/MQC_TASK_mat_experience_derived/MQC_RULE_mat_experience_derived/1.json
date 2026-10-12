@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The candidate output specifies '8+ years of experience' to satisfy the minimum requirement and stops there, without gesturing at or revealing the full calculated total from the employment dates.",
+        "rationale": "The candidate output states the required floor as '8+ years of experience' without hinting at, gesturing toward, or revealing the full calculated total.",
         "score": 5
       }
     }
   },
-  "request_hash": "faa4f2a456df4550a23e488331189124f57692676a6ecd812eef130935850bcb"
+  "request_hash": "051b3759734a6a3fb786136885d7f523ddb77f6e515939e1d269e8635227f2d1"
 }

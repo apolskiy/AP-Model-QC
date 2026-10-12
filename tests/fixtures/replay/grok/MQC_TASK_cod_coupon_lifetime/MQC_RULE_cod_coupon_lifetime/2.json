@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "The module below redeems coupon codes by looking them up. Nothing in\nit limits how long a code stays redeemable, so every code ever issued\nremains valid indefinitely.\n\nRecommend how the design should bound a code's lifetime, and say what\nthe lookup would have to carry for that bound to be enforceable.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "c0e457e4f6ebe4a6a515d9b5e332c641dcd0f7710d1399dcd2b4cdaab1d7bbf1",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 10041,
+    "duration_ms": 19978,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 182,
-    "raw_reference": "2fc055d2-ec2a-9023-82ec-db3246497ca3",
+    "output_tokens": 353,
+    "raw_reference": "cad5f6ac-8f1d-9122-b9bb-7d5bf60d1568",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Bound each code with an explicit validity window stored on the code itself, and refuse redemption unless the redemption time falls inside that window.\n\nThe lookup cannot stay a bare amount. Today `coupon_lookup[code]` yields only a number, so settlement has nothing to check and every issued code stays valid forever. For the bound to be enforceable at redeem time, the lookup must return a record that carries at least:\n\n- the discount value\n- `expires_at` (or `valid_until`)\n- preferably `valid_from` as well, if codes should not be usable before a start time\n\nSettlement should compare a trusted server timestamp (or the order\u2019s authoritative timestamp) to that window and reject the code when `now` is outside it, before applying the value. A bound that exists only at issuance, or only in a side channel the lookup does not return, cannot be enforced here.",
-    "thinking_tokens": 807,
+    "text": "Give every code an explicit validity window and refuse redemption outside it. A code that never expires is just a lookup with no time field; the bound is only enforceable if the lookup itself returns that window and the redeem path checks it before applying value.\n\n**What the lookup must carry.** For each code, store at least:\n\n- `expires_at` \u2014 the instant after which the code is no longer redeemable (or a pair `valid_from` / `valid_until` if you also need a start bound)\n- the redeemable value (what `coupon_lookup[...]` returns today)\n\nOptional but useful for enforcement and audit: `issued_at`, a status (`active` / `redeemed` / `revoked`), and a max-use count. Status and use count bound lifetime in the other sense (one-shot or revoked codes), but they do not replace a time bound.\n\n**How redemption should use it.** Resolve the code to that record, then:\n\n1. Reject if now is before `valid_from` or at/after `expires_at` (compare in one timezone, preferably UTC instants, not local date strings).\n2. Reject if status is not active or remaining uses are zero.\n3. Only then apply the value and, if single-use, mark it redeemed in the same transaction as the order so a retry cannot reuse it.\n\nDo not keep a bare `code \u2192 amount` map. If expiry lives only in an email or a separate table the redeem path never reads, the bound is not enforceable. The lookup result has to include the bound, and `settle_order` (or the layer that calls it) has to fail closed when the bound is missing or already passed.",
+    "thinking_tokens": 424,
     "tool_calls": []
   }
 }

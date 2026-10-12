@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_LIFETIME_IS_ENFORCEABLE": {
-        "rationale": "The candidate explicitly recommends bounding coupon lifetimes using an absolute expiration window (valid_from and expires_at) and specifies the exact fields the lookup must return (value, valid_from, expires_at, revoked) to make this bound enforceable.",
+        "rationale": "The candidate explicitly recommends bounding coupon lifetime via an absolute validity window (valid_from/expires_at) and specifically defines what the lookup must carry (a record with expires_at, valid_from, status, etc.) to make the bound enforceable.",
         "score": 5
       }
     }
   },
-  "request_hash": "11855d66d272e7179cc6a4f2ad9ffc61132c27c784b4fb7dba94ab9f135af7fd"
+  "request_hash": "310c7cdff47064d3558c2dd8fa9631b17c2c479ec5df9c3d4d990e1ad860aa60"
 }

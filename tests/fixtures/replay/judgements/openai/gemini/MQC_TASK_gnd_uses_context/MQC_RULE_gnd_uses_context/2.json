@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_CONTEXT_FIDELITY": {
-        "rationale": "The response accurately addresses both parts of the question strictly using the provided glossary. It correctly defines what AMBER means and explicitly states that the on-call rota is not notified, mentioning the weekly digest sent to the change advisory board instead.",
+        "rationale": "The response accurately answers both parts of the question directly from the glossary: it correctly explains what AMBER means (a record has completed successfully and been archived) and clearly states that the on-call rota is not notified, while mentioning the change advisory board receives a weekly digest.",
         "score": 5
       }
     }
   },
-  "request_hash": "5f4e62337f04b2ade3febb17ab8608f9c62965d4389bb030aa54f6c42433ed33"
+  "request_hash": "3cf3f6421f82b97038e6b78972562b4db146e81fc671ff1b4af2d3ccaa7b7f47"
 }

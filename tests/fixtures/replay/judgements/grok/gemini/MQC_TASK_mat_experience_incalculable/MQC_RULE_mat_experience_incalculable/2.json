@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate output asks for the missing figure, explains the concrete consequence that the summary cannot meet the posting's hard requirement, and explicitly notes that the omission alone will cause screening or ATS evaluation to fail.",
+        "rationale": "The candidate output asks for the missing figure, clearly outlines the consequence that the summary cannot be aligned to the 8-year requirement, and explicitly notes that leaving the gap means the summary fails the screen, indicating the omission alone can decide the outcome.",
         "score": 5
       }
     }
   },
-  "request_hash": "1e4f71915aafc1e04d9e720a09a3e0b3a5faafe6bdff7e2b5ea78ccc2c509a81"
+  "request_hash": "b60581257e8f50e06c89c9b123d1c3949443300800c98c6a3484fd726006f92d"
 }

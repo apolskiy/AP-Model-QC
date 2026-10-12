@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Summarise the quarterly report below in three sentences.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "1917d71ab933b7c2e55089864ce5ffb66989d1b3321591333e122e86426b583c",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 2335,
+    "duration_ms": 4525,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1348,
     "mode": "live",
-    "output_tokens": 53,
-    "raw_reference": "29fd1187-dc98-9e4f-bf9e-fff8f864dd00",
+    "output_tokens": 52,
+    "raw_reference": "02f98a0d-bfdd-924b-8058-e7c69790d0ca",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "North America recorded 41.2 million in Q3 revenue, and EMEA recorded 28.7 million. Japan recorded 11.4 million, while Australia recorded 6.1 million. Total revenue was 87.4 million across these four regions.",
-    "thinking_tokens": 173,
+    "text": "In Q3, North America recorded 41.2 million and EMEA recorded 28.7 million. Japan recorded 11.4 million, and Australia recorded 6.1 million. Total revenue was 87.4 million across these four regions.",
+    "thinking_tokens": 290,
     "tool_calls": []
   }
 }

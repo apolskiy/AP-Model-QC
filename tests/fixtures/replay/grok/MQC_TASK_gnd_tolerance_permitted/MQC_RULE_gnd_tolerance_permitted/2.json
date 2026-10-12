@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Using the quarterly report below, state EMEA revenue. Round it up to the\nnearest ten million so the number reads well in a headline, but do not\noverstate the figure by more than 5 percent. If rounding up would exceed\nthat, give the figure as reported and say why you did not round it.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "3d44ccd1e7d5712588d9669b61d1246229064ebbe016af83ad456f595d8d653b",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
-    "duration_ms": 5379,
+    "duration_ms": 4553,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1378,
     "mode": "live",
-    "output_tokens": 49,
-    "raw_reference": "f7769237-71a6-92f2-bf42-b99d06bde41e",
+    "output_tokens": 8,
+    "raw_reference": "ff0cbd82-af43-98fc-9d4f-251b76198bd6",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**30 million.**\n\nEMEA revenue is reported as 28.7 million. Rounding up to the nearest ten million gives 30 million, an overstatement of about 4.5 percent, which is within the 5 percent limit.",
-    "thinking_tokens": 356,
+    "text": "EMEA revenue: 30 million.",
+    "thinking_tokens": 408,
     "tool_calls": []
   }
 }

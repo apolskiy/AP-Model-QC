@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The candidate provides the correct figure (100%) and explicitly names the 'or' connector in 'Python, Go, or Rust' as the reason why knowing any single one of the listed languages is sufficient to satisfy the requirement.",
+        "rationale": "The response provides the correct figure (100%) and explicitly names the logical OR connector as the reason why satisfying one item meets the requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "2ca1fbb7fcafe9c8e5ff682b64707bffe2c32e2d86caf91ff54ffe642eb725f6"
+  "request_hash": "bc0f90f17e3dcb86c8ccc4c437da318d5c1b302d78cb15f7eb975519738bd57e"
 }

@@ -1,4 +1,17 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "The function below settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "285408820d81e187be653a4aff964e918aa70450cf0fd6be2e407869ced47f4c",
   "resolved_model": "grok-4.7",
   "response": {
@@ -6,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1536,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
-    "duration_ms": 31422,
+    "duration_ms": 50575,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1538,
     "mode": "live",
-    "output_tokens": 232,
-    "raw_reference": "3cece08b-dfb5-99c4-87f4-ae86ec9eb450",
+    "output_tokens": 287,
+    "raw_reference": "1eba7252-5143-9f31-8e1a-c1e05c9e34ad",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement is wrong for three independent reasons.\n\n1. The tier value is a percent off the basket, but it is used as the fraction still owed. `total_amount * discount / 100` is the currency value of the discount (20 on a 100-unit standard basket), not the balance. Subtracting the coupon from that figure never reduces the basket, and it combines a percentage-derived amount with a currency coupon as if they were the same kind of term. Subtract the percent of the original total from the total, then subtract coupon currency from what remains: `total_amount * (100 - discount) / 100 - coupon_currency`.\n\n2. Only `coupon_codes[0]` is looked up, so later codes never affect the balance. Sum the currency value of every supplied code.\n\n3. A missing code is read with `coupon_lookup[...]`, which raises and aborts settlement. An unrecognised code must be skipped (contribute 0) so the tier discount and any recognised coupons still settle.\n\nOn the 100-unit calls that is 50, \u221210, 80, and 30.",
-    "thinking_tokens": 2459,
+    "text": "The settlement math treats the tier percentage as the amount due, uses only the first coupon, and aborts on an unknown code.\n\n1. **The percentage is applied as the payable fraction, not as a reduction.** `total_amount * discount / 100` is the currency value of the tier discount (20 for a standard 100-unit basket). The function then subtracts the coupon from that slice and returns it as the amount owed. A discount and a coupon are different units: the percentage must come off the basket, and the coupon is a further currency reduction of what remains. It should owe `(100 - discount)%` of `total_amount`, then subtract coupon currency. For these calls that is `100 * 0.8 - coupon_sum`, not `20 - coupon_sum`.\n\n2. **Only `coupon_codes[0]` is looked up.** Later codes never affect the total, so `[\"SAVE20\", \"SAVE30\"]` drops the 30. It should sum every recognised code in the list.\n\n3. **An unknown code is a hard lookup failure.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"` and stops settlement. An unrecognised code should be skipped (contribute 0), not abort the call.\n\nCorrect results for the 100-unit standard basket: `50`, `-10`, `80`, and `30`.",
+    "thinking_tokens": 2071,
     "tool_calls": []
   }
 }

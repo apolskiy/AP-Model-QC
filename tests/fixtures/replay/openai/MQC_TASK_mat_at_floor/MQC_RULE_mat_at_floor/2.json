@@ -1,4 +1,21 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_resume_at_floor>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nInfrastructure: Docker, Kubernetes, Terraform, Ansible.\nObservability: Grafana, Prometheus.\nOther: technical writing, mentoring, public speaking.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate against the posting below. A numbered requirement that\nlists several items counts as one requirement, credited in proportion to how\nmany of those items the candidate shows. Report the mandatory match\npercentage. If it lands between 78 and 84 percent, also report the combined\nfigure over all requirements and proceed only if that reaches 85 percent.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
   "request_hash": "261982ef4aaf16a27b70125c1f1b526e75c4525903310c7d7a34c7167ed4f5dc",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
@@ -6,16 +23,16 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 3471,
+    "duration_ms": 4841,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 256,
     "mode": "live",
-    "output_tokens": 402,
-    "raw_reference": "chatcmpl-EULJtq8Dbud1k3d4MCW9C162RHcvK",
+    "output_tokens": 858,
+    "raw_reference": "chatcmpl-EY2jLejSKjnCWO6YBODeUvwuqWsOJ",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Let's break down and compare each requirement.\n\n### Mandatory requirements (10 total):\n\n1. **Python.**\n   - **Match:** Yes (Languages: Python)\n2. **SQL.**\n   - **Match:** Yes (Languages: SQL)\n3. **Linux administration.**\n   - **Match:** Yes (Platform: Linux administration)\n4. **Git.**\n   - **Match:** Yes (Platform: Git)\n5. **REST API design.**\n   - **Match:** Yes (Services: REST API design)\n6. **Unit testing.**\n   - **Match:** Yes (Services: Unit testing)\n7. **CI pipelines.**\n   - **Match:** Yes (Services: CI pipelines)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm.**\n   - **Match:** 4 out of 5 (Docker, Kubernetes, Terraform, Ansible; Helm missing)\n   - **Credit:** 4/5 = 0.8\n9. **Kafka.**\n   - **Match:** Not present\n   - **Credit:** 0\n10. **GraphQL.**\n    - **Match:** Not present\n    - **Credit:** 0\n\n#### Scoring (Mandatory):\n- Items 1-7: 1 each\n- Item 8: 0.8\n- Items 9-10: 0 each\n\nSum: 1+1+1+1+1+1+1+0.8+0+0 = **6.8 / 10 = 68%**\n\n### Match Percentage\n\n**Mandatory match percentage:** **68%**\n\n- This is below the reporting threshold where combined figures are considered.  \n- The candidate does **not** meet the required range (78\u201384%) where combined (all requirements) could be considered for a total over 85%.\n\n---\n\n**Summary:**  \n**Mandatory match percentage is 68%.**  \nCandidate does not meet the threshold to proceed further.",
+    "text": "**Assessment**\n\nLet's compare the candidate (DOC_resume_at_floor) to the requirements (DOC_posting_ten_five):\n\n---\n### Mandatory Requirements\n\n1. **Python.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n2. **SQL.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n3. **Linux administration.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n4. **Git.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n5. **REST API design.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n6. **Unit testing.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n7. **CI pipelines.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n8. **Docker, Kubernetes, Terraform, Ansible, Helm.**  \n   - Docker: \u2714  \n   - Kubernetes: \u2714  \n   - Terraform: \u2714  \n   - Ansible: \u2714  \n   - Helm: \u2718  \n   4 out of 5 covered.  \n   **Score: 4/5 = 0.8**\n\n9. **Kafka.**  \n   \u2718 Not mentioned.  \n   **Score: 0**\n\n10. **GraphQL.**  \n   \u2718 Not mentioned.  \n   **Score: 0**\n\n---\n\n**Mandatory Totals**:  \n- Individual scores: 1+1+1+1+1+1+1+0.8+0+0 = **7.8 / 10**\n\n**Mandatory Match Percentage**:  \n\\( \\frac{7.8}{10} \\times 100 = 78\\% \\)\n\n---\n\n### Nice-to-have Requirements\n\n11. **Grafana.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n12. **Prometheus.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n13. **Technical writing.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n14. **Mentoring.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n15. **Public speaking.**  \n   \u2714 Mentioned.  \n   **Score: 1**\n\n**Nice-to-have Totals**: 5 / 5\n\n---\n\n### Combined Match Percentage\n\nTotal requirements: 10 (mandatory) + 5 (nice-to-have) = 15  \nTotal candidate scores: 7.8 (mandatory) + 5 (nice-to-have) = 12.8  \n\nCombined percentage:  \n\\( \\frac{12.8}{15} \\times 100 = 85.3\\% \\)\n\n---\n\n**Decision:**\n\n- **Mandatory match is 78%.**\n- This falls within the 78\u201384% range.\n- Combined match is **85.3%**, which is above 85%.\n\n**Proceed: YES** (Combined match meets the threshold).\n\n---\n\n**Summary Table**\n\n| Requirement                  | Score                |\n|------------------------------|----------------------|\n| 1. Python                    | 1                    |\n| 2. SQL                       | 1                    |\n| 3. Linux administration      | 1                    |\n| 4. Git                       | 1                    |\n| 5. REST API design           | 1                    |\n| 6. Unit testing              | 1                    |\n| 7. CI pipelines              | 1                    |\n| 8. Docker, K8s, ... (4/5)    | 0.8                  |\n| 9. Kafka                     | 0                    |\n| 10. GraphQL                  | 0                    |\n| 11. Grafana                  | 1                    |\n| 12. Prometheus               | 1                    |\n| 13. Technical writing        | 1                    |\n| 14. Mentoring                | 1                    |\n| 15. Public speaking          | 1                    |\n\n---\n\n**Final Scores:**  \n- Mandatory match: **78%**  \n- Combined match: **85.3%**  \n- **Proceed:** YES",
     "thinking_tokens": 0,
     "tool_calls": []
   }

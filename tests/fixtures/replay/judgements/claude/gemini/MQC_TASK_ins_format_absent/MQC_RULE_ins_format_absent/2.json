@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate provides a human-readable summary rather than a machine-readable format like JSON. However, it introduces light incidental formatting (a bulleted list with bold key-value-style tags) rather than completely unstructured plain prose.",
+        "rationale": "The candidate provides a summary in text rather than a machine-readable format like JSON, but formats the content into a bulleted list with bolded key-value-style prefixes rather than pure unstructured prose.",
         "score": 4
       }
     }
   },
-  "request_hash": "578de71d346e990dc5ccf0df108f00ee4cafe0b2f3e17c407bec7b112dc6fb1c"
+  "request_hash": "d3d25f5819e63e719aba1ed194433c45c2e950df515f44e6fd43c03bcef3083a"
 }
