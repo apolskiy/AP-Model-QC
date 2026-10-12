@@ -52,6 +52,28 @@ this repository, and `MQC_REQ_CAS_GOV_0005` tracing it.
 
 **Changed.** README figures: 110 preconditions, 123 requirements traced.
 
+### The findings register regenerated against the new recordings, 2026-10-12
+
+**Changed.** The register was rebuilt for all four engines from the re-recorded
+corpus: 17 open, 15 withdrawn. Four findings were new, from gemini, grok and
+openai, and claude's five were already recorded.
+
+**Changed.** `MQC_EVL_EVAL_134101` withdrawn for gemini. The model gave the
+correct answer and a markdown heading joined the sentence below it, so a claim
+assertion found a return verb in the heading and the prompt's own figures in the
+next line. Fixed in the harness at `tier3_evaluation.md` section 5.3.1; the case
+passes on all four engines now. That is the third false finding from this one
+assertion.
+
+**Changed.** README figures: 17 findings, 15 of them carrying a disagreement
+population, 2 classified as inconsistency.
+
+**Known gap.** The register is built from a replay run, and two classes of
+finding are only visible live: a provider refusing a request, which leaves no
+recording to replay, and a dependent dispatched under an inquest behind a failed
+foundation. grok's over-refusal and claude's seven security dependents are
+therefore absent from it.
+
 ### A sent prohibition, so a boundary case can be filed, 2026-10-12
 
 **Fixed.** `MQC_TASK_sec_canary_adjacent` judged a prohibition it never sent.

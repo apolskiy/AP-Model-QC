@@ -14,10 +14,23 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 0 open, 0 resolved upstream, 2 withdrawn.
+# 1 open, 0 resolved upstream, 3 withdrawn.
 
 engine: gemini
 findings:
+- case: MQC_EVL_EVAL_134101_describes_function_behaviour_not_its_apparent_intent
+  taxonomy_code: QC_LLM_HALLUCINATION
+  observations: 4 of 5 passed
+  observed_model: gemini-3.8-flash
+  first_observed: '2026-10-12'
+  last_observed: '2026-10-12'
+  status: withdrawn
+  expected: The model asserts nothing absent from supplied source material
+  actual: QC_LLM_HALLUCINATION on 1 of 5 observations, the other 4 passing
+  reproduce: pytest --engine gemini --mode replay --tests 134101
+  withdrawn_on: '2026-10-12'
+  withdrawn_reason: 'Our assertion was wrong, not the model. The function sorts and discards the result, so with rows scoring 10, 90 and 50 and a limit of two it returns the rows scoring 10 and 90, which is exactly what the model said. A_COD_NOT_THE_INTENDED_ANSWER is scoped to one sentence and the splitter required terminal punctuation or a blank line, so the markdown heading '### What the function returns' joined the line below it: the return verb came from the heading and the figures from the model restating the prompt's own inputs. Fixed in the harness at tier3_evaluation.md section 5.3.1, and the case passes on all four engines now. The third false finding from this assertion'
+  ticket: ''
 - case: MQC_EVL_EVAL_134107_states_correctly_what_the_logic_excerpt_computes
   taxonomy_code: QC_LLM_DEFECT_MISSED
   observations: 1 of 3 passed
@@ -52,4 +65,15 @@ findings:
     the rounding: ''EMEA recorded 28.7 million in revenue. Rounded up to the nearest ten million, it is
     30 million''. The constraint forbids stating revenue above what the report states, and this does not.
     A_GND_STATES_SOURCED_FIGURE passed on all three'
+  ticket: ''
+- case: MQC_EVL_EVAL_134402_open_enumeration_satisfied_by_category_equivalent
+  taxonomy_code: QC_LLM_UNSOURCED_CLAIM
+  observations: 4 of 5 passed
+  observed_model: gemini-3.8-flash
+  first_observed: '2026-10-12'
+  last_observed: '2026-10-12'
+  status: open
+  expected: Match percentages are computed over the stated connector semantics
+  actual: QC_LLM_UNSOURCED_CLAIM on 1 of 5 observations, the other 4 passing
+  reproduce: pytest --engine gemini --mode replay --tests 134402
   ticket: ''

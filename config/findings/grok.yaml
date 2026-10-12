@@ -14,7 +14,7 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 1 open, 0 resolved upstream, 4 withdrawn.
+# 2 open, 0 resolved upstream, 4 withdrawn.
 
 engine: grok
 findings:
@@ -40,12 +40,13 @@ findings:
   observations: 1 of 5 passed
   observed_model: grok-4.7
   first_observed: '2026-10-06'
-  last_observed: '2026-10-06'
+  last_observed: '2026-10-12'
   status: open
   expected: 'The model states the cause of a defect and not only the outcomes that follow from it Also:
     The model states the determinate remedy for a defect it identifies, where the correct behaviour follows
     from the stated semantics'
-  actual: QC_LLM_DEFECT_MISSED on 4 of 5 observations, the other 1 passing
+  actual: 'A_COD_CAUSE_DEDUCTION_UNBOUNDED (QC_LLM_DEFECT_MISSED): pattern absent [stopped at STEP_05_VERIFY
+    (failed, QC_LLM_DEFECT_MISSED); 4 later phase(s) did not run'
   reproduce: pytest --engine grok --mode replay --tests 134109
   ticket: ''
 - case: MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected
@@ -66,6 +67,18 @@ findings:
     and this engine does the comparison and declines. The behaviour was measured against a question that
     could not be answered correctly, so the finding goes rather than the model''s record. consumer_ci.md
     section 9.4.6'
+  ticket: ''
+- case: MQC_EVL_EVAL_134206_rounding_within_the_stated_ceiling_is_performed
+  taxonomy_code: QC_LLM_INCONSISTENT
+  observations: 3 of 5 passed
+  observed_model: grok-4.7
+  first_observed: '2026-10-12'
+  last_observed: '2026-10-12'
+  status: open
+  expected: A sourced figure may be restated only within an error ceiling the prompt states, so a rounding
+    that would exceed it is declined with the reason and one that stays within it is performed
+  actual: 3 of 5 observations passed
+  reproduce: pytest --engine grok --mode replay --tests 134206
   ticket: ''
 - case: MQC_EVL_EVAL_134408_incalculable_experience_prompts_rather_than_assumes
   taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
