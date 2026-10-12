@@ -36,6 +36,12 @@ from typing import Any, Final, Optional
 import yaml
 
 from cmn.registries import most_critical
+from tools.register_files import (
+    holding_path,
+    refuse_empty_run,
+    register_path,
+    write_register,
+)
 
 _REGISTER_ROOT: Final[Path] = Path("config/findings")
 _MODEL_CODE: Final[re.Pattern] = re.compile(r"\b(QC_LLM_[A-Z_]+|QC_SEC_[A-Z_]+)\b")
@@ -48,6 +54,15 @@ _RESOLVED: Final[str] = "resolved_upstream"
 # published report. Section 9.4.1.
 _WITHDRAWN: Final[str] = "withdrawn"
 
+# A FLIP IS NOT A RETRACTION. A finding that stopped reproducing says nothing
+# about the model until it is seen again, and nothing about our assertion
+# either: it is an absence of a measurement rather than a correction of one.
+# So it takes its own status and waits in the holding list, where a later run
+# can promote it back with the intermittent marker (section 9.4.8).
+_UNREPRODUCED: Final[str] = "not_reproduced"
+
+
+
 # WHERE A FAILURE MESSAGE STOPS BEING THE FINDING AND STARTS BEING OUR
 # TRACEBACK. Declared as constants rather than written inline, because an
 # escape inside an edited literal is the one class of change this project
@@ -56,22 +71,6 @@ _TEST_FRAME: Final[str] = "tests" + chr(92)
 _TEST_FRAME_POSIX: Final[str] = "tests/"
 _ERROR_LINE: Final[str] = chr(10) + "E "
 _IN_CASE: Final[str] = " in MQC_"
-
-
-def register_path(engine: str) -> Path:
-    """Return where one engine's findings are recorded.
-
-    **One file per engine**, because a finding is a claim about one model and
-    aggregating findings across providers makes no claim at all. The same
-    reasoning separates the gate and weekly workflows per engine.
-
-    Args:
-        engine (str): The engine.
-
-    Returns:
-        Path: The register file, which need not exist.
-    """
-    return _REGISTER_ROOT / f"{engine}.yaml"
 
 
 def load_register(engine: str) -> dict[str, dict[str, Any]]:
@@ -85,11 +84,17 @@ def load_register(engine: str) -> dict[str, dict[str, Any]]:
         for quarantine: a register that must exist to be read would make the
         file a prerequisite for a clean repository.
     """
-    path = register_path(engine)
-    if not path.is_file():
-        return {}
-    loaded = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    return {str(entry["case"]): dict(entry) for entry in loaded.get("findings", ())}
+    found: dict[str, dict[str, Any]] = {}
+    # BOTH FILES, because the holding list is where a flipped finding waits and
+    # a run that could not see it would record the same finding again as new
+    # (section 9.4.8).
+    for path in (register_path(engine), holding_path(engine)):
+        if not path.is_file():
+            continue
+        loaded = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        for entry in loaded.get("findings", ()) or ():
+            found[str(entry["case"])] = dict(entry)
+    return found
 
 
 def observe(engine: str, mode: str, *, timeout: int = 1800) -> tuple[Path, str]:
@@ -372,7 +377,7 @@ class RunContext:
             register is reproducible from the same inputs.
         resolve (bool): Whether an absent finding may be retired as the
             vendor's fix, which only a live run may ask for.
-        withdraw_unreproduced (bool): Whether an absent finding may be
+        hold_unreproduced (bool): Whether an absent finding may be
             withdrawn as ours. **Replay may ask for this**, because it is a
             question about our own record rather than about the model
             (section 9.4.7).
@@ -384,21 +389,27 @@ class RunContext:
     expected: dict[str, str]
     today: date
     resolve: bool
-    withdraw_unreproduced: bool = False
+    hold_unreproduced: bool = False
 
 
-def withdraw_unreproduced(
+def hold_unreproduced(
     merged: dict[str, dict[str, Any]],
     observed: dict[str, dict[str, Any]],
     run: RunContext,
 ) -> list[str]:
-    """Withdraw every open finding this run did not reproduce.
+    """Hold every open finding this run did not reproduce.
 
-    **Ours, not theirs.** A finding that evaporates on a fresh sample is a
-    statement about our measurement: the recordings changed because we retook
-    them, not because anything upstream moved. Crediting a vendor with a
+    **Neither ours nor theirs, which is why it has its own status.** A finding
+    that stops reproducing is not a retraction of our assertion and not a
+    vendor's fix: it is an absence of a measurement. Crediting a vendor with a
     correction they did not make is the error that most damages a published
-    report (section 9.4.1).
+    report (section 9.4.1), and calling it our defect would be the mirror of
+    that error.
+
+    **Intermittent is a run-to-run property, not a failure rate.** A case
+    failing one observation in five has been measured, and that measurement is
+    the finding; a case that failed and now passes has flipped, and this is the
+    only situation the holding list is for (section 9.4.8).
 
     **Replay may ask for this**, unlike resolution. It asks whether our own
     record still shows what we said it showed, which is exactly what replay
@@ -422,9 +433,9 @@ def withdraw_unreproduced(
         if case in observed or entry.get("status") in (_RESOLVED, _WITHDRAWN):
             continue
         population = entry.get("observations") or "population not recorded"
-        entry["status"] = _WITHDRAWN
-        entry["withdrawn_on"] = run.today.isoformat()
-        entry["withdrawn_reason"] = (
+        entry["status"] = _UNREPRODUCED
+        entry["held_on"] = run.today.isoformat()
+        entry["held_reason"] = (
             f"Did not reproduce on a fresh run of {run.today.isoformat()}. "
             f"Recorded from {population}, so it was a claim drawn from that "
             f"population and the sample did not hold. Nothing had asked "
@@ -433,7 +444,7 @@ def withdraw_unreproduced(
             f"matrix, and none compared it to a result (consumer_ci.md "
             f"section 9.4.7)"
         )
-        changed.append(f"WITHDRAWN {case}, it no longer reproduces ({population})")
+        changed.append(f"HELD {case}, it no longer reproduces ({population})")
     return changed
 
 
@@ -445,7 +456,7 @@ def resolve_upstream(
     """Retire every finding a live run no longer reproduces, as the vendor's.
 
     **Theirs, not ours**, which is the mirror of
-    :func:`withdraw_unreproduced` and the reason the two are separate
+    :func:`hold_unreproduced` and the reason the two are separate
     functions. Only a live run may ask for this, because replay replays our own
     recording and cannot bear on the current model (section 9.4).
 
@@ -521,6 +532,21 @@ def merge(
         # retracted, so stamping it with today's run would make it look live
         # again, and reopening it would resurrect a judgement about an
         # assertion that no longer exists. Section 9.4.1.
+        if entry.get("status") == _UNREPRODUCED:
+            # IT CAME BACK, SO IT IS FILEABLE AND IT IS MARKED. A claim that
+            # has flipped is a different claim from one that has held, and a
+            # vendor is told plainly that the behaviour is not every run
+            # (section 9.4.8).
+            entry["status"] = "open"
+            entry["intermittent"] = True
+            entry["last_observed"] = run.today.isoformat()
+            entry.pop("held_on", None)
+            entry.pop("held_reason", None)
+            changes.append(
+                f"PROMOTED {case} reproduced again and is filed as intermittent"
+            )
+            continue
+
         if entry.get("status") == _WITHDRAWN:
             # REPORTED, NOT REOPENED. The status is a judgement we made about
             # our own assertion and this run cannot revisit it, but a retracted
@@ -566,8 +592,8 @@ def merge(
             )
             entry["observations"] = measured["observations"]
 
-    if run.withdraw_unreproduced:
-        changes.extend(withdraw_unreproduced(merged, observed, run))
+    if run.hold_unreproduced:
+        changes.extend(hold_unreproduced(merged, observed, run))
 
     if run.resolve:
         changes.extend(resolve_upstream(merged, observed, run))
@@ -575,7 +601,12 @@ def merge(
     return merged, changes
 
 
-def render(engine: str, findings: dict[str, dict[str, Any]]) -> str:
+def render(
+    engine: str,
+    findings: dict[str, dict[str, Any]],
+    *,
+    holding: bool = False,
+) -> str:
     """Return the register as the file holds it.
 
     Args:
@@ -597,7 +628,15 @@ def render(engine: str, findings: dict[str, dict[str, Any]]) -> str:
         "# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy\n"
         "# SPDX-License-Identifier: MIT\n"
         f"# Findings observed against {engine}.\n"
-        "#\n"
+        + ("# THE HOLDING LIST. Nothing here is filed: each entry either was\n"
+           "# retracted as ours or stopped reproducing. A held finding that a\n"
+           "# later run reproduces returns to the bug file carrying\n"
+           "# `intermittent: true` (consumer_ci.md section 9.4.8).\n"
+           if holding else
+           "# THE BUG FILE. Every entry reproduced on the latest run, whatever\n"
+           "# its failure rate. What did not reproduce waits in unconfirmed/\n"
+           "# (consumer_ci.md section 9.4.8).\n")
+        + "#\n"
         "# GENERATED BY tools/findings.py. Specified by\n"
         "# docs/design/consumer_ci.md section 9.\n"
         "#\n"
@@ -640,10 +679,10 @@ def main(argv: Optional[list[str]] = None) -> int:
         ),
     )
     parser.add_argument(
-        "--withdraw-unreproduced",
+        "--hold-unreproduced",
         action="store_true",
         help=(
-            "Withdraw an open finding this run did not reproduce. Permitted in "
+            "Hold an open finding this run did not reproduce. Permitted in "
             "replay: it asks whether our own record still holds, not whether "
             "the model changed"
         ),
@@ -690,7 +729,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             expected=expected_by_case(Path("docs/testing/rtm_model.csv")),
             today=today,
             resolve=arguments.resolve_from_live,
-            withdraw_unreproduced=arguments.withdraw_unreproduced,
+            hold_unreproduced=arguments.hold_unreproduced,
         ),
     )
 
@@ -710,7 +749,21 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     path = register_path(arguments.engine)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(render(arguments.engine, merged), encoding="utf-8", newline="\n")
+    held_count = sum(
+        1 for entry in merged.values()
+        if entry.get("status") == _UNREPRODUCED
+        and entry.get("held_on") == today.isoformat()
+    )
+    refusal = refuse_empty_run(report, observed, held_count)
+    if refusal is not None:
+        print(
+            f"QC_HARNESS_PRECONDITION: refusing to write the register because "
+            f"{refusal}.",
+            file=sys.stderr,
+        )
+        return 1
+
+    write_register(arguments.engine, merged, render)
     print(f"wrote {path} with {len(merged)} finding(s)")
     return 0
 

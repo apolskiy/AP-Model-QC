@@ -52,6 +52,37 @@ this repository, and `MQC_REQ_CAS_GOV_0005` tracing it.
 
 **Changed.** README figures: 110 preconditions, 123 requirements traced.
 
+### The bug file holds what reproduced, and an empty run is refused, 2026-10-12
+
+**Changed.** `config/findings/<engine>.yaml` is now the bug file and carries
+only findings the latest run reproduced, whatever their failure rate. What was
+retracted as ours, or stopped reproducing, waits in
+`config/findings/unconfirmed/<engine>.yaml`. A held finding a later run
+reproduces returns to the bug file carrying `intermittent: true`. Specified in
+`docs/design/consumer_ci.md` section 9.4.8.
+
+**Changed.** Intermittent means a run-to-run flip, not a failure rate. The
+first draft read any population with a passing observation as intermittent,
+which would have held ten of twelve findings out of the bug files on the
+strength of a rate. A case failing one observation in five has been measured
+and that measurement is the finding; `QC_LLM_INCONSISTENT` already names it.
+
+**Fixed.** A findings run that could not collect emptied all four bug files in
+one command. Renaming a function left a stale import in a case module, pytest
+aborted at collection, the run observed nothing, and twelve reproducing
+findings were moved to the holding list. `refuse_empty_run` now refuses a
+report carrying a collection error, one that collected far less than the graded
+suite holds while a retirement is pending, and an absent report. Recording a
+finding a run did not see is impossible; retiring one on an empty result is a
+silent total loss, and that asymmetry is why only the retiring direction is
+guarded.
+
+**Added.** `tools/register_files.py`, split from `findings.py` at the
+nine-hundred-line runway ceiling. That module observes a run and merges what it
+saw; this one decides which file an entry belongs in.
+
+**Changed.** README figures: 114 preconditions, 127 requirements traced.
+
 ### The register reconciled against a fresh run, 2026-10-12
 
 **Added.** `--withdraw-unreproduced` on `tools.findings`. An open finding a

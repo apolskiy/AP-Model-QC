@@ -26,6 +26,8 @@ marker, per the harness ``framework-rules.md`` section 3.3.
 # TestMQCTicketInput
 #   115733  a_ticket_input_is_the_recorded_request_not_the_corpus
 #   115736  the_finding_reader_carries_the_questions
+#   115738  a_run_that_collected_nothing_does_not_retire_findings
+#   115739  the_bug_file_holds_only_what_reproduced
 #   115737  a_finding_that_stopped_reproducing_is_withdrawn
 # ------------------------------------------------------------ end of cases
 
@@ -37,7 +39,13 @@ import allure
 import pytest
 
 from tools.ticket_report import _input_block, recorded_request
-from tools.findings import RunContext, withdraw_unreproduced
+from tools.findings import RunContext, hold_unreproduced
+from tools.register_files import (
+    holding_path,
+    partition,
+    refuse_empty_run,
+    register_path,
+)
 from tools.finding_evidence import (
     _QUESTIONS,
     evidence,
@@ -150,6 +158,91 @@ class TestMQCTicketInput:
         # AND THE REGISTER READER ANSWERS FOR AN ENGINE THAT HAS NONE.
         assert register_rows("no-such-engine") == []
 
+    @allure.story("A run that measured nothing is refused")
+    def MQC_CAS_UNI_115738_a_run_that_collected_nothing_does_not_retire_findings(
+        self, tmp_path: Path
+    ) -> None:
+        """An empty result is not a result in which nothing reproduced.
+
+        **This emptied all four bug files in one command.** Renaming a function
+        left a stale import in this very module, pytest aborted at collection,
+        the findings run observed nothing, and twelve reproducing findings were
+        moved to the holding list. The exit status could not tell the story: a
+        quiet run shares it between "everything passed" and "nothing was
+        collected".
+
+        **The asymmetry is why the guard exists.** Recording a finding a run did
+        not see is impossible; retiring one on an empty result is a silent,
+        total loss.
+
+        Design: ``consumer_ci.md`` section 9.4.8.
+
+        Returns:
+            None
+        """
+        report = tmp_path / "junit.xml"
+
+        # THE SHAPE THAT DID IT: a collection error and no failures.
+        report.write_text(
+            '<testsuites><testsuite name="pytest" tests="1">'
+            '<testcase classname="" name="tests/cases/mqc_uni_ticket_report.py">'
+            '<error message="collection failure">ImportError</error>'
+            "</testcase></testsuite></testsuites>",
+            encoding="utf-8",
+        )
+        refusal = refuse_empty_run(report, {}, 12)
+        assert refusal and "collection or setup error" in refusal, refusal
+
+        # A RUN THAT COLLECTED ALMOST NOTHING AND WOULD RETIRE TWELVE.
+        report.write_text(
+            '<testsuites><testsuite name="pytest" tests="2">'
+            '<testcase classname="a" name="one"/>'
+            '<testcase classname="a" name="two"/>'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+        refusal = refuse_empty_run(report, {}, 12)
+        assert refusal and "collected 2 case(s)" in refusal, refusal
+
+        # AN ABSENT REPORT IS REFUSED RATHER THAN READ AS EMPTY.
+        assert refuse_empty_run(tmp_path / "absent.xml", {}, 1) is not None
+
+        # AND A FULL RUN IS ALLOWED, WHETHER OR NOT IT RETIRES ANYTHING. The
+        # guard is about measuring nothing, not about retiring: gemini
+        # legitimately reproduces none of its findings.
+        cases = "".join(
+            f'<testcase classname="c" name="n{index}"/>' for index in range(70)
+        )
+        report.write_text(
+            f'<testsuites><testsuite name="pytest" tests="70">{cases}'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+        assert refuse_empty_run(report, {}, 0) is None
+        assert refuse_empty_run(report, {}, 4) is None
+
+    @allure.story("A bug file holds only what reproduced")
+    def MQC_CAS_UNI_115739_the_bug_file_holds_only_what_reproduced(self) -> None:
+        """What gets filed and what waits are different files.
+
+        Design: ``consumer_ci.md`` section 9.4.8.
+
+        Returns:
+            None
+        """
+        entries = {
+            "a": {"case": "a", "status": "open"},
+            "b": {"case": "b", "status": "withdrawn"},
+            "c": {"case": "c", "status": "not_reproduced"},
+            "d": {"case": "d", "status": "resolved_upstream"},
+        }
+        fileable, held = partition(entries)
+
+        assert set(fileable) == {"a"}, fileable
+        assert set(held) == {"b", "c", "d"}, held
+        assert holding_path("claude") != register_path("claude")
+        assert holding_path("claude").parent.name == "unconfirmed"
+
     @allure.story("The register is reconciled against the run")
     def MQC_CAS_UNI_115737_a_finding_that_stopped_reproducing_is_withdrawn(
         self,
@@ -169,7 +262,7 @@ class TestMQCTicketInput:
         """
         run = RunContext(
             engine="gemini", mode="replay", models={}, expected={},
-            today=date(2026, 10, 12), resolve=False, withdraw_unreproduced=True,
+            today=date(2026, 10, 12), resolve=False, hold_unreproduced=True,
         )
         register = {
             "MQC_EVL_EVAL_134000_gone": {
@@ -185,19 +278,22 @@ class TestMQCTicketInput:
         }
         observed = {"MQC_EVL_EVAL_134001_here": {"taxonomy_code": "QC_LLM_HALLUCINATION"}}
 
-        lines = withdraw_unreproduced(register, observed, run)
+        lines = hold_unreproduced(register, observed, run)
 
         # THE ABSENT ONE IS WITHDRAWN, AND THE POPULATION IS IN THE REASON.
         gone = register["MQC_EVL_EVAL_134000_gone"]
-        assert gone["status"] == "withdrawn", gone
-        assert gone["withdrawn_on"] == "2026-10-12", gone
-        assert "4 of 5 passed" in gone["withdrawn_reason"], gone["withdrawn_reason"]
+        assert gone["status"] == "not_reproduced", gone
+        assert gone["held_on"] == "2026-10-12", gone
+        assert "4 of 5 passed" in gone["held_reason"], gone["held_reason"]
         assert any("134000" in line for line in lines), lines
 
         # OURS, NOT THEIRS. Crediting a vendor with a correction they did not
         # make is the error that most damages a published report.
         assert "resolved_on" not in gone, gone
         assert gone["status"] != "resolved_upstream"
+        # NOR OURS. A flip is not a retraction of our assertion either, which
+        # is why it has a status of its own (section 9.4.8).
+        assert gone["status"] != "withdrawn", gone
 
         # ONE THE RUN STILL SHOWS IS UNTOUCHED, and so is one already retracted.
         assert register["MQC_EVL_EVAL_134001_here"]["status"] == "open"

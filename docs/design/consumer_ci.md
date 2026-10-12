@@ -882,6 +882,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115735` | N | `a_readme_without_a_changelog_is_reported` |
 | `115736` | P | `the_finding_reader_carries_the_questions` |
 | `115737` | P | `a_finding_that_stopped_reproducing_is_withdrawn` |
+| `115738` | N | `a_run_that_collected_nothing_does_not_retire_findings` |
+| `115739` | P | `the_bug_file_holds_only_what_reproduced` |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -897,7 +899,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 76 cases, 55 negative, 16 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 78 cases, 56 negative, 17 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2716,6 +2718,65 @@ still reproduced. The inventory checks compare the register to the suite by
 name, the trace checks compare it to the matrix, and no check compared it to a
 result. `MQC_CAS_UNI_115737` does, and `--withdraw-unreproduced` performs it.
 
+
+### 9.4.8 A bug file holds what the latest run reproduced; the rest waits
+
+Decided 2026-10-12 by the project owner: "let's engine bug files keep only
+problems we reproduced on the latest run, if problems are no longer
+reproducible or prove intermittent, let's keep a separate list, if they
+reproduce again we will add them with the intermittent marker to bug files."
+
+**A bug file is what gets filed, so it carries only what a vendor can
+reproduce.** Everything else waits in `config/findings/unconfirmed/`, which is
+a holding list rather than a verdict.
+
+| Where | What it holds |
+|---|---|
+| `config/findings/<engine>.yaml` | **Reproduced on the latest run.** Whatever its failure rate |
+| `config/findings/unconfirmed/<engine>.yaml` | Did not reproduce on the latest run, or was withdrawn as ours |
+
+#### Intermittent is a run-to-run property, not a failure rate
+
+Corrected 2026-10-12 by the project owner: "intermittent means test case has
+failed once. But passes on another run. 20% rate failure is not intermittent."
+
+**The first draft of this section had it wrong**, reading any population with a
+passing observation as intermittent. That would have held ten of twelve open
+findings out of the bug files on the strength of a rate.
+
+| | Means | Where it belongs |
+|---|---|---|
+| **Inconsistent**, 1 of 5 observations failing | A measured disagreement **within** one run | A finding in its own right. `QC_LLM_INCONSISTENT` already names it, and the repeats exist to produce it |
+| **Intermittent**, failed once and passed later | The case outcome flipped **between** runs | The holding list, until a later run reproduces it |
+
+**A rate is a measurement and a flip is an absence of one.** The project
+already escalates three observations to five on disagreement and fails the case
+whichever way the majority went, because a majority would discard the finding
+the repeats exist to produce. So a 20% failure rate is not weak evidence; it is
+the evidence, and a bug file carries it.
+
+**What a flip means is that the run stopped agreeing with the register**, which
+says nothing about the model until it is seen again. That is the only case the
+holding list is for.
+
+#### A flip is marked when it comes back
+
+A finding that stops reproducing moves to the holding list. When a later run
+reproduces it again it returns to the bug file carrying `intermittent: true`,
+because a claim that has flipped is a different claim from one that has held:
+a vendor is told plainly that the behaviour is not every run.
+
+**Four findings entered the list on 2026-10-12** by not reproducing against the
+re-recorded corpus, and one of them, grok `134408`, is already back. It was
+retracted and now fails again, which is exactly the flip this marker names.
+
+**The marker is on the entry, not in the prose**, so a reader sorts by it.
+
+#### What this is not
+
+It is not quarantine and it is not a verdict exemption. Nothing here changes a
+gate: a P0 or P1 failure fails the run whether its finding is filed, held or
+withdrawn (section 9.2).
 
 ### 9.5 Filing needs three sources joined, and nothing joined them
 

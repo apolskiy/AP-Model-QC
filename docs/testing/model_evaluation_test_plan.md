@@ -145,6 +145,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_COR_0026` | A ticket's input is the request the recording stored together with a runnable reproduction of it, and a recording that predates the field says so rather than presenting the corpus as the call | consumer_ci.md section 9.5.3 |
 | `MQC_REQ_CAS_COR_0027` | One finding's evidence is readable on its own, with how every other engine stands on the same case and the questions that have decided every withdrawal | consumer_ci.md section 9.5.4 |
 | `MQC_REQ_CAS_COR_0028` | An open finding a fresh run does not reproduce is withdrawn as ours with the population it was drawn from, a withdrawn finding that reproduces again is reported without being reopened, and neither is credited to the vendor | consumer_ci.md section 9.4.7 |
+| `MQC_REQ_CAS_COR_0029` | A findings run that could not collect, or collected far less than the graded suite holds, refuses to write the register rather than retiring every finding it did not observe | consumer_ci.md section 9.4.8 |
+| `MQC_REQ_CAS_COR_0030` | A bug file carries only findings the latest run reproduced, and what was retracted or stopped reproducing waits in a holding list beside it | consumer_ci.md section 9.4.8 |
 | `MQC_REQ_CAS_COR_0013` | Every code excerpt inlined into a task is byte-identical to the guarded fixture it names, so the dispatched copy is the copy under guard |
 | `MQC_REQ_CAS_COR_0014` | The code comprehension corpus supplies nine tasks formulating three grounding requirements in the code domain |
 | `MQC_REQ_CAS_COR_0015` | The settlement excerpt guard executes all three money outcomes, including the silent zero settlement |
