@@ -370,8 +370,12 @@ class RunContext:
         expected (dict): Case name to the requirement it traces to.
         today (date): The date to stamp, injected rather than read, so a
             register is reproducible from the same inputs.
-        resolve (bool): Whether an absent finding may be retired, which only a
-            live run may ask for.
+        resolve (bool): Whether an absent finding may be retired as the
+            vendor's fix, which only a live run may ask for.
+        withdraw_unreproduced (bool): Whether an absent finding may be
+            withdrawn as ours. **Replay may ask for this**, because it is a
+            question about our own record rather than about the model
+            (section 9.4.7).
     """
 
     engine: str
@@ -380,6 +384,90 @@ class RunContext:
     expected: dict[str, str]
     today: date
     resolve: bool
+    withdraw_unreproduced: bool = False
+
+
+def withdraw_unreproduced(
+    merged: dict[str, dict[str, Any]],
+    observed: dict[str, dict[str, Any]],
+    run: RunContext,
+) -> list[str]:
+    """Withdraw every open finding this run did not reproduce.
+
+    **Ours, not theirs.** A finding that evaporates on a fresh sample is a
+    statement about our measurement: the recordings changed because we retook
+    them, not because anything upstream moved. Crediting a vendor with a
+    correction they did not make is the error that most damages a published
+    report (section 9.4.1).
+
+    **Replay may ask for this**, unlike resolution. It asks whether our own
+    record still shows what we said it showed, which is exactly what replay
+    answers (section 9.4.7).
+
+    **Named rather than inline so a case can call it**, which is the lesson the
+    cascade marker taught when it was set and read by nothing.
+
+    Args:
+        merged (dict): The register, modified in place.
+        observed (dict): What this run reported, by case.
+        run (RunContext): What the run was, for the date and the intent.
+
+    Returns:
+        list[str]: One line per withdrawal, naming the population it was drawn
+        from, because a one-in-five finding is a claim about variance and a
+        five-in-five finding is a claim about behaviour.
+    """
+    changed: list[str] = []
+    for case, entry in sorted(merged.items()):
+        if case in observed or entry.get("status") in (_RESOLVED, _WITHDRAWN):
+            continue
+        population = entry.get("observations") or "population not recorded"
+        entry["status"] = _WITHDRAWN
+        entry["withdrawn_on"] = run.today.isoformat()
+        entry["withdrawn_reason"] = (
+            f"Did not reproduce on a fresh run of {run.today.isoformat()}. "
+            f"Recorded from {population}, so it was a claim drawn from that "
+            f"population and the sample did not hold. Nothing had asked "
+            f"whether an open finding still reproduced: the inventory checks "
+            f"compare the register to the suite and the trace checks to the "
+            f"matrix, and none compared it to a result (consumer_ci.md "
+            f"section 9.4.7)"
+        )
+        changed.append(f"WITHDRAWN {case}, it no longer reproduces ({population})")
+    return changed
+
+
+def resolve_upstream(
+    merged: dict[str, dict[str, Any]],
+    observed: dict[str, dict[str, Any]],
+    run: RunContext,
+) -> list[str]:
+    """Retire every finding a live run no longer reproduces, as the vendor's.
+
+    **Theirs, not ours**, which is the mirror of
+    :func:`withdraw_unreproduced` and the reason the two are separate
+    functions. Only a live run may ask for this, because replay replays our own
+    recording and cannot bear on the current model (section 9.4).
+
+    Args:
+        merged (dict): The register, modified in place.
+        observed (dict): What this run reported, by case.
+        run (RunContext): What the run was.
+
+    Returns:
+        list[str]: One line per retirement.
+    """
+    changed: list[str] = []
+    for case, entry in sorted(merged.items()):
+        if case in observed or entry.get("status") == _RESOLVED:
+            continue
+        entry["status"] = _RESOLVED
+        entry["resolved_on"] = run.today.isoformat()
+        # THE MODEL THIS RUN USED, from any case it did serve: a resolved
+        # finding has no result of its own to read, having not failed.
+        entry["resolved_model"] = next(iter(sorted(set(run.models.values()))), "")
+        changed.append(f"RESOLVED UPSTREAM {case}, it no longer reproduces live")
+    return changed
 
 
 def merge(
@@ -389,10 +477,12 @@ def merge(
 ) -> tuple[dict[str, dict[str, Any]], list[str]]:
     """Return the register after a run, and what changed.
 
-    **A finding that stops reproducing is kept.** It takes
-    ``status: resolved_upstream`` with the date and the model it resolved
-    against, because the claim was about one model and a later model behaving
-    differently is the finding's outcome rather than its absence.
+    **A finding that stops reproducing is kept**, and which state it takes
+    depends on what stopped. ``resolved_upstream`` needs a live run, because
+    only that bears on the current model. ``withdrawn`` is the answer where the
+    run shows our own record no longer holds, which replay answers perfectly
+    well: it asks whether we still see what we said we saw
+    (section 9.4.7).
 
     Args:
         existing (dict): What was already recorded.
@@ -432,6 +522,16 @@ def merge(
         # again, and reopening it would resurrect a judgement about an
         # assertion that no longer exists. Section 9.4.1.
         if entry.get("status") == _WITHDRAWN:
+            # REPORTED, NOT REOPENED. The status is a judgement we made about
+            # our own assertion and this run cannot revisit it, but a retracted
+            # claim that is failing again is the one thing a reader of the
+            # register must not learn by accident (section 9.4.7).
+            changes.append(
+                f"RETURNED {case} is withdrawn and reproduces again "
+                f"({measured['taxonomy_code']}). Read it against its recording: "
+                f"either the assertion was repaired and now fires correctly, or "
+                f"the same false positive has come back"
+            )
             continue
 
         entry["last_observed"] = run.today.isoformat()
@@ -466,16 +566,12 @@ def merge(
             )
             entry["observations"] = measured["observations"]
 
+    if run.withdraw_unreproduced:
+        changes.extend(withdraw_unreproduced(merged, observed, run))
+
     if run.resolve:
-        for case, entry in sorted(merged.items()):
-            if case in observed or entry.get("status") == _RESOLVED:
-                continue
-            entry["status"] = _RESOLVED
-            entry["resolved_on"] = run.today.isoformat()
-            # THE MODEL THIS RUN USED, from any case it did serve: a resolved
-            # finding has no result of its own to read, having not failed.
-            entry["resolved_model"] = next(iter(sorted(set(run.models.values()))), "")
-            changes.append(f"RESOLVED UPSTREAM {case}, it no longer reproduces live")
+        changes.extend(resolve_upstream(merged, observed, run))
+
     return merged, changes
 
 
@@ -543,6 +639,15 @@ def main(argv: Optional[list[str]] = None) -> int:
             "replays our own recording and cannot bear on the current model"
         ),
     )
+    parser.add_argument(
+        "--withdraw-unreproduced",
+        action="store_true",
+        help=(
+            "Withdraw an open finding this run did not reproduce. Permitted in "
+            "replay: it asks whether our own record still holds, not whether "
+            "the model changed"
+        ),
+    )
     parser.add_argument("--dry-run", action="store_true")
     arguments = parser.parse_args(argv)
 
@@ -585,6 +690,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             expected=expected_by_case(Path("docs/testing/rtm_model.csv")),
             today=today,
             resolve=arguments.resolve_from_live,
+            withdraw_unreproduced=arguments.withdraw_unreproduced,
         ),
     )
 

@@ -25,8 +25,11 @@ marker, per the harness ``framework-rules.md`` section 3.3.
 #
 # TestMQCTicketInput
 #   115733  a_ticket_input_is_the_recorded_request_not_the_corpus
+#   115736  the_finding_reader_carries_the_questions
+#   115737  a_finding_that_stopped_reproducing_is_withdrawn
 # ------------------------------------------------------------ end of cases
 
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +37,13 @@ import allure
 import pytest
 
 from tools.ticket_report import _input_block, recorded_request
+from tools.findings import RunContext, withdraw_unreproduced
+from tools.finding_evidence import (
+    _QUESTIONS,
+    evidence,
+    other_engines,
+    register_rows,
+)
 
 pytestmark = pytest.mark.unit
 
@@ -100,3 +110,96 @@ class TestMQCTicketInput:
         # AND THE READER FOR IT ANSWERS HONESTLY ON AN EMPTY STORE, rather
         # than raising, because a pair with no recording is an ordinary state.
         assert recorded_request(tmp_path, "claude", "MQC_TASK_x", "MQC_RULE_x") is None
+
+    @allure.story("The questions are the tool")
+    def MQC_CAS_UNI_115736_the_finding_reader_carries_the_questions(
+        self,
+    ) -> None:
+        """One finding's evidence, the population, and the seven questions.
+
+        **The questions are the tool, not the extraction.** Sixteen findings
+        have been withdrawn and every one was ours; none fell to inspiration,
+        each fell to one of these, and leaving them implicit is why one class
+        recurred four times on a single assertion.
+
+        Design: ``consumer_ci.md`` section 9.5.4.
+
+        Returns:
+            None
+        """
+        # EVERY QUESTION CARRIES THE DEFECT IT CAUGHT, so the list is a record
+        # rather than advice.
+        assert len(_QUESTIONS) >= 7, _QUESTIONS
+        for question, scar in _QUESTIONS:
+            assert question.endswith("?"), question
+            assert scar.strip(), f"{question} names no defect it caught"
+
+        # THE POPULATION IS A CONTROL, and an engine absent from a register
+        # passed rather than being unmeasured.
+        standing = other_engines(
+            "MQC_EVL_EVAL_134402_open_enumeration_satisfied_by_category_equivalent",
+            "openai",
+        )
+        assert standing, "no other engine was reported, so there is no control"
+        assert not any(entry.startswith("openai") for entry in standing), standing
+
+        # A MISSING TICKET PAGE IS REPORTED, NOT RAISED. It means the report
+        # has not been generated, which is an ordinary state.
+        assert evidence("no-such-engine", "134402") is None
+
+        # AND THE REGISTER READER ANSWERS FOR AN ENGINE THAT HAS NONE.
+        assert register_rows("no-such-engine") == []
+
+    @allure.story("The register is reconciled against the run")
+    def MQC_CAS_UNI_115737_a_finding_that_stopped_reproducing_is_withdrawn(
+        self,
+    ) -> None:
+        """A finding the run does not show is withdrawn as ours, not theirs.
+
+        **The register drifted both ways and nothing reconciled it.** Four open
+        entries described failures the re-recorded corpus no longer contained,
+        and two withdrawn entries described failures that had returned. Every
+        one of the four was a minority finding: 1 or 2 observations of 5, a
+        claim about variance reported as a characterisation.
+
+        Design: ``consumer_ci.md`` section 9.4.7.
+
+        Returns:
+            None
+        """
+        run = RunContext(
+            engine="gemini", mode="replay", models={}, expected={},
+            today=date(2026, 10, 12), resolve=False, withdraw_unreproduced=True,
+        )
+        register = {
+            "MQC_EVL_EVAL_134000_gone": {
+                "case": "MQC_EVL_EVAL_134000_gone", "status": "open",
+                "observations": "4 of 5 passed",
+            },
+            "MQC_EVL_EVAL_134001_here": {
+                "case": "MQC_EVL_EVAL_134001_here", "status": "open",
+            },
+            "MQC_EVL_EVAL_134002_ours": {
+                "case": "MQC_EVL_EVAL_134002_ours", "status": "withdrawn",
+            },
+        }
+        observed = {"MQC_EVL_EVAL_134001_here": {"taxonomy_code": "QC_LLM_HALLUCINATION"}}
+
+        lines = withdraw_unreproduced(register, observed, run)
+
+        # THE ABSENT ONE IS WITHDRAWN, AND THE POPULATION IS IN THE REASON.
+        gone = register["MQC_EVL_EVAL_134000_gone"]
+        assert gone["status"] == "withdrawn", gone
+        assert gone["withdrawn_on"] == "2026-10-12", gone
+        assert "4 of 5 passed" in gone["withdrawn_reason"], gone["withdrawn_reason"]
+        assert any("134000" in line for line in lines), lines
+
+        # OURS, NOT THEIRS. Crediting a vendor with a correction they did not
+        # make is the error that most damages a published report.
+        assert "resolved_on" not in gone, gone
+        assert gone["status"] != "resolved_upstream"
+
+        # ONE THE RUN STILL SHOWS IS UNTOUCHED, and so is one already retracted.
+        assert register["MQC_EVL_EVAL_134001_here"]["status"] == "open"
+        assert register["MQC_EVL_EVAL_134002_ours"]["status"] == "withdrawn"
+        assert "withdrawn_on" not in register["MQC_EVL_EVAL_134002_ours"]

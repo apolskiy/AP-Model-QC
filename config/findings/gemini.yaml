@@ -14,7 +14,7 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 1 open, 0 resolved upstream, 3 withdrawn.
+# 0 open, 0 resolved upstream, 4 withdrawn.
 
 engine: gemini
 findings:
@@ -29,7 +29,10 @@ findings:
   actual: QC_LLM_HALLUCINATION on 1 of 5 observations, the other 4 passing
   reproduce: pytest --engine gemini --mode replay --tests 134101
   withdrawn_on: '2026-10-12'
-  withdrawn_reason: 'Our assertion was wrong, not the model. The function sorts and discards the result, so with rows scoring 10, 90 and 50 and a limit of two it returns the rows scoring 10 and 90, which is exactly what the model said. A_COD_NOT_THE_INTENDED_ANSWER is scoped to one sentence and the splitter required terminal punctuation or a blank line, so the markdown heading '### What the function returns' joined the line below it: the return verb came from the heading and the figures from the model restating the prompt's own inputs. Fixed in the harness at tier3_evaluation.md section 5.3.1, and the case passes on all four engines now. The third false finding from this assertion'
+  withdrawn_reason: 'Our assertion was wrong, not the model. The function sorts and discards the result,
+    so with rows scoring 10, 90 and 50 and a limit of two it returns the rows scoring 10 and 90, which
+    is exactly what the model said. A_COD_NOT_THE_INTENDED_ANSWER is scoped to one sentence and the splitter
+    required terminal punctuation or a blank line, so the markdown heading '
   ticket: ''
 - case: MQC_EVL_EVAL_134107_states_correctly_what_the_logic_excerpt_computes
   taxonomy_code: QC_LLM_DEFECT_MISSED
@@ -72,8 +75,15 @@ findings:
   observed_model: gemini-3.8-flash
   first_observed: '2026-10-12'
   last_observed: '2026-10-12'
-  status: open
+  status: withdrawn
   expected: Match percentages are computed over the stated connector semantics
   actual: QC_LLM_UNSOURCED_CLAIM on 1 of 5 observations, the other 4 passing
   reproduce: pytest --engine gemini --mode replay --tests 134402
   ticket: ''
+  withdrawn_on: '2026-10-12'
+  withdrawn_reason: 'Our assertion was wrong, not the model. Gemini answered correctly: MySQL meets the
+    requirement through the open third slot, judged equivalent rather than matching a named item. A_MAT_OPEN_CLAIMS_NO_NAMED_MATCH
+    was kind regex with present false, so it found the substring in gemini''s own denial, ''rather than
+    matching one of the named items directly''. Converted to kind claim on 2026-10-12. The 2026-10-06
+    audit converted nine assertions for exactly this defect and left this one. Openai fails the same case
+    for a real reason, reading the open enumeration as closed'

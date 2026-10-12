@@ -52,6 +52,69 @@ this repository, and `MQC_REQ_CAS_GOV_0005` tracing it.
 
 **Changed.** README figures: 110 preconditions, 123 requirements traced.
 
+### The register reconciled against a fresh run, 2026-10-12
+
+**Added.** `--withdraw-unreproduced` on `tools.findings`. An open finding a
+fresh run does not reproduce is withdrawn as **ours**, with the population it
+was drawn from in the reason. Crediting a vendor with a correction they did not
+make is the error that most damages a published report, and the recordings
+changed because we retook them rather than because anything upstream moved.
+Replay may ask for this, unlike resolution: it asks whether our own record
+still holds. Specified in `consumer_ci.md` section 9.4.7.
+
+**Added.** A withdrawn finding that reproduces again is now reported rather
+than silently left. Its status is a judgement this run cannot revisit, but a
+retracted claim that is failing again must not be learnt by accident. grok
+`134408` is the first.
+
+**Changed.** Four findings withdrawn for not reproducing: openai `134109` and
+`134404`, claude `134308` and `144006`. **Every one was a minority finding**,
+one or two observations of five, which is a claim about variance reported as a
+characterisation.
+
+**Changed.** The register now stands at 12 open and 20 withdrawn, and its open
+entries match the failures a fresh replay shows on every engine.
+
+**What was not caught, stated plainly.** Nothing asked whether an open finding
+still reproduced. The inventory checks compare the register to the suite by
+name, the trace checks compare it to the matrix, and none compared it to a
+result. `MQC_CAS_UNI_115737` does now.
+
+**Changed.** README figures: 12 findings, 10 carrying a disagreement
+population, 112 preconditions, 125 requirements traced.
+
+### Every open finding read against its recording, 2026-10-12
+
+**Added.** `tools/finding_evidence.py`, which prints one finding's evidence
+without the reproduction block and ends with the seven questions that have
+decided every withdrawal. It also prints how the other engines stand on the
+same case, which is the population control: a case no engine passes is a case
+to doubt. Specified in `consumer_ci.md` section 9.5.4.
+
+**Fixed.** `A_MAT_OPEN_CLAIMS_NO_NAMED_MATCH` converted from `regex` to
+`claim`. Gemini answered correctly, that MySQL meets the requirement through
+the open third slot by equivalence rather than a named match, and the substring
+found the phrase inside gemini's own denial. The 2026-10-06 audit converted
+nine assertions for this defect and left this one.
+
+**Fixed.** `A_COD_NOT_THE_INTENDED_ANSWER` excludes a counterfactual framing.
+Claude wrote "With either fix, the function returns the rows scoring 90 and
+50", which is true of the corrected function and says nothing about the one it
+was shown.
+
+**Changed.** Two findings withdrawn, both ours: gemini `134101` and gemini
+`134402`. **Gemini now passes all 70 graded cases.**
+
+**Changed.** README figures: 16 findings, 14 carrying a disagreement
+population, 111 preconditions, 124 requirements traced.
+
+**Known gap.** The register drifts from the run in both directions and nothing
+reconciles it. Four open entries no longer reproduce against the re-recorded
+corpus, and two withdrawn entries reproduce again: `findings.py` adds a new
+failure and leaves every existing row alone. A finding that a fresh sample does
+not reproduce is neither withdrawn nor resolved upstream, and the register has
+no state for it.
+
 ### The findings register regenerated against the new recordings, 2026-10-12
 
 **Changed.** The register was rebuilt for all four engines from the re-recorded

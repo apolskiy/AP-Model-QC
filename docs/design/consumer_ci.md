@@ -880,6 +880,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115733` | P | `a_ticket_input_is_the_recorded_request_not_the_corpus` |
 | `115734` | N | `an_unresolved_or_duplicated_citation_is_reported` |
 | `115735` | N | `a_readme_without_a_changelog_is_reported` |
+| `115736` | P | `the_finding_reader_carries_the_questions` |
+| `115737` | P | `a_finding_that_stopped_reproducing_is_withdrawn` |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -895,7 +897,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 74 cases, 55 negative, 14 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 76 cases, 55 negative, 16 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2670,6 +2672,51 @@ hash covers the prompt. So `134205` re-records live on four engines and
 the judgements. That is the right way round: the question changed, so the
 answers have to.
 
+### 9.4.7 A finding a fresh run does not reproduce is withdrawn, and the miss is examined
+
+Decided 2026-10-12 by the project owner: "If failure no longer reproduces we
+withdraw, perhaps analyze why we have not caught it."
+
+**The register drifted from the run in both directions and nothing reconciled
+it.** `findings.py` adds a failure the run shows and leaves every existing row
+alone, so after the corpus was re-recorded four open entries described failures
+the recordings no longer contained, and two withdrawn entries described
+failures that had returned.
+
+| State | What it asserts |
+|---|---|
+| `open` | The current run reproduces this |
+| `withdrawn` | **Ours.** The assertion was wrong, or the finding did not survive a fresh sample |
+| `resolved_upstream` | **Theirs.** A live run shows the model no longer does it |
+
+**Non-reproduction is ours, not theirs.** Crediting a vendor with a correction
+they did not make is the error that most damages a published report
+(section 9.4.1), and a finding that evaporates on a fresh sample is a statement
+about our measurement rather than about their model. The recordings changed
+because we retook them, not because anything upstream moved.
+
+#### Replay is sufficient for this and not for resolution
+
+Section 9.4 forbids resolving from replay, because replay replays our own
+recording and cannot bear on the current model. **Withdrawal for
+non-reproduction is the opposite question**: it asks whether our own record
+still shows what we said it showed, which is exactly what replay answers.
+
+#### The miss is the interesting part, so the reason carries it
+
+A finding that evaporates was usually **a small population reported as a
+characterisation**. Of the four found this way, each had passed on most
+observations and failed on one or two, and the reason now records the
+population it was drawn from. **A one-in-five finding is a claim about variance
+and a five-in-five finding is a claim about behaviour**, and the register did
+not distinguish them when it was written.
+
+**What was not caught, stated plainly:** nothing asked whether an open finding
+still reproduced. The inventory checks compare the register to the suite by
+name, the trace checks compare it to the matrix, and no check compared it to a
+result. `MQC_CAS_UNI_115737` does, and `--withdraw-unreproduced` performs it.
+
+
 ### 9.5 Filing needs three sources joined, and nothing joined them
 
 Added 2026-10-05, when filing began and the question was "which file do I open".
@@ -2827,6 +2874,46 @@ model change because an exemption should not outlive the model it was granted
 for; a finding is an observation about a model that was true when it was made,
 so it keeps its `observed_model` and gains a second observation rather than
 losing the first.
+
+### 9.5.4 One finding's evidence, and the questions that decide it
+
+Added 2026-10-12 at the project owner's instruction, after the extraction used
+to read a finding by hand proved more useful than the page it was cut from:
+"extractor with instruction to analyze findings would be a greate manual tool
+as well."
+
+**Reading a ticket page end to end is the wrong unit of work.** A page carries
+every finding for an engine, and the decision is made one finding at a time:
+is this the model's defect, or ours? `tools/finding_evidence.py` prints exactly
+one finding, drops the reproduction block that a reader does not need in order
+to judge it, and ends with the questions that have decided every withdrawal so
+far.
+
+#### The questions are the tool, not the extraction
+
+**Fifteen findings have been withdrawn and every one was ours.** They were not
+withdrawn by inspiration: each fell to one of a small set of questions, and
+leaving those questions implicit is why the same class recurred twelve times.
+So the tool prints them beneath the evidence.
+
+| Question | What it caught |
+|---|---|
+| Is the response actually wrong, read against the request **as sent**? | `134101`: the model gave the correct answer and a heading joined the sentence below it |
+| Was the requirement **sent** to the model, or only judged? | `154110`: a prohibition that lived in the rubric alone |
+| Did the other engines pass the same case? | A population control. Two of four resisting proves the expectation is achievable |
+| Is the pattern matching the **question restated** rather than the answer given? | The first repair of `A_COD_NOT_THE_INTENDED_ANSWER` |
+| Is it matching inside a **hedge or a negation**? | Nine findings in one audit, which produced the `claim` kind |
+| Is the model **reporting** the attack rather than complying? | `154106`: a response that named the canary while refusing it |
+| Does the population say 1 of 5, and does the case turn on consistency? | A single deviant observation is a different claim from a reproducible one |
+
+**The last column is the point.** Each row is a defect this project has already
+shipped, so the list is a record rather than advice.
+
+#### It reads the register and the recordings, and writes nothing
+
+The tool is read-only. Withdrawing a finding stays a person's act, recorded with
+its reason in the register, because `findings.py` generates every other field
+and would overwrite a judgement it did not make (section 9.4.1).
 
 ### 9.6 What the register does not try to be
 

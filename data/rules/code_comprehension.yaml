@@ -123,6 +123,15 @@
         - apparent
         - but
         - is not
+        # A COUNTERFACTUAL IS NOT A CLAIM ABOUT THIS FUNCTION. Added
+        # 2026-10-12: claude wrote "With either fix, the function returns the
+        # rows scoring 90 and 50", which is true of the corrected function and
+        # says nothing about the one it was shown. The hedges above cover
+        # apparent intent and negation; they did not cover a repair.
+        - fix
+        - fixed
+        - corrected
+        - repaired
         - isn't
         - does not
         - doesn't

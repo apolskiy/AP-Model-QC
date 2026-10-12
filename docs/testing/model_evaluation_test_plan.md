@@ -143,6 +143,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_COR_0024` | Every shipped rule set declares the evaluation families it grades, primary first, each registered in the harness and none repeated, so a graded result is attributable to a task |
 | `MQC_REQ_CAS_COR_0025` | The families this repository's matrix states agree with the families its corpus declares, verified by running every matrix integrity check against the real matrix with the per-case mapping |
 | `MQC_REQ_CAS_COR_0026` | A ticket's input is the request the recording stored together with a runnable reproduction of it, and a recording that predates the field says so rather than presenting the corpus as the call | consumer_ci.md section 9.5.3 |
+| `MQC_REQ_CAS_COR_0027` | One finding's evidence is readable on its own, with how every other engine stands on the same case and the questions that have decided every withdrawal | consumer_ci.md section 9.5.4 |
+| `MQC_REQ_CAS_COR_0028` | An open finding a fresh run does not reproduce is withdrawn as ours with the population it was drawn from, a withdrawn finding that reproduces again is reported without being reopened, and neither is credited to the vendor | consumer_ci.md section 9.4.7 |
 | `MQC_REQ_CAS_COR_0013` | Every code excerpt inlined into a task is byte-identical to the guarded fixture it names, so the dispatched copy is the copy under guard |
 | `MQC_REQ_CAS_COR_0014` | The code comprehension corpus supplies nine tasks formulating three grounding requirements in the code domain |
 | `MQC_REQ_CAS_COR_0015` | The settlement excerpt guard executes all three money outcomes, including the silent zero settlement |

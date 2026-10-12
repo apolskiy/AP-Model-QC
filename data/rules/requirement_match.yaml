@@ -141,10 +141,23 @@
     # Claiming a named match would be a fabrication: neither PostgreSQL nor
     # Redis appears in the candidate's summary.
     - assertion_id: A_MAT_OPEN_CLAIMS_NO_NAMED_MATCH
-      kind: regex
+      kind: claim
       parameters:
         pattern: '(?i)(postgres|redis)\b[^.]{0,30}\b(match|present|held|listed)'
         present: false
+        # A DENIAL IS NOT A CLAIM. Converted from `regex` to `claim` on
+        # 2026-10-12: gemini answered "MySQL was judged to be a similar
+        # database ... rather than matching one of the named items directly",
+        # which is the correct answer, and the substring found "Redis),
+        # rather than matching" and read it as claiming a named match. The
+        # 2026-10-06 audit converted nine assertions for exactly this and
+        # left this one (harness tier3_evaluation.md section 5.3).
+        unless:
+        - rather than
+        - instead
+        - not a named
+        - no named
+        - equivalent
       taxonomy_code: QC_LLM_UNSOURCED_CLAIM
       severity: violation
       constraint_ref: MAT_OPEN_THIRD_SLOT
