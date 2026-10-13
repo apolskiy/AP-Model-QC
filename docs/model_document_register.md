@@ -46,6 +46,7 @@ designs live in `AP-Harness-QC` and are **never copied in**, per `CLAUDE.md`.
 | `docs/model_document_register.md` | **This file.** Every tracked document and what it holds, checked against the repository both ways |
 | `README.md` | **The latest state only.** What the case set is, how to run it, the current figures. Never a history |
 | `docs/model_running_jobs.md` | How to run each workflow and what each one spends |
+| `docs/model_open_questions.md` | **Decisions waiting on a person**, and the measurement questions only the owner can settle. Not a backlog: a closed question moves to its settled list and its number is retired, so the same ground is not argued twice |
 | `CHANGELOG.md` | **What changed, when and why**, newest first. Added 2026-10-12: a README change carries an entry here in the same change, because the README is historyless by design (harness `code-style.md` section 7.4) |
 | `CLAUDE_LOG.md` | Decisions and their reasoning in date order, written for an external reader |
 

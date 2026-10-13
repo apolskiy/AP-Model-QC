@@ -87,10 +87,26 @@
     # The mirror of the previous case: reading a conjunction as a disjunction
     # awards the whole line for one item.
     - assertion_id: A_MAT_AND_NOT_READ_AS_OR
-      kind: regex
+      kind: claim
       parameters:
-        pattern: '(?i)100\s*(%|per\s?cent)'
+        # THE CLAIM, NOT THE ARITHMETIC. A closed AND scores the fraction of
+        # its items that are held, so reading it as a disjunction reports a
+        # full match. Forbidding the bare string failed every correct answer
+        # that showed its working: openai answered 50% five times from five
+        # and wrote "(1 met / 2 total) x 100% = 50%" to get there.
+        #
+        # VERB PROXIMITY, matching the sibling A_MAT_OR_NOT_READ_AS_AND, which
+        # forbids "meets ... 33%" and passes a compliant answer. The kind is
+        # claim so a denial is excluded as well
+        # (harness tier3_evaluation.md section 5.3).
+        pattern: '(?i)\b(meets?|match\w*|satisfies|fulfil\w*|achieves?)\b[^.]{0,30}\b100\s*(%|per\s?cent)'
         present: false
+        unless:
+        - not
+        - partial
+        - would be
+        - rather than
+        - instead of
       taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
       severity: violation
       constraint_ref: MAT_AND_IS_CONJUNCTION

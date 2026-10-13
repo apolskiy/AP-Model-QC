@@ -40,6 +40,7 @@ from cmn.emission import record_observation
 from cmn.observations import assemble_observation
 from cmn.options import resolve_judge_mode
 from cmn.pricing import load_price_table
+from cmn.prerequisites import record_rule_set_hash
 from evaluation.isolation import UnauthoredMaterial
 from evaluation.judge import JudgeBinding
 from evaluation.pipeline import ObservationContext, evaluate_observation
@@ -174,6 +175,10 @@ def dispatch_plan(config: Any) -> DispatchPlan:
         is isolated from the one before it without asking, and `--mode live`
         means call the provider (harness sections 7.7 and 7.10).
     """
+    # THE PRIMARY CARRY GUARD, POPULATED HERE. Harness
+    # `cmn_verdict_and_cli.md` section 7.6.2.
+    record_rule_set_hash(config, shipped_corpus()[1])
+
     engine = config.getoption("--engine")
     roster = engine_roster()
     return DispatchPlan(

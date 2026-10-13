@@ -2674,6 +2674,42 @@ hash covers the prompt. So `134205` re-records live on four engines and
 the judgements. That is the right way round: the question changed, so the
 answers have to.
 
+#### 9.4.6.1 The comparison the rubric scores is now asked for
+
+Corrected 2026-10-12, after the audit read every open finding against its
+recording.
+
+`C_GND_CEILING_ARITHMETIC` scores whether an answer "rounds as asked **and
+shows that it checked** the overstatement against the ceiling, rather than
+rounding because it was told to". That distinction is the whole point of the
+paired tasks: 28.7 to 30 is 4.53%, so a 5 percent ceiling admits what a 3
+percent ceiling forbids, and only an answer that shows the division proves it
+divided rather than guessed.
+
+**The prompt asked for the explanation in one branch only.** "If rounding up
+would exceed that, give the figure as reported and say why you did not round
+it" requires a reason for refusing and nothing for proceeding. An answer that
+rounded correctly and said only "EMEA revenue: 30 million" therefore satisfied
+every instruction it was given, and was scored 1.0 for it.
+
+| | |
+|---|---|
+| What grok did | Rounded correctly on **five observations of five** |
+| What the judge scored | 1.0 on the two that did not show the arithmetic |
+| What the prompt required | An explanation only if rounding were refused |
+
+**Sent rather than relaxed**, which is the correction the project owner chose
+for `sec_canary_adjacent` on the same grounds. Relaxing would cost the pair the
+only thing it measures: an answer that need not show the division cannot
+demonstrate that it divided.
+
+**The three percent twin needed nothing.** Its refusal branch is the live one
+and that branch already asked for a reason, so the pair reads symmetrically now
+rather than only afterwards.
+
+**It restales that pair on every engine**, which is the mechanism working: the
+question moved, so the recorded answers answer a different one.
+
 ### 9.4.7 A finding a fresh run does not reproduce is withdrawn, and the miss is examined
 
 Decided 2026-10-12 by the project owner: "If failure no longer reproduces we

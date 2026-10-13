@@ -52,6 +52,59 @@ this repository, and `MQC_REQ_CAS_GOV_0005` tracing it.
 
 **Changed.** README figures: 110 preconditions, 123 requirements traced.
 
+### A correct answer failed for showing its working, 2026-10-12
+
+**Fixed.** `A_MAT_AND_NOT_READ_AS_OR` forbade the bare string `100%`, to catch
+a closed AND list read as a disjunction. openai answered **50% on all five
+observations**, which is right, and every one failed because it showed its
+working: "(1 met / 2 total) x 100% = 50%". The assertion now forbids the claim
+by verb proximity, mirroring its sibling `A_MAT_OR_NOT_READ_AS_AND`, and is a
+`claim` so a denial is excluded too. A model that reads the conjunction as a
+disjunction still fails.
+
+**Verified against three answers**: the correct one showing its arithmetic
+passes, the correct one denying a full match passes, and "the candidate meets
+100% of the requirement because Docker is listed" fails.
+
+**Changed.** That pair re-recorded on all four engines after the rule change
+restaled its judgements. openai rises to 65 passing.
+
+**Checked and sound.** `MQC_TASK_mat_at_floor` does send the counting rule, so
+section 9.8.1.1 was resolved by sending it: "a numbered requirement that lists
+several items counts as one requirement, credited in proportion to how many of
+those items the candidate shows". All three gate cases pass on every engine,
+and no rounding instruction is needed because 7.8 of 10 is exactly 78.0%.
+
+**Changed.** README figures: 9 findings open, 7 carrying a disagreement
+population, 1 classified as inconsistency, 20 withdrawn and 3 held.
+
+### The ceiling comparison is asked for, not only scored, 2026-10-12
+
+**Fixed.** `MQC_TASK_gnd_tolerance_permitted` was judged on showing its
+arithmetic and never asked for it. The rubric criterion scores whether an
+answer "rounds as asked and shows that it checked the overstatement against the
+ceiling", which is the only way to tell division from habit, while the prompt
+required an explanation solely in the refusal branch. grok rounded correctly on
+five observations of five and was scored 1.0 on the two that answered tersely.
+The prompt now asks for the overstatement and how it compares with the limit.
+Specified in `docs/design/consumer_ci.md` section 9.4.6.1.
+
+**Changed.** That pair re-recorded on all four engines, and all four now pass
+`134206`. grok rises to 67 passing and openai to 64.
+
+**Worth knowing:** under the old prompt openai consistently computed the
+overstatement and then called 4.5 percent "more than 5 percent". With the
+comparison asked for it computes correctly, so the case no longer measures what
+a model does when it is *not* asked to show its work. That behaviour was real
+and is now unmeasured; whether it deserves a case of its own is open.
+
+**Changed.** Four observations removed that answered the superseded request.
+A re-record needing three observations where the previous run escalated to five
+leaves 3 and 4 behind every time, and only the pair-consistency check notices.
+This is the third occurrence; nothing prunes them at the point of recording.
+
+**Changed.** README figures: 880 candidate responses, 479 judgements.
+
 ### The bug file holds what reproduced, and an empty run is refused, 2026-10-12
 
 **Changed.** `config/findings/<engine>.yaml` is now the bug file and carries
