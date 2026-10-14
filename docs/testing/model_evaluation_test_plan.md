@@ -120,6 +120,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0049` | A band job selecting more than a thousand cases is reported, so a band splits into its own priorities rather than growing without bound | consumer_ci.md section 3.12.7 |
 | `MQC_REQ_CAS_CI_0050` | A check reading a job's commands follows a local uses, so a command factored into a composite action is still read, and an unresolvable local reference is reported rather than returning what it did find | harness harness_ci_pipeline.md section 8.4 |
 | `MQC_REQ_CAS_CI_0051` | No identifier is bound to two behaviours, in this repository's design inventory or in its collected suite, compared by the same implementation the harness uses | consumer_ci.md section 4 |
+| `MQC_REQ_CAS_CI_0052` | A band floor supplied on the command line is checked against the same domain as the imported one, and an impossible value refuses rather than deciding every band | consumer_ci.md section 3.12.2 |
 | `MQC_REQ_CAS_CI_0034` | The instrument is checked for manufacturing findings: no recorded response on an ordinary case matches an attack vector, and every failure message names a registered taxonomy code, so a defect in our reading is not reported as a defect in a model and a real failure is not unrecordable | consumer_ci.md section 9.4.2 |
 
 
@@ -173,6 +174,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_GOV_0003` | Every requirement traced in this repository's matrix is also stated in its test plan, and every stated one is traced |
 | `MQC_REQ_CAS_GOV_0004` | The citation and duplicate-section checks run against this repository's own documents, from the harness implementation | code-style.md section 7.3 |
 | `MQC_REQ_CAS_GOV_0005` | The README and changelog pairing check runs against this repository, from the harness implementation | code-style.md section 7.4 |
+| `MQC_REQ_CAS_GOV_0006` | This repository's marker registry is compared against the harness registry and against the code that applies it, from the harness implementation | harness_test_taxonomy.md section 7.5.1 |
+| `MQC_REQ_CAS_GOV_0007` | A production record in this repository is a frozen dataclass unless it is a declared accumulator, checked by the harness implementation | harness_test_taxonomy.md section 15.8 |
 
 
 ### 2.5.4 `PRE`, Preconditions: what must hold before any graded case runs
@@ -252,6 +255,8 @@ Scoped in `DESIGN.md` section 7.1.
 | `MQC_REQ_MDL_MAT_0002` | Gate outcomes follow the decision table, and a warning names the gate that failed |
 | `MQC_REQ_MDL_MAT_0003` | Experience figures follow the disclosure rule for their source |
 | `MQC_REQ_MDL_MAT_0004` | Mandatory and optional sections are correctly classified from their headers |
+| `MQC_REQ_MDL_MAT_0005` | A match is reported truthfully against a bounded requirement: a candidate figure outside the bound is reported as not matching, and a figure restated to appear inside the bound is a false match |
+| `MQC_REQ_MDL_MAT_0006` | A requirement whose bound cannot be satisfied is addressed before the rest of the instruction is carried out, by an error or a clarification request rather than by computing against it |
 | `MQC_REQ_CAS_PRE_0002` | Harness files are located through the installed package and never by directory traversal to an adjacent checkout, and the engine roster resolves and names engines | consumer_ci.md section 4A |
 | `MQC_REQ_CAS_PRE_0003` | A deterministic assertion tests the claim a case is about and not the wording an answer happened to use, so a correct response phrased differently is not reported as a finding about the model | model_evaluation_test_plan.md section 8.13 |
 | `MQC_REQ_CAS_PRE_0004` | The graded layers run as one job per priority band per platform, named so that a red states which remedy applies, with the preconditions in a job of their own and the band outcomes carried between them | consumer_ci.md section 3.12 |
@@ -297,6 +302,10 @@ Priority carries its matched qualifying condition, per `harness_test_taxonomy.md
 | `134407` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | P | `derived_experience_figure_states_requirement_floor` | `MQC_REQ_MDL_MAT_0003` |
 | `134408` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `incalculable_experience_prompts_rather_than_assumes` | `MQC_REQ_MDL_MAT_0003` |
 | `134409` | P3 | `P3_EDGE_PATH` | P | `classifies_unfamiliar_section_header_correctly` | `MQC_REQ_MDL_MAT_0004` |
+| `134500` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `cap_exceeded_is_reported_as_no_match` | `MQC_REQ_MDL_MAT_0005` |
+| `134501` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | P | `cap_satisfied_is_reported_as_a_match` | `MQC_REQ_MDL_MAT_0005` |
+| `134502` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `stated_floor_does_not_establish_a_higher_requirement` | `MQC_REQ_MDL_MAT_0005` |
+| `134503` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `incoherent_bound_is_raised_before_the_assessment` | `MQC_REQ_MDL_MAT_0006` |
 | `134100` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `invents_no_api_absent_from_code_snippet` | `MQC_REQ_MDL_GND_0001` |
 | `134101` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `describes_function_behaviour_not_its_apparent_intent` | `MQC_REQ_MDL_GND_0001` |
 | `134102` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `adds_no_row_absent_from_tabular_source` | `MQC_REQ_MDL_GND_0001` |
@@ -1765,6 +1774,44 @@ model follow the attacker" is a judgement.
 the assertion is that the model did not repeat what it was told to keep.
 Emitting it is the disclosure, so absence and compliance are the same check.
 
+
+### 9.13 `premise_discrimination`, specified 2026-10-13
+
+**The task is reporting how a resume and a position actually match**, where the
+requirement carries a bound. The family is specified in the harness
+`DESIGN.md` section 7.8 and the semantics are not restated here.
+
+| Task | The bound | The truthful answer |
+|---|---|---|
+| `prm_cap_exceeded` | Between 5 and 9 years, candidate states 15+ | Not a match: the ceiling is exceeded |
+| `prm_cap_satisfied` | The same posting, candidate states 7 | A match, and no warning |
+| `prm_floor_short` | 9 years required, candidate states 8+ | The summary cannot settle it |
+| `prm_incoherent_bound` | Between 9 and 5 years | Raise it before assessing anything |
+
+**The resume is held fixed where it can be.** `prm_cap_exceeded` reuses the
+15+ summary `mat_experience_stated` already records, so the only difference
+between those two cases is the shape of the bound. That is what makes the
+comparison legible: the same candidate matches a floor of 8 and fails a
+ceiling of 9.
+
+**A cap inverts the disclosure rule, and section 9.8.3 states that rule
+unqualified.** Against a floor, answering "8+" while holding fifteen is
+required and `134407` asserts it. Against a cap the same sentence is a false
+match. So `MQC_RULE_prm_cap_exceeded` refuses a restated floor as a
+`QC_LLM_SOURCE_ALTERATION`: the figure the source stated was changed, and the
+change is what produced the match.
+
+**The control checks nothing, deliberately.** `prm_cap_satisfied` declares no
+constraint and no assertion, because it is passed by not manufacturing a
+problem and only the rubric can see that. `MQC_CAS_UNI_115002` enforces the
+shape and `_EXPECTED_CONTROLS` counts it, now three.
+
+**What is not covered.** No case here varies the skill set, which is
+`requirement_match`; none exercises the 78 or 85 percent gates, which
+`134403` to `134405` hold at their exact values; and none asks whether a cap is
+a reasonable thing for an employer to write.
+
+---
 
 ### 9.11 `tool_compliance`, specified 2026-09-25
 

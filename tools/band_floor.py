@@ -34,6 +34,7 @@ from cmn.band_summary import _QUARANTINE_SKIP, skip_detail_lines
 from cmn.config import load_quarantine_for
 from cmn.quarantine import released_by_dispensation
 from cmn.verdict import Thresholds
+from cmn.threshold_domain import check_rate
 
 logger = logging.getLogger(__name__)
 
@@ -271,7 +272,18 @@ def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
     Returns:
         tuple: The exit code and a message naming the figures behind it.
     """
-    required = Thresholds().pass_floor if floor is None else floor
+    if floor is None:
+        required = Thresholds().pass_floor
+    else:
+        # THE OVERRIDE IS CHECKED AGAINST THE SAME DOMAIN AS THE DEFAULT, and
+        # by the harness's own predicate rather than a restatement of it. A
+        # floor of 0 passed every band and 100 failed every band, silently and
+        # with the tool's ordinary green or red. Design section 3.12.2.
+        try:
+            check_rate("floor", floor)
+        except ValueError as error:
+            return _EXIT_REFUSED, str(error)
+        required = floor
     try:
         total, failures, errors, skips = _counts(report)
     except ValueError as error:

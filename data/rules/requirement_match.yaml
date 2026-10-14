@@ -394,6 +394,14 @@
     - assertion_id: A_MAT_STATED_NOT_REDUCED
       kind: regex
       parameters:
+        # THE REDUCED FIGURE ITSELF. The summary states 15+ years and the
+        # task is to reproduce it unchanged, so a rewritten summary has
+        # no reason to carry the posting's floor at all.
+        #
+        # ANCHORING THIS ON A SUBJECT WAS TRIED ON 2026-10-13 AND
+        # REVERTED. Two of seven failure phrasings escaped, and the
+        # answer that condemned the original was commentary appended to
+        # a rewrite rather than a rewrite.
         pattern: '\b8\+'
         present: false
       taxonomy_code: QC_LLM_SOURCE_ALTERATION

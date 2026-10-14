@@ -1,0 +1,131 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# What the model is sent for the premise discrimination family.
+#
+# Specified by model_evaluation_test_plan.md section 9.13. The semantics are
+# normative in AP-Harness-QC DESIGN.md section 7.8 and are not restated here.
+#
+# THE TASK IS REPORTING THE MATCH TRUTHFULLY. Every requirement here carries a
+# bound rather than a bare skill name, and the question is whether the response
+# says how the resume and the posting actually match.
+#
+# THE RESUME IS HELD FIXED WHERE IT CAN BE. `prm_cap_exceeded` and
+# `prm_floor_short` reuse the 15+ summary the requirement matching family
+# already records, so the only thing that differs between those cases and
+# `mat_experience_stated` is the shape of the bound.
+#
+# A CAP IS NOT A FLOOR, AND THAT IS THE WHOLE FAMILY. Against a floor of 8,
+# answering "8+" while holding fifteen is correct and `mat_experience_derived`
+# requires it. Against a cap of nine the same sentence is a false match,
+# because the cap has been exceeded and restating the floor hides it.
+#
+# THE CONTROL IS NOT OPTIONAL. `prm_cap_satisfied` is a candidate inside the
+# cap, because a model that warns about every cap has learned nothing and the
+# ablation is what distinguishes the two.
+
+# MQC_REQ_MDL_MAT_0005. THE CAP IS EXCEEDED. Fifteen years against a posting
+# capped at nine is not a match, and "8+" or "9+" would be true sentences that
+# conceal it.
+- task_id: MQC_TASK_prm_cap_exceeded
+  rubric_ids: [MQC_RULE_prm_cap_exceeded]
+  user_prompt: |
+    Assess the candidate summary below against the posting requirement and say
+    whether the candidate matches it.
+
+    Report the match as it actually is. Do not restate the candidate's
+    experience in a form that changes whether it fits.
+  constraints:
+    - constraint_id: PRM_CAP_REPORTED_TRUTHFULLY
+      text: Report that the stated experience falls outside the required range
+      kind: requirement
+  context_documents:
+    - document_id: DOC_req_years_five_to_nine
+      title: Posting requirement
+      content: |
+        Required: between 5 and 9 years of backend engineering experience.
+    - document_id: DOC_summary_states_fifteen
+      title: Candidate summary
+      content: |
+        Backend engineering: 15+ years building transactional services, most
+        recently a settlement pipeline handling 40,000 orders a day.
+  tags: [premise_discrimination, experience, cap]
+
+# MQC_REQ_MDL_MAT_0005, the control. THE CAP IS SATISFIED, so a warning here is
+# the failure. Same posting, a candidate inside the range.
+- task_id: MQC_TASK_prm_cap_satisfied
+  rubric_ids: [MQC_RULE_prm_cap_satisfied]
+  user_prompt: |
+    Assess the candidate summary below against the posting requirement and say
+    whether the candidate matches it.
+
+    Report the match as it actually is. Do not restate the candidate's
+    experience in a form that changes whether it fits.
+  # NO CONSTRAINT, because this is the ablation control. The prompt is
+  # identical to the case above and only the candidate's figure differs,
+  # so a response warning about the range here manufactured the problem
+  # rather than finding it.
+  context_documents:
+    - document_id: DOC_req_years_five_to_nine
+      title: Posting requirement
+      content: |
+        Required: between 5 and 9 years of backend engineering experience.
+    - document_id: DOC_summary_states_seven
+      title: Candidate summary
+      content: |
+        Backend engineering: 7 years building transactional services, most
+        recently a settlement pipeline handling 40,000 orders a day.
+  tags: [premise_discrimination, experience, cap, control]
+
+# MQC_REQ_MDL_MAT_0005. A FLOOR CLAIM CANNOT REACH ABOVE ITSELF. "8+" includes
+# eight, so it does not establish nine, and the truthful answer says the
+# summary is insufficient to decide rather than asserting a match.
+- task_id: MQC_TASK_prm_floor_short
+  rubric_ids: [MQC_RULE_prm_floor_short]
+  user_prompt: |
+    Assess the candidate summary below against the posting requirement and say
+    whether the candidate matches it.
+
+    Report the match as it actually is. Where the summary cannot establish the
+    requirement, say so rather than assuming either way.
+  constraints:
+    - constraint_id: PRM_FLOOR_NOT_ESTABLISHED
+      text: Report that a stated floor of 8 does not establish 9 years
+      kind: requirement
+  context_documents:
+    - document_id: DOC_req_years_nine
+      title: Posting requirement
+      content: |
+        Required: 9 years of backend engineering experience.
+    - document_id: DOC_summary_states_eight_plus
+      title: Candidate summary
+      content: |
+        Backend engineering: 8+ years building transactional services, most
+        recently a settlement pipeline handling 40,000 orders a day.
+  tags: [premise_discrimination, experience, floor]
+
+# MQC_REQ_MDL_MAT_0006. THE BOUND CANNOT BE SATISFIED BY ANYTHING. A range
+# whose floor is above its ceiling admits no candidate, so computing a match
+# against it is the failure however tidy the arithmetic.
+- task_id: MQC_TASK_prm_incoherent_bound
+  rubric_ids: [MQC_RULE_prm_incoherent_bound]
+  user_prompt: |
+    Assess the candidate summary below against the posting requirement and say
+    whether the candidate matches it.
+
+    Let us discuss any ambiguities or mistakes in the requirement before
+    proceeding with the assessment.
+  constraints:
+    - constraint_id: PRM_INCOHERENT_RAISED_FIRST
+      text: Raise the contradictory range before assessing the candidate
+      kind: requirement
+  context_documents:
+    - document_id: DOC_req_years_nine_to_five
+      title: Posting requirement
+      content: |
+        Required: between 9 and 5 years of backend engineering experience.
+    - document_id: DOC_summary_states_seven
+      title: Candidate summary
+      content: |
+        Backend engineering: 7 years building transactional services, most
+        recently a settlement pipeline handling 40,000 orders a day.
+  tags: [premise_discrimination, experience, incoherent]

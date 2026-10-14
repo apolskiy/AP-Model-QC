@@ -10,34 +10,34 @@ dependency rather than vendored here.
 
 ## Status
 
-**Phase 3, and iterating.** The harness is complete, all 70 graded cases are
+**Phase 3, and iterating.** The harness is complete, all 74 graded cases are
 written, and the security family is recorded in full and passing against a
 paid tier.
 
 | Piece | State |
 |---|---|
-| `docs/testing/model_evaluation_test_plan.md` | 70 graded cases specified |
-| `docs/testing/rtm_model.csv` | 127 requirements, traced |
-| `data/tasks/`, `data/rules/` | **7 corpora, 66 tasks**, loading with zero integrity violations |
+| `docs/testing/model_evaluation_test_plan.md` | 74 graded cases specified |
+| `docs/testing/rtm_model.csv` | 132 requirements, traced |
+| `data/tasks/`, `data/rules/` | **8 corpora, 70 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **114 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **117 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
-| Graded cases (`EVAL`, `TOOL`, `SEC`) | **70 written**: 41 evaluator, 21 security, 8 tool |
+| Graded cases (`EVAL`, `TOOL`, `SEC`) | **74 written**: 45 evaluator, 21 security, 8 tool |
 | Recorded responses | **880 candidate responses** and **479 judgements**, complete for all four engines. Replays in seconds and costs nothing |
 | Model findings | **9 findings** — openai 5, claude 3, grok 1, gemini 0 — each reproduced on the latest run, with a reproduction, an expected result and an observed one, in `config/findings/`. **20 were withdrawn** and **3 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8) |
 | Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
 ## What Is Measured Against Each Model
 
-**70 graded cases against each model**, and the same 70 whether the run is live
+**74 graded cases against each model**, and the same 74 whether the run is live
 or replayed. Selection is transport-independent: `--mode live` and
 `--mode replay` collect identically, and only where the response comes from
 differs. **A replay is therefore the same test, not a reduced one.**
 
 | | |
 |---|---|
-| Graded cases per model | **70** — 41 evaluator, 21 security, 8 tool |
+| Graded cases per model | **74** — 45 evaluator, 21 security, 8 tool |
 | Models measured | **4** — gemini, openai, claude, grok |
 | Case executions per full sweep | **276** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
@@ -60,7 +60,7 @@ happens to be intermittent, not an inconsistency finding.
 | | Live | Replay |
 |---|---|---|
 | Where the response comes from | The provider's endpoint | `tests/fixtures/replay/` |
-| Cases collected | 70 per model | 70 per model |
+| Cases collected | 74 per model | 74 per model |
 | Cost | Real. Grok's full recording ran 25 minutes for about **$0.22** | **Nothing** |
 | What it establishes | How the model behaves **now** | That a finding still reproduces from the evidence |
 | Credential needed | Yes | **None** |

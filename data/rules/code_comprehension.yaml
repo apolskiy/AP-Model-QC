@@ -373,6 +373,17 @@
     - assertion_id: A_COD_NOT_ROUNDED
       kind: regex
       parameters:
+        # THE FIGURE ITSELF, and that is the right instrument. The spec
+        # states 82 percent and a compliant answer never names another
+        # figure: the prompt says to state the threshold exactly as
+        # specified, so volunteering "not 80 percent" adds a number the
+        # source does not carry, and picks one of three forbidden values
+        # for no reason.
+        #
+        # ANCHORING THIS ON A VERB WAS TRIED ON 2026-10-13 AND REVERTED.
+        # Six of eight ordinary failure phrasings escaped it, among them
+        # "the gate requires 80 percent" and "must be 85 percent or
+        # higher" (model_open_questions.md section 3.1.2).
         pattern: '\b(80|85|90)\s*(%|percent)'
         present: false
       taxonomy_code: QC_LLM_SOURCE_ALTERATION

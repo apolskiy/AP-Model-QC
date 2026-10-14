@@ -4432,3 +4432,40 @@ failed foundations.
 
 110 of 110 preconditions passing, pylint exit 0. 884 candidate recordings, each
 carrying the request that produced it.
+
+---
+
+### 2026-10-13 - An Impossible Band Floor Refuses Instead Of Deciding Every Band
+* **Phase:** Implementation, alongside the harness threshold domain added the same day.
+* **User Prompt Summary:** The same audit, applied where the consumer carries its own copy of the question.
+* **What Was Found:** `tools/band_floor.py` imports `Thresholds.pass_floor` rather than restating it, so the default is now validated by the harness check. `--floor` takes a float from argparse and reached the comparison untouched, so `--floor 0` passed every band and `--floor 100` failed every one, both with the tool's ordinary green or red.
+* **Key Decisions Made:**
+  * The override is checked by `cmn.threshold_domain.check_rate`, the harness's own predicate, for the same reason the floor itself is imported rather than restated: two copies eventually disagree.
+  * It refuses with exit 4 rather than raising. That is this tool's existing shape for an input it cannot act on, and a traceback is a worse answer to a mistyped flag than the refusal line the gate already reads.
+  * The check runs before the report is opened, so an impossible floor is refused whatever the report says.
+* **Injection Verification:** the `check_rate` call removed, `MQC_CAS_UNI_115740` reports it; restored, suite green.
+* **Code Quality & Compliance Audit:** 115 preconditions passing, pylint exit 0.
+* **AI Output Summary & Action Items:** `consumer_ci.md` section 3.12.2 gained a subsection; requirement `MQC_REQ_CAS_CI_0052`; case `MQC_CAS_UNI_115740`; README 115 preconditions, 128 requirements traced.
+
+---
+
+### 2026-10-13 - The Marker Registry, Read Against This Repository
+* **Phase:** Implementation, alongside the harness marker work the same day.
+* **User Prompt Summary:** The same task, applied where the second copy of the registry lives.
+* **What Was Found:** this repository's `pytest.ini` carries the whole layer registry although `unit` is the only layer it exercises, which is deliberate and documented in the file. The consequence is that `--strict-markers` never sees the graded entries, so a typo in `evaluator`, `tool`, `sec` or `priority` would surface as a warning on a passing run until the first graded case was written against it.
+* **Key Decisions Made:**
+  * `--strict-markers` here too, for the layer that is exercised.
+  * The reader is the harness's, called with this root. A rule enforced differently in two repositories is a defect that ships.
+  * The harness case proves the reader non-vacuous by building a configuration that registers nothing; this caller asserts the state of this repository, which is the half the harness cannot see.
+* **Code Quality & Compliance Audit:** 116 preconditions passing, pylint exit 0.
+* **AI Output Summary & Action Items:** `MQC_REQ_CAS_GOV_0006`; case `MQC_CAS_UNI_115741`; `--strict-markers`; README 116 preconditions, 129 requirements traced.
+
+---
+
+### 2026-10-13 - The Frozen-Record Check, From The Harness Mutation Audit
+* **Phase:** Implementation, alongside the harness mutation suite.
+* **User Prompt Summary:** The same audit, applied where this repository holds production code.
+* **What Was Found Upstream:** `frozen=True` becoming `frozen=False` on six harness records went unnoticed by 768 cases. A validated value that can be replaced after construction was never validated, because the check runs at construction.
+* **Key Decisions Made:** the reader is the harness's, called with this root, which is the one-implementation-two-callers arrangement the encoding, annotation, header, naming, citation and marker rules already use. This repository's records were clean on the first run.
+* **Code Quality & Compliance Audit:** 117 preconditions passing, pylint exit 0.
+* **AI Output Summary & Action Items:** `MQC_REQ_CAS_GOV_0007`, case `MQC_CAS_UNI_115742`, README 117 preconditions and 130 requirements traced. **The three open questions in `docs/model_open_questions.md` section 2 are untouched and still open.**

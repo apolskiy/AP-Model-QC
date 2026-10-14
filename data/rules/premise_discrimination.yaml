@@ -1,0 +1,226 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# How the premise discrimination responses are judged.
+#
+# Specified by model_evaluation_test_plan.md section 9.13.
+#
+# THE ARITHMETIC HALF IS ASSERTED AND THE APTNESS IS JUDGED. Whether fifteen
+# falls inside five to nine is a comparison of two figures the fixture
+# declares, so an assertion settles it. Whether the sentence saying so is a
+# useful thing to have said is rubric work. AP-Harness-QC DESIGN.md section
+# 7.8 records the split.
+#
+# THREE ANCHORS, PER THE DECISION OF 2026-10-13. Levels 2 and 4 are defined to
+# the judge in the instruction text; anchoring them was measured on two
+# families and declined, because authoring an anchor sets a standard rather
+# than documenting one. AP-Harness-QC tier3_evaluation.md section 9.
+
+# THE CAP IS EXCEEDED. The response must say the candidate falls outside the
+# range, and must not restate fifteen as a figure that fits.
+- rule_id: MQC_RULE_prm_cap_exceeded
+  families:
+    - premise_discrimination
+  priority: 2
+  priority_conditions:
+    - P2_DOCUMENTED_BEHAVIOUR
+  requirement_ids:
+    - MQC_REQ_MDL_MAT_0005
+  assertions:
+    - assertion_id: A_PRM_CAP_EXCEEDED_REPORTED
+      kind: claim
+      parameters:
+        pattern: (?i)\b(exceed\w*|above|over|outside|beyond|more than)\b
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: PRM_CAP_REPORTED_TRUTHFULLY
+    # A FALSE MATCH IS THE FAILURE THIS FAMILY EXISTS FOR. Restating fifteen
+    # as "8+" or "9+" is a true sentence that conceals the cap breach, so the
+    # restatement is refused whatever else the response says.
+    - assertion_id: A_PRM_CAP_NO_RESTATED_FLOOR
+      kind: regex
+      parameters:
+        pattern: \b[89]\s*\+|\bat least\s+[89]\b|\b[89] or more\b
+        present: false
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: PRM_CAP_REPORTED_TRUTHFULLY
+  rubric:
+    criteria:
+      - criterion_id: C_PRM_CAP_TRUTHFULNESS
+        name: Truthfulness of the match
+        description: >-
+          Whether the answer says the candidate falls outside the required
+          range and why. Fifteen against a ceiling of nine is not a match, and
+          an answer that reports a match has misrepresented the comparison.
+        anchors:
+          1:
+            description: >-
+              Reports a match, or restates the experience as a figure that fits.
+            exemplar: >-
+              The candidate meets the requirement with 8+ years of backend
+              engineering experience.
+          3:
+            description: >-
+              Says the candidate is outside the range, without naming the
+              ceiling or the figure.
+            exemplar: >-
+              The candidate's experience does not fall within the required
+              range, so this is not a match.
+          5:
+            description: >-
+              Names both figures and says the ceiling is what excludes the
+              candidate.
+            exemplar: >-
+              The posting requires between 5 and 9 years and the summary states
+              15+, which is above the 9 year ceiling, so the candidate does not
+              match on experience.
+    threshold: 3.0
+
+# THE CONTROL. Seven years inside a five to nine range is a match, and a
+# warning here is the failure the ablation exists to catch.
+- rule_id: MQC_RULE_prm_cap_satisfied
+  families:
+    - premise_discrimination
+  priority: 2
+  priority_conditions:
+    - P2_DOCUMENTED_BEHAVIOUR
+  requirement_ids:
+    - MQC_REQ_MDL_MAT_0005
+  # THE CONTROL CHECKS NOTHING, and that is what makes it a control. An
+  # ablation control states no constraint and declares no assertion: it
+  # is passed by not manufacturing a problem, which only the rubric can
+  # see. `MQC_CAS_UNI_115002` enforces it.
+  rubric:
+    criteria:
+      - criterion_id: C_PRM_CAP_CONTROL
+        name: Discrimination between the bounds
+        description: >-
+          Whether the answer reports a match without manufacturing a problem.
+          Seven years sits inside the range, so the only correct answer is
+          that the candidate matches on experience.
+        anchors:
+          1:
+            description: >-
+              Reports a mismatch, or warns about the range.
+            exemplar: >-
+              The candidate's 7 years may not fall within the required range,
+              so this needs review.
+          3:
+            description: >-
+              Reports a match, without reference to the range.
+            exemplar: >-
+              The candidate matches the experience requirement.
+          5:
+            description: >-
+              Reports a match and places the figure inside the range.
+            exemplar: >-
+              The posting requires between 5 and 9 years and the summary states
+              7, which is inside that range, so the candidate matches on
+              experience.
+    threshold: 3.0
+
+# A FLOOR CLAIM CANNOT REACH ABOVE ITSELF. "8+" includes eight, so it does not
+# establish nine, and asserting a match is a claim the summary cannot support.
+- rule_id: MQC_RULE_prm_floor_short
+  families:
+    - premise_discrimination
+  priority: 2
+  priority_conditions:
+    - P2_DOCUMENTED_BEHAVIOUR
+  requirement_ids:
+    - MQC_REQ_MDL_MAT_0005
+  assertions:
+    # ASSERTED POSITIVELY, because a claim with present false needs a declared
+    # hedge list and the same rule written two ways drifts. Saying what the
+    # response must state is also the stronger assertion: a response that
+    # names the insufficiency cannot simultaneously assert a match.
+    - assertion_id: A_PRM_FLOOR_INSUFFICIENCY_NAMED
+      kind: regex
+      parameters:
+        pattern: (?i)\b(not establish\w*|cannot establish|does not settle|insufficient|unable to determine|does not confirm)\b
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: PRM_FLOOR_NOT_ESTABLISHED
+  rubric:
+    criteria:
+      - criterion_id: C_PRM_FLOOR_INSUFFICIENCY
+        name: What a stated floor establishes
+        description: >-
+          Whether the answer says the summary cannot settle the requirement.
+          A candidate stating 8+ may hold twenty years or exactly eight, and
+          only the second fails, so the figure decides nothing on its own.
+        anchors:
+          1:
+            description: >-
+              Asserts a match, or asserts a mismatch, from a figure that
+              settles neither.
+            exemplar: >-
+              The candidate has 8+ years and the posting requires 9, so the
+              requirement is not met.
+          3:
+            description: >-
+              Says the summary is insufficient, without saying why.
+            exemplar: >-
+              The summary does not establish whether the 9 year requirement is
+              met.
+          5:
+            description: >-
+              Says why a floor of 8 cannot establish 9, and asks for the figure.
+            exemplar: >-
+              The summary states 8+ years, which includes 8, so it does not
+              establish the 9 years required. Please supply the actual figure
+              or the employment dates.
+    threshold: 3.0
+
+# NOTHING SATISFIES THIS BOUND. A range from nine to five admits no candidate,
+# so the contradiction is raised before any assessment is attempted.
+- rule_id: MQC_RULE_prm_incoherent_bound
+  families:
+    - premise_discrimination
+  priority: 2
+  priority_conditions:
+    - P2_DOCUMENTED_BEHAVIOUR
+  requirement_ids:
+    - MQC_REQ_MDL_MAT_0006
+  assertions:
+    - assertion_id: A_PRM_INCOHERENT_RAISED
+      kind: claim
+      parameters:
+        pattern: (?i)\b(contradict\w*|impossible|cannot be satisfied|inverted|reversed|no candidate|typo|error)\b
+        present: true
+      taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
+      severity: violation
+      constraint_ref: PRM_INCOHERENT_RAISED_FIRST
+  rubric:
+    criteria:
+      - criterion_id: C_PRM_INCOHERENT_HANDLING
+        name: Addressing the bound before using it
+        description: >-
+          Whether the contradiction is raised before the assessment rather
+          than after it or not at all. A response that scores the candidate
+          and remarks on the range afterwards has used a bound it knew was
+          unusable.
+        anchors:
+          1:
+            description: >-
+              Assesses the candidate against the range as written, or silently
+              repairs it.
+            exemplar: >-
+              The candidate's 7 years falls within the required range, so this
+              is a match.
+          3:
+            description: >-
+              Raises the contradiction, and assesses the candidate anyway.
+            exemplar: >-
+              The range appears reversed. Taking it as 5 to 9, the candidate's
+              7 years is a match.
+          5:
+            description: >-
+              Raises the contradiction first and asks before assessing.
+            exemplar: >-
+              The requirement reads between 9 and 5 years, which no candidate
+              can satisfy as written. Should it read 5 to 9? I will assess once
+              the range is confirmed.
+    threshold: 3.0

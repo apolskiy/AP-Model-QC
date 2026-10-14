@@ -625,6 +625,38 @@ failure, because an error is an instrument defect and the floor is about the
 model. That
 distinction is the whole reason the band has a floor at all.
 
+##### An overridden floor is checked against the same domain
+
+Added 2026-10-13, with the harness check it depends on.
+
+**The imported floor is now validated and the overridden one was not.**
+`Thresholds` refuses a rate outside `0 < x <= 1` at construction (harness
+`cmn_verdict_and_cli.md` section 8.1), so `Thresholds().pass_floor` cannot be
+impossible. `--floor` takes a float from argparse and reaches the comparison
+untouched, so `--floor 0` passed every band and `--floor 100` failed every one,
+in both cases silently and with the tool's ordinary green or red.
+
+**That is the same defect the harness had**, one layer out, and it matters more
+here for a small reason: the flag exists to test the boundary rather than the
+policy, so it is typed by hand, in a hurry, by somebody checking something else.
+
+| `--floor` | Before | Now |
+|---|---|---|
+| Absent | The imported default, 0.90 | Unchanged |
+| `0.95` | Compared | Unchanged |
+| `0` or `-1` | **Every band green** | **Refused, exit 4** |
+| `100` | **Every band red** | **Refused, exit 4** |
+
+**It refuses rather than raising**, which is this tool's existing shape and not
+a new one: argparse exits 2, a missing or unparseable report exits 4, and an
+impossible floor is the same kind of thing as an unreadable report. A traceback
+would be a worse answer to a mistyped flag than the refusal line the gate
+already knows how to read.
+
+**The check is imported, never restated**, for the reason the floor itself is:
+`cmn.threshold_domain.check_rate` is the harness's own predicate, so the
+override and the default cannot come to disagree about what a rate is.
+
 ---
 
 ### 3.12.5 The one release, and how a skip names its cause
@@ -870,6 +902,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115718` | N | `a_document_naming_no_repository_is_reported` |
 | `115719` | N | `a_case_block_disagreeing_with_its_module_is_reported` |
 | `115720` | N | `a_floor_step_skipped_on_a_red_band_is_reported` |
+| `115740` | N | `an_impossible_band_floor_refuses_rather_than_deciding` (3.12.2) |
+| `115741` | N | `a_marker_registry_disagreeing_with_the_harness_is_reported` (harness taxonomy 7.5.1) |
+| `115742` | N | `a_mutable_production_record_is_reported` (harness taxonomy 15.8) |
 | `115721` | N | `a_blocking_case_with_no_recording_is_reported` |
 | `115722` | N | `a_recording_check_that_compares_nothing_is_reported` |
 | `115723` | N | `a_stated_inventory_disagreeing_with_rows_is_reported` |
@@ -899,7 +934,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 78 cases, 56 negative, 17 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 81 cases, 59 negative, 17 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,

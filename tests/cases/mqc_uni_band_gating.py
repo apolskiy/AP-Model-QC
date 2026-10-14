@@ -33,6 +33,7 @@ harness ``framework-rules.md`` section 3.3.
 #   115717  a_blocking_band_releases_only_on_a_recorded_dispensation
 # TestMQCFloorReporting
 #   115720  a_floor_step_skipped_on_a_red_band_is_reported
+#   115740  an_impossible_band_floor_refuses_rather_than_deciding
 # TestMQCOneBandDefinition
 #   115724  a_band_job_not_using_the_shared_definition_is_reported
 #   115725  a_band_job_above_its_case_ceiling_is_reported
@@ -47,7 +48,7 @@ from pathlib import Path
 import allure
 import pytest
 
-from tools.band_floor import assess_blocking
+from tools.band_floor import assess, assess_blocking
 
 from tests.cases.workflow_support import (
     jobs as _jobs,
@@ -396,6 +397,53 @@ class TestMQCFloorReporting:
             f"{len(graded - set(assessed))} graded band(s) assess no floor: "
             f"{', '.join(sorted(graded - set(assessed)))}"
         )
+
+
+    @allure.story("A mistyped boundary refuses instead of deciding every band")
+    def MQC_CAS_UNI_115740_an_impossible_band_floor_refuses_rather_than_deciding(
+        self, tmp_path: Path
+    ) -> None:
+        """The overridden floor is checked against the imported one's domain.
+
+        **`--floor` exists to test the boundary rather than the policy**, so it
+        is typed by hand by somebody checking something else. A floor of zero
+        passed every band and one hundred failed every band, in both cases
+        with the tool's ordinary green or red and no sign anything was wrong.
+
+        **Exit 4, not a traceback.** A refusal is this tool's shape for an
+        input it cannot act on, and the gate already reads it.
+
+        Design: section 3.12.2.
+
+        Args:
+            tmp_path (Path): Where the band report is written.
+
+        Returns:
+            None
+        """
+        report = tmp_path / "junit_band.xml"
+        report.write_text(
+            '<?xml version="1.0"?>'
+            '<testsuites><testsuite tests="2" failures="1" errors="0" '
+            'skipped="0">'
+            '<testcase name="MQC_CAS_EVAL_134000_passes"/>'
+            '<testcase name="MQC_CAS_EVAL_134001_fails"><failure/></testcase>'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+
+        # HALF THE BAND PASSED, so a real floor decides and an impossible one
+        # must not. Without the check, 0.0 called this green and 100.0 red.
+        assert assess(report, 0.40)[0] == 0
+        assert assess(report, 0.90)[0] == 1
+
+        for impossible in (0.0, -1.0, 1.5, 100.0):
+            code, message = assess(report, impossible)
+            assert code == 4, (
+                f"a floor of {impossible} returned {code}, so the tool decided "
+                f"the band against a standard that is not a rate"
+            )
+            assert "floor" in message and repr(impossible) in message
 
 
 class TestMQCOneBandDefinition:

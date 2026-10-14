@@ -40,6 +40,61 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Production records are checked for immutability, 2026-10-13
+
+**Added.** `MQC_CAS_UNI_115742` and `MQC_REQ_CAS_GOV_0007`, running the
+harness's frozen-record reader against this repository. Found by the harness
+mutation audit: `frozen=True` becoming `frozen=False` went unnoticed by 768
+cases there, and the same check belongs here because a validated value that can
+be replaced after construction was never validated.
+
+**Clean on the first run**, which is the ordinary result for a check added
+after a rule everybody already followed. The harness case proves the reader
+non-vacuous; this one asserts the state of this repository.
+
+**Changed.** README figures: 117 preconditions, 130 requirements traced.
+
+### The marker registry is compared against the harness, 2026-10-13
+
+**Added.** `--strict-markers` in `addopts`, so a marker applied here and not
+registered fails collection rather than warning on a passing run.
+
+**Added.** `MQC_CAS_UNI_115741` and `MQC_REQ_CAS_GOV_0006`, reading the harness
+implementation against this repository, which is the one-implementation-two-
+callers arrangement the encoding, annotation, header, naming and citation rules
+already use.
+
+**Why it matters more here than in the harness.** This repository registers the
+whole layer registry deliberately, although `unit` is the only layer it
+currently exercises, so strict markers never sees the graded entries: a typo in
+`evaluator` or `priority` would have surfaced as a warning on a passing run
+until the first graded case was written against it.
+
+**Changed.** README figures: 116 preconditions, 129 requirements traced.
+
+### An impossible band floor refuses instead of deciding every band, 2026-10-13
+
+**Fixed.** `tools/band_floor.py` imports `Thresholds.pass_floor` rather than
+restating it, so the default is now validated by the harness check added the
+same day. The `--floor` override went straight to the comparison: `--floor 0`
+passed every band and `--floor 100` failed every one, both with the tool's
+ordinary green or red and no sign anything was wrong.
+
+The override is checked by `cmn.threshold_domain.check_rate`, the harness's own
+predicate, so it cannot come to disagree with the default about what a rate is.
+**It refuses with exit 4** rather than raising, which is this tool's existing
+shape for an input it cannot act on and what the gate already reads.
+
+**Why it matters more here than the figure suggests.** The flag exists to test
+the boundary rather than the policy, so it is typed by hand, in a hurry, by
+somebody checking something else.
+
+**Added.** `MQC_CAS_UNI_115740`, which asserts that a real floor still decides a
+half-passing band in both directions and that four impossible ones refuse.
+Verified by removing the check: the case reports it.
+
+**Changed.** README figures: 115 preconditions, 128 requirements traced.
+
 ### A changelog, and the pairing rule that required it, 2026-10-12
 
 **Added.** This file. The repository had a README and no changelog while its
@@ -51,6 +106,38 @@ narrative rather than a version history.
 this repository, and `MQC_REQ_CAS_GOV_0005` tracing it.
 
 **Changed.** README figures: 110 preconditions, 123 requirements traced.
+
+### All five forbidding assertions kept as written, 2026-10-13
+
+**No change to the measure, after two were narrowed and reverted the same day.**
+
+`A_COD_NOT_ROUNDED` and `A_MAT_STATED_NOT_REDUCED` were anchored on the
+construction that states the claim, to stop them firing on an answer that named
+the right figure beside the wrong one. Measured afterwards against ordinary
+failure phrasings, the narrowed patterns let **six of eight** and **two of
+seven** escape: "the gate requires 80 percent", "must be 85 percent or higher",
+"Experience: 8+ years". Both are restored.
+
+**The answers that condemned them were not compliant.** `134105` asks for the
+threshold exactly as the specification states it, and the probe added a figure
+the specification does not carry. `134406` asks for a rewritten summary, and the
+probe appended commentary. Same error as `134403`, `134407` and the three naming
+assertions.
+
+**`A_COD_NO_INVENTED_CALLS`, `A_COD_NO_INVENTED_REGION` and
+`A_GND_NO_INVENTED_REGION` stay as they are**, for the reasons recorded in
+`docs/model_open_questions.md` section 3.1: the prompts say only what is
+present, and a response volunteering what is absent has exceeded the
+instruction.
+
+**Changed.** `tools/finding_evidence.py` asks first whether the response does
+everything the prompt asked, rather than merely avoiding the forbidden thing.
+That question was skipped in all five cases.
+
+**Net effect of the whole audit:** of twenty forbidding assertions, eight are
+form checks, one was genuinely wrong and fixed on 2026-10-12
+(`A_MAT_AND_NOT_READ_AS_OR`, which failed a correct answer for writing
+"x 100%"), and the rest are correct as written.
 
 ### A correct answer failed for showing its working, 2026-10-12
 

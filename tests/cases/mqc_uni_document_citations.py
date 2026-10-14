@@ -26,6 +26,9 @@ marker, per the harness ``framework-rules.md`` section 3.3.
 # TestMQCDocumentCitations
 #   115734  an_unresolved_or_duplicated_citation_is_reported
 #   115735  a_readme_without_a_changelog_is_reported
+# TestMQCMarkerRegistry
+#   115741  a_marker_registry_disagreeing_with_the_harness_is_reported
+#   115742  a_mutable_production_record_is_reported
 # ------------------------------------------------------------ end of cases
 
 from pathlib import Path
@@ -34,6 +37,8 @@ import allure
 import pytest
 
 from cmn.document_citations import duplicate_sections, unresolved_citations
+from cmn.environments import environment_marker, registered_markers
+from cmn.code_standards import unfrozen_records
 from cmn.document_standards import changelog_problems
 
 pytestmark = pytest.mark.unit
@@ -90,4 +95,63 @@ class TestMQCDocumentCitations:
         assert not reported, (
             f"the README has no changelog beside it, so a figure that moves "
             f"there leaves no record of when it moved or why: {reported}"
+        )
+
+
+class TestMQCMarkerRegistry:
+    """The harness's marker registry reader, run against this repository.
+
+    Specified in the harness ``harness_test_taxonomy.md`` section 7.5.1.
+    """
+
+    @allure.story("The registry is declared whole, so a typo in it must fail")
+    def MQC_CAS_UNI_115741_a_marker_registry_disagreeing_with_the_harness_is_reported(
+        self,
+    ) -> None:
+        """This repository registers the whole layer registry on purpose.
+
+        **Which is why the check matters more here.** `unit` is the only layer
+        this repository currently exercises, so `--strict-markers` never sees
+        the graded entries and a typo in `evaluator` or `priority` would
+        surface as a warning on a passing run until the first graded case was
+        written against it.
+
+        **The harness case proves the reader non-vacuous**, building a
+        configuration that registers nothing and confirming it is refused.
+        This caller asserts the state of this repository, which is the half the
+        harness cannot see.
+
+        Returns:
+            None
+        """
+        here = registered_markers(_ROOT / "pytest.ini")
+
+        assert environment_marker() in here
+        assert "unit" in here, (
+            "the layer this repository exercises is unregistered, so every "
+            "precondition applies a marker pytest does not know"
+        )
+
+        bare = sorted(name for name, text in here.items() if not text)
+        assert not bare, f"{len(bare)} marker(s) registered with no description: {bare}"
+
+    @allure.story("A validated value cannot be replaced after construction")
+    def MQC_CAS_UNI_115742_a_mutable_production_record_is_reported(self) -> None:
+        """The harness's frozen-record reader, run against this repository.
+
+        **The harness case proves the reader non-vacuous.** This caller
+        asserts the state of this repository, which is the half the harness
+        cannot see: it owns no case data and a check there reading a file this
+        repository owns would be the boundary violation in reverse.
+
+        Specified in the harness ``harness_test_taxonomy.md`` section 15.8.
+
+        Returns:
+            None
+        """
+        problems = unfrozen_records(_ROOT)
+
+        assert not problems, (
+            f"{len(problems)} mutable production record(s):\n  "
+            + "\n  ".join(problems)
         )

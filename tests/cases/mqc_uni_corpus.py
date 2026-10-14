@@ -81,7 +81,12 @@ _CONTROL_TAG = "control"
 
 # How many ablation pairs the corpus is designed around. Stated so that losing
 # a control tag fails rather than shrinking the population the checks run over.
-_EXPECTED_CONTROLS = 2
+#
+# THREE SINCE 2026-10-13, when `premise_discrimination` added one: a candidate
+# inside the required range, against the same posting as the case whose
+# candidate exceeds it. A family asserting that a bound is breached needs the
+# arm where it is not, or it measures a model that warns about every bound.
+_EXPECTED_CONTROLS = 3
 
 # Which guarded fixture each inlined document carries. Named rather than
 # inferred: a document identifier is authored text and a heuristic matching it

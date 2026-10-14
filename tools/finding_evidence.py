@@ -39,6 +39,10 @@ _FIXTURES: Final[pathlib.Path] = pathlib.Path("tests") / "fixtures" / "replay"
 # THE QUESTIONS THAT HAVE DECIDED EVERY WITHDRAWAL. Each line is a defect this
 # project shipped, so the list is a record rather than advice (design 9.5.4).
 _QUESTIONS: Final[tuple[tuple[str, str], ...]] = (
+    ("Does the response do everything the prompt asked, not merely avoid the "
+     "forbidden thing?",
+     "134200: a response naming no revenue at all was called compliant because "
+     "it denied an invented region. Three assertions were condemned this way"),
     ("Is the response actually wrong, read against the request as sent?",
      "134101: the model gave the correct answer and a markdown heading joined "
      "the sentence below it"),
