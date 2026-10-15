@@ -1,0 +1,46 @@
+{
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_req_years_nine_to_five>\nRequired: between 9 and 5 years of backend engineering experience.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_summary_states_seven>\nBackend engineering: 7 years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>"
+          },
+          {
+            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nLet us discuss any ambiguities or mistakes in the requirement before\nproceeding with the assessment."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
+  "request_hash": "39bb3175db3a82bea5b441073511d063cc067d38c8e0178b674c02e701e52e4e",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_incoherent_bound::MQC_RULE_prm_incoherent_bound",
+    "duration_ms": 8271,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 118,
+    "mode": "live",
+    "output_tokens": 175,
+    "raw_reference": "AAvPavDaLMH4jrEPnPHw0AI",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "### Ambiguities and Mistakes in the Requirement\n\n1. **Inverted Range Order:**\n   * The requirement specifies **\"between 9 and 5 years\"**. Standard conventions dictate listing ranges in ascending order (i.e., \"between 5 and 9 years\"). \n   * While this inverted phrasing is non-standard and likely a drafting typo, the semantic meaning of \"between\" still defines a numeric interval between the boundary values of 5 and 9.\n\n---\n\n### Candidate Assessment\n\n* **Requirement:** 5 to 9 years of backend engineering experience.\n* **Candidate Experience:** 7 years of backend engineering experience (specifically building transactional services and settlement pipelines).\n\n**Conclusion:** **The candidate matches the requirement.** \nSeven years falls directly within the 5-to-9-year range required for the role.",
+    "thinking_tokens": 630,
+    "tool_calls": []
+  }
+}

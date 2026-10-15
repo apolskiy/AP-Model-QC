@@ -1,0 +1,39 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_nine_to_five>\nRequired: between 9 and 5 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_states_seven>\nBackend engineering: 7 years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nLet us discuss any ambiguities or mistakes in the requirement before\nproceeding with the assessment.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
+  "request_hash": "19dbc59cfffc859aec5c347727bcac1e47662f5c93c70b0804bb2e53c344407d",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_incoherent_bound::MQC_RULE_prm_incoherent_bound",
+    "duration_ms": 2156,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 123,
+    "mode": "live",
+    "output_tokens": 207,
+    "raw_reference": "chatcmpl-EYl9pDFUVa8eS4lpAgMGIauOtJGYR",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Sure, let\u2019s first clarify the requirement and identify any ambiguities or mistakes:\n\nRequirement from DOC_req_years_nine_to_five:  \n\"Required: between 9 and 5 years of backend engineering experience.\"\n\n**Ambiguity/Mistake Discussion:**\n\n- The usual phrase would be \"between 5 and 9 years,\" listing the lower boundary first. The posting says \"between 9 and 5 years,\" which is technically inverted.\n- If taken literally, \"between 9 and 5 years\" could be interpreted as an empty set (since no number is simultaneously greater than 5 and less than 9, unless we ignore ordering), or it could simply mean 5 to 9 years, just ordered unconventionally.\n- Most likely, the intent is to require candidates with a minimum of 5 and a maximum of 9 years of experience.\n\nCan you confirm that the intended range is 5 to 9 years of backend engineering experience? Once confirmed, I can proceed with the assessment.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

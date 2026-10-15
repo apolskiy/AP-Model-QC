@@ -4,7 +4,9 @@
 
 Covers ``MQC_CAS_UNI_115414`` and ``115415``, inventoried in
 ``docs/testing/model_evaluation_test_plan.md`` section 8.1 and designed in
-harness ``harness_test_taxonomy.md`` sections 11.7 and 11.8.
+harness ``harness_test_taxonomy.md`` sections 11.7 and 11.8, and the workflow
+checks ``115418``, ``115743`` and ``115744``, designed in harness
+``harness_ci_pipeline.md`` sections 8.2, 8.5 and 8.5.4.
 
 **Written 2026-10-04, when the declaration became possible.** Until then
 nothing outside the matrix said what family a case belonged to, so the one
@@ -23,6 +25,8 @@ harness ``framework-rules.md`` section 3.3.
 #   115415  a_matrix_family_disagreeing_with_the_corpus_is_reported
 #   115417  a_case_index_disagreeing_with_the_corpus_is_reported
 #   115418  a_live_step_without_a_spend_ceiling_is_reported
+#   115743  a_workflow_engine_list_off_the_roster_is_reported
+#   115744  a_live_workflow_missing_an_engine_key_is_reported
 # TestMQCFindingsRegister
 #   115416  the_register_records_a_finding_and_refuses_a_vacuous_run
 # ------------------------------------------------------------ end of cases
@@ -36,10 +40,16 @@ import pytest
 
 from cmn.registries import registered_evaluation_families
 from cmn.traceability import MatrixRow, check_matrix_integrity
-from cmn.workflow_standards import uncapped_spending_steps
+from cmn.workflow_standards import (
+    engine_list_gaps,
+    uncapped_spending_steps,
+    unoffered_credentials,
+)
+from execution.adapters.registry import adapter_for
 from tests.cases.graded_support import (
     case_families_from_suite,
     case_rules_from_suite,
+    engine_roster,
     shipped_corpus,
 )
 from tools import case_index
@@ -251,6 +261,50 @@ class TestMQCDeclaredFamilies:
         assert not uncapped, (
             "a workflow step can dispatch live with no ceiling, against a "
             "monthly limit of $20 per provider: " + "; ".join(uncapped)
+        )
+
+    @allure.story("Governance")
+    def MQC_CAS_UNI_115743_a_workflow_engine_list_off_the_roster_is_reported(
+        self,
+    ) -> None:
+        """Every engine list this repository's workflows write is the roster.
+
+        The check is the harness's, called with this repository's root and the
+        roster read from the installed harness. The harness case proves the
+        reader non-vacuous; this caller asserts this repository's workflows.
+
+        Design: harness ``harness_ci_pipeline.md`` section 8.5.
+
+        Returns:
+            None
+        """
+        problems = engine_list_gaps(_repository_root(), tuple(engine_roster()))
+        assert not problems, (
+            f"{len(problems)} workflow engine list(s) disagree with the roster:\n  "
+            + "\n  ".join(problems)
+        )
+
+    @allure.story("Governance")
+    def MQC_CAS_UNI_115744_a_live_workflow_missing_an_engine_key_is_reported(
+        self,
+    ) -> None:
+        """A workflow here that can run any engine live assigns every engine's key.
+
+        The check is the harness's, called with this repository's root and the
+        credential variables the rostered adapters declare. The harness case
+        proves the reader non-vacuous; this caller asserts this repository's
+        workflows. No secret value is read.
+
+        Design: harness ``harness_ci_pipeline.md`` section 8.5.4.
+
+        Returns:
+            None
+        """
+        variables = [adapter_for(engine).API_KEY_ENV for engine in engine_roster()]
+        problems = unoffered_credentials(_repository_root(), variables)
+        assert not problems, (
+            f"{len(problems)} workflow(s) cannot run every engine live:\n  "
+            + "\n  ".join(problems)
         )
 
 @allure.epic("AP-Model-QC")

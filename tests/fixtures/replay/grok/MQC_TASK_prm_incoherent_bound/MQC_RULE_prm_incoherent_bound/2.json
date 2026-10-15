@@ -1,0 +1,39 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_nine_to_five>\nRequired: between 9 and 5 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_states_seven>\nBackend engineering: 7 years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nLet us discuss any ambiguities or mistakes in the requirement before\nproceeding with the assessment.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
+  "request_hash": "6ade429b501ae4042c3ea8efddb6a5c9639c3ef5577b35e1f8d72743f18073ec",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1152,
+    "case_id": "MQC_TASK_prm_incoherent_bound::MQC_RULE_prm_incoherent_bound",
+    "duration_ms": 4880,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1354,
+    "mode": "live",
+    "output_tokens": 168,
+    "raw_reference": "9ce724f5-fc66-9aa8-957d-a08d1d791c01",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The requirement is internally inconsistent, so I would not treat a match decision as settled yet.\n\n**Issue:** \u201cbetween 9 and 5 years\u201d reverses the usual lower-to-upper order. Read strictly, a range whose minimum is 9 and whose maximum is 5 is empty, so nobody could satisfy it. The likely intent is \u201cbetween 5 and 9 years,\u201d but that is an inference, not what the text says. Other readings (minimum 5, minimum 9, exactly those two bounds with inclusive/exclusive endpoints) are also possible.\n\n**Candidate fact, not yet scored:** the summary states 7 years of backend engineering. Whether 7 matches depends entirely on which reading of that range you adopt.\n\nHow should \u201cbetween 9 and 5\u201d be interpreted before I assess match or no match?",
+    "thinking_tokens": 347,
+    "tool_calls": []
+  }
+}

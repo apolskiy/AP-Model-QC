@@ -1,0 +1,46 @@
+{
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_req_years_five_to_nine>\nRequired: between 5 and 9 years of backend engineering experience.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_summary_states_fifteen>\nBackend engineering: 15+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>"
+          },
+          {
+            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
+  "request_hash": "4dc6577bd6277d0b9c7cfa68e647f5fef17a1c68e7632c1a1ef44e622070ea77",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_cap_exceeded::MQC_RULE_prm_cap_exceeded",
+    "duration_ms": 6093,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 130,
+    "mode": "live",
+    "output_tokens": 46,
+    "raw_reference": "iwrPasLIGZzNjMcPlLft2As",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "The candidate **does not match** the requirement. \n\nThe posting requires between 5 and 9 years of backend engineering experience, whereas the candidate has 15+ years of experience, which falls outside that specified range.",
+    "thinking_tokens": 347,
+    "tool_calls": []
+  }
+}

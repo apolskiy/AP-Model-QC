@@ -46,9 +46,9 @@ on:
         required: false
         default: gemini
         type: choice
-        options: [gemini, openai, claude]
+        options: [gemini, openai, claude, grok]
       mode:
-        description: "live or replay. A judged replay run still spends judge quota"
+        description: "live or replay. Replay spends nothing: the judge replays too"
         required: false
         default: replay
         type: choice
@@ -67,9 +67,9 @@ jobs:
   debug:
     name: debug
     runs-on: ubuntu-24.04
-    # Named because the judge is a live call whatever the mode, so a judged
-    # replay run needs a credential. Gating derives from selection mode and run
-    # context, neither of which a credential touches, so this stays ungated.
+    # Named because a live run needs a credential. Gating derives from
+    # selection mode and run context, neither of which a credential touches,
+    # so this stays ungated.
     environment: live
     steps:
       - uses: actions/checkout@v5
@@ -170,7 +170,13 @@ jobs:
         id: run
         continue-on-error: true
         env:
+          # EVERY ROSTERED ENGINE'S KEY, because the engine is a choice and
+          # live is one of the modes. A secret reaches a step only by name.
+          # Harness `harness_ci_pipeline.md` section 8.5.4.
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           # THROUGH THE ENVIRONMENT. The engine and mode are choices from a
           # list this workflow does not enforce in the shell, and the list is a
           # path rather than free text somebody types.
@@ -231,7 +237,7 @@ jobs:
             echo "| Good content, failed a shape assertion | The assertion or the case |"
             echo "| Content that was poor as well | The model |"
             echo ""
-            echo "**A judged run spends quota even in replay.** The candidate is"
-            echo "replayed from a fixture; the judge has no fixture kind and is a"
-            echo "live call whatever the mode. consumer_ci.md section 6.4."
+            echo "**A replay run spends nothing.** The candidate and the judge"
+            echo "both come from recordings; a failed case no live run has judged"
+            echo "reports its judgement as unavailable. consumer_ci.md section 6.4."
           } >> "$GITHUB_STEP_SUMMARY"

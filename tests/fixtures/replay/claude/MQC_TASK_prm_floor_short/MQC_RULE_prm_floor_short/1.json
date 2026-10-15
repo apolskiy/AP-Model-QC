@@ -1,0 +1,48 @@
+{
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_req_years_nine>\nRequired: 9 years of backend engineering experience.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_summary_states_eight_plus>\nBackend engineering: 8+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
+  "request_hash": "a873c2e8f275398ec35ee1bc5f510ec98e81b1eff61b04dfe61a486aff6a8d4d",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
+    "duration_ms": 5057,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 177,
+    "mode": "live",
+    "output_tokens": 375,
+    "raw_reference": "msg_011Cg1WvJp1tLuXAGJVw4hsh",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Partial match: the summary does not establish the requirement.**\n\n- **Requirement:** 9 years of backend engineering experience.\n- **Candidate summary:** \"8+ years\" of backend engineering.\n\nThe summary guarantees only 8 years, one year short of the requirement. \"8+\" might mean 9 or more, but it might mean exactly 8, and nothing in the summary settles which. So we can't say the candidate meets the requirement, and we also can't say they fall short.\n\n**What is established:** at least 8 years of relevant backend work, including recent experience on a settlement pipeline handling 40,000 orders a day. That experience is clearly relevant, but it doesn't add to the year count.\n\n**To resolve it:** ask the candidate for their exact years of backend experience, or for start and end dates of their relevant roles.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

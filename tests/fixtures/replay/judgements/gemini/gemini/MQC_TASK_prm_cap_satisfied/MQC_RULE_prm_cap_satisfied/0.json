@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_CONTROL": {
+        "rationale": "The candidate correctly reports a match and explicitly places the 7 years of experience within the 5 to 9 years required range.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "404259abc1c57fc258504f7c16ba67b42bd93cb53639070fa98ddf8600a6c2b3"
+}

@@ -4469,3 +4469,108 @@ carrying the request that produced it.
 * **Key Decisions Made:** the reader is the harness's, called with this root, which is the one-implementation-two-callers arrangement the encoding, annotation, header, naming, citation and marker rules already use. This repository's records were clean on the first run.
 * **Code Quality & Compliance Audit:** 117 preconditions passing, pylint exit 0.
 * **AI Output Summary & Action Items:** `MQC_REQ_CAS_GOV_0007`, case `MQC_CAS_UNI_115742`, README 117 preconditions and 130 requirements traced. **The three open questions in `docs/model_open_questions.md` section 2 are untouched and still open.**
+
+---
+
+## 2026-10-13: The first recording of a family found the rules, not a model
+
+* **Requirements & Design Choices:** Record `premise_discrimination` on all
+  four engines, at the project owner's direction, after the family was built
+  and collected but measured nothing.
+* **What The Recording Found:** openai failed three of four cases, and the
+  responses were correct. "The candidate does not match the posting
+  requirement. The job requires between 5 and 9 years of backend engineering
+  experience, but the candidate has 15+ years." That answer was refused
+  because it used none of six keywords.
+* **The Defect:** Three assertions checked synonym lists, `exceed`, `above`,
+  `over`, `outside`, `beyond`, `more than`, and called it "the breach is
+  reported". **The rule's own level 3 exemplar would have failed it**, which
+  is the proof that the assertion and the rubric had stopped describing the
+  same behaviour. It fails in both directions: "the candidate exceeds
+  expectations and matches the requirement" is wrong and would have passed.
+* **Why It Matters More Than Phrasing:** An assertion failure is a
+  `QC_LLM_*` finding about a model. A vocabulary assertion manufactures
+  findings about phrasing, filed against a vendor as a defect, which is the
+  most expensive mistake this project can make.
+* **The Fix:** Assert the figures the fixture declares, which is what
+  `requirement_match` has always done with 78, 85 and 100, and what the
+  harness `DESIGN.md` section 7.8 specified all along. The rubric is
+  untouched, so every recorded judgement stayed valid and no candidate needed
+  re-recording.
+* **What I Nearly Reported:** claude passed 4 of 4 under the broken rules and
+  I described it as a clean result. It was a coincidence of phrasing.
+* **A Misleading Code, Found Chasing A Ghost:** After the fix, replay reported
+  `QC_HARNESS_FIXTURE_MISSING`, "no recorded response for this engine", while
+  five candidate fixtures sat on disk. `pipeline.py` emits that code for an
+  absent **judgement** as well. The broken assertions had short-circuited at
+  STEP_05 so the judge was never called; the candidates were always there.
+* **The Finding That Is Real:** `MQC_EVL_EVAL_134502` passes on claude, grok
+  and gemini and fails on openai, which reads "8+ years" as exactly eight:
+  "indicates at least 8 years, which is less than the required 9 years, so the
+  candidate does not meet the requirement". A stated floor is an open bound
+  and settles neither direction. The anchors are symmetric, level 1 being
+  "asserts a match, **or asserts a mismatch**, from a figure that settles
+  neither", so the judge applied the standard the rubric states. 2 of 5
+  observations passed.
+* **Code Quality & Compliance Audit:** 117 preconditions, pylint exit 0. 938
+  candidate responses and 534 judgements recorded; 10 open findings, openai 6.
+* **AI Output Summary & Action Items:** `data/rules/premise_discrimination.yaml`
+  reworked; `config/findings/openai.yaml` regenerated; README figures
+  reconciled and the live-and-replay claim qualified, since a case written and
+  not yet recorded is skipped in replay and this family spent a day that way.
+
+## 2026-10-14: A replay debug run was documented as spending judge quota
+
+* **Requirements & Design Choices:** The project owner's position: the judge is
+  not under test, and a model finding comes only from a live candidate scored
+  by a live judge. Section 6.4.1 already recorded that; section 6.4 above it
+  still said there was no judge fixture.
+* **What Was Corrected:** `consumer_ci.md` section 6.4, `model_running_jobs.md`
+  section 5, the docstring of `judgement_plan` in `tests/cases/graded_support.py`,
+  and three places in `debug-cases-on-demand.yml`: the `mode` input
+  description, the comment explaining `environment: live`, and the run summary.
+  The workflow's behaviour is unchanged; its `environment` stays, because a
+  live run needs a credential.
+
+## 2026-10-14: The debug workflow's engine menu was a copy of the roster
+
+* **What Was Found:** `debug-cases-on-demand.yml` offered gemini, openai and
+  claude ten days after grok was rostered. Section 4.19.3 had replaced the
+  case module's copy of the roster with a read and missed the copies the
+  workflows hold.
+* **The Check:** `MQC_CAS_UNI_115743` calls the harness `engine_list_gaps` with
+  this repository's root and the roster from the installed harness, traced as
+  `MQC_REQ_CAS_GOV_0008`. It failed naming this workflow before grok was added
+  and passes after.
+* **Decided, Not Yet Done:** The project owner, 2026-10-14: model tests never
+  use replay for the candidate or the judge, and replay on both sides is for
+  harness tests only. The replay pull-request gate, rungs 1 and 2 of the
+  ladder in section 7 and the table written today in section 6.4 are contrary
+  to it and go through design next.
+* **Open Item:** The workflow passes only the judge's key, so a live debug run
+  for openai, claude or grok has no credential.
+
+## 2026-10-14: The debug workflow could not run three engines live
+
+* **What Was Found:** `debug-cases-on-demand.yml` offered every engine and a
+  live mode and assigned only the judge's key, so a live debug run against
+  openai, claude or grok refused at preflight.
+* **The Check:** `MQC_CAS_UNI_115744` calls the harness `unoffered_credentials`
+  with this repository's root and the variables the rostered adapters declare,
+  traced as `MQC_REQ_CAS_GOV_0009`. It failed naming this workflow and the three
+  missing variables before the assignments were added, and passes after.
+
+## 2026-10-14: Branch passages brought into line with dated branches
+
+* **What Changed:** `consumer_ci.md` section 2.2 paired a single
+  `stabilization` branch with harness `stabilization`; no entry in
+  `config/harness_pin.yaml` does. The table now carries the dated kinds, a
+  `debug-*` row, and the rule that the patterns are floors and a stabilization
+  or extend branch adds its own entry. Section 3.9's table moved to
+  `stabilization-*`. `model_running_jobs.md` section 2.2 said an extend branch
+  gets harness `stabilization` by default, where the pin file gives harness
+  `main` unless the branch names its own; it now says so, and the examples use
+  branch names and case identifiers the checks accept.
+  `tests/cases/mqc_uni_harness_pin.py` used the retired identifier `10428` as
+  the referent in six branch names the naming check refuses; they now use
+  `115005`.

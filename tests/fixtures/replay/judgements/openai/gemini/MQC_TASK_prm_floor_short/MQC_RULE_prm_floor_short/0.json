@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_FLOOR_INSUFFICIENCY": {
+        "rationale": "The response asserts a mismatch ('does not meet the requirement') based solely on the '8+' floor, which cannot settle whether the candidate has 9 or more years of experience.",
+        "score": 1
+      }
+    }
+  },
+  "request_hash": "559ecd4dc74e520057dce6164b5c30f926525ccc28e6d107ce7de75596ad2ac4"
+}

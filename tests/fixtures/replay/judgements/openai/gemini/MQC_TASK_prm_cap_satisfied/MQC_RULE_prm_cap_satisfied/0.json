@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_CONTROL": {
+        "rationale": "The candidate reports that the candidate matches the posting requirement, but does so without referencing the specific range or placing the 7 years figure within it.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "3effb65f00608500a49660db7930b4b29ee2837b183a8ef71cfd390f18fc9fb9"
+}

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_TRUTHFULNESS": {
+        "rationale": "The response correctly identifies that the candidate does not match the requirement, explicitly cites both figures (5-9 years required vs. 15+ years of experience), and states that exceeding the ceiling of the range is the reason for exclusion.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "9102abef7090263a36b71125578cf43f782d1946099fd9d5528fa887ddf5f0dc"
+}

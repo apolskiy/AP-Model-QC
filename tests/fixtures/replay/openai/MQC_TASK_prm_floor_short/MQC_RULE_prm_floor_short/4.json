@@ -1,0 +1,39 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_nine>\nRequired: 9 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_states_eight_plus>\nBackend engineering: 8+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
+  "request_hash": "ca9bb8c0e7a02ae9bc47da9b035c09aa8ad02c91eb9741c2bf68e094f0662d40",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
+    "duration_ms": 1390,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 124,
+    "mode": "live",
+    "output_tokens": 62,
+    "raw_reference": "chatcmpl-EYl9PIOnwfl5k6LWi9aXnfjLye43m",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "The posting requires 9 years of backend engineering experience.\n\nThe candidate summary states \"8+ years\" of backend engineering experience.\n\nTherefore, based solely on this summary, the candidate does not meet the stated requirement of 9 years, as it only establishes at least 8 years (but not necessarily 9).",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

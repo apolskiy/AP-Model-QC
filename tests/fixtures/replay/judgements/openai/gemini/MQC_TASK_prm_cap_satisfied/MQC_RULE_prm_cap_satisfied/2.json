@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_CONTROL": {
+        "rationale": "The response reports that the candidate matches the requirement, but does so without referencing the specific 5 to 9 years range or placing the candidate's 7 years inside it.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "54234eecefd5386e541aac242ee01eea91fe691486d79a294cacf3b2127effc6"
+}

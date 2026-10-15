@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_FLOOR_INSUFFICIENCY": {
+        "rationale": "The candidate output explicitly states that the summary cannot settle the 9-year requirement, clearly explains why an '8+' floor could mean either exactly 8 (failing) or 9+ (passing), and directly recommends asking the candidate for their total years of backend experience to resolve the ambiguity.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "f1b815c5902126777feaec91d3ec8e3a0a6898e24179e71a07c0fdc59196afc9"
+}

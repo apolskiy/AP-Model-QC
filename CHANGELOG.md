@@ -40,6 +40,61 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The debug workflow offers every engine's key, 2026-10-14
+
+**`debug-cases-on-demand.yml` assigned only the judge's key** while offering
+every engine live. It now assigns all four, and `MQC_CAS_UNI_115744` applies the
+harness check to this repository's workflows, widening the rule
+`MQC_CAS_UNI_115710` held for `evaluate-engine.yml` alone. The README's figures
+moved with it: 134 requirements, 119 preconditions, and 803 harness cases.
+
+### The debug workflow offers grok, 2026-10-14
+
+**`debug-cases-on-demand.yml` offered three engines ten days after grok was
+rostered.** It now offers four, and `MQC_CAS_UNI_115743` compares every engine
+list this repository's workflows write with the roster, from the harness
+implementation. `model_running_jobs.md` names the roster instead of listing
+engines. The README's figures moved with it: 133 requirements, 118
+preconditions, and 802 harness cases. No recorded measurement changes.
+
+### A replay run spends no judge quota, and the documents said it did, 2026-10-14
+
+**`consumer_ci.md` section 6.4, `model_running_jobs.md` section 5 and
+`debug-cases-on-demand.yml` said a judged replay run calls the judge live.**
+It has replayed the judge since judgements gained a fixture kind of their own:
+`--judge-mode` follows `--mode`, and a failed case no live run has judged
+reports its judgement as unavailable. The workflow's input description, its
+`environment` comment and its run summary now say so. No recorded measurement
+changes.
+
+### `premise_discrimination`, recorded on four engines, 2026-10-13
+
+**A new family: whether a bound is reported truthfully.** Four tasks against
+requirements carrying a floor, a cap, a range and an impossible range, with
+`MQC_EVL_EVAL_134500` to `134503`. A cap inverts the disclosure rule: against
+a floor of 8, answering "8+" while holding fifteen is required and `134407`
+asserts it; against a cap of nine the same sentence is a false match.
+
+**The first recorded run found a defect in the rules rather than in a model.**
+Three assertions checked for synonym lists, `exceed`, `above`, `over`,
+`outside`, `beyond`, `more than`, and called that "the breach is reported".
+A correct openai answer was refused for using none of the six, and the rule's
+own level 3 exemplar would have failed it too. They assert the figures the
+fixture declares now, which is what `requirement_match` has always done and
+what the harness `DESIGN.md` section 7.8 specified.
+
+**One genuine finding, and it is openai's.** `134502` passes on claude, grok
+and gemini and fails on openai, which reads "8+ years" as exactly eight:
+"indicates at least 8 years, which is less than the required 9 years, so the
+candidate does not meet the requirement". A stated floor is an open bound and
+settles neither direction, so asserting a mismatch is the same error as
+asserting a match. 2 of 5 observations passed.
+
+README: 938 candidate responses, 534 judgements, 10 open findings with openai
+at 6. The claim that the same 74 cases run live and replayed is qualified: a
+case written and not yet recorded is skipped in replay, and this family spent
+a day in that state.
+
 ### Production records are checked for immutability, 2026-10-13
 
 **Added.** `MQC_CAS_UNI_115742` and `MQC_REQ_CAS_GOV_0007`, running the

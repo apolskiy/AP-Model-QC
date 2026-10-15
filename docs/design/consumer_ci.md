@@ -71,10 +71,18 @@ to say which:
 | Branch | Pairs with | Because |
 |---|---|---|
 | `main` | harness `main` | What its cases run against once merged |
-| `stabilization` | harness `stabilization` | Stabilization on one side is verified against stabilization on the other |
+| `stabilization-*` | Its own entry, or harness `main` | One cycle's stabilization, verified against the harness stabilization branch of the same cycle, named when the branch is cut |
 | `expand-*` | harness `main` | New cases needing no new harness capability |
 | `extend-*` | Its own entry, or harness `main` | New cases needing a harness extension, named when the branch is cut |
+| `debug-*` | harness `main` | Debugging a case against whatever the harness is doing |
 | Anything else | harness `main` | The default, and the safe one |
+
+**The patterns are floors, not pairings.** Every branch other than `main` is
+dated (harness `harness_ci_pipeline.md` section 3C.6), so a stabilization or
+extend branch adds a literal entry naming its harness branch when it is cut.
+First match wins, so the literal takes precedence, and merging the branch
+removes it. A forgotten entry falls through to harness `main`, where a missing
+capability fails loudly rather than appearing to work against a stale branch.
 
 **`extend-*` is the branch the whole mechanism exists for.** A case that cannot
 be written until the harness grows a capability has nowhere to run except
@@ -260,7 +268,7 @@ split is already in `config/harness_pin.yaml`.
 | Branch | `require_green` | A red harness means |
 |---|---|---|
 | `main` | **true** | Exit 4. **Nothing installs and nothing runs** |
-| `stabilization` | false | The run proceeds, ungated, yielding no verdict |
+| `stabilization-*` | false | The run proceeds, ungated, yielding no verdict |
 | `expand-*`, `extend-*`, `debug-*` | false | As above |
 | Unmatched | false | As above |
 
@@ -905,6 +913,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115740` | N | `an_impossible_band_floor_refuses_rather_than_deciding` (3.12.2) |
 | `115741` | N | `a_marker_registry_disagreeing_with_the_harness_is_reported` (harness taxonomy 7.5.1) |
 | `115742` | N | `a_mutable_production_record_is_reported` (harness taxonomy 15.8) |
+| `115743` | N | `a_workflow_engine_list_off_the_roster_is_reported` (harness CI pipeline 8.5) |
+| `115744` | N | `a_live_workflow_missing_an_engine_key_is_reported` (harness CI pipeline 8.5.4) |
 | `115721` | N | `a_blocking_case_with_no_recording_is_reported` |
 | `115722` | N | `a_recording_check_that_compares_nothing_is_reported` |
 | `115723` | N | `a_stated_inventory_disagreeing_with_rows_is_reported` |
@@ -934,7 +944,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 81 cases, 59 negative, 17 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 83 cases, 61 negative, 17 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1697,6 +1707,14 @@ required reviewer, and section 4.17.2 already governs what happens when it is
 absent. What is checked here is that the wiring exists, which is the part a
 roster addition forgets.
 
+**The workflows held copies as well**, found 2026-10-14: the `engine` menu of
+`debug-cases-on-demand.yml` still offered three engines. Every engine list a
+workflow writes is now compared with the roster by `MQC_CAS_UNI_115743`, from
+the harness implementation (harness `harness_ci_pipeline.md` section 8.5).
+The same workflow assigned only the judge's key, so the rule above for
+`evaluate-engine.yml` now covers every workflow that can run any engine live,
+checked by `MQC_CAS_UNI_115744` (harness section 8.5.4).
+
 #### 4.19.4 A known finding still blocks its gate, and that is the decision
 
 **Decided 2026-10-05 by the project owner.** A P0 or P1 graded failure fails its
@@ -1850,27 +1868,25 @@ or the model is wrong, and those prompt entirely different fixes:
 
 So a debug run passes `--judge-on-failure`, and the gate never does.
 
-### 6.4 A judged run spends quota, including in replay
+### 6.4 What a judged run spends
 
-**This corrects a claim made elsewhere.** `testing-standards.md` section 2 says
-replay jobs consume no quota and are pure CPU. That is true of the **candidate**
-response, which is replayed from a stored fixture. It is not true of the judge.
-
-There is no judge fixture. `FixtureKey` is `(case_id, engine, observation_index)`
-and keys the candidate only, so a bound judge is a **live call whatever the
-mode**. A replay run that judges therefore spends quota, and a replay run that
-judges on failure spends it on exactly the cases that failed.
+**Judge quota is spent only where the judge is named live.** `--judge-mode`
+defaults to `--mode`, so a replay run replays the candidate and the judge
+alike, and a judgement it cannot find is a `QC_HARNESS_FIXTURE_MISSING` skip,
+never a live call (harness `tier2_execution.md` section 7.9).
 
 | Run | Candidate | Judge | Spends |
 |---|---|---|---|
-| Gate, replay | Fixture | Skipped on failure | Nothing |
-| Debug, replay, judging | Fixture | **Live** | One request per failed case |
+| Gate, replay | Fixture | Fixture | Nothing |
+| Debug, replay, judging on failure | Fixture | Fixture, or a skip where none is stored | Nothing |
+| Ladder Job 2 | Fixture | **Live**, by `--judge-mode live` | One judge request per judged case |
 | Live schedule | Live | Live | Both |
 
-**The cost is deliberate and bounded here**, because a debug run is manually
-dispatched against a named subset. It is stated rather than left implicit,
-because the alternative is a reader trusting a blanket claim that replay is
-free and being surprised by a bill.
+**Corrected 2026-10-14.** This section said there was no judge fixture and a
+bound judge was a live call whatever the mode, so a judged replay run spent
+quota. That stopped being true when judgements gained a fixture kind of their
+own, and the section was not revisited when 6.4.1 settled what they may be
+used for.
 
 #### 6.4.1 Decided 2026-10-08: the judge is replayed, and never for a finding
 

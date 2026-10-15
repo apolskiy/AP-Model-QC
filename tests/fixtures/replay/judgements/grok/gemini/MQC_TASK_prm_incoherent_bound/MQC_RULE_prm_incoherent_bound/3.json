@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The candidate output identifies and raises the contradiction in the requirement before providing an assessment, but proceeds to assess the candidate under the assumed correction rather than asking before assessing.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "7f99e006b56ff2a542888862886df786289c9e526b03e8c558e1e1a9b82a25c4"
+}

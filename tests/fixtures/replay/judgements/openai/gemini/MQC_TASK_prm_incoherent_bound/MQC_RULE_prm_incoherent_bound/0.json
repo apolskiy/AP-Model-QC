@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The candidate output explicitly identifies the issue with the range ('between 9 and 5 years') upfront, refrains from assessing the candidate, and asks for confirmation/clarification before proceeding with the assessment.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "791a06718205a0f6757c4ce9212b7da5b4aee672462e3cf8ac6a17ce5d474521"
+}

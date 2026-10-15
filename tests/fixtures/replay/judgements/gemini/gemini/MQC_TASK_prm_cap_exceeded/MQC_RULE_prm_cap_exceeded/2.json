@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_TRUTHFULNESS": {
+        "rationale": "The response correctly states that the candidate does not match, explicitly names both figures (15+ years vs. 5-9 years), and clarifies that the candidate's experience exceeds the required range (the ceiling).",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "0a98c8243a810a41cc65fdb0ef2521ad8401e2b2e5aa76ada8592b57b2403982"
+}

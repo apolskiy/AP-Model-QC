@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_TRUTHFULNESS": {
+        "rationale": "The response explicitly states that the candidate does not match the requirement, names both figures (5 to 9 years required and more than 15 years possessed), and explains that having more than 15 years puts the candidate over the ceiling of the required range.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e4b06b10cc05018b027ad66a324a098c4cca3a64c64424f9ac48e905f0b915ef"
+}

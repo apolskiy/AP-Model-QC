@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_FLOOR_INSUFFICIENCY": {
+        "rationale": "The candidate output acknowledges that the summary does not establish whether the candidate has the required 9 years, which exceeds a simple assertion of a match or mismatch (Level 1). However, it immediately concludes that confirming at least 8 years 'does not meet the stated requirement', partially asserting a mismatch rather than cleanly identifying the figure as genuinely inconclusive, and it does not explain how a floor works or ask for the actual figure.",
+        "score": 2
+      }
+    }
+  },
+  "request_hash": "ef6b0d196754e3502b951cffbb02b9004d07652556a78d881730847f0225008e"
+}

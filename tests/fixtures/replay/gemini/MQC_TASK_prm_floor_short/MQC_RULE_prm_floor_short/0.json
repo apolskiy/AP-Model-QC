@@ -1,0 +1,46 @@
+{
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_req_years_nine>\nRequired: 9 years of backend engineering experience.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_summary_states_eight_plus>\nBackend engineering: 8+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>"
+          },
+          {
+            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
+  "request_hash": "dadb97a4fb23efaeb071571fb38a60ff16c8442b9776d2248d5e3af9606b2bc3",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
+    "duration_ms": 7031,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 120,
+    "mode": "live",
+    "output_tokens": 88,
+    "raw_reference": "vgrPaqbxOv2k1MkP98TeuAw",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "Based on the provided documents:\n\n* **Requirement:** 9 years of backend engineering experience.\n* **Candidate Summary:** 8+ years of backend engineering experience.\n\n**Assessment:** \nThe summary **cannot establish** whether the candidate meets the requirement. Stating \"8+ years\" confirms the candidate has at least 8 years of experience, but it does not definitively prove whether they have reached the required 9 years.",
+    "thinking_tokens": 415,
+    "tool_calls": []
+  }
+}

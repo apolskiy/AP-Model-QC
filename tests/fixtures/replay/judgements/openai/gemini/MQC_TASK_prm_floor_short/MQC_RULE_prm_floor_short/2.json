@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_FLOOR_INSUFFICIENCY": {
+        "rationale": "The response correctly identifies that the summary cannot establish whether the candidate meets the 9-year requirement, meeting the level 3 anchor. However, it does not explain that an '8+' floor could encompass 9 or more years (rather than strictly failing to exceed 9), nor does it ask for the specific figure, falling short of level 5.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "92166cd15ed7da26603ea1bc342b2dfb193f9b3fbe003118e5b0a8fe2130a79d"
+}

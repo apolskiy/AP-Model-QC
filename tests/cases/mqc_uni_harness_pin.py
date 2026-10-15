@@ -138,7 +138,7 @@ class TestMQCHarnessPairing:
         Returns:
             None
         """
-        expanding = resolve_pairing(mapping, "expand-10428-09-24-2026")
+        expanding = resolve_pairing(mapping, "expand-115005-09-24-2026")
         assert expanding.matched == "expand-*"
         assert expanding.harness_ref == "main"
 
@@ -149,7 +149,7 @@ class TestMQCHarnessPairing:
         # Debugging pairs with main and is always advisory, because
         # withholding the tool while the harness is red withholds it exactly
         # when it is needed.
-        debugging = resolve_pairing(mapping, "debug-10428-09-24-2026")
+        debugging = resolve_pairing(mapping, "debug-115005-09-24-2026")
         assert debugging.matched == "debug-*"
         assert debugging.require_green is False
 
@@ -224,8 +224,8 @@ class TestMQCHarnessPairing:
         lenient = (
             "stabilization-MQC-1234-09-24-2026",
             "extend-MQC-1234-09-24-2026",
-            "expand-10428-09-24-2026",
-            "debug-10428-09-24-2026",
+            "expand-115005-09-24-2026",
+            "debug-115005-09-24-2026",
         )
         for branch in lenient:
             pairing = resolve_pairing(mapping, branch)
@@ -551,7 +551,7 @@ class TestMQCBranchPolicyHere:
         # default, checked through the resolver rather than by reading the file
         # twice.
         for kind in sorted(BRANCH_KINDS):
-            pairing = resolve_pairing(mapping, f"{kind}-10428-09-24-2026")
+            pairing = resolve_pairing(mapping, f"{kind}-115005-09-24-2026")
             assert pairing.matched == f"{kind}-*", (
                 f"a dated {kind} branch matched {pairing.matched!r}"
             )
@@ -632,7 +632,7 @@ class TestMQCTargetStrictness:
 
         # INTO AN ADVISORY TARGET, nothing is raised.
         onto_stabilization = apply_target_strictness(
-            resolve_pairing(mapping, "expand-10428-09-24-2026"),
+            resolve_pairing(mapping, "expand-115005-09-24-2026"),
             mapping,
             source,
         )

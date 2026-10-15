@@ -1,0 +1,39 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_nine_to_five>\nRequired: between 9 and 5 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_states_seven>\nBackend engineering: 7 years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nLet us discuss any ambiguities or mistakes in the requirement before\nproceeding with the assessment.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
+  "request_hash": "19dbc59cfffc859aec5c347727bcac1e47662f5c93c70b0804bb2e53c344407d",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_incoherent_bound::MQC_RULE_prm_incoherent_bound",
+    "duration_ms": 2577,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 123,
+    "mode": "live",
+    "output_tokens": 291,
+    "raw_reference": "chatcmpl-EYl9RQLfCKpaGoe8ARWf7mKcdBIjb",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Let's clarify the requirement before assessing:\n\n**Requirement Document (DOC_req_years_nine_to_five):**  \n- States: \"Required: between 9 and 5 years of backend engineering experience.\"\n\n**Ambiguities/Mistakes in the Requirement:**\n- The phrase \"between 9 and 5 years\" is ambiguous. It is unclear if the requirement is for 5 to 9 years or 9 to 5 years (which is not a typical order).\n- Most job postings would specify \"between 5 and 9 years\" if either boundary is acceptable.\n\n**Discussion:**  \n- Standard usage is \"between X and Y\" where X < Y.  \n- Based on context and common phrasing, it's reasonable to infer the requirement is for candidates with **at least 5 and at most 9 years** of backend engineering experience.  \n- If \"between 9 and 5\" is interpreted literally (i.e., between 9 and 5 years, which would mean less than 5 years or more than 9 years), that doesn't make logical sense.\n- It is likely a typographical error and should read \"between 5 and 9 years.\"\n\n**Conclusion:**  \n- I propose we proceed with the assumption that the requirement is for **between 5 and 9 years** of backend engineering experience.\n\nLet me know if you would like to clarify further or proceed with this interpretation for the assessment.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

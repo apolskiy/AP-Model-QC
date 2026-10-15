@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_CONTROL": {
+        "rationale": "The candidate output explicitly states that the candidate matches the requirement and specifically explains that 7 years falls within the required 5 to 9 year range, meeting the level 5 rubric anchor.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "e412c4c3348a4b2d35b92822805aaa6735f9a6f127c2f1aea77e56fa2e5cba4b"
+}

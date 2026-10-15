@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The candidate output identifies the contradictory range immediately, refrains from making a match/no-match assessment, and explicitly asks how the requirement should be interpreted before proceeding with the assessment.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "c9f8f82db93aad3dc62c9a49458acac7df0d06255521ad965bc3ee7098388523"
+}

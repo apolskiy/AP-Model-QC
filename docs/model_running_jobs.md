@@ -28,7 +28,7 @@ it, and deleted. `main` is never merged into a branch.
 ```
 git checkout main
 git pull
-git checkout -b expand-10428-09-24-2026
+git checkout -b expand-115005-09-24-2026
 ```
 
 The date is **the day you cut it**, and it is not decoration: it is the last
@@ -117,7 +117,7 @@ so nobody is tempted to.
 | You want to | Use | Blocks a merge | Spends quota |
 |---|---|---|---|
 | Run one case or a few, right now | `debug-cases-on-demand` | No | Only if you ask |
-| Stabilize cases against a harness in flight | `debug-cases-on-demand` from `stabilization` | No | Only if you ask |
+| Stabilize cases against a harness in flight | `debug-cases-on-demand` from your `stabilization-*` branch | No | Only if you ask |
 | Check a branch before opening a pull request | Push it. One `gate-<engine>` per target runs itself | Yes, on the pull request | No |
 | Regression across one target, live | `evaluate-<engine>-weekly` | No | **Yes, all three rungs** |
 
@@ -167,8 +167,8 @@ Every debug dispatch answers three questions, and only the first is required.
 | `case_ref` | **Which branch of this repository** | The branch you dispatched from |
 | `harness_ref` | **Which harness** | Whatever `config/harness_pin.yaml` pairs with `case_ref` |
 
-Two more inputs exist and usually want their defaults, `engine` (`gemini`,
-`openai` or `claude`) and `mode` (`replay` or `live`).
+Two more inputs exist and usually want their defaults, `engine` (any engine
+on the roster) and `mode` (`replay` or `live`).
 
 ### 2.1 `tests` takes identifiers or full test names
 
@@ -207,11 +207,17 @@ and you get exactly that ref, whatever the mapping says.
 
 | `case_ref` | Harness you get by default |
 |---|---|
-| `main` | Harness `main` |
-| `stabilization` | Harness `stabilization` |
+| `main` | Harness `main`, and only once it is green |
+| `stabilization-<date>` | The harness branch its own entry names, otherwise harness `main` |
 | `expand-<referent>-<date>` | Harness `main` |
-| `extend-<referent>-<date>` | Harness `stabilization` |
+| `extend-<referent>-<date>` | The harness branch its own entry names, otherwise harness `main` |
+| `debug-<referent>-<date>` | Harness `main` |
 | Anything else | Harness `main` |
+
+**A stabilization or extend branch adds its own entry to
+`config/harness_pin.yaml` when it is cut**, naming the harness branch it pairs
+with. Forgetting it pairs the branch with harness `main`, where a missing
+capability fails loudly.
 
 **Fill in `harness_ref` when you are testing a harness change that has no
 pairing yet**, such as somebody's feature branch or a specific commit. A commit
@@ -225,13 +231,13 @@ harness revisions against the same cases.
 ### 3.1 From the command line
 
 ```
-gh workflow run debug-cases-on-demand.yml --ref stabilization --field tests=115005
+gh workflow run debug-cases-on-demand.yml --ref stabilization-10-14-2026 --field tests=115005
 ```
 
 With every input named:
 
 ```
-gh workflow run debug-cases-on-demand.yml --ref stabilization --field tests=115005,10431 --field case_ref=stabilization --field harness_ref=extend-judge-replay-09-24-2026 --field engine=gemini --field mode=replay
+gh workflow run debug-cases-on-demand.yml --ref stabilization-10-14-2026 --field tests=115005,115006 --field case_ref=stabilization-10-14-2026 --field harness_ref=extend-MQC-1234-09-24-2026 --field engine=gemini --field mode=replay
 ```
 
 Then watch it:
@@ -256,7 +262,7 @@ The run is named for what it does, so the Actions list is readable without
 opening anything:
 
 ```
-DEBUG (no verdict) 10428,10431 on stabilization
+DEBUG (no verdict) 115005,115006 on stabilization-10-14-2026
 ```
 
 ---
@@ -404,12 +410,13 @@ judge request here and not in a gate.
 
 | `mode` | Candidate quota | Judge quota |
 |---|---|---|
-| `replay` | None | **Spent, when a case fails** |
+| `replay` | None | None |
 | `live` | Spent | Spent, when a case fails |
 
-**Replay is not free here**, which is the one surprise on this page. The
-candidate response comes from a fixture, but judging a failed case is a live
-request unless a stored judgement covers it.
+**Replay replays the judge too.** A failed case is judged from a stored
+judgement, and one no live run has judged reports its judgement as unavailable
+(`QC_HARNESS_FIXTURE_MISSING`) rather than calling the judge. A live judgement
+of that case needs a live run.
 
 ---
 
@@ -450,7 +457,7 @@ Two things produce it:
   branch that was deleted. Check the ref exists.
 * **The harness gate is not green and the branch requires it.** Only `main`
   requires it. Either wait for the harness to go green, or do the work on
-  `stabilization` where it is advisory.
+  a `stabilization-*` branch, where it is advisory.
 
 **Exit 3 and exit 1 are worth telling apart.** Exit 1 means a case ran and
 failed, which is a result. Exit 3 means the graded layers never executed, so
@@ -556,7 +563,7 @@ Nothing above is required to run a case on your own machine.
 
 ```
 pytest -m unit
-pytest -k 10428 --mode replay
+pytest -k 115005 --mode replay
 ```
 
 Local runs need the harness importable. Install it the way CI does, by commit:

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_FLOOR_INSUFFICIENCY": {
+        "rationale": "The candidate clearly explains why a floor of 8+ years cannot definitively confirm or rule out meeting the 9-year requirement, going beyond level 3. However, it does not ask for the actual figure/clarification, falling short of level 5.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "f48d45c11e522b14fc4ffec6d05da3a25bb23f5e967520aa5190bcede7a9dfbf"
+}

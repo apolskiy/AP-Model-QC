@@ -265,9 +265,9 @@ def judgement_plan(config: Any, candidate_engine: str) -> JudgementPlan:
     ``tier3_evaluation.md`` section 5A.5).
 
     **This is the difference between a free pull request and a quota bill.**
-    `FixtureKey` keys the candidate only, so a bound judge is a live call
-    whatever `--mode` says; a replay run that judged live would spend provider
-    quota on every pull request.
+    `FixtureKey` keys the candidate only, so without this plan a bound judge
+    would be a live call whatever `--mode` says, and a replay run that judged
+    would spend provider quota on every pull request.
 
     Args:
         config (Any): pytest's configuration.

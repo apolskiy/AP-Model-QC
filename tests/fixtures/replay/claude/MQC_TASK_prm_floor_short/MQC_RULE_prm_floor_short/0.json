@@ -1,0 +1,48 @@
+{
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_req_years_nine>\nRequired: 9 years of backend engineering experience.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_summary_states_eight_plus>\nBackend engineering: 8+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
+  "request_hash": "a873c2e8f275398ec35ee1bc5f510ec98e81b1eff61b04dfe61a486aff6a8d4d",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
+    "duration_ms": 6014,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 177,
+    "mode": "live",
+    "output_tokens": 456,
+    "raw_reference": "msg_011Cg1WuWWwA2CbzqMi3FFgW",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Verdict: Not established.** The summary neither confirms nor rules out a match.\n\n**Requirement:** 9 years of backend engineering experience (DOC_req_years_nine).\n\n**What the summary says:** \"8+ years building transactional services\" (DOC_summary_states_eight_plus).\n\n**Why it's inconclusive:**\n- \"8+\" sets a floor of 8 years, one short of the required 9.\n- The \"+\" leaves the upper end open. The actual figure could be 8 years and a few months, which would fall short, or 9 years or more, which would meet the requirement. The summary gives no way to tell which.\n- The detail about the settlement pipeline handling 40,000 orders a day shows relevant, substantive backend work. It says nothing about duration, though, so it doesn't help with the years requirement.\n\n**What would resolve it:** the candidate's actual start date in backend engineering, or a dated employment history. A one-line question to the candidate (\"How many years of backend experience do you have exactly?\") would settle it.\n\nIt would be wrong to treat \"8+\" as meeting a 9-year bar, and equally wrong to treat it as missing that bar. The stated evidence only guarantees 8 years.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

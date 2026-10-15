@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The response identifies the issue with the 'between 9 and 5 years' requirement first, explains the ambiguity, and explicitly asks for confirmation before proceeding to assess the candidate, completely withholding the candidate evaluation until clarified.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "925b5e4eef6f3cd536b063e00893a0379cafcaf13f32fc1a73a7e6ac6aafa253"
+}

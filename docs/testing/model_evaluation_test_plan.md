@@ -176,6 +176,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_GOV_0005` | The README and changelog pairing check runs against this repository, from the harness implementation | code-style.md section 7.4 |
 | `MQC_REQ_CAS_GOV_0006` | This repository's marker registry is compared against the harness registry and against the code that applies it, from the harness implementation | harness_test_taxonomy.md section 7.5.1 |
 | `MQC_REQ_CAS_GOV_0007` | A production record in this repository is a frozen dataclass unless it is a declared accumulator, checked by the harness implementation | harness_test_taxonomy.md section 15.8 |
+| `MQC_REQ_CAS_GOV_0008` | Every engine list this repository's workflows write names exactly the rostered engines, checked by the harness implementation | harness_ci_pipeline.md section 8.5 |
+| `MQC_REQ_CAS_GOV_0009` | A workflow here that can run any rostered engine live assigns every rostered engine's credential variable, checked by the harness implementation | harness_ci_pipeline.md section 8.5.4 |
 
 
 ### 2.5.4 `PRE`, Preconditions: what must hold before any graded case runs

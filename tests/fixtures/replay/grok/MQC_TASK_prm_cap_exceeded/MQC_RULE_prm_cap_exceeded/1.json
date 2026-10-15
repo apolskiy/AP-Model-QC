@@ -1,0 +1,39 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_five_to_nine>\nRequired: between 5 and 9 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_states_fifteen>\nBackend engineering: 15+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
+  "request_hash": "cd5f0cdf2728165db806b1a6e6046a37f03fa721061bcd845fb54135fc5b0a37",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_prm_cap_exceeded::MQC_RULE_prm_cap_exceeded",
+    "duration_ms": 3264,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1363,
+    "mode": "live",
+    "output_tokens": 35,
+    "raw_reference": "a771f4ce-8b46-9a43-965d-4d13feb578df",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The candidate does not match. The posting requires between 5 and 9 years of backend engineering experience; the summary states 15+ years, which is outside that range.",
+    "thinking_tokens": 238,
+    "tool_calls": []
+  }
+}

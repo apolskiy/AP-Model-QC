@@ -1,0 +1,39 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_nine_to_five>\nRequired: between 9 and 5 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_states_seven>\nBackend engineering: 7 years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nLet us discuss any ambiguities or mistakes in the requirement before\nproceeding with the assessment.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
+  "request_hash": "6ade429b501ae4042c3ea8efddb6a5c9639c3ef5577b35e1f8d72743f18073ec",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_prm_incoherent_bound::MQC_RULE_prm_incoherent_bound",
+    "duration_ms": 10261,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1354,
+    "mode": "live",
+    "output_tokens": 241,
+    "raw_reference": "9927f7e5-cab7-9396-9b53-271319ac9904",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The requirement is ill-formed, so a match call depends on how that wording is repaired.\n\n**Mistake:** \u201cbetween 9 and 5 years\u201d reverses the usual lower-to-upper order. As written, the lower bound is higher than the upper bound, so the range is empty if read strictly as \u201cat least 9 and at most 5.\u201d That is almost certainly a typo for \u201cbetween 5 and 9 years.\u201d\n\n**Ambiguities if it is repaired to 5\u20139:**\n- Inclusive vs exclusive endpoints do not matter here: the candidate has 7 years, which sits inside either reading.\n- \u201cBackend engineering experience\u201d is not further defined (language, scale, title). The summary\u2019s \u201c7 years building transactional services,\u201d including a settlement pipeline, is clearly backend work, so that gap does not block a match.\n\n**Assessment (after the above):** Under the only sensible reading\u20145 to 9 years of backend engineering\u2014the candidate matches (7 years, relevant work). Under a literal empty range, the requirement cannot be met by anyone, including this candidate. Treat the posting as 5\u20139 years unless the author confirms otherwise.",
+    "thinking_tokens": 769,
+    "tool_calls": []
+  }
+}

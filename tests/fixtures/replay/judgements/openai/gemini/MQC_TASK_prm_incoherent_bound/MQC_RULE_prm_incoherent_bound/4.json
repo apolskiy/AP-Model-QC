@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The model explicitly identifies and discusses the inverted range contradiction before performing any evaluation, and halts to ask for confirmation of the intended range before proceeding with the assessment.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "969b200d44018833837511a65946d84adf147c8605424dde6a9a490c9cb43ff5"
+}

@@ -1,0 +1,39 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_nine_to_five>\nRequired: between 9 and 5 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_states_seven>\nBackend engineering: 7 years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nLet us discuss any ambiguities or mistakes in the requirement before\nproceeding with the assessment.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
+  "request_hash": "19dbc59cfffc859aec5c347727bcac1e47662f5c93c70b0804bb2e53c344407d",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_incoherent_bound::MQC_RULE_prm_incoherent_bound",
+    "duration_ms": 2098,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 123,
+    "mode": "live",
+    "output_tokens": 225,
+    "raw_reference": "chatcmpl-EYl9YHvrkWGBys5eUx4L1SZy2yRWq",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "Let's clarify the requirement first:\n\n**Requirement:**  \n\"Required: between 9 and 5 years of backend engineering experience.\"\n\nThere is an ambiguity here. The phrase \"between 9 and 5 years\" could be interpreted in two opposing ways:\n- **Interpretation 1 (most common):** 5 to 9 years inclusive (i.e., candidates must have at least 5 years but not more than 9 years of experience).\n- **Interpretation 2 (less likely):** 9 to 5 years, implying descending order, but in context, this is unusual.\n\nSince normal conventions for job requirements list the minimum years first, it is reasonable to assume the requirement is referring to candidates with between 5 and 9 years of experience in backend engineering.\n\n**Mistake:**  \nThe phrasing \"between 9 and 5 years\" is unconventional. The standard would be \"between 5 and 9 years.\"\n\n**Proceed?**  \nIf you agree with this (that the requirement is 5 to 9 years inclusive), I will proceed to assess the candidate based on that assumption.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

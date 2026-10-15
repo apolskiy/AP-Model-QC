@@ -1,0 +1,48 @@
+{
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_req_years_nine>\nRequired: 9 years of backend engineering experience.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_summary_states_eight_plus>\nBackend engineering: 8+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
+  "request_hash": "a873c2e8f275398ec35ee1bc5f510ec98e81b1eff61b04dfe61a486aff6a8d4d",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
+    "duration_ms": 4422,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 177,
+    "mode": "live",
+    "output_tokens": 270,
+    "raw_reference": "msg_011Cg1Ww1TWdkqBYsQmFb6ko",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Not established. The summary may or may not meet the 9-year requirement.**\n\n- **Requirement:** 9 years of backend engineering experience.\n- **Summary:** \"8+ years\" of backend engineering.\n\n\"8+\" sets only a minimum. It fits a candidate with exactly 8 years, which falls short, and one with 9 or more, which meets the bar. The summary doesn't say which.\n\nThe settlement pipeline handling 40,000 orders a day is relevant backend work, but it says nothing about duration, so it doesn't resolve the gap.\n\n**To resolve it:** ask the candidate for their total years of backend experience, or check the start and end dates of each role in the full r\u00e9sum\u00e9.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

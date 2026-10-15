@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_TRUTHFULNESS": {
+        "rationale": "The candidate output clearly states that the candidate does not meet the requirement because their 15+ years of experience exceeds the 9-year ceiling specified in the job posting, explicitly naming both numbers and identifying the ceiling as the excluding factor.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "4d8f453cc3b730cd441641b0df6eaa89a449a8a0644787c71be3d6b0b811145d"
+}

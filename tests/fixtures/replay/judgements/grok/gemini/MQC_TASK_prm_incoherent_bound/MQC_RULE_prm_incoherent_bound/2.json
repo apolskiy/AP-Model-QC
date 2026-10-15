@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The candidate output identifies and explains the contradiction in the experience requirement upfront, explicitly refrains from scoring or deciding on a match, and directly asks how the range should be interpreted before assessing.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "989f4633c33d3c5b077199fbec125e59247d9e521dad4067d56730bc058e9e02"
+}

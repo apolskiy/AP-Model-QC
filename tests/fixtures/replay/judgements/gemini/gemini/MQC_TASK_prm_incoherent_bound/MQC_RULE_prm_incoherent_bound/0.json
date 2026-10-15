@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The response identifies and discusses the inverted range contradiction first, but then proceeds to assess and conclude on the candidate anyway rather than pausing and asking before assessing.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "e694024ca0ecba9dd7888f2b7c80ef24763f00424d0aa68349ee350f8e00d4ca"
+}

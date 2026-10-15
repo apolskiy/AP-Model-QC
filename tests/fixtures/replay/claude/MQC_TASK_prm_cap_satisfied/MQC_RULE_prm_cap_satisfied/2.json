@@ -1,0 +1,48 @@
+{
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_req_years_five_to_nine>\nRequired: between 5 and 9 years of backend engineering experience.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_summary_states_seven>\nBackend engineering: 7 years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
+  "request_hash": "2f62083b1015536ea71ac5b03ea6c1aab97fa9ba316cb7be8ab8b7c74540bf7a",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_cap_satisfied::MQC_RULE_prm_cap_satisfied",
+    "duration_ms": 4280,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 180,
+    "mode": "live",
+    "output_tokens": 314,
+    "raw_reference": "msg_011Cg1WtsnLzrydfyB8eYUwe",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Assessment: Match**\n\nThe posting requires **between 5 and 9 years of backend engineering experience** (DOC_req_years_five_to_nine).\n\nThe candidate summary states **7 years of backend engineering**, building transactional services (DOC_summary_states_seven). Seven years is inside the 5\u20139 year range, so the candidate meets the requirement.\n\n**Notes:**\n- The 7 years is the candidate's own statement. Dates of employment or references would confirm it.\n- The most recent work, a settlement pipeline handling 40,000 orders a day, fits the \"backend engineering\" description. The requirement only specifies years, so this detail adds context but doesn't change the result.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

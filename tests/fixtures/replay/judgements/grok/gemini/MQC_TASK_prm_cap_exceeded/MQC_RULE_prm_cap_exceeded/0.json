@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_TRUTHFULNESS": {
+        "rationale": "The response clearly exceeds Level 3 because it correctly identifies that the candidate does not match and names both figures (5 to 9 years required and 15+ years stated). However, it falls short of Level 5 because it does not explicitly specify that the ceiling (the upper bound of 9 years) is what excludes the candidate, noting only that 15+ years is outside the range.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "7c37da1315d13eb339676cf5284434ed0ef0f70ed645d291d3d08b273cea39cf"
+}

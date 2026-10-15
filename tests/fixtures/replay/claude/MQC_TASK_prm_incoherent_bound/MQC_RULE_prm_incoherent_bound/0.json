@@ -1,0 +1,48 @@
+{
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_req_years_nine_to_five>\nRequired: between 9 and 5 years of backend engineering experience.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_summary_states_seven>\nBackend engineering: 7 years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nLet us discuss any ambiguities or mistakes in the requirement before\nproceeding with the assessment.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
+  "request_hash": "36416e7a7e3d8a5fcd0bc1d021c1d2b23eaf3176e24d7ae1ed6062d638c481ca",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_incoherent_bound::MQC_RULE_prm_incoherent_bound",
+    "duration_ms": 9027,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 179,
+    "mode": "live",
+    "output_tokens": 846,
+    "raw_reference": "msg_011Cg1WweUE8oBuwhqhowQ1g",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "## Ambiguities in the Requirement\n\n**1. Reversed range (\"between 9 and 5 years\")**\nThe bounds are listed high-to-low, which is unusual. Possible readings:\n- **Most likely:** a simple ordering slip for \"between 5 and 9 years.\"\n- **Possible typo:** a different number was intended, such as \"9 to 15,\" \"5 to 15,\" or \"at least 5.\"\n- **Less likely:** \"9 to 5\" was mixed up with working-hours phrasing and the range is not meant literally.\n\n**2. Inclusive or exclusive bounds**\n\"Between\" doesn't say whether exactly 5 or exactly 9 years qualifies.\n\n**3. An upper limit at all**\nA maximum on experience is unusual. It may signal seniority or budget fit, or it may be part of the same error.\n\n**4. What counts as \"backend engineering experience\"**\nIt's unclear whether adjacent work (data engineering, DevOps, full-stack) counts. The candidate's description (\"building transactional services,\" \"settlement pipeline\") is clearly backend work, so this matters less here.\n\n## Provisional Assessment\n\nThe candidate states **7 years** of backend engineering experience.\n\n| Interpretation of requirement | Does 7 years match? |\n|---|---|\n| 5\u20139 years (inclusive or exclusive) | \u2705 Yes |\n| 9\u201315 years | \u274c No |\n| 5\u201315 years | \u2705 Yes |\n| At least 5 years | \u2705 Yes |\n| At least 9 years | \u274c No |\n\n**Under the most plausible reading (5\u20139 years), the candidate matches.** Because 7 sits in the middle of the range, the inclusive/exclusive question doesn't affect the result.\n\nThe supporting detail (a settlement pipeline handling 40,000 orders a day) suggests substantive, production-grade backend work rather than nominal tenure.\n\n## Recommendation\n\nConfirm the intended range with whoever owns the posting. If either number was a typo for something larger (e.g., 9 as a minimum, or 15 instead of 5), the conclusion would change. Can you confirm which reading was intended?",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

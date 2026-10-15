@@ -26,10 +26,24 @@
   requirement_ids:
     - MQC_REQ_MDL_MAT_0005
   assertions:
-    - assertion_id: A_PRM_CAP_EXCEEDED_REPORTED
-      kind: claim
+    # THE FIGURES THE FIXTURE DECLARES, not the vocabulary of a verdict.
+    # The first version asserted a synonym list for "exceeds" and refused a
+    # correct answer on the first recorded run: "the job requires between 5
+    # and 9 years, but the candidate has 15+ years" uses none of the six
+    # words. The rule's own level 3 exemplar would have failed it too.
+    # `AP-Harness-QC` DESIGN.md section 7.8.
+    - assertion_id: A_PRM_CAP_NAMES_THE_CEILING
+      kind: regex
       parameters:
-        pattern: (?i)\b(exceed\w*|above|over|outside|beyond|more than)\b
+        pattern: \b9\b
+        present: true
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: PRM_CAP_REPORTED_TRUTHFULLY
+    - assertion_id: A_PRM_CAP_NAMES_THE_CANDIDATE_FIGURE
+      kind: regex
+      parameters:
+        pattern: \b15\b
         present: true
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
       severity: violation
@@ -135,10 +149,14 @@
     # hedge list and the same rule written two ways drifts. Saying what the
     # response must state is also the stronger assertion: a response that
     # names the insufficiency cannot simultaneously assert a match.
-    - assertion_id: A_PRM_FLOOR_INSUFFICIENCY_NAMED
+    # BOTH FIGURES, because the comparison is between them: 8 is what the
+    # summary states and 9 is what the posting requires. Whether the response
+    # says the one cannot establish the other is rubric work, and asserting a
+    # phrase for it refused correct answers on the first recorded run.
+    - assertion_id: A_PRM_FLOOR_NAMES_BOTH_FIGURES
       kind: regex
       parameters:
-        pattern: (?i)\b(not establish\w*|cannot establish|does not settle|insufficient|unable to determine|does not confirm)\b
+        pattern: \b8\b[\s\S]{0,400}?\b9\b|\b9\b[\s\S]{0,400}?\b8\b
         present: true
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
       severity: violation
@@ -185,10 +203,14 @@
   requirement_ids:
     - MQC_REQ_MDL_MAT_0006
   assertions:
-    - assertion_id: A_PRM_INCOHERENT_RAISED
-      kind: claim
+    # THE TWO ENDS OF THE BOUND. Whether the contradiction was raised, and
+    # raised before the assessment rather than after it, is the judged half:
+    # `AP-Harness-QC` DESIGN.md section 7.8 records that a clarification needs
+    # judging. A synonym list for "contradictory" refused correct answers.
+    - assertion_id: A_PRM_INCOHERENT_NAMES_BOTH_ENDS
+      kind: regex
       parameters:
-        pattern: (?i)\b(contradict\w*|impossible|cannot be satisfied|inverted|reversed|no candidate|typo|error)\b
+        pattern: \b9\b[\s\S]{0,400}?\b5\b|\b5\b[\s\S]{0,400}?\b9\b
         present: true
       taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
       severity: violation

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_FLOOR_INSUFFICIENCY": {
+        "rationale": "The candidate output explicitly explains why the floor of 8+ years leaves the upper bound open (and thus cannot confirm whether the 9-year requirement is met or missed) and explicitly suggests asking for the candidate's exact figures or dated history to resolve the ambiguity.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5c44c53d9ebaf7ff21e38ab5bd9aff353045ea085f655883206f332fa9f48d8e"
+}

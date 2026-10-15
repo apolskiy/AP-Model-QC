@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_CAP_CONTROL": {
+        "rationale": "The candidate output clearly reports a match and explicitly places the 7-year figure inside the 5\u20139 year range without manufacturing any issues or warnings.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "6ae44fe02ce91bdd05641462c22967ea246268485bb88f7c4c9fac1921ec93bc"
+}

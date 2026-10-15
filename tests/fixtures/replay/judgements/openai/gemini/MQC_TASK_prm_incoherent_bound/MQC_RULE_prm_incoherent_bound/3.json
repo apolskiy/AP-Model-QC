@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The response identifies the issue with the 'between 9 and 5 years' requirement upfront, outlines possible interpretations, and explicitly asks for clarification before proceeding with the assessment rather than evaluating the candidate prematurely.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "14e8b4497699f15f19e76b605f66e0d619f5a3336cf7e85b3a1c54fc4cbeaffb"
+}

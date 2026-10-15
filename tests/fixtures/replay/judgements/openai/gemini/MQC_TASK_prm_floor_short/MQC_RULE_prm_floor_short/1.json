@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_FLOOR_INSUFFICIENCY": {
+        "rationale": "The response identifies that the summary is insufficient to establish whether the candidate meets the requirement ('does not clearly establish that the candidate has 9 years'), but it does not explain why (i.e., that '8+' is a floor that could be either below or above 9), nor does it ask for clarification on the exact figure.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "d64c75ae47e1aac4bf194c32565327cbae11b4146834df8fb7677c5ebffec5c8"
+}

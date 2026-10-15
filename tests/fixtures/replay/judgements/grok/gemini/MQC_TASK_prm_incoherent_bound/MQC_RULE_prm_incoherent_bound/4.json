@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The model raises the contradiction immediately, explicitly refuses to assess the candidate until the issue is resolved, and asks for clarification before proceeding with an assessment.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "a2eacf6525b8939bae821e2b01c2fa35cb10aef17ff7938a5fe7507a7e7e7854"
+}

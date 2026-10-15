@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The model identifies and discusses the inverted range contradiction first, but then proceeds to assess the candidate anyway (offering a provisional assessment that the candidate matches) rather than asking and waiting for clarification before assessing.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "683fb736d15ba7bcb1c65d3b13f1dd5fb0d995ff860099a070cec2f784f8f604"
+}

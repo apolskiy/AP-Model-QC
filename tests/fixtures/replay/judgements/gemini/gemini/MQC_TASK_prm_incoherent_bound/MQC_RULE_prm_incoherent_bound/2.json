@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_INCOHERENT_HANDLING": {
+        "rationale": "The response identifies and raises the inverted range requirement ('between 9 and 5 years') before the assessment section, but proceeds to assess the candidate anyway rather than asking or waiting for clarification before assessing.",
+        "score": 3
+      }
+    }
+  },
+  "request_hash": "44f7ff2a3388baa2e3cec87ffd8e73e1352aaa8da9200535aa1545f09085b802"
+}
