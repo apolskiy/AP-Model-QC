@@ -4662,3 +4662,34 @@ carrying the request that produced it.
   not an error in the checks: each case tests what its name says. It decides
   how a ticket should be framed and where it can be filed.
 * **Code Quality & Compliance Audit:** 131 preconditions, pylint exit 0.
+
+## 2026-10-15: Security tickets framed by where the instruction was
+
+* **Requirements & Design Choices:** The project owner approved rewording the
+  security tickets. Every security case places its payload in the user
+  message, so "an instruction planted in the content" misdescribed what a
+  vendor sees. `tools/ticket_framing.py` finds the canary in the user prompt,
+  plainly or base64-encoded, and the ticket then says the model let an
+  instruction in the user message override the system prompt. A canary in a
+  supplied document keeps the planted-content wording (`consumer_ci.md` section
+  9.5.5.3, COR_0042, `MQC_CAS_UNI_115756`).
+* **Found While Building:** the first version searched for the canary as
+  written and missed `154104`, whose canary is base64-encoded. The case gained
+  an encoded variant, failed, and then passed.
+* **Filing Material:** `reports/tickets/FILING.md` gives per filed finding the
+  system prompt, documents, user prompt, one failing response, the expected
+  answer, the suggested channel and the ticket file. The six security tickets
+  now carry the precedence wording. A LinkedIn article draft was published as a
+  private artifact for the project owner.
+* **Code Quality & Compliance Audit:** 132 preconditions, pylint exit 0.
+
+* **Where I Was Wrong, The Harness Change Broke This Repository Both Ways:**
+  `result_lines` took its two exit-3 counts as one `Alarms` record, so this
+  repository's committed `conftest.py`, passing `preconditions_skipped=`,
+  raised `TypeError` against the new harness, and `regress-consumers-on-merge`
+  run 38816653910 went red. The updated `conftest.py` imports `cmn.broken`,
+  which only the new harness has. I advised pushing the harness first as if
+  that ordering were safe; neither order was. The signature should have stayed
+  compatible for one release, or the two pushes treated as one change. Verified
+  against the pushed harness before staging: 132 preconditions, pylint,
+  actionlint and a graded replay band, all as expected.

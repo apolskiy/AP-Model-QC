@@ -33,7 +33,8 @@ from cmn.environments import (
     is_precondition,
     refuse_precondition_skips,
 )
-from cmn.band_summary import result_lines, skipped_cases_from
+from cmn.band_summary import Alarms, result_lines, skipped_cases_from
+from cmn.broken import broken_count, broken_detail_lines, mark_broken, refuse_broken
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
 from cmn.selection import (
@@ -169,8 +170,9 @@ def pytest_runtest_makereport(item: pytest.Item, call: Any) -> Any:
     Returns:
         Any: The hook result, yielded back to pytest unchanged.
     """
-    del call
     outcome = yield
+    # A CRASH IS BROKEN, NOT FAILED (taxonomy section 5.1.1).
+    mark_broken(outcome.get_result(), call)
     # EVERY PHASE, not only the call. A middle link skipped by the cascade
     # reports from setup, and recording only the call phase left the next link
     # with no entry to read. Design section 10.28.5.
@@ -214,6 +216,8 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     # nothing, and pytest exits 0 on a skip: a unit job reported green
     # at 99.44% with four of them (`harness_test_taxonomy.md` 7.5.1).
     refuse_precondition_skips(session)
+    # AND A CRASH MEASURED NOTHING EITHER (taxonomy section 5.1.1).
+    refuse_broken(session)
 
 
 def pytest_terminal_summary(
@@ -235,9 +239,10 @@ def pytest_terminal_summary(
     """
     del exitstatus
     stats = getattr(terminalreporter, "stats", {}) or {}
+    broken = broken_count(stats)
     lines = result_lines(
         passed=len(stats.get("passed", [])),
-        failed=len(stats.get("failed", [])),
+        failed=len(stats.get("failed", [])) - broken[0],
         skips=skipped_cases_from(stats.get("skipped", [])),
         priority=str(config.getoption("--priority") or ""),
         # THE ENGINE ONLY WHERE ONE WAS MEASURED. `--engine` carries a
@@ -252,10 +257,13 @@ def pytest_terminal_summary(
             )
             else ""
         ),
-        preconditions_skipped=sum(
-            1 for report in stats.get("skipped", [])
-            if is_precondition(getattr(report, "nodeid", ""))
+        alarms=Alarms(
+            preconditions_skipped=sum(
+                1 for report in stats.get("skipped", [])
+                if is_precondition(getattr(report, "nodeid", ""))
+            ),
+            broken=sum(broken),
         ),
     )
-    for line in lines:
+    for line in [*lines, *broken_detail_lines(stats)]:
         terminalreporter.write_line(line)

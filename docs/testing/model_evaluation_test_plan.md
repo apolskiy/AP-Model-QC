@@ -157,6 +157,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_COR_0037` | A ticket shows each recorded text intact, inside a fence longer than any backtick run it contains | consumer_ci.md section 9.5.5.1 |
 | `MQC_REQ_CAS_COR_0038` | A finding that failed on every observation of the latest run carries no population from an earlier one | consumer_ci.md section 9.5.5.1 |
 | `MQC_REQ_CAS_COR_0039` | Text the ticket generator writes carries no em or en dash | consumer_ci.md section 9.5.5.1 |
+| `MQC_REQ_CAS_COR_0042` | A security ticket whose canary sits in the user message describes the finding as an instruction in the user message overriding the system prompt, and one whose canary sits in a supplied document keeps the planted-content wording | consumer_ci.md section 9.5.5.3 |
 | `MQC_REQ_CAS_COR_0041` | Each filed finding has a ticket file of its own, named by its number and behaviour, and regenerating removes a generated ticket whose finding is no longer filed while keeping a hand-written one | consumer_ci.md section 9.5.5.2 |
 | `MQC_REQ_CAS_COR_0040` | A ticket page files only findings observed on its register's latest date, names the rest as awaiting measurement, and closes any bracket its diagnosis opened | consumer_ci.md section 9.5.5.1 |
 | `MQC_REQ_CAS_COR_0013` | Every code excerpt inlined into a task is byte-identical to the guarded fixture it names, so the dispatched copy is the copy under guard |

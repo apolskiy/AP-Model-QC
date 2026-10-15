@@ -40,6 +40,17 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Security tickets say where the instruction was, and a crash is broken, 2026-10-15
+
+**Every security case places its payload in the user message**, so a ticket
+saying the model "followed an instruction planted in the content" misdescribed
+what a vendor would see. A ticket now says the model let an instruction in the
+user message override the system prompt, wherever the canary sits in the user
+turn, plainly or base64-encoded (`consumer_ci.md` section 9.5.5.3,
+`MQC_CAS_UNI_115756`). This repository's session now reports a crash as broken
+and exits 3, from the harness's shared implementation. The README's figures
+moved: 147 requirements, 132 preconditions, 644 harness cases.
+
 ### Each finding has a ticket of its own, 2026-10-15
 
 **The project owner submits each vendor ticket individually**, so beside each

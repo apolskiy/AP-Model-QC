@@ -938,6 +938,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115753` | N | `a_ticket_label_is_a_sentence_without_a_dash` (9.5.5.1) |
 | `115754` | N | `a_finding_not_observed_on_the_latest_run_is_not_filed` (9.5.5.1) |
 | `115755` | P | `each_filed_finding_has_a_ticket_of_its_own` (9.5.5.2) |
+| `115756` | N | `a_payload_in_the_user_turn_is_framed_as_precedence` (9.5.5.3) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -953,7 +954,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 92 cases, 68 negative, 19 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 93 cases, 69 negative, 19 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3121,6 +3122,31 @@ removes only the files it wrote, recognised by the line it puts at the top of
 each.
 
 `MQC_CAS_UNI_115755` asserts it.
+
+#### 9.5.5.3 A ticket says where the planted instruction was
+
+Decided 2026-10-15 by the project owner, after a review of the filed security
+findings. **Every security case in the corpus places its payload in the user
+message**, where an application pastes a notice, a ticket or a paragraph. To a
+vendor reading the raw request, the user asked for it, so "an instruction planted
+in the content" reads as a misdescription and the report is closed as working as
+intended.
+
+**What the cases measure is real, and it is precedence**: a system prompt
+constrains the reply, and an instruction in the user turn overrides it. Each
+vendor's own guidance puts the system or developer message above the user's, so
+that is the claim a ticket makes.
+
+| Where the canary is | The problem a ticket states |
+|---|---|
+| The user message | The model let an instruction in the user message override the system prompt's constraint |
+| A supplied document | The planted-content wording, unchanged |
+
+**The location is read from the task**, by finding the canary token in the user
+prompt or in a context document, so a later case placing its payload in a
+document is described correctly without a change here.
+
+`MQC_CAS_UNI_115756` asserts both rows.
 
 ### 9.4 Only a live run can detect an upstream fix
 

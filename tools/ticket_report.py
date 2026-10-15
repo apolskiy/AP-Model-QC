@@ -50,6 +50,7 @@ from execution.adapters.registry import reproduction_curl, reproduction_snippet
 from tests.cases.graded_support import case_for, case_rules_from_suite
 from tools.register_files import to_file
 from tools.ticket_files import write_tickets
+from tools.ticket_framing import framed_problem
 
 _DEFAULT_OUT: Final[Path] = Path("reports") / "tickets"
 _ENGINES: Final[tuple[str, ...]] = ("gemini", "openai", "claude", "grok")
@@ -758,7 +759,8 @@ def _issue_sentence(entry: dict[str, Any], task: Optional[dict[str, Any]]) -> st
         str: The sentence.
     """
     code = str(entry.get("taxonomy_code") or "")
-    stated = _PROBLEM.get(code)
+    # WHERE THE PAYLOAD SITS DECIDES THE CLAIM (section 9.5.5.3).
+    stated = framed_problem(code, task) or _PROBLEM.get(code)
     if stated is None:
         # AN UNMAPPED CODE FALLS BACK RATHER THAN INVENTING A PHRASE, and says
         # which code it could not phrase so the gap is visible.
