@@ -57,7 +57,9 @@ from cmn.dependencies import (
     publish_prerequisites,
     record_from_report,
 )
+from cmn.prerequisites import record_rule_set_hash
 from execution.adapters.registry import credential_variables
+from tests.cases.graded_support import shipped_corpus
 
 
 def pytest_addoption(parser: Any) -> None:
@@ -185,7 +187,7 @@ def pytest_runtest_makereport(item: pytest.Item, call: Any) -> Any:
 
 
 def pytest_sessionstart(session: pytest.Session) -> None:
-    """Adopt base outcomes an earlier band of this job published.
+    """Record this run's corpus digest, then adopt what an earlier band published.
 
     Args:
         session (pytest.Session): The starting session.
@@ -193,6 +195,10 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     Returns:
         None
     """
+    # THE DIGEST BEFORE THE ADOPTION, which compares it. Recorded later, every
+    # band after P0 compared a real digest with an empty one and exited 3
+    # (harness `cmn_verdict_and_cli.md` section 7.6.2).
+    record_rule_set_hash(session.config, shipped_corpus()[1])
     adopt_prerequisites(session.config)
 
 

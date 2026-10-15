@@ -516,6 +516,14 @@ debug-artifact exclusion uses.
 commit and this repository's commit, because a commit is a property of the
 checkout and the provenance guard compares both.
 
+**The corpus digest is recorded at session start**, before the carried record
+is adopted. It was recorded where the first dispatch plan is built, which runs
+after adoption, so from 2026-10-13 every band after P0 compared a real digest
+with an empty one, refused, and exited 3 on every engine. The gates were red for
+that as well as for their findings. Harness `cmn_verdict_and_cli.md` section
+7.6.2 carries the correction, and `MQC_CAS_UNI_115757` runs two bands in
+sequence.
+
 #### 3.12.3 A reporting job runs after every band, and a red run is the one worth reading
 
 Added 2026-10-06 at the project owner's instruction: **for a release decision
@@ -939,6 +947,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115754` | N | `a_finding_not_observed_on_the_latest_run_is_not_filed` (9.5.5.1) |
 | `115755` | P | `each_filed_finding_has_a_ticket_of_its_own` (9.5.5.2) |
 | `115756` | N | `a_payload_in_the_user_turn_is_framed_as_precedence` (9.5.5.3) |
+| `115757` | P | `a_band_adopts_the_outcomes_the_band_before_carried` (3.12.1) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -954,7 +963,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 93 cases, 69 negative, 19 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 94 cases, 69 negative, 20 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,

@@ -17,10 +17,10 @@ paid tier.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 74 graded cases specified |
-| `docs/testing/rtm_model.csv` | 147 requirements, traced |
+| `docs/testing/rtm_model.csv` | 148 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 70 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **132 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **133 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **74 written**: 45 evaluator, 21 security, 8 tool |
@@ -91,7 +91,7 @@ is the one thing not in question.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 644 harness cases, 841 executions with their parameters, and 132 preconditions pass;
+separately from what it measures. 644 harness cases, 841 executions with their parameters, and 133 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate

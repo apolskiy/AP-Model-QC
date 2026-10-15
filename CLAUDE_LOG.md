@@ -4693,3 +4693,31 @@ carrying the request that produced it.
   compatible for one release, or the two pushes treated as one change. Verified
   against the pushed harness before staging: 132 preconditions, pylint,
   actionlint and a graded replay band, all as expected.
+
+## 2026-10-15: Every band after P0 had exited 3 since 2026-10-13
+
+* **Found:** the project owner pushed both repositories, and all four gates
+  were red. gemini has no filed finding, so its red was the lead: its P1 and
+  P2-P4 bands crashed with `QC_HARNESS_PREREQUISITE_MISMATCH` before running
+  anything, the carried `rule_set_hash` meeting an empty one. Every gemini run
+  since 2026-10-13 failed the same way, and openai, claude and grok had the same
+  crash behind their real findings.
+* **Cause:** `record_rule_set_hash` was wired in on 2026-10-13 where the first
+  dispatch plan is built, which is after session start, where
+  `adopt_prerequisites` compares the carried digest with this run's. The design
+  (harness `cmn_verdict_and_cli.md` 7.6.2) said to record it there, so the
+  design was wrong too. No case ran two bands in sequence.
+* **Fix:** `pytest_sessionstart` records the digest before adopting. Design
+  corrected in harness 7.6.2 and here in 3.12.1, CI_0053, and
+  `MQC_CAS_UNI_115757` runs the P0 band and then the P1 band carrying its
+  outcomes, as `.github/actions/band` does. It failed with the mismatch before
+  the fix.
+* **Measured:** each engine's three bands run locally in sequence. gemini passes
+  15, 11 and 48. openai fails 154202 at P0, 154104 and 154108 at P1, and 134109,
+  134400 and 134502 at P2-P4; claude fails 154100, 154103 and 154109 at P0, with
+  its P1 and P2-P4 bands passing; grok fails 134109 at P2-P4. Each is a filed
+  finding and nothing else.
+* **Where I Was Wrong:** the summary the user received earlier said the model
+  gates are red "because they found something". For a P1 or later band that had
+  not been true for two days, and nothing local ran the bands as the gate does.
+* **Code Quality & Compliance Audit:** 133 preconditions, pylint exit 0.

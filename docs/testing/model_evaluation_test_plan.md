@@ -121,6 +121,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0050` | A check reading a job's commands follows a local uses, so a command factored into a composite action is still read, and an unresolvable local reference is reported rather than returning what it did find | harness harness_ci_pipeline.md section 8.4 |
 | `MQC_REQ_CAS_CI_0051` | No identifier is bound to two behaviours, in this repository's design inventory or in its collected suite, compared by the same implementation the harness uses | consumer_ci.md section 4 |
 | `MQC_REQ_CAS_CI_0052` | A band floor supplied on the command line is checked against the same domain as the imported one, and an impossible value refuses rather than deciding every band | consumer_ci.md section 3.12.2 |
+| `MQC_REQ_CAS_CI_0053` | A band carrying the outcomes of the band before it adopts them: the corpus digest is recorded at session start, before adoption compares it | consumer_ci.md section 3.12.1 |
 | `MQC_REQ_CAS_CI_0034` | The instrument is checked for manufacturing findings: no recorded response on an ordinary case matches an attack vector, and every failure message names a registered taxonomy code, so a defect in our reading is not reported as a defect in a model and a real failure is not unrecordable | consumer_ci.md section 9.4.2 |
 
 

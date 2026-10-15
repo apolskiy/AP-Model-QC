@@ -40,6 +40,19 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Every band after P0 runs again, 2026-10-15
+
+**From 2026-10-13 every gate exited 3 in its P1 and P2-P4 bands, on every
+engine.** The corpus digest that guards carried outcomes was recorded where the
+first dispatch plan is built, after the band had already adopted the outcomes
+the band before it carried, so the comparison met an empty digest and refused.
+The gates were red for that as well as for their findings, and gemini's, which
+has none, was red for that alone. The digest is now recorded at session start
+(`consumer_ci.md` section 3.12.1, `MQC_CAS_UNI_115757`, which runs two bands in
+sequence). Locally each engine's bands now fail only on the findings filed
+against it, and gemini passes all three. The README's figures moved: 148
+requirements, 133 preconditions.
+
 ### Security tickets say where the instruction was, and a crash is broken, 2026-10-15
 
 **Every security case places its payload in the user message**, so a ticket
