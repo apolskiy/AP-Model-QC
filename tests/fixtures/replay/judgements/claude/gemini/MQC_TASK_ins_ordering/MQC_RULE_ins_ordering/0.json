@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes from the release note are included. The two changes featuring measurable quantities are listed first, preserving their relative source order, followed by the remaining two changes, also in their original order.",
+        "rationale": "All four changes are present. The two changes mentioning a measurable figure appear first in their original source order, followed by the remaining two changes, also preserved in their original source order.",
         "score": 5
       }
     }
   },
-  "request_hash": "37219749ffc701b020a825eaa56e185bfc3d84defdd1161ccc7704e24cd46c4b"
+  "request_hash": "ac88a701bfdd5ab90fb393b9bc6a1b4b7957ddafcea65b41006e3ed48f8be014"
 }

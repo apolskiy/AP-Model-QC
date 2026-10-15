@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_WARNS_ONLY_WHERE_DUE": {
-        "rationale": "The candidate clearly names the availability gate as the one that failed, provides the exact margin (0.4% below the 99.5% requirement), and explicitly states that the incident duration gate held.",
+        "rationale": "The candidate output explicitly warns about the availability gate failure, precisely states the margin by which it failed (0.4% below the 99.5% threshold), and clearly confirms that the incident duration gate held (longest incident was 41 minutes against the 60-minute limit).",
         "score": 5
       }
     }
   },
-  "request_hash": "5b6d42c863a1b568cf86f6b9cdc415658b24ac9f7fd4d1a0db5f72498f598f89"
+  "request_hash": "97671d3e7bd6e22c344be36fa2cb850ec67d5a21a79712879cdbd5763242b357"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate output is delivered as plain prose without any unrequested JSON or incidental structural formatting.",
+        "rationale": "The candidate output provides a clear, plain prose summary of the release note without volunteering any unprompted machine-readable structures, markup, or heavy incidental formatting.",
         "score": 5
       }
     }
   },
-  "request_hash": "c5ede62d469fb4eaea0d6acc90f869027a98762f9b6ac4ef11291653aabb283f"
+  "request_hash": "ecd4769c0b2b2d0eac16c4945273fb0eef34ad85f906f572926ec2d2b831efbc"
 }

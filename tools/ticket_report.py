@@ -37,18 +37,23 @@ Usage::
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any, Final, Optional
 
 import yaml
 
+from evaluation.aggregation import CriterionScore, aggregate
 from evaluation.assertions import run_assertions
-from execution.adapters.registry import reproduction_snippet
+from execution.adapters.registry import reproduction_curl, reproduction_snippet
 from tests.cases.graded_support import case_for, case_rules_from_suite
+from tools.register_files import to_file
+from tools.ticket_files import write_tickets
 
 _DEFAULT_OUT: Final[Path] = Path("reports") / "tickets"
 _ENGINES: Final[tuple[str, ...]] = ("gemini", "openai", "claude", "grok")
+_BACKTICKS: Final[re.Pattern[str]] = re.compile("`+")
 
 
 # WHAT EACH CODE MEANS TO SOMEONE WHO DOES NOT WORK HERE. The register's
@@ -103,7 +108,7 @@ def observation_outcomes(
 
     **The checks are re-run rather than read from a report.** They are pure
     functions of the recorded text, so this is deterministic, needs no
-    credential and costs nothing — and it lets the document say which
+    credential and costs nothing, and it lets the document say which
     observation carried the problem instead of showing five and leaving the
     reader to find it.
 
@@ -217,6 +222,151 @@ def recorded_request(
     return None
 
 
+def recorded_judgements(
+    root: Path, engine: str, task: str, rule: str, count: int
+) -> list[Optional[dict[str, Any]]]:
+    """Return each observation's recorded judgement, None where there is none.
+
+    Args:
+        root (Path): The repository root.
+        engine (str): The engine whose responses were judged.
+        task (str): The task identifier.
+        rule (str): The rule set identifier.
+        count (int): How many observations the pair recorded.
+
+    Returns:
+        list: One entry per observation, in order. The judge's folder is
+        whichever one holds this pair; None where no judgement was recorded,
+        which is the case for every observation a check stopped.
+    """
+    folder = root / "tests" / "fixtures" / "replay" / "judgements" / engine
+    found: list[Optional[dict[str, Any]]] = [None] * count
+    if not folder.is_dir():
+        return found
+    for judge in sorted(path for path in folder.iterdir() if path.is_dir()):
+        pair = judge / task / rule
+        for index in range(count):
+            source = pair / f"{index}.json"
+            if found[index] is None and source.is_file():
+                try:
+                    found[index] = json.loads(source.read_text(encoding="utf-8"))
+                except json.JSONDecodeError:
+                    continue
+    return found
+
+
+def judged_outcome(
+    judgement: Optional[dict[str, Any]], rubric: Any
+) -> Optional[tuple[bool, float, str]]:
+    """Return whether a recorded judgement clears its rubric, and why.
+
+    Args:
+        judgement (Optional[dict]): The recorded judgement, or None.
+        rubric (Any): The rule's rubric, whose strategy and threshold decide.
+
+    Returns:
+        Optional[tuple]: Whether it passed, the aggregated score, and each
+        criterion's score with the judge's rationale. None where there is no
+        judgement or no rubric to read it against.
+    """
+    if judgement is None or rubric is None:
+        return None
+    scores = (judgement.get("reply") or {}).get("scores") or {}
+    weights = {criterion.criterion_id: criterion.weight for criterion in rubric.criteria}
+    result = aggregate(
+        rubric.aggregation,
+        [CriterionScore(criterion_id=name, score=float(detail.get("score", 0)),
+                        weight=weights.get(name, 1.0))
+         for name, detail in scores.items()],
+        threshold=rubric.threshold,
+        parameters=dict(rubric.aggregation_params or {}),
+    )
+    if result.value is None:
+        return None
+    reasons = "; ".join(
+        f"`{name}` scored {detail.get('score')}: {detail.get('rationale', '')}"
+        for name, detail in scores.items()
+    )
+    return bool(result.passed), float(result.value), reasons
+
+
+def heading(case: str) -> str:
+    """Return a finding's heading: the case name with its number in brackets.
+
+    Args:
+        case (str): The full case name.
+
+    Returns:
+        str: The Markdown heading.
+    """
+    parts = case.split("_")
+    number = parts[3] if len(parts) > 3 else ""
+    return f"## `{case}` ({number})"
+
+
+def reproduce_command(engine: str, case: str) -> str:
+    """Return the replay command that re-runs one case from its recordings.
+
+    Args:
+        engine (str): The engine whose recordings to replay.
+        case (str): The full case name.
+
+    Returns:
+        str: The command. ``--with-prerequisites`` is always present, because a
+        case resting on a foundation is refused without it.
+    """
+    parts = case.split("_")
+    number = parts[3] if len(parts) > 3 else case
+    return (
+        f"pytest --engine {engine} --mode replay --tests {number} "
+        f"--with-prerequisites"
+    )
+
+
+def expected_block(task_id: str, rule_id: str, task: Optional[dict[str, Any]]) -> str:
+    """Return what a correct response is, for the Expected part of a ticket.
+
+    Args:
+        task_id (str): The task identifier.
+        rule_id (str): The rule set identifier.
+        task (Optional[dict]): The task definition, for its constraint texts.
+
+    Returns:
+        str: Markdown. Each rubric criterion with what it asks and its top
+        exemplar, which is a correct response by construction; for a rule with
+        no rubric, the constraints its checks and tool expectation enforce.
+    """
+    try:
+        rules = case_for(task_id, rule_id).golden_rules
+    except (KeyError, ValueError):
+        return "_The rule could not be resolved, so no expected response is shown._"
+    lines: list[str] = []
+    rubric = getattr(rules, "rubric", None)
+    if rubric is not None:
+        for criterion in rubric.criteria:
+            top = criterion.anchors.get(max(criterion.anchors)) if criterion.anchors else None
+            lines.append(f"*{criterion.name}*: {_sentence(criterion.description)}")
+            if top is not None and top.exemplar:
+                lines.extend(["", "A response that meets it:", "",
+                              *fenced(top.exemplar)])
+            lines.append("")
+        return "\n".join(lines).rstrip()
+
+    referenced = {assertion.constraint_ref for assertion in rules.assertions}
+    expectation = getattr(rules, "tool_expectation", None)
+    if expectation is not None:
+        referenced.add(expectation.constraint_ref)
+    for constraint in (task or {}).get("constraints") or []:
+        if isinstance(constraint, dict) and constraint.get("constraint_id") in referenced:
+            lines.append(f"- {_sentence(str(constraint.get('text', '')))}")
+    if expectation is not None:
+        if expectation.required_tools:
+            lines.append(f"- Calls {', '.join(sorted(expectation.required_tools))}.")
+        if expectation.forbidden_tools:
+            lines.append(f"- Never calls {', '.join(sorted(expectation.forbidden_tools))}.")
+    return "\n".join(lines) or "_The rule states no constraint text._"
+
+
 def _message_texts(request: dict[str, Any]) -> list[tuple[str, str]]:
     """Return the role and text of each message in a composed request.
 
@@ -269,7 +419,7 @@ def _request_block(task: Optional[dict[str, Any]]) -> str:
             "_The case could not be mapped to a shipped task, so the request "
             "is not reconstructible here._\n"
         )
-    lines = ["**Prompt**\n", "```", str(task.get("user_prompt", "")).rstrip(), "```\n"]
+    lines = ["**Prompt**\n", *fenced(str(task.get("user_prompt", ""))), ""]
 
     constraints = task.get("constraints") or []
     if constraints:
@@ -289,9 +439,7 @@ def _request_block(task: Optional[dict[str, Any]]) -> str:
             if not isinstance(entry, dict):
                 continue
             lines.append(f"*{entry.get('title', entry.get('document_id', ''))}*\n")
-            lines.append("```")
-            lines.append(str(entry.get("content", "")).rstrip())
-            lines.append("```\n")
+            lines.extend([*fenced(str(entry.get("content", ""))), ""])
     return "\n".join(lines)
 
 
@@ -325,44 +473,6 @@ def _scenario(task: Optional[dict[str, Any]]) -> str:
     return f'the model was asked: "{instruction}"{carried}'
 
 
-def _frequency(
-    entry: dict[str, Any],
-    responses: list[str],
-    outcomes: Optional[list[tuple[int, bool, str]]] = None,
-) -> str:
-    """Return how often the failure occurred, in words.
-
-    **The ratio is the finding when it is intermittent.** An attacker retries,
-    so "obeyed on 2 of 5 attempts" is a security claim and "obeyed" alone
-    overstates while "sometimes" understates.
-
-    Args:
-        entry (dict): The register entry.
-        responses (list): The recorded observations.
-
-    Returns:
-        str: A phrase such as ``"3 out of 5 times"``.
-    """
-    # COUNTED FROM THE REPLAYED CHECKS FIRST, because the register's ratio is
-    # the whole case's verdict and can include observations whose judgement
-    # was unavailable. The checks are what this document shows, so they are
-    # what it counts.
-    if outcomes:
-        failing = sum(1 for _, passed, _ in outcomes if not passed)
-        if failing:
-            return f"{failing} of {len(outcomes)} observations"
-    population = str(entry.get("observations") or "").strip()
-    if population:
-        parts = population.split()
-        if len(parts) >= 3 and parts[0].isdigit() and parts[2].isdigit():
-            passed, total = int(parts[0]), int(parts[2])
-            return f"{total - passed} of {total} observations"
-    if responses:
-        return f"on each of {len(responses)} observations" if len(
-            responses
-        ) > 1 else "on the single observation taken"
-    return "on an observation this report could not locate"
-
 
 def _diagnosis(entry: dict[str, Any]) -> str:
     """Return what the check found, or nothing when there is nothing to add.
@@ -392,7 +502,6 @@ def _diagnosis(entry: dict[str, Any]) -> str:
 def _input_block(
     task: Optional[dict[str, Any]],
     request: Optional[dict[str, Any]] = None,
-    engine: str = "",
 ) -> list[str]:
     """Return the request as sent, reading the recording where there is one.
 
@@ -404,8 +513,6 @@ def _input_block(
     Args:
         task (Optional[dict]): The task definition, the fallback source.
         request (Optional[dict]): The composed request the recording stored.
-        engine (str): The engine, for the adapter that declares how its
-            recorded call is re-issued.
 
     Returns:
         list[str]: Markdown lines. **The readable text and then the exact
@@ -418,15 +525,7 @@ def _input_block(
         if model:
             out.extend([f"*Model requested:* `{model}`", ""])
         for role, body in _message_texts(request):
-            out.extend([f"*{role.capitalize()}*", "", "```",
-                        str(body).rstrip(), "```", ""])
-        snippet = reproduction_snippet(engine, request) if engine else ""
-        if snippet:
-            out.extend([
-                "<details><summary>Reproduce it: the recorded call, runnable"
-                "</summary>", "",
-                "```python", snippet, "```", "", "</details>", "",
-            ])
+            out.extend([f"*{role.capitalize()}*", "", *fenced(str(body)), ""])
         return out
 
     if task is None:
@@ -440,16 +539,15 @@ def _input_block(
     ]
     system = str(task.get("system_instruction") or "").strip()
     if system:
-        out.extend(["*System instruction*", "", "```", system, "```", ""])
-    out.extend(["*Prompt*", "", "```",
-                str(task.get("user_prompt", "")).rstrip(), "```", ""])
+        out.extend(["*System instruction*", "", *fenced(system), ""])
+    out.extend(["*Prompt*", "", *fenced(str(task.get("user_prompt", ""))), ""])
     documents = task.get("context_documents") or []
     for item in documents:
         if not isinstance(item, dict):
             continue
         out.extend([
             f"*Supplied: {item.get('title', item.get('document_id', ''))}*",
-            "", "```", str(item.get("content", "")).rstrip(), "```", "",
+            "", *fenced(str(item.get("content", ""))), "",
         ])
     tools = [
         item for item in (task.get("available_tools") or []) if isinstance(item, dict)
@@ -463,51 +561,125 @@ def _input_block(
     return out
 
 
-def _output_block(
-    engine: str,
-    entry: dict[str, Any],
-    responses: list[str],
-    outcomes: list[tuple[int, bool, str]],
+def _reproduce_block(
+    engine: str, request: Optional[dict[str, Any]], case: str
 ) -> list[str]:
-    """Return the observations, each labelled by what its checks found.
-
-    **Which observation carried the problem is stated, not left to the
-    reader.** Showing five responses where one failed buries the finding, and
-    stating a ratio without the responses makes it unverifiable.
+    """Return every way to re-issue the call, the exact ones first.
 
     Args:
-        engine (str): The engine under test.
-        entry (dict): The register entry.
-        responses (list): Each recorded observation's text.
-        outcomes (list): Per-observation assertion outcomes, possibly empty
-            when the case could not be resolved.
+        engine (str): The engine the call was made against.
+        request (Optional[dict]): The composed request the recording stored.
+        case (str): The full case name, for the replay command.
 
     Returns:
-        list[str]: Markdown lines.
+        list[str]: Markdown lines: a ``curl`` where the recording is the wire
+        body, the SDK call with every recorded parameter, then the replay
+        command, which needs no credential (``consumer_ci.md`` section 9.5.5).
     """
-    bodies = [body for body in responses if body.strip()]
-    out = [f"**Output** — the problem appeared on "
-           f"{_frequency(entry, responses, outcomes)}", ""]
-    if not bodies:
-        out.extend([
-            f"_No recording at `tests/fixtures/replay/{engine}/`, so this "
-            f"finding cannot show what was returned._", "",
-        ])
-        return out
-
-    verdicts = {index: (passed, detail) for index, passed, detail in outcomes}
-    for index, body in enumerate(bodies):
-        label = f"Observation {index + 1} of {len(bodies)}"
-        if index in verdicts:
-            passed, detail = verdicts[index]
-            label += " — checks passed" if passed else " — this one failed"
-        out.extend([f"*{label}*", "", "```", body.rstrip(), "```", ""])
-        if index in verdicts and not verdicts[index][0]:
-            out.extend([f"> {verdicts[index][1]}", ""])
+    out = ["**Reproduce**", ""]
+    if request is not None:
+        command = reproduction_curl(engine, request)
+        if command:
+            out.extend(["The recorded request, posted unchanged:", "",
+                        *fenced(command, "bash"), ""])
+        snippet = reproduction_snippet(engine, request)
+        if snippet:
+            out.extend(["The same call through the provider's SDK:", "",
+                        *fenced(snippet, "python"), ""])
+    out.extend([
+        "From this repository, replaying the committed recordings, with no "
+        "credential and no cost:", "",
+        *fenced(reproduce_command(engine, case)), "",
+    ])
     return out
 
 
-def _section(
+def _output_block(
+    engine: str,
+    responses: list[str],
+    outcomes: list[tuple[int, bool, str]],
+    judged: Optional[list[Optional[tuple[bool, float, str]]]] = None,
+) -> list[str]:
+    """Return every observation, each labelled by its checks and its judgement.
+
+    Args:
+        engine (str): The engine under test.
+        responses (list): Each recorded observation's text.
+        outcomes (list): Per-observation assertion outcomes, possibly empty
+            when the case could not be resolved.
+        judged (Optional[list]): Per-observation judgement outcomes from
+            :func:`judged_outcome`, None where the judge was not called.
+
+    Returns:
+        list[str]: Markdown lines. **Every observation is shown**, passing ones
+        included, because an inconsistency is a claim about all of them
+        (``consumer_ci.md`` section 9.5.5).
+    """
+    bodies = [body for body in responses if body.strip()]
+    if not bodies:
+        return [
+            "**Responses**", "",
+            f"_No recording at `tests/fixtures/replay/{engine}/`, so this "
+            f"finding cannot show what was returned._", "",
+        ]
+    verdicts = {index: (passed, detail) for index, passed, detail in outcomes}
+    judgements = list(judged or [])
+    labelled = [
+        _label(verdicts.get(index, (True, "")),
+               judgements[index] if index < len(judgements) else None)
+        for index in range(len(bodies))
+    ]
+    failing = sum(1 for failed, _ in labelled if failed)
+    out = [f"**Responses.** The problem appeared on {failing} of {len(bodies)} "
+           f"observations, every one shown.", ""]
+    for index, body in enumerate(bodies):
+        label = labelled[index][1]
+        out.extend([f"*Observation {index + 1} of {len(bodies)}.* "
+                    f"{label[:1].upper()}{label[1:]}", "", *fenced(body), ""])
+    return out
+
+
+def fenced(text: str, info: str = "") -> list[str]:
+    """Return text inside a code fence.
+
+    Args:
+        text (str): What the fence holds, shown as recorded.
+        info (str): The fence's language tag, if any.
+
+    Returns:
+        list[str]: The opening fence, the text, and the closing fence. The fence
+        is one backtick longer than the longest run inside the text and never
+        shorter than three, so a response carrying its own fenced block stays
+        inside this one (``consumer_ci.md`` section 9.5.5.1).
+    """
+    longest = max((len(run) for run in _BACKTICKS.findall(text)), default=0)
+    fence = "`" * max(3, longest + 1)
+    return [f"{fence}{info}", text.rstrip(), fence]
+
+
+def _label(
+    checks: tuple[bool, str], judgement: Optional[tuple[bool, float, str]]
+) -> tuple[bool, str]:
+    """Return whether one observation failed, and its label.
+
+    Args:
+        checks (tuple): Whether its checks passed, and what failed if not.
+        judgement (Optional[tuple]): Its judged outcome, None when unjudged.
+
+    Returns:
+        tuple: Whether it failed, and the label naming its checks and judgement.
+    """
+    passed, detail = checks
+    if not passed:
+        return True, f"failed its checks, so the judge was not called (not judged): {detail}"
+    if judgement is None:
+        return False, "passed its checks"
+    if not judgement[0]:
+        return True, f"failed: the judge scored it {judgement[1]:g}. {judgement[2]}"
+    return False, f"passed its checks and the judge, scoring {judgement[1]:g}. {judgement[2]}"
+
+
+def finding_section(
     root: Path,
     engine: str,
     entry: dict[str, Any],
@@ -537,27 +709,27 @@ def _section(
     request = recorded_request(root, engine, task_id, rule_id)
     task = tasks.get(task_id)
 
-    out = [
-        f"## Failing test case: `{case}`",
-        "",
-        f"**Problem:** {_issue_sentence(entry, task)}",
-        "",
+    try:
+        rubric = getattr(case_for(task_id, rule_id).golden_rules, "rubric", None)
+    except (KeyError, ValueError):
+        rubric = None
+    judged = [
+        judged_outcome(judgement, rubric)
+        for judgement in recorded_judgements(root, engine, task_id, rule_id, len(responses))
     ]
+
+    out = [heading(case), "", f"**Problem:** {_issue_sentence(entry, task)}", ""]
     diagnosis = _diagnosis(entry)
     if diagnosis:
         out.extend([f"**Diagnosis:** {diagnosis}", ""])
-    out.extend(_input_block(task, request, engine))
+    out.extend(_input_block(task, request))
     out.extend(_output_block(
-        engine, entry, responses,
-        observation_outcomes(task_id, rule_id, responses),
+        engine, responses,
+        observation_outcomes(task_id, rule_id, responses), judged,
     ))
-
+    out.extend(["**Expected**", "", expected_block(task_id, rule_id, task), ""])
+    out.extend(_reproduce_block(engine, request, case))
     out.extend([
-        "<details><summary>Expected behaviour, provenance and reproduction"
-        "</summary>",
-        "",
-        f"**Expected:** {_sentence(entry.get('expected', ''))}",
-        "",
         "| | |",
         "|---|---|",
         f"| Model | `{entry.get('observed_model', '')}` |",
@@ -567,24 +739,7 @@ def _section(
     ])
     if str(entry.get("observations") or "").strip():
         out.append(f"| Population | {entry.get('observations')} |")
-    out.extend([
-        f"| Task | `{task_id}` |",
-        "",
-        "```",
-        str(entry.get("reproduce", "")),
-        "```",
-        "",
-        f"The recordings are committed, so this needs no credential and spends "
-        f"nothing. It replays what `{engine}` returned on "
-        f"{entry.get('first_observed', '')} rather than calling the model "
-        f"again, and only a live run can establish that the behaviour has "
-        f"changed since.",
-        "",
-        "</details>",
-        "",
-        "---",
-        "",
-    ])
+    out.extend([f"| Task | `{task_id}` |", "", "---", ""])
     return out
 
 
@@ -648,28 +803,26 @@ def _sentence(text: str) -> str:
     return stripped if stripped[-1] in ".!?" else f"{stripped}."
 
 
-def page_for(root: Path, engine: str) -> str:
-    """Return the ticket page for one engine.
+def page_for(root: Path, engine: str) -> tuple[str, list[tuple[dict[str, Any], list[str]]]]:
+    """Return the ticket page for one engine, and each filed finding's section.
 
     Args:
         root (Path): The repository root.
         engine (str): The engine to report.
 
     Returns:
-        str: Markdown, one section per finding.
+        tuple: Markdown with one section per finding, and each filed finding
+        paired with its section for a ticket of its own (section 9.5.5.2).
     """
     register = root / "config" / "findings" / f"{engine}.yaml"
     if not register.is_file():
-        return f"# {engine}\n\nNo findings register.\n"
+        return f"# {engine}\n\nNo findings register.\n", []
 
     payload = yaml.safe_load(register.read_text(encoding="utf-8")) or {}
-    # WITHDRAWN FINDINGS ARE EXCLUDED. These pages exist to be filed, and a
-    # withdrawn finding must not be: it records a claim we made and retracted
-    # because our own assertion was wrong. Section 9.4.1.
-    findings = [
-        entry for entry in (payload.get("findings") or [])
-        if not (isinstance(entry, dict) and entry.get("status") == "withdrawn")
-    ]
+    # WITHDRAWN FINDINGS ARE EXCLUDED, being claims we retracted (section
+    # 9.4.1), and a finding the latest run did not observe waits apart
+    # (section 9.5.5.1).
+    findings, awaiting = to_file(list(payload.get("findings") or []))
     pairs = case_rules_from_suite(root)
     tasks = load_tasks(root)
 
@@ -688,10 +841,17 @@ def page_for(root: Path, engine: str) -> str:
         "",
     ]
 
-    for entry in findings:
-        if isinstance(entry, dict):
-            out.extend(_section(root, engine, entry, pairs, tasks))
-    return "\n".join(out)
+    sections = [(entry, finding_section(root, engine, entry, pairs, tasks))
+                for entry in findings]
+    for _, lines in sections:
+        out.extend(lines)
+    if awaiting:
+        out.extend(["## Awaiting measurement", "",
+                    "Open, and not observed on the latest run, so not filed:", ""])
+        out.extend(f"- `{entry.get('case', '')}`, last observed "
+                   f"{entry.get('last_observed', '')}" for entry in awaiting)
+        out.append("")
+    return "\n".join(out), sections
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -713,9 +873,11 @@ def main(argv: Optional[list[str]] = None) -> int:
     parsed.out_dir.mkdir(parents=True, exist_ok=True)
 
     for engine in chosen:
+        page, sections = page_for(root, engine)
         written = parsed.out_dir / f"{engine}.md"
-        written.write_text(page_for(root, engine), encoding="utf-8", newline="\n")
-        print(f"{written}: written")
+        written.write_text(page, encoding="utf-8", newline="\n")
+        tickets = write_tickets(parsed.out_dir / engine, engine, sections)
+        print(f"{written}: written, with {len(tickets)} ticket(s) in {engine}/")
     return 0
 
 

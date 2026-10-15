@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The response provides the correct figure (100%) and explicitly identifies the 'or' connector / disjunctive requirement as the reason why possessing just one of the listed languages completely satisfies the requirement.",
+        "rationale": "The candidate output provides the correct figure (100%) and explicitly identifies the connector 'or' (noting its disjunctive function) as the reason why possessing just one of the listed languages completely satisfies the requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "cd66d5763425196ef3660b8613e9cd1dc6311d129423f1a261b4bb07f31d9d30"
+  "request_hash": "a1b0ecd711026842a0e9a239884d04d07fe912c4de9cd4aa3bbbf1a03d472ec9"
 }

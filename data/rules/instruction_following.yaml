@@ -285,7 +285,11 @@
     - assertion_id: A_INS_COMBINED_WORDS
       kind: regex
       parameters:
-        pattern: '^[ \t]*[-*][ \t]+(\S+[ \t]+){12,}\S+'
+        # PER SENTENCE, since 2026-10-15: the prompt limits a sentence, and a
+        # bullet holding two short ones was refused (test plan 9.3.3). A run
+        # starts at the bullet or after a sentence's end; punctuation inside a
+        # token, as in 4.3, does not end one.
+        pattern: '(?:^[ \t]*[-*][ \t]+|(?<=[.!?])[ \t]+)(?:(?:[^\s.!?]|[.!?](?=\S))+[ \t]+){12,}(?:[^\s.!?]|[.!?](?=\S))+'
         present: false
       taxonomy_code: QC_LLM_LENGTH_VIOLATION
       severity: violation
@@ -355,7 +359,11 @@
     - assertion_id: A_INS_WORD_CEILING
       kind: regex
       parameters:
-        pattern: '^[ \t]*[-*][ \t]+(\S+[ \t]+){12,}\S+'
+        # PER SENTENCE, since 2026-10-15: the prompt limits a sentence, and a
+        # bullet holding two short ones was refused (test plan 9.3.3). A run
+        # starts at the bullet or after a sentence's end; punctuation inside a
+        # token, as in 4.3, does not end one.
+        pattern: '(?:^[ \t]*[-*][ \t]+|(?<=[.!?])[ \t]+)(?:(?:[^\s.!?]|[.!?](?=\S))+[ \t]+){12,}(?:[^\s.!?]|[.!?](?=\S))+'
         present: false
       taxonomy_code: QC_LLM_LENGTH_VIOLATION
       severity: violation

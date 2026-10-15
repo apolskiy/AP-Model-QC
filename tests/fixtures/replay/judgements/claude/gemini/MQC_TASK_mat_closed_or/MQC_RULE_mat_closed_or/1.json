@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The response gives the correct figure of 100% and explicitly names the connector 'or' as the reason why knowing any single language satisfies the requirement.",
+        "rationale": "The candidate provides the correct figure (100%) and explicitly names the connector 'OR' as the reason why satisfying just one of the options fulfills the entire requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "7384ad41b75b2302840e59ddb00f4ec96b00046161710f6cd57482d9d34a74e6"
+  "request_hash": "705c5e51d3c8172a2275acba91cc36acd62fad456c94eff2adc84e0f10547e50"
 }

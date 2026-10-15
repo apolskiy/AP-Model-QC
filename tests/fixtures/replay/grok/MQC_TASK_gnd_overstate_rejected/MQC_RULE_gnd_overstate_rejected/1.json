@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_overstate_rejected::MQC_RULE_gnd_overstate_rejected",
-    "duration_ms": 3449,
+    "duration_ms": 3747,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1378,
     "mode": "live",
-    "output_tokens": 45,
-    "raw_reference": "1f5ef02d-96ad-9265-a1f5-eb07f6f60ecc",
+    "output_tokens": 42,
+    "raw_reference": "872f2143-6bc2-9c4d-8860-81da71b8b294",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "EMEA revenue was 28.7 million as reported. Rounding up to 30 million would overstate it by about 4.5 percent, which exceeds the 3 percent limit, so the figure was not rounded.",
-    "thinking_tokens": 244,
+    "text": "EMEA revenue was 28.7 million. Rounding up to 30 million would overstate it by about 4.5%, which is more than 3%, so the figure is left as reported.",
+    "thinking_tokens": 243,
     "tool_calls": []
   }
 }

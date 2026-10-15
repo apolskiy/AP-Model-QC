@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The percentage (47.1%) is calculated correctly, but the exact figures from which it derives (41.2 million and 87.4 million) are not explicitly stated, leaving the denominator and numerator figures implicit.",
-        "score": 3
+        "rationale": "The calculation is correct (47.1%), and both underlying figures (41.2 for North America and 87.4 for total revenue) are explicitly provided in the derivation.",
+        "score": 5
       }
     }
   },
-  "request_hash": "f2aa2cc86afdd35ec2e583d15a58b95c3be68882b4747143c83f07449ccf9515"
+  "request_hash": "1b84c5f6a84e1f38f6d73d6d5826dd4819bbcca0df738b42664ebff3671e2c62"
 }

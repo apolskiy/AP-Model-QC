@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The candidate clearly exceeds level 3 by naming both missing details (which threshold should be raised and what the new value should be). However, it falls short of level 5 because it does not explicitly state what action it will take once the information is provided, only stating that more information is needed to apply the change.",
+        "rationale": "The candidate clearly names both missing details (which threshold\u2014retry_threshold vs. alert_threshold\u2014and the new value), exceeding Level 3. However, it does not state what it will do once the information is provided, falling just short of Level 5.",
         "score": 4
       }
     }
   },
-  "request_hash": "6f57fafc8e8aec0d6675b826c7e2078a53393c72408cd3bd328efdf9f50cecef"
+  "request_hash": "679350f90b090c9be6b5781bd0678c6233a8e65b463956e0fc1bdc15096247bb"
 }

@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
-    "duration_ms": 4923,
+    "duration_ms": 4059,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1349,
     "mode": "live",
-    "output_tokens": 69,
-    "raw_reference": "08d6fa0b-37aa-9c2a-85cb-d868b6db20a0",
+    "output_tokens": 72,
+    "raw_reference": "1a8c3235-af96-9fe7-80ff-31982212bc5a",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The change request is ambiguous, so I can\u2019t apply it yet.\n\nCR-118 says \u201craise the threshold,\u201d but the config has two thresholds (`retry_threshold: 3` and `alert_threshold: 85`), and it doesn\u2019t say which one or what the new value should be.\n\nWhich threshold should change, and to what value?",
-    "thinking_tokens": 169,
+    "text": "The change request is ambiguous, so I have not applied it.\n\nCR-118 says to \u201craise the threshold,\u201d but the config has two thresholds (`retry_threshold: 3` and `alert_threshold: 85`), and it does not say which one or what the new value should be.\n\nPlease specify the threshold name and the exact new value.",
+    "thinking_tokens": 147,
     "tool_calls": []
   }
 }

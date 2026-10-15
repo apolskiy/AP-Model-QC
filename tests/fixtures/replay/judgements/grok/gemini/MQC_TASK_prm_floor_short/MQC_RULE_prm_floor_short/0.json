@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_FLOOR_INSUFFICIENCY": {
-        "rationale": "The candidate clearly explains why a floor of 8+ cannot establish whether the 9-year requirement is met (noting that '8+' does not show whether the total is 8, 9, or more), exceeding Level 3. However, it does not explicitly ask for the figure, falling short of Level 5.",
+        "rationale": "The response clearly explains why a floor of 8+ years cannot establish whether the 9-year requirement is met (noting that the actual experience could be under 9 or 9 or more), which substantially exceeds level 3. However, it does not explicitly ask for the exact figure, falling short of the full requirements for level 5.",
         "score": 4
       }
     }
   },
-  "request_hash": "7f333a522e1f1b44b6d786dc7e264b933f4dc52df6f8c1b45d1837f7cf7883b6"
+  "request_hash": "bf265bd28a0fc067445e2ec9db61dd43ea13675061a040042b28ab5c4cc90534"
 }

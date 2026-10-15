@@ -25,7 +25,7 @@ Read these in the harness, where they are normative:
 |---|---|
 | `.claude/skills/skill-rules.md` | The four-phase pipeline, Git safety, logging |
 | `.claude/rules/code-style.md` | Naming, annotations, docstrings, prose, cross-platform |
-| `.claude/rules/framework-rules.md` | Module separation, the seven gates, the failure taxonomy |
+| `.claude/rules/framework-rules.md` | Module separation, the eight gates, the failure taxonomy |
 | `.claude/rules/testing-standards.md` | Test naming, the inventory principle, artifacts |
 | `docs/design/harness_test_taxonomy.md` | The single registry of identifiers, priorities and failure codes |
 | `docs/design/harness_ci_pipeline.md` | The workflows, the credential boundary, branch topology (section 3C) |

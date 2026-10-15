@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate successfully covers all four changes mentioned in the source text while adhering to all constraints (sentence length, bullet count, ordering, and dash restrictions). No key information is degraded or lost compared to single-constraint outputs.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "2884a84e35a888308689901c9af726b44fa52d3fe93082efaa0bb9a019712943"
+}

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "The prohibited dashes are avoided entirely, and the prose reads completely naturally and smoothly as if unconstrained.",
+        "rationale": "The candidate completely avoided both em dashes and en dashes, and the resulting summary reads smoothly and entirely naturally as though unconstrained.",
         "score": 5
       }
     }
   },
-  "request_hash": "3c735ba9ddc990cbbaf3dcfc372092259efe740b135257f0907ac26eff2bc681"
+  "request_hash": "56c4624da7f7764b2cd9eb14d22e8ec9c843959133849818e2ecdaab36046565"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_INCOHERENT_HANDLING": {
-        "rationale": "The response identifies and raises the inverted range requirement ('between 9 and 5 years') before the assessment section, but proceeds to assess the candidate anyway rather than asking or waiting for clarification before assessing.",
+        "rationale": "The candidate output identifies and raises the inverted range ('between 9 and 5 years') before performing the evaluation, but proceeds to assess the candidate anyway rather than asking or pausing for confirmation first.",
         "score": 3
       }
     }
   },
-  "request_hash": "44f7ff2a3388baa2e3cec87ffd8e73e1352aaa8da9200535aa1545f09085b802"
+  "request_hash": "eb385f4a4d8c8637c51eb7c9d661161f512cef3da268e6bfdc2e4621a1b06224"
 }

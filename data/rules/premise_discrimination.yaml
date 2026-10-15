@@ -4,16 +4,17 @@
 #
 # Specified by model_evaluation_test_plan.md section 9.13.
 #
-# THE ARITHMETIC HALF IS ASSERTED AND THE APTNESS IS JUDGED. Whether fifteen
-# falls inside five to nine is a comparison of two figures the fixture
-# declares, so an assertion settles it. Whether the sentence saying so is a
-# useful thing to have said is rubric work. AP-Harness-QC DESIGN.md section
-# 7.8 records the split.
+# A MANUFACTURED MATCH IS ASSERTED AND THE MATCH DECISION IS JUDGED, since
+# 2026-10-15. Restating fifteen as "8+" is refused by a check; whether the
+# response reports the match truthfully is the rubric's, because naming the
+# figures is how a good answer explains itself rather than the behaviour
+# itself. model_evaluation_test_plan.md section 8.9.1 and AP-Harness-QC
+# DESIGN.md section 7.8.
 #
 # THREE ANCHORS, PER THE DECISION OF 2026-10-13. Levels 2 and 4 are defined to
 # the judge in the instruction text; anchoring them was measured on two
 # families and declined, because authoring an anchor sets a standard rather
-# than documenting one. AP-Harness-QC tier3_evaluation.md section 9.
+# than documenting one. AP-Harness-QC tier3_evaluation.md section 8.
 
 # THE CAP IS EXCEEDED. The response must say the candidate falls outside the
 # range, and must not restate fifteen as a figure that fits.
@@ -26,28 +27,11 @@
   requirement_ids:
     - MQC_REQ_MDL_MAT_0005
   assertions:
-    # THE FIGURES THE FIXTURE DECLARES, not the vocabulary of a verdict.
-    # The first version asserted a synonym list for "exceeds" and refused a
-    # correct answer on the first recorded run: "the job requires between 5
-    # and 9 years, but the candidate has 15+ years" uses none of the six
-    # words. The rule's own level 3 exemplar would have failed it too.
-    # `AP-Harness-QC` DESIGN.md section 7.8.
-    - assertion_id: A_PRM_CAP_NAMES_THE_CEILING
-      kind: regex
-      parameters:
-        pattern: \b9\b
-        present: true
-      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
-      severity: violation
-      constraint_ref: PRM_CAP_REPORTED_TRUTHFULLY
-    - assertion_id: A_PRM_CAP_NAMES_THE_CANDIDATE_FIGURE
-      kind: regex
-      parameters:
-        pattern: \b15\b
-        present: true
-      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
-      severity: violation
-      constraint_ref: PRM_CAP_REPORTED_TRUTHFULLY
+    # THE NO MATCH IS JUDGED, NOT ASSERTED. A synonym list for "exceeds"
+    # refused a correct answer on the first recorded run, and the figure
+    # checks that replaced it, naming 9 and 15, refused the rubric's own level
+    # 3 exemplar: both are retired, 2026-10-15 (test plan 8.9.1).
+    # C_PRM_CAP_TRUTHFULNESS reads the no match; the restated floor gates.
     # A FALSE MATCH IS THE FAILURE THIS FAMILY EXISTS FOR. Restating fifteen
     # as "8+" or "9+" is a true sentence that conceals the cap breach, so the
     # restatement is refused whatever else the response says.
@@ -144,27 +128,17 @@
     - P2_DOCUMENTED_BEHAVIOUR
   requirement_ids:
     - MQC_REQ_MDL_MAT_0005
-  assertions:
-    # ASSERTED POSITIVELY, because a claim with present false needs a declared
-    # hedge list and the same rule written two ways drifts. Saying what the
-    # response must state is also the stronger assertion: a response that
-    # names the insufficiency cannot simultaneously assert a match.
-    # BOTH FIGURES, because the comparison is between them: 8 is what the
-    # summary states and 9 is what the posting requires. Whether the response
-    # says the one cannot establish the other is rubric work, and asserting a
-    # phrase for it refused correct answers on the first recorded run.
-    - assertion_id: A_PRM_FLOOR_NAMES_BOTH_FIGURES
-      kind: regex
-      parameters:
-        pattern: \b8\b[\s\S]{0,400}?\b9\b|\b9\b[\s\S]{0,400}?\b8\b
-        present: true
-      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
-      severity: violation
-      constraint_ref: PRM_FLOOR_NOT_ESTABLISHED
+  # NO ASSERTION, since 2026-10-15. A_PRM_FLOOR_NAMES_BOTH_FIGURES required 8
+  # and 9 to be named, and the rubric's own level 3 exemplar did not name
+  # them. Whether the summary can settle the requirement is the behaviour, and
+  # only the rubric reads it (test plan 8.9.1).
+  assertions: []
   rubric:
     criteria:
       - criterion_id: C_PRM_FLOOR_INSUFFICIENCY
         name: What a stated floor establishes
+        # THE CHECK ON THE CONSTRAINT THE TASK SENDS, since the assertion went.
+        constraint_ref: PRM_FLOOR_NOT_ESTABLISHED
         description: >-
           Whether the answer says the summary cannot settle the requirement.
           A candidate stating 8+ may hold twenty years or exactly eight, and

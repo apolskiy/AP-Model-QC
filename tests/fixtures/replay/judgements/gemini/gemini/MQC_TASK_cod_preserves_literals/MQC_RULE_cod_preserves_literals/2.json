@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_COD_MINIMAL_CORRECTION": {
-        "rationale": "The candidate added only the missing closing parenthesis to close the sorted() call, leaving all formatting, literals, variable names, and structure completely untouched.",
+        "rationale": "The missing closing parenthesis on the sorted call was added and nothing else was modified.",
         "score": 5
       }
     }

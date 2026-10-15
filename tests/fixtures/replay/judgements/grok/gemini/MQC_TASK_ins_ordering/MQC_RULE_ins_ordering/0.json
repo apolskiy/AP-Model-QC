@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes are included. The two changes with measurable quantities ('under 30 seconds' and 'up to 2 GB') appear first in their original order, followed by the two non-measurable changes in their original source order.",
+        "rationale": "All four changes from the release note are included. The two changes containing measurable quantities (export job under 30 seconds, importer up to 2 GB) are placed first in their original source order, followed by the two non-measurable changes in their source order.",
         "score": 5
       }
     }

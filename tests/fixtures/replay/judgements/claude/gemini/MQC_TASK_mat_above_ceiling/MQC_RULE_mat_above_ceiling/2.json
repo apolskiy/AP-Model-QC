@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_CEILING_PROCEEDS": {
-        "rationale": "The response decides to proceed based on meeting the mandatory threshold and explicitly notes that the nice-to-have requirements do not affect the outcome.",
+        "rationale": "The candidate assessment correctly concludes to proceed and explicitly notes that the nice-to-have set does not affect the outcome.",
         "score": 5
       }
     }
   },
-  "request_hash": "d73d86f5b35deaf81bce0dfd13c820ac64ec02fbce9e8915992cea25ee7e86b4"
+  "request_hash": "a2e6fa1860c1aa40927e5dcc8396fafada13c581de6dfd20cda8054ef3523c58"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_CEILING_PROCEEDS": {
-        "rationale": "The response reports the correct match figure (90%), proceeds based on meeting the threshold, and explicitly confirms that the optional (nice-to-have) items do not affect the outcome.",
+        "rationale": "The response reports the correct match figure (90%), proceeds, and explicitly notes that the nice-to-have set does not change or affect the outcome.",
         "score": 5
       }
     }
   },
-  "request_hash": "3c8dfe73d6ab82bafb9a88fda54cb5237bd9529c952debc93a3377c327be7883"
+  "request_hash": "8754725498d89d7d4f4cd8e0bd56d69a18036d2b7ad53acce7bcc6edc951cd54"
 }

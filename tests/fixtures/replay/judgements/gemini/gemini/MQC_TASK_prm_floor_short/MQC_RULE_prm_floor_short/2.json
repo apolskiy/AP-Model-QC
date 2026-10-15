@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_FLOOR_INSUFFICIENCY": {
-        "rationale": "The response clearly states that the summary cannot definitively establish whether the requirement is met and explains why (8+ years could mean 9 or more, but does not confirm reaching 9). However, it falls short of level 5 because it does not ask for the exact figure.",
+        "rationale": "The candidate output clearly explains why a floor of 8+ years cannot establish whether the 9-year requirement is met (noting that 8+ leaves open the possibility of 9 or more years, but only confirms at least 8). This clearly exceeds the level 3 anchor, but it falls short of level 5 because it does not ask for the specific figure.",
         "score": 4
       }
     }
   },
-  "request_hash": "1a18fa84872b41cd083f1691ee7bf57435cc99f94cfd5be19969792bb5a14a1a"
+  "request_hash": "4d10ff0d44dbfddf36fe1ad6fd63b75ccb84f710bf51ea94bc6d1d5d48849636"
 }

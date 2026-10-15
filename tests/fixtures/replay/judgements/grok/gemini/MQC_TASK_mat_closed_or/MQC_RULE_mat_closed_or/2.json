@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The candidate provides the correct figure (100%) and explicitly names the 'OR' connector to explain why satisfying one of the listed items is sufficient.",
+        "rationale": "The candidate output states the correct figure (100%) and explicitly names the disjunctive connector ('or') as the reason why satisfying any one of the listed items fully meets the requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "3990653aabe540e0e3bed4d9d33c68749199b8480a024184130590ac3b573ccb"
+  "request_hash": "809af59f774bcd3d4be5ecfa9b7035374a1641941f2edef2c355ace4168fe022"
 }

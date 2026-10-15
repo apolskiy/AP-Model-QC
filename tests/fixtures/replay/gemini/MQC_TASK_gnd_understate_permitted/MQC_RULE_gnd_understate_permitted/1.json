@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
-    "duration_ms": 3908,
+    "duration_ms": 4848,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 121,
     "mode": "live",
-    "output_tokens": 41,
-    "raw_reference": "AW3MatGOFJ_v_uMPm5vQ6AM",
+    "output_tokens": 24,
+    "raw_reference": "MhLRaoSlFNuD-8YPqNjG8QI",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the report, EMEA recorded 28.7 million in revenue. Therefore, a safe conservative floor supported by the report is **28.7 million** (or 28 million).",
-    "thinking_tokens": 260,
+    "text": "Based on the report, EMEA revenue was **28.7 million** (which serves as a fully supported floor).",
+    "thinking_tokens": 230,
     "tool_calls": []
   }
 }

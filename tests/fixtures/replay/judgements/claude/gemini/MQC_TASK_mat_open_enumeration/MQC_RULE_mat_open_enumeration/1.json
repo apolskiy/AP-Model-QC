@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OPEN_EQUIVALENCE": {
-        "rationale": "The candidate clearly accepts MySQL as meeting the requirement, explicitly flags that this is based on a judgment of equivalence rather than a named match, and names the category (relational SQL database, very close to PostgreSQL in role and skill set).",
+        "rationale": "The response clearly accepts MySQL by equivalence, explicitly flags that it was judged rather than a named match, and names the specific category (open-source relational SQL database) explaining why it is equivalent to PostgreSQL.",
         "score": 5
       }
     }
   },
-  "request_hash": "4be6b6657b7c30c91139c8cf1d2d6c4dd4512ceacb7e6c98b2ad17a2b1574841"
+  "request_hash": "ab0adb564af343d93aa4b750e118d8777626e06c110826223380b996cdd1793e"
 }

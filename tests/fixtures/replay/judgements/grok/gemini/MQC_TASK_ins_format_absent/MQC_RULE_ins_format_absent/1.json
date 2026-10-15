@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate provides a concise, plain prose summary without any unrequested machine-readable formatting or heavy incidental structure.",
+        "rationale": "The candidate output is written as a clear, plain prose summary without introducing any unprompted JSON, machine-readable formatting, or heavy incidental structure.",
         "score": 5
       }
     }

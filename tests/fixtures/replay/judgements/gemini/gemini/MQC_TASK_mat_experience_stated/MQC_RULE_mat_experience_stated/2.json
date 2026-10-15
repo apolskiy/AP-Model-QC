@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The candidate preserved the years of experience figure ('15+ years') verbatim as instructed, and adapted the wording to specifically match the posting requirement ('backend engineering experience').",
+        "rationale": "The candidate preserved the original figure ('15+ years') verbatim without altering or recalculating it, and effectively rewrote the phrasing to target the posting by adopting the phrasing 'backend engineering experience'.",
         "score": 5
       }
     }

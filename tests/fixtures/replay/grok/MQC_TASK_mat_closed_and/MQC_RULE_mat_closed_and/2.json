@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 5154,
+    "duration_ms": 3852,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1304,
     "mode": "live",
-    "output_tokens": 75,
-    "raw_reference": "00ca6e9b-df28-93d5-94d8-d76ff885ac6c",
+    "output_tokens": 55,
+    "raw_reference": "051eaccf-6f0d-9e26-850e-bcdef3637688",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**50%**\n\nThe requirement is a closed AND: both **Docker** and **Kubernetes** must be present (2 of 2).\n\n- **Docker:** met \u2014 the candidate names Docker.\n- **Kubernetes:** not met \u2014 it is not named. \u201cOrchestration\u201d is not a substitute for the required technology.\n\n1 / 2 = **50%**.",
-    "thinking_tokens": 240,
+    "text": "**50%**\n\nThe requirement lists two mandatory items: Docker and Kubernetes. The candidate explicitly includes Docker and does not mention Kubernetes. \u201cContainers and orchestration\u201d is related context, not a substitute for the missing required skill.\n\n1 of 2 required items = 50%.",
+    "thinking_tokens": 175,
     "tool_calls": []
   }
 }

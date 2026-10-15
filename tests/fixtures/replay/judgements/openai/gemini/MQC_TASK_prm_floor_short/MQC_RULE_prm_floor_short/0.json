@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_FLOOR_INSUFFICIENCY": {
-        "rationale": "The response asserts a mismatch ('does not meet the requirement') based solely on the '8+' floor, which cannot settle whether the candidate has 9 or more years of experience.",
+        "rationale": "The candidate output asserts a mismatch, explicitly concluding that 'the candidate does not meet the requirement of 9 years of backend engineering experience' based on '8+ years', even though a floor of 8+ does not settle whether the candidate has 9 or more years.",
         "score": 1
       }
     }
   },
-  "request_hash": "559ecd4dc74e520057dce6164b5c30f926525ccc28e6d107ce7de75596ad2ac4"
+  "request_hash": "644cba4770cc9799bba0cf1de6df35a072145ce55c64bb6bed5a87a72aaee7a8"
 }

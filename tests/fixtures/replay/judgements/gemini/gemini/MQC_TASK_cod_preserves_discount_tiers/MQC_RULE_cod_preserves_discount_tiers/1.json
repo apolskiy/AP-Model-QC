@@ -3,14 +3,14 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_MISCOMPUTATION": {
-        "rationale": "The candidate clearly and accurately names the discount-versus-price issue with exact formulas and an illustrative example ($20 computed instead of $80 balance), far exceeding level 3, but does not explicitly state who loses money as required for level 5.",
+        "rationale": "The response clearly articulates the discount-versus-price distinction (noting that the calculation computes the discount amount rather than the post-discount price, resulting in the customer being billed for the amount they were meant to save), which clearly exceeds Level 3, but it stops short of explicitly naming who loses money (Level 5).",
         "score": 4
       },
       "C_COD_TIERS_UNCHANGED": {
-        "rationale": "The candidate leaves the module's discount percentages intact and correctly uses the 20% standard tier in a concrete example, clearly distinguishing between the $20 discount amount and the $80 remaining balance.",
+        "rationale": "The candidate leaves the module's discount percentages intact (20% and 30%) and correctly distinguishes the discount from the remainder (80% and 70%) when explaining what should be computed.",
         "score": 5
       }
     }
   },
-  "request_hash": "0599c3020a0a07e548c56efbb6465c268a2f27e92d5b0f61e217641c80c7bf22"
+  "request_hash": "776a551f41623660c14c64180d05641995392b195f6c206dc548887b9c7b5b5e"
 }

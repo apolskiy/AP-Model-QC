@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 19592,
+    "duration_ms": 9416,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 165,
-    "raw_reference": "75930ea7-c408-996c-9317-2311d096a0e4",
+    "output_tokens": 139,
+    "raw_reference": "d0755216-db16-9275-a28a-81c7ae4efa93",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Bound each code with an absolute expiry stored beside its value, and refuse redemption when that time has passed.\n\n`coupon_lookup` currently maps a code to a bare number, so lifetime cannot be enforced no matter what the caller does. The value has to be a record that includes at least:\n\n- the discount amount (what settlement applies)\n- `expires_at` (absolute timestamp, set when the code is issued)\n\nOptionally also `not_before` if a code should not be valid immediately.\n\nAt redeem time, read that record and apply the amount only if a trusted server clock is within the window (`now >= not_before` and `now < expires_at`). Otherwise treat the code as invalid. Checking only in the issuer, or only in a client, does not make the bound enforceable at lookup.",
-    "thinking_tokens": 593,
+    "text": "Give every code a validity window and store that window with the code, then reject redemption outside it.\n\nThe lookup should stop being a bare amount and become a record that includes at least:\n\n- the discount value\n- `valid_from` (or issued-at)\n- `expires_at`\n\nSettlement must compare those timestamps to the redemption time and refuse the code if `now` is before `valid_from` or after `expires_at`. Without the timestamps on the lookup entry, the redeem path has nothing to enforce, so a code stays valid forever. A fixed TTL only works if issuance time is also stored (or the expiry is computed and stored when the code is issued).",
+    "thinking_tokens": 536,
     "tool_calls": []
   }
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response consists of exactly three well-crafted sentences that smoothly integrate all five figures from the source text into a coherent, natural summary rather than reading as a bare list.",
+        "rationale": "The candidate output consists of exactly three well-crafted sentences that incorporate all five figures from the source text. It leads with a clear summary sentence covering the total revenue and then pairs the regional breakdowns smoothly using appropriate conjunctions, reading as a cohesive summary rather than a list.",
         "score": 5
       }
     }
   },
-  "request_hash": "4ca641c3949cb73ccf4c9881012824d85218665e68e415cc735f591177aa5e67"
+  "request_hash": "df4a80e6ff486ddc00867b307d34268b7589990e52940b7d556a809a2c259b17"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_THRESHOLD_SENSE": {
-        "rationale": "The figure 82 percent is exact, and the phrasing 'at or above' is fully preserved.",
+        "rationale": "The figure '82 percent' is exact, and the phrasing 'at or above' is fully preserved.",
         "score": 5
       }
     }
   },
-  "request_hash": "aec50ba4a01b9da7fdaa746d9ace7af501b6e7dcd5ee4864a145011a1626d9da"
+  "request_hash": "7769cb39ef2cee6bb53e68697995b16fff873c96b8f4752aa2e8349504612418"
 }

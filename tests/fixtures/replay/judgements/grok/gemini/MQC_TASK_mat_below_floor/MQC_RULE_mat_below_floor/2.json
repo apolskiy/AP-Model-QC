@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The response includes a warning and mentions the 78 percent cutoff, but it does not specify any of the unmet mandatory requirements (Kafka, GraphQL, and the infrastructure tools).",
-        "score": 3
+        "rationale": "The candidate output clearly warns that the match falls below the 78 percent cutoff, explicitly states the cutoff threshold, refrains from evaluating the nice-to-have requirements, and lists all the specific unmet mandatory requirements (Docker, Kubernetes, Terraform, Ansible, Helm, Kafka, and GraphQL).",
+        "score": 5
       }
     }
   },
-  "request_hash": "2c336c01658b1725f6f7907c1ad7be1e025ffaefea23100a771bcfa01b336b5e"
+  "request_hash": "d34eae664a45c297fd5e421c7f65e02e63cd14622ea7dfabe316cf9cb9b15fa6"
 }

@@ -85,13 +85,13 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_tul_invokes_required::MQC_RULE_tul_invokes_required",
-    "duration_ms": 2321,
+    "duration_ms": 21431,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1502,
     "mode": "live",
     "output_tokens": 16,
-    "raw_reference": "8e2ebb83-a254-9fe7-b03b-3968dd7e6720",
+    "raw_reference": "59ec0e30-4153-9774-9381-0d2f0ddc4a2f",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
@@ -101,7 +101,7 @@
         "arguments": {
           "order_id": "A-4471"
         },
-        "call_id": "call-34332b00-8710-4f9a-8b56-dbbf61e2745d-0",
+        "call_id": "call-52cb9f25-c66e-4032-91f1-864fbe42d312-0",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

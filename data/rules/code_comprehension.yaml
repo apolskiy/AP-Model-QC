@@ -752,7 +752,9 @@
       parameters:
         # VOCABULARY ONLY, as above. A reviewer naming this defect reaches for
         # one of these words; which noun it lands beside is not the claim.
-        pattern: '(?i)\b(floor|clamp\w*|cap(ped|ping)?|lower\s+bound|negative|below\s+zero|minimum|max\(0)\b'
+        # `floor\w*` since 2026-10-15: grok wrote "nothing stated here floors a
+        # coupon", which names this cause, and `floor` alone refused it.
+        pattern: '(?i)\b(floor\w*|clamp\w*|cap(ped|ping)?|lower\s+bound|negative|below\s+zero|minimum|max\(0)\b'
         present: true
       taxonomy_code: QC_LLM_DEFECT_MISSED
       severity: violation
@@ -776,22 +778,36 @@
     criteria:
       - criterion_id: C_COD_CAUSES_DIAGNOSED
         name: Causes named rather than outcomes listed
+        # THE THREE CAUSES NAMED, since 2026-10-15. The description named none,
+        # and the judge scored 5 on answers that took an unknown code's
+        # KeyError, case 134110's subject, as the third cause and called a
+        # settlement of -10 correct (test plan 8.9.1).
         description: >-
           Whether the response identifies what is wrong with the arithmetic rather
-          than what the function returns. Case 30036 already asks for the
-          outcomes, and all of them follow from these causes, so listing them
-          again is not a diagnosis.
+          than what the function returns. The causes are three: the discount
+          computed is used as the amount owed instead of the remainder; a coupon
+          larger than the discounted total drives the amount owed negative, so the
+          seller would pay the buyer; and only the first coupon code is read. A
+          response that gives a negative amount owed as a correct result has not
+          found the second. An unknown code raising is case 134110's subject and
+          is not one of these three. Case 30036 already asks for the outcomes, and
+          all of them follow from these causes, so listing them again is not a
+          diagnosis.
         anchors:
           1:
             description: Lists what the function returns, naming no cause.
             exemplar: >-
               It settles to a negative amount on large coupons, gives goods away
               on some baskets, and crashes on an unrecognised code.
+          # LEVEL 3 NAMES ALL THREE, since 2026-10-15. It named one, and the
+          # assertions gate all three, so the rubric called a response a pass
+          # that the case could never award (test plan 8.9.1).
           3:
-            description: Names one cause correctly and says what it should do.
+            description: Names the three causes, without a remedy for each.
             exemplar: >-
-              total_amount * discount / 100 produces the discount itself rather
-              than the amount owed; it should compute the remainder instead.
+              total_amount * discount / 100 is the discount rather than the
+              amount owed, a large coupon drives the amount owed negative, and
+              only coupon_codes[0] is ever read.
           5:
             description: >-
               Names the independent causes and the remedy for each, keeping them
@@ -843,11 +859,15 @@
             exemplar: >-
               Raising a KeyError is appropriate here, since the code is not valid
               and the caller should be told.
+          # LEVEL 3 STATES THE ZERO, since 2026-10-15. "This needs handling"
+          # names no remedy, and the case is named for the determinate one
+          # (test plan 8.9.1).
           3:
-            description: Says an unknown code must not crash, without saying what it contributes.
+            description: >-
+              Says an unknown code contributes zero, without saying how
+              settlement proceeds.
             exemplar: >-
-              The lookup should not raise on a code that is missing; this needs
-              handling.
+              An unrecognised code should count as zero rather than raise.
           5:
             description: >-
               States that an unrecognised code contributes zero and settlement

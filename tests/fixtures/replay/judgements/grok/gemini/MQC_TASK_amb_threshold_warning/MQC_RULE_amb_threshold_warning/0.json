@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_AMB_WARNS_ONLY_WHERE_DUE": {
-        "rationale": "The candidate clearly warns that the availability gate failed, specifies the exact margin by which it failed (0.4 percentage points below 99.5 percent), and explicitly confirms that the incident-duration gate held.",
+        "rationale": "The candidate clearly names availability as the failed gate, specifies the exact margin (0.4 percentage points below the 99.5 percent minimum), and explicitly confirms that the incident-duration gate held.",
         "score": 5
       }
     }

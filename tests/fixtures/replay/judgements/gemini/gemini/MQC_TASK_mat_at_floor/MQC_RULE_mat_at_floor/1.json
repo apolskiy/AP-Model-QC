@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_FLOOR_MARGIN": {
-        "rationale": "Both the mandatory figure (78.0%) and the combined figure (85.33%) are reported correctly, but the candidate output does not remark on the narrow margin or convey that it only just clears the threshold.",
+        "rationale": "Both the mandatory figure (78.0%) and the combined figure (85.33%) are reported correctly, but the candidate output does not remark on the narrow margin or state that it only just clears the 85% threshold.",
         "score": 3
       }
     }
   },
-  "request_hash": "2be7c3a3fdf89b859503d9a1ec95593c40d3330bea8adf3b67bfed01cfd76ccd"
+  "request_hash": "0c51ac7e1158e471091da6cad2f419ebfde0ca576a31d1eb5d3eed56e665be14"
 }

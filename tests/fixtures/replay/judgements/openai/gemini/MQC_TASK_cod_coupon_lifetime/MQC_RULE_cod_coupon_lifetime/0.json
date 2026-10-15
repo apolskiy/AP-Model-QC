@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_LIFETIME_IS_ENFORCEABLE": {
-        "rationale": "The response recommends bounding code lifetime via an expiration date/timestamp and explicitly specifies what data the lookup must carry (an expiration date or timestamp field) to make the check enforceable.",
+        "rationale": "The candidate recommends bounding code lifetime via an expiration date/time and explicitly names and demonstrates what the lookup data structure must carry (an 'expires_at' date or timestamp field) to enforce that bound.",
         "score": 5
       }
     }
   },
-  "request_hash": "1e645312e4141a7aac9bc8a8cceef141db7e7a25ce42d28fabaead1b8686807a"
+  "request_hash": "c19c88eeb6713a0bcd83603a15777535b3a1556589dfecafabebc724693a3d6d"
 }

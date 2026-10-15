@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_cap_exceeded::MQC_RULE_prm_cap_exceeded",
-    "duration_ms": 4825,
+    "duration_ms": 5496,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 130,
     "mode": "live",
-    "output_tokens": 53,
-    "raw_reference": "gQrPatncBZKc_uMP1IvWiQo",
+    "output_tokens": 46,
+    "raw_reference": "ExTRarrtEvjljMcPk_awmAE",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The candidate **does not match** the requirement. \n\n**Reason:** The posting requires between 5 and 9 years of backend engineering experience. The candidate has 15+ years, which exceeds the specified 5-to-9-year range.",
-    "thinking_tokens": 283,
+    "text": "The candidate **does not match** the requirement. \n\nThe posting explicitly requires **between 5 and 9 years** of backend engineering experience, whereas the candidate has **15+ years**, which exceeds the specified range.",
+    "thinking_tokens": 356,
     "tool_calls": []
   }
 }

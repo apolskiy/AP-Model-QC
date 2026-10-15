@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_AND_REASONING": {
-        "rationale": "The candidate provides the correct figure (50%), shows full working, and explicitly identifies Kubernetes as the missing item/gap.",
+        "rationale": "The response provides the correct figure (50%) and explicitly names Kubernetes as the missing skill/gap.",
         "score": 5
       }
     }
   },
-  "request_hash": "fee863177fe3b989e83a858c5c961266419aeef4fb3ad96bd1aa0c2683c693ae"
+  "request_hash": "b0180dda7b47f4c0ff6d1783ee512f2b5fcc5767183f0311a07384b555da6288"
 }

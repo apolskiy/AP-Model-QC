@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_CONTEXT_FIDELITY": {
-        "rationale": "The candidate output accurately states what AMBER means based on the glossary and clearly identifies who is notified, explicitly noting that the on-call rota is deliberately not notified.",
+        "rationale": "The response accurately provides both halves of the answer directly from the glossary, correctly explaining what AMBER means and explicitly stating that the on-call rota is deliberately not notified.",
         "score": 5
       }
     }
   },
-  "request_hash": "d7a955e4940031a08279534769de5be7ff586ed6f4fa09ebdbe42ddccec11b55"
+  "request_hash": "18fc30545adb14c93788149138f1c2f2556610c061283c2ebc5fd3103510f660"
 }

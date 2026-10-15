@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_WARNS_ONLY_WHERE_DUE": {
-        "rationale": "The candidate specifically warns about the availability gate, calculates the exact margin of failure (0.4 percentage points below the 99.5% threshold), and explicitly confirms that the incident duration gate passed.",
+        "rationale": "The candidate clearly names the availability gate as failed, explicitly specifies the margin by which it fell short (0.4 percentage points), and states that the incident duration gate passed.",
         "score": 5
       }
     }
   },
-  "request_hash": "44b6459809bcfd90b7d92f35b1013748bf2d9afd9f9fe0eed2d18e4a1396930d"
+  "request_hash": "83c5c0394a7c1ec0edef32af39d93aba9c4bebd08ff8d6627590b736cd00b4b7"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_HEADER_EVIDENCE": {
-        "rationale": "Both headers are correctly classified (mandatory and optional), and the response quotes the specific decisive phrases from each header (\"Need\", \"On day one\", \"Stand out\", \"Would\") to justify the classification.",
+        "rationale": "Both headers are correctly classified (mandatory and optional), and the response quotes the specific phrases from each header that informed the classification.",
         "score": 5
       }
     }
   },
-  "request_hash": "be940a0be5279f7239717e995382d6980b086e8a6914a33b3c28c3b4eff0a7c8"
+  "request_hash": "677358229945cd757312b68a086ce5f5ea8745df1eb3b6d352f9b4f40044a710"
 }

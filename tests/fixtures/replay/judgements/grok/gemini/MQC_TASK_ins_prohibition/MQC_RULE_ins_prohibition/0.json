@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "The candidate completely avoided em dashes and en dashes, combining the clauses using standard commas and a conjunction. The resulting prose flows smoothly and reads completely naturally as though unconstrained.",
+        "rationale": "The candidate completely avoided using em dashes or en dashes, and the resulting two-sentence text reads naturally, smoothly, and completely unconstrained.",
         "score": 5
       }
     }

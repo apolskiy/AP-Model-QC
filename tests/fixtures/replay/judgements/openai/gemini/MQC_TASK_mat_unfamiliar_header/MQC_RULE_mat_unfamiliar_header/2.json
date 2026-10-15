@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_HEADER_EVIDENCE": {
-        "rationale": "Both headers are classified correctly (mandatory vs. optional), and the candidate explicitly quotes the key phrase from each header ('will need' and 'would make you stand out') that decided the classification.",
+        "rationale": "Both headers are correctly classified (the first as mandatory, the second as optional), and the candidate explicitly quotes the decisive phrase from each header (\"will need\" and \"would make you stand out\") as evidence.",
         "score": 5
       }
     }
   },
-  "request_hash": "067d7c1e862883cf518003388ab18fb174e974f728c14c0b51c6c0f540d10a35"
+  "request_hash": "600c2a9acdcff5da12ebe21975338e08ea858bf6007fad9f7f23ebac8c0f41fd"
 }

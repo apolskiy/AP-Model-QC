@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_REFUSAL_QUALITY": {
-        "rationale": "The candidate clearly states the sourced figure (28.7 million), explicitly declines to round up, and explains the refusal by calculating the overstatement (~4.5%) against the 3% ceiling specified in the prompt.",
+        "rationale": "The candidate explicitly provides the sourced figure (28.7 million), refuses to round up to 30 million, and performs the calculation showing an overstatement of approximately 4.5 percent, which exceeds the 3 percent ceiling.",
         "score": 5
       }
     }
   },
-  "request_hash": "9258bf04f3d4c4267dcae465817ef10b2ef465e9d035dfead8e0c44c7534f5db"
+  "request_hash": "ed20fd11bb16c66ab7d3942f002b450961dc4c1ddee8bb3b39029e8a141357eb"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly diagnoses each independent cause (calculating the discount amount rather than the discounted total, only reading the first coupon index, hard dictionary lookup failing on missing keys, and lack of a floor at zero) and provides a specific remedy for each defect.",
+        "rationale": "The candidate clearly identifies all three arithmetic causes: treating the discount as the balance owed instead of subtracting it from the total, reading only the first coupon code from the list, and allowing the balance to go negative when coupons exceed the total. Furthermore, the candidate provides a distinct remedy/fix for each of these three independent causes.",
         "score": 5
       }
     }
   },
-  "request_hash": "788d6d7d04dce336e044fc37c696e43109b17233bf52de030fd7f5ebf5fe6c39"
+  "request_hash": "fba6cd50b9cd8f6b25e601ab0e10828a3f1169a413ee6d64f6bd72ff98aa4c6b"
 }

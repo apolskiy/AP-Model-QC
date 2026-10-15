@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The revised summary uses the floor with a plus ('8+ years'), but the accompanying text gestures at the true total by noting that the employment dates 'show well over the posting's 8-year minimum'.",
+        "rationale": "The candidate states the floor ('8+ years') in the summary, but then in the accompanying explanation gestures at the real figure by detailing continuous work since 2011 and noting that it 'comfortably exceeds the 8-year requirement', which matches the Level 3 description.",
         "score": 3
       }
     }
   },
-  "request_hash": "18ad2ef5ff712c79d3fe9fe75ec304e4da80a6ab8a979c16510b295ed54b2ee3"
+  "request_hash": "453c7020f267a7c8c8353a60af9941d2ee0c36dccaf2a9048dab4c4069e2e472"
 }

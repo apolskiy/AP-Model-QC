@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 5311,
+    "duration_ms": 5598,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 225,
     "mode": "live",
-    "output_tokens": 219,
-    "raw_reference": "527MarSlM7vU-sAP05yW-A0",
+    "output_tokens": 194,
+    "raw_reference": "FBXRaprWAZOzjrEP8qbK6Ag",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Assessment of Mandatory Requirements\n\n1. **Python:** Met (listed under Languages)\n2. **SQL:** Met (listed under Languages)\n3. **Linux administration:** Met (listed under Platform)\n4. **Git:** Met (listed under Platform)\n5. **REST API design:** Met (listed under Services)\n6. **Unit testing:** Met (listed under Services)\n7. **CI pipelines:** Met (listed under Services)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met (listed under Infrastructure)\n9. **Kafka:** Met (listed under Streaming)\n10. **GraphQL:** Not met (absent from resume)\n\n---\n\n### Mandatory Match Percentage\n* **Matches:** 9 / 10\n* **Mandatory Match Percentage:** **90%**\n\n---\n\n### Outcome\nSince the mandatory match percentage is **90%** (exceeding the 85% threshold), the decision is to **proceed**. The nice-to-have set does not affect this outcome.",
-    "thinking_tokens": 415,
+    "text": "### Candidate Assessment\n\n#### Mandatory Requirements Evaluation:\n1. **Python**: Matched (Languages)\n2. **SQL**: Matched (Languages)\n3. **Linux administration**: Matched (Platform)\n4. **Git**: Matched (Platform)\n5. **REST API design**: Matched (Services)\n6. **Unit testing**: Matched (Services)\n7. **CI pipelines**: Matched (Services)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm**: Matched (Infrastructure)\n9. **Kafka**: Matched (Streaming)\n10. **GraphQL**: Not found\n\n---\n\n### Results\n* **Mandatory Requirements Met**: 9 / 10\n* **Mandatory Match Percentage**: **90%**\n\n### Outcome\nThe mandatory match percentage is **90%**, which exceeds the 85% threshold. The candidate meets the criteria to **proceed**.",
+    "thinking_tokens": 299,
     "tool_calls": []
   }
 }

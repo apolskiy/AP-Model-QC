@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate asks for the missing years of experience, details specific concrete consequences of omitting the number (such as ATS filters and recruiter skims), and explicitly notes that the omission alone can decide the outcome (being filtered out before anyone reads it, or screeners assuming the requirement is unmet and moving on).",
+        "rationale": "The candidate output asks for the missing years of experience, clearly explains the concrete consequence of omitting it, and states that applicant tracking systems and screeners filter on that requirement first, meaning the omission alone can cause screeners to assume the bar is not met and move on.",
         "score": 5
       }
     }
   },
-  "request_hash": "b5fb20ce5f584827bfb7eafbb11b4fc7332b0b3937208b01cec727fbf024dfb7"
+  "request_hash": "77c0f4b8d959dbd6bf25430dc5e8f3a99faad4afff5f51a4cccfb0c1c455d41a"
 }

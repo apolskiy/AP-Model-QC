@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The candidate summary uses the floor ('8+ years'), but the accompanying text explicitly notes that the employment dates cover 'well over the 8-year requirement'. This directly matches the Level 3 description of stating the floor and then gesturing at the real figure.",
+        "rationale": "The candidate states the required floor ('8+ years') in the summary, but then adds an explanatory note stating that the employment dates 'add up to more than the 8 years required', gesturing at the higher actual figure without fully calculating and stating the exact total.",
         "score": 3
       }
     }
   },
-  "request_hash": "d1b6d9ecbb1650d1c1ae921c0f5e44cc2d29be24329d5f5ee9cacf6f68967665"
+  "request_hash": "a27fb1ec2f3523b0447bf5ab3156576870b0f9734ee44a80c9ff26f66ab2da05"
 }

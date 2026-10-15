@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
-    "duration_ms": 51078,
+    "duration_ms": 33122,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1455,
     "mode": "live",
-    "output_tokens": 452,
-    "raw_reference": "aa5949fb-3f10-9b72-814e-64dac1b23c58",
+    "output_tokens": 482,
+    "raw_reference": "a600d024-1235-9608-b68e-2ccc3e007ae8",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math is wrong, and invalid inputs crash checkout. Against the 100-unit calls, standard customers are billed \u221210, 0, or not at all.\n\n1. **Discount percent is applied as the amount due, not as a reduction.** `total_amount * discount / 100` treats 20 as \u201ccharge 20%,\u201d not \u201ctake 20% off.\u201d A standard 100-unit basket becomes 20 before coupons; a premium basket would become 30, so premium pays more than standard. Customers are undercharged (premium relatively overcharged versus standard), and the merchant loses most of the sale.\n\n2. **The coupon is subtracted from that already-wrong figure, and the result is not floored.** `amount_owed = total_amount * discount / 100 - coupon_sum` can go negative. `[\"SAVE30\"]` returns \u221210; `[\"SAVE20\"]` returns 0 instead of a positive balance near 60\u201380. Customers can be credited or zeroed out; payments and accounting break; the merchant eats the loss.\n\n3. **Only the first coupon is used.** `coupon_codes[0]` ignores every later code, despite the plural argument and the name `coupon_sum`. Stacked coupons never add up. Customers who hold more than one code are shorted; anyone relying on a true sum gets a partial discount.\n\n4. **Unknown coupon codes raise `KeyError`.** `[\"NOPE\"]` with lookup `{\"SAVE30\": 30}` crashes instead of rejecting the code. That customer cannot check out; support sees a production exception.\n\n5. **No coupons crash as well.** An empty `coupon_codes` hits `IndexError` on `[0]`. Customers without a code cannot settle.\n\n6. **Unknown tiers crash.** Any `account_tier` other than `\"standard\"` or `\"premium\"` raises `KeyError` on `DISCOUNT_BY_TIER`. Those accounts cannot check out.\n\n7. **Money is computed with binary float division.** `/` yields a float, so totals can be off by fractions of a unit. Customers can be mis-charged by rounding dust; finance cannot reconcile exactly.",
-    "thinking_tokens": 2249,
+    "text": "The function mis-bills every one of these calls, and the third one crashes.\n\n1. **Tier \u201cdiscount\u201d is used as the price, not taken off the price.**  \n   `total_amount * discount / 100` charges standard customers 20% of the basket and premium customers 30%. On a 100-unit basket that is 20 and 30, not 80 and 70. Premium pays more than standard.  \n   **Affected:** every customer (undercharged); premium customers if this was meant as a payable rate (worse deal than standard); the merchant (lost revenue). On any basket other than 100, a flat tier amount would also be wrong, because it is scaled by `total/100`.\n\n2. **Amount owed can go negative.**  \n   First call: `100 * 20 / 100 - 30 = -10`. Nothing clamps at zero.  \n   **Affected:** finance and payments (credit/refund or a negative charge); the merchant.\n\n3. **Only the first coupon is applied.**  \n   The argument is a list and the variable is `coupon_sum`, but the code reads `coupon_codes[0]` only. Extra codes are ignored.  \n   **Affected:** customers who pass more than one code (under-discounted).\n\n4. **Unknown coupon crashes the checkout.**  \n   `coupon_lookup[\"NOPE\"]` raises `KeyError`. The third production call does this.  \n   **Affected:** customers with a typo, expired, or inapplicable code; the request fails instead of rejecting the coupon.\n\n5. **Unknown tier crashes the same way.**  \n   `DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for anything other than `\"standard\"` or `\"premium\"`.  \n   **Affected:** any other tier, bad or missing tier data.\n\n6. **No coupons crashes.**  \n   An empty `coupon_codes` raises `IndexError` on `[0]`. `None` raises `TypeError`.  \n   **Affected:** customers checking out without a coupon.\n\n7. **Money is computed with binary floats.**  \n   `/ 100` yields a float. Cent-level totals will not round like currency.  \n   **Affected:** accounting and any basket that is not a clean multiple of the rates above.",
+    "thinking_tokens": 2022,
     "tool_calls": []
   }
 }

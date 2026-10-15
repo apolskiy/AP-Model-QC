@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The response provides the correct figure (100%) and explicitly explains that the requirement is an OR condition, meaning any single language suffices to meet it fully.",
+        "rationale": "The candidate provides the correct figure (100%) and explicitly names the 'or' connector (pointing out the requirement is disjunctive: 'Python or Go or Rust') as the reason why matching a single language satisfies the requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "3213e336040215472de051d53eec66045e12a181106adb34042ebeb05daf094c"
+  "request_hash": "c858f4238b698486e1057c786467546930f07c0aa5bb58870ec589d6158043c6"
 }

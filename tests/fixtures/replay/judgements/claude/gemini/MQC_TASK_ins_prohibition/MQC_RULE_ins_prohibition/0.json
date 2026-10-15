@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "The candidate completely avoided both em dashes and en dashes, and the writing flows smoothly and reads as though entirely unconstrained.",
+        "rationale": "The candidate completely avoids em dashes and en dashes, and the resulting prose is fluent, grammatical, and reads as though entirely unconstrained.",
         "score": 5
       }
     }
   },
-  "request_hash": "e845d70fc3558a9ea35a29ec82cf4b726171fc48068ab3bc78f29ac16aac6aa6"
+  "request_hash": "2ad2c78d5aeee7b7306555eb8e839413149a49f479d96a24865806f972e3fdd4"
 }

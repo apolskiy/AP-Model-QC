@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_WARNS_ONLY_WHERE_DUE": {
-        "rationale": "The model correctly identified that the availability gate failed, explicitly stated the margin (0.4 percentage points below the 99.5 percent minimum), and confirmed that the incident-duration gate held.",
+        "rationale": "The candidate names the availability gate as the one that failed, explicitly calculates and states the margin (0.4 percentage points below the 99.5 percent minimum), and explicitly states that the incident-duration gate held (longest incident was 41 minutes against the 60-minute limit).",
         "score": 5
       }
     }
   },
-  "request_hash": "4ba8a49b6edee98d0836d18d64310cabd4bffdb4dbe468d12b7b643cfc17e9d5"
+  "request_hash": "b92475dca33083c77d4df92ae91a378b975417fbb8b24d7db9322a5fd0373608"
 }

@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_COD_CAUSES_DIAGNOSED": {
+        "rationale": "The response clearly identifies all three independent causes of the defect (charging the discount amount rather than reducing the total by it, evaluating only the first coupon code instead of summing them all, and indexing directly into the lookup dict which throws a KeyError on unrecognised codes). It provides an explicit remedy for each cause while keeping them distinct.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "9d21b6fe08cc2715aaef0cb096856df16139d06c461c53744272eb2e8f5c75d0"
+}

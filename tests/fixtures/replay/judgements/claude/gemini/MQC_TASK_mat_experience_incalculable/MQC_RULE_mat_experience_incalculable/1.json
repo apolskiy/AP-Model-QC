@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate output asks for the missing years of experience, explains the concrete consequences of omitting them, and explicitly states that the omission alone can decide the outcome (noting that the 8-year requirement is the only hard requirement and that omitting it can cause the resume to be filtered out before anything else is read).",
+        "rationale": "The candidate output asks for the missing figure, outlines concrete consequences of leaving it out, and explicitly explains that the omission alone can decide the outcome (e.g., being filtered out automatically by ATS/recruiters screening on that specific number before reading anything else).",
         "score": 5
       }
     }
   },
-  "request_hash": "509747ea440e334cfa0970d84bdc7369f4d0806de6a7ef7f5cf7eda735cb17cb"
+  "request_hash": "ba0adc203c8a77635455549bfab14e3d3e6becdb0748bcb9ae8d70f699cdf583"
 }

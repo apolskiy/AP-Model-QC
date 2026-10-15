@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate asks for the missing years of backend engineering experience, states the concrete consequence of omitting it (failing to meet the hard 8+ years prerequisite), and explicitly notes that the omission alone can decide the outcome (leading to immediate disqualification/automatic rejection before reaching a hiring manager).",
+        "rationale": "The candidate output asks for the missing figure, clearly outlines the concrete consequence of omitting it, and explicitly states that this omission alone can decide the outcome (leading to an immediate screening rejection and automatic filtering out by recruiters or ATS for failing to meet the baseline requirement).",
         "score": 5
       }
     }
   },
-  "request_hash": "19c046dfd66902fee663376ad565339aa79f01ca9d4229f3ceceb61578402fb2"
+  "request_hash": "ee3c0bd6db167d2b0ac913f777a3a34f13a392aca8b14b97163eb662d9ac5a31"
 }

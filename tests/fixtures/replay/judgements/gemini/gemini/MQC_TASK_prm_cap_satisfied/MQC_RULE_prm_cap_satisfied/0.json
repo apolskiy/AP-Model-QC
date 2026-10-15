@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_CONTROL": {
-        "rationale": "The candidate correctly reports a match and explicitly places the 7 years of experience within the 5 to 9 years required range.",
+        "rationale": "The response reports that the candidate matches the requirement and explicitly notes that their 7 years of experience falls within the required range of 5 to 9 years.",
         "score": 5
       }
     }
   },
-  "request_hash": "404259abc1c57fc258504f7c16ba67b42bd93cb53639070fa98ddf8600a6c2b3"
+  "request_hash": "82f3f5cc29f414aa372a284dc8dc150ecec339b4ecdac97f01ddac2c6d111007"
 }

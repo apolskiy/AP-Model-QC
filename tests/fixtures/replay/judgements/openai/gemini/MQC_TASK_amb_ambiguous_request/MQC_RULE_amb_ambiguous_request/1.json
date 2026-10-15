@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The candidate output explicitly identifies both missing details (which specific threshold to raise and what new value to set it to) and clearly explains what it will do once that information is provided (accurately update the configuration).",
+        "rationale": "The candidate clearly names both missing details (which threshold to raise and what the new value should be) and states what it will do once the information is provided (apply the change correctly).",
         "score": 5
       }
     }
   },
-  "request_hash": "0b5ab75a7e430c0c87c322e2df0a37ccb66f4dbb2f70c0d92822207e265067d4"
+  "request_hash": "c469f34355bf9d1df545aa5b57d6a6a9740d398e618957fbad862dbec687c067"
 }

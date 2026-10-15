@@ -3,18 +3,18 @@
   "reply": {
     "scores": {
       "C_COD_CREDITED_DEFECTS": {
-        "rationale": "The candidate identifies both unprompted defects: an empty coupon list causing an IndexError on index 0, and an unmapped account tier raising a KeyError on DISCOUNT_BY_TIER, explicitly detailing the inputs that trigger each.",
+        "rationale": "The candidate reports both defects along with the inputs that trigger them: empty coupon list (IndexError on coupon_codes[0] or TypeError on None) and an unmapped account tier (KeyError for anything other than standard or premium).",
         "score": 5
       },
       "C_COD_FURTHER_PROBLEMS": {
-        "rationale": "The candidate identifies floating-point arithmetic from division as an additional defect and explains why it matters: rounding dust can mischarge customers and prevent finance from reconciling accounts.",
+        "rationale": "The candidate identifies multiple valid further problems beyond the prompt's required outcomes, notably binary float math and lack of currency rounding, clearly explaining why it matters for accounting and fractional baskets.",
         "score": 5
       },
       "C_COD_WHO_IS_AFFECTED": {
-        "rationale": "The candidate clearly exceeds Level 3 by explaining who loses (stating the merchant loses most of the sale and eats the loss from undercharging and zero/negative balances). However, it falls short of Level 5 because it does not explicitly point out that settling at zero fails silently while negative balances cause payment processing failures.",
+        "rationale": "The candidate explicitly identifies who loses out financially (the merchant suffering lost revenue and undercharging customers), which exceeds level 3. However, it does not explicitly note that the zero settlement call (producing 0) fails silently without raising an error compared to the negative settlement, falling short of level 5.",
         "score": 4
       }
     }
   },
-  "request_hash": "94fbec53a1939d8a7bcadc5d8bb322926a811aae785dd75a3491ac6f859aeb55"
+  "request_hash": "efcc08a9cd94ae46932bdfb6cec0d67957ce7d8aa781d28cfbfe9218681d09c5"
 }

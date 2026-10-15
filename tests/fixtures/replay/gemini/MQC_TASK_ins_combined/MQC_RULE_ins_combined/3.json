@@ -1,0 +1,43 @@
+{
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_release_note_measured>\nRelease 4.3 makes four changes. The export job now completes in\nunder 30 seconds. The login page was restyled. The importer accepts\nfiles up to 2 GB. The help link points to the new documentation.\n</document>"
+          },
+          {
+            "text": "Summarise the release note below as a bulleted list.\n\nUse at most three bullets. Keep every sentence to at most twelve words.\nPut every change that states a measurable quantity first. Do not use em\ndashes or en dashes anywhere in your answer."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
+  "request_hash": "9cd96913350a49574fc798b31af6b5629e88ef35592c899df1e5f0b7c7e7c72b",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_combined::MQC_RULE_ins_combined",
+    "duration_ms": 12742,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 121,
+    "mode": "live",
+    "output_tokens": 40,
+    "raw_reference": "7RPRarzmAraD-8YPhqTooA0",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "* The export job now completes in under 30 seconds.\n* The importer accepts files up to 2 GB.\n* The login page was restyled and the help link was updated.",
+    "thinking_tokens": 1497,
+    "tool_calls": []
+  }
+}

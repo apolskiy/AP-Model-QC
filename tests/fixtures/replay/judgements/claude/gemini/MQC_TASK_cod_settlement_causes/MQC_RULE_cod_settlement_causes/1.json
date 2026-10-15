@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response clearly identifies each independent defect\u2014including the core arithmetic error of calculating the discount amount rather than the discounted total, the single-coupon indexing, the unhandled KeyError for unknown codes, and the lack of a zero floor\u2014and provides a specific remedy for each without conflating them.",
+        "rationale": "The response identifies all three independent arithmetic causes (using the discount as the amount owed rather than subtracting it, reading only the first coupon code, and allowing the amount owed to go negative when coupons exceed the balance) and provides a clear, separate remedy for each.",
         "score": 5
       }
     }
   },
-  "request_hash": "6509a5fe4addbad2ef96674dcfddee6359c387ef08ccccafa712ede3781d7610"
+  "request_hash": "55b7a01c1e787c9ff16f801c6c6b5b1251788922f1b19118151e1b87a1113ab7"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_FLOOR_INSUFFICIENCY": {
-        "rationale": "The candidate output recognizes that '8+ years' establishes a floor of at least 8 years and does not necessarily establish 9 years, which clearly exceeds a simple Level 1 mismatch assertion. However, it falls short of Level 3 because it concludes that the candidate does not meet the requirement, rather than correctly identifying that the summary is insufficient to settle whether the candidate matches.",
-        "score": 2
+        "rationale": "The candidate output correctly explains why the summary cannot settle the requirement (noting that '8+ years' establishes at least 8 years but does not confirm 9 or more), thereby clearly exceeding Level 3. However, it falls short of Level 5 because it does not ask for the candidate's actual figure.",
+        "score": 4
       }
     }
   },
-  "request_hash": "4827933cbafdfb7409aba4750d79634ba66635a3060efff00e99db76bbf7538a"
+  "request_hash": "15eae6902befdef9198c9145ac57d2eb3ec01c7939aded7e1e2305992c2b6e50"
 }

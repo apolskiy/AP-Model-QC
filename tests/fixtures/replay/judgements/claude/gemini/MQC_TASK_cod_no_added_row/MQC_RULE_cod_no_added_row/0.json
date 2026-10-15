@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_COD_TABLE_FIDELITY": {
-        "rationale": "All four regions and their corresponding order counts are accurately reproduced in the exact order presented in the source table.",
+        "rationale": "All four regions and their order counts are accurately reproduced from the table in the exact original order.",
         "score": 5
       }
     }

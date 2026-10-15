@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_STAYS_IN_SOURCE": {
-        "rationale": "Every claim and figure provided directly traces to the context document, with no unsupported generalities or outside information introduced.",
+        "rationale": "Every stated region and revenue figure traces directly to the source report, with no added figures, external knowledge, or unsupported generalities.",
         "score": 5
       }
     }
   },
-  "request_hash": "a441a739b8bc4f8331a070609b63c910ea9dd8b14040dafd9633b0c560794a04"
+  "request_hash": "202c6e87410a20ee9aeba15d4680950dce57c3e4222a07b520c04e6f21eb8b74"
 }

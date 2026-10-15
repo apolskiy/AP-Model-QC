@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate clearly states that an unrecognised code should contribute 0 and that settlement proceeds without raising an exception, explicitly naming how to do so via `.get(code, 0)`.",
+        "rationale": "The candidate explicitly identifies that unrecognized codes should resolve to 0 using `coupon_lookup.get(code, 0)` and explains how settlement proceeds without halting (summing the retrieved values into the balance calculation).",
         "score": 5
       }
     }
   },
-  "request_hash": "a19d221630c588dde8f5773c68ea62aa8cb58a3ad0d2862b709c339abbf0a6cf"
+  "request_hash": "044b1c2b786e13e799d2cf35697bbbcab54fd3c4aa472d75fd51aa7ed631ccbb"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "The text completely avoids em dashes and en dashes without awkward phrasing. The prose uses a colon and standard list structure that flows smoothly and reads as though entirely unconstrained.",
+        "rationale": "The prohibited em dashes and en dashes are completely avoided, and the prose flows smoothly and naturally without any strained phrasing.",
         "score": 5
       }
     }
   },
-  "request_hash": "65ef05c0c2354f06ff3d996fe49ce7a1fdcecc0b394dc9cc1b802c99dbc944b6"
+  "request_hash": "b4145c9f9b55821d840754866378a5b6df2f2d9ddffc1ea390e284b33b97ddc2"
 }

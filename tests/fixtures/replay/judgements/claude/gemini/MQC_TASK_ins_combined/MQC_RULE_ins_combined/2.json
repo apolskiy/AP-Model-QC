@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_NO_DEGRADATION": {
-        "rationale": "The candidate successfully captured all four changes mentioned in the source release note across three concise bullet points without losing any key details or clarity. Content quality and informativeness are fully preserved.",
+        "rationale": "The summary successfully incorporates all four updates from the source document without omitting any key details or distorting information, remaining fully as informative as single-constraint answers.",
         "score": 5
       }
     }
   },
-  "request_hash": "97934b7e315e496b9fc7acf3868d157e5b6293878e50422f39c5e0cfd92e02e6"
+  "request_hash": "4cad376c2a8af3e7b79ce26ce9cf0a757bba9c5440b4a32d5adb7bea2da01880"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_CEILING_PROCEEDS": {
-        "rationale": "The candidate output accurately computes the mandatory match above 85% (90%), proceeds with the candidate, and explicitly states that the nice-to-have set does not affect the outcome.",
+        "rationale": "The candidate correctly calculates the mandatory match percentage (90%), decides to proceed based on meeting the 85% threshold, and explicitly notes that the optional/nice-to-have set has no effect on the outcome.",
         "score": 5
       }
     }
   },
-  "request_hash": "da41174f4380ee8c265365f2060c7d176f7fa5eac0bbd1d870412e162a1b6e96"
+  "request_hash": "7149962dcdf0dd3039ad0c6051a0fca258753b0e399e7578a83e7d5f933f2e4b"
 }

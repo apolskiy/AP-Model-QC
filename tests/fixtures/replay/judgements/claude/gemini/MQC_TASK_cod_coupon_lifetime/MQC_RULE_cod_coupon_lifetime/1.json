@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_LIFETIME_IS_ENFORCEABLE": {
-        "rationale": "The candidate recommends specific lifetime bounds (an absolute `expires_at` timestamp and an issuance-time maximum lifetime cap) and explicitly details the data the lookup must carry (such as `expires_at`) for the redemption logic to enforce the bound.",
+        "rationale": "The candidate recommends bounding code lifetime via an absolute expiry timestamp (`expires_at`) and explicitly details what the lookup must return (a record carrying `expires_at`, `value`, etc.) for the bound to be checked and enforced.",
         "score": 5
       }
     }
   },
-  "request_hash": "4a96af58118887b90754aa2f53f4ec90cbd82e945d93e6a75590078d55a92415"
+  "request_hash": "fd806af6084d68f2ce0174339f4820761df35f4042c5789fd55a660b42d65f13"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The candidate asks for the missing figure, explains the concrete consequence of not including it (inability to verify the 8-year requirement), and explicitly states that this omission alone can decide the outcome (leading to automatic disqualification or filtering out).",
+        "rationale": "The response asks for the missing figure, outlines the concrete consequence of omitting it, and explicitly states that the omission alone can decide the outcome (noting that the 8-year requirement serves as a hard filter leading to automatic rejection/immediate screening disqualification).",
         "score": 5
       }
     }
   },
-  "request_hash": "4b292b659871db7aa7e3491c08ed6de93d10b30327bff4f0c12686a5ee143f90"
+  "request_hash": "346aec856b5f0e003dbf9bf04c60d638e7306585b519627353265c43900342d1"
 }

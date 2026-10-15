@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The candidate output states '8+ years' to satisfy the minimum requirement floor and immediately stops without gesturing toward or disclosing the full calculated total.",
+        "rationale": "The candidate output states the floor of '8+ years' without gesturing at or revealing the actual total derived from the employment dates.",
         "score": 5
       }
     }

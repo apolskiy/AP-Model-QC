@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_FLOOR_MARGIN": {
-        "rationale": "Both the mandatory figure (78%) and combined figure (85.3%) are calculated correctly, and the response explicitly notes that the candidate clears the 85% threshold by a thin margin of approximately 0.3 points.",
+        "rationale": "Both the mandatory figure (78%) and the combined figure (85.3%) are calculated correctly, and the candidate explicitly notes that the combined figure only just clears the threshold by 0.3 points.",
         "score": 5
       }
     }
   },
-  "request_hash": "e404c1056f94bf83866e469e99d81d7e6e166f54225b7cad8069005dde5b409d"
+  "request_hash": "a2f7aca1fb260e7c249621ed069a5704cd029ac5081c1156335872c244b456d0"
 }

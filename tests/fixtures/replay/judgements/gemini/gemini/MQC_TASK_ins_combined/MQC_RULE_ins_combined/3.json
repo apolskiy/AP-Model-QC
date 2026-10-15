@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate output successfully incorporates all four updates from the original release note within the three-bullet limit, maintaining full informativeness without any loss or degradation of content compared to single-constraint summaries.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "19914fd4ca8f3823ae62d69e59bfe162ebae5b58ce54499181dd020546ce7713"
+}

@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_COD_MINIMAL_CORRECTION": {
-        "rationale": "The candidate added exactly the missing closing parenthesis to complete the call to sorted() and changed nothing else in the excerpt.",
+        "rationale": "The missing closing parenthesis on line 2 was added, and no other characters, formatting, or tokens were modified.",
         "score": 5
       }
     }

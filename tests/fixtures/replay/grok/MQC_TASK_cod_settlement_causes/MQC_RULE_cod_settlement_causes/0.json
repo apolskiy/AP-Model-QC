@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
-    "duration_ms": 36801,
+    "duration_ms": 35048,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1538,
     "mode": "live",
-    "output_tokens": 259,
-    "raw_reference": "39af0e21-4ec6-920c-b3f3-22a0d648bfd9",
+    "output_tokens": 412,
+    "raw_reference": "5a54d87a-d516-91f6-a4c6-0fca65a39bf8",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math treats a percent-off as the amount due, and coupon handling both drops extra codes and aborts on an unknown one.\n\n1. **Percent-off is used as the payable amount.** `discount` is a percent of the basket (standard = 20% off), but `total_amount * discount / 100` is only the discount slice, and that slice is what gets returned as amount owed. A coupon is a currency amount, so it cannot be combined with a raw percentage. Subtract the percent from the total first (`total_amount * (100 - discount) / 100`), then subtract currency coupons from that remainder.\n\n2. **Only the first coupon is applied.** `coupon_codes[0]` ignores every later code, so stacked coupons are not summed. Look up each code and add the currency values.\n\n3. **An unknown code aborts settlement.** `coupon_lookup[...]` raises `KeyError` when the code is missing, so the third call never settles. Skip unrecognised codes (they add 0) and still apply the tier discount.\n\nFor the 100-unit basket that is: 50, \u221210, 80, and 30 \u2014 not \u221210, \u221270, an exception, and 0.",
-    "thinking_tokens": 2020,
+    "text": "The settlement formula treats the tier percentage as the balance and then subtracts a currency coupon from that slice. It also reads only the first coupon and aborts when a code is missing.\n\n**Discount is applied as the amount due, and a currency coupon is subtracted from that slice.** `discount` is a percent of the basket (20 means 20% off), not the fraction still owed. `total_amount * discount / 100` is only the currency value of that percent (20 on a 100 basket). Subtracting `coupon_sum` from it never reduces the basket, and it combines two different units: a rate and a currency credit. Both adjustments are reductions of `total_amount`, and they are not interchangeable. Convert the tier percent into a currency reduction of the total, then subtract that and the coupon currency amounts from the basket:\n\n`total_amount * (100 - discount) / 100 - coupon_sum`\n\n**Only the first coupon is used.** `coupon_lookup[coupon_codes[0]]` ignores every later code, so `[\"SAVE20\", \"SAVE30\"]` never adds the second credit. Sum the currency value of every supplied code.\n\n**An unknown code aborts settlement.** A missing key raises `KeyError` (the `\"NOPE\"` call), so no amount is returned. Skip unrecognised codes (treat them as 0) and still settle with the tier discount and any recognised coupons.\n\n```python\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = sum(\n        coupon_lookup[code] for code in coupon_codes if code in coupon_lookup\n    )\n    return total_amount * (100 - discount) / 100 - coupon_sum\n```\n\nOn the 100-unit standard basket that is 50, \u221210, 80, and 30 for the four calls.",
+    "thinking_tokens": 4014,
     "tool_calls": []
   }
 }

@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_INS_NO_DEGRADATION": {
-        "rationale": "The candidate output retains all four updates mentioned in the source release note accurately and clearly, without loss of information or unnatural phrasing.",
+        "rationale": "The candidate successfully captures all four updates from the source document without losing any information or detail while strictly adhering to all formatting and length constraints.",
         "score": 5
       }
     }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The candidate provides the exact arithmetic calculation showing both the numerator (41.2 million for North America) and the denominator (87.4 million for total revenue), clearly naming and displaying the figures from which the percentage is derived.",
+        "rationale": "The percentage calculation is correct, and both figures it is derived from (North America's revenue of 41.2 million and the total revenue of 87.4 million) are explicitly stated and shown in the calculation.",
         "score": 5
       }
     }
   },
-  "request_hash": "3229209a1253ed1f9933880129f5bc63976ab38893acd60b64304ae2deeab98e"
+  "request_hash": "a43418b5552244d0c26cdf417bc78a371775a5eda89752db4451b8c629fec0b0"
 }

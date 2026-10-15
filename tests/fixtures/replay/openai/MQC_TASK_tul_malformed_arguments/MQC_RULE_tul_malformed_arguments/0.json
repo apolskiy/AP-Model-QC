@@ -85,13 +85,13 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_malformed_arguments::MQC_RULE_tul_malformed_arguments",
-    "duration_ms": 910,
+    "duration_ms": 1397,
     "engine": "openai",
     "finish_reason": "tool_calls",
     "input_tokens": 146,
     "mode": "live",
     "output_tokens": 21,
-    "raw_reference": "chatcmpl-EY2nIPra7sslWowKX3KCyLEXPAcJH",
+    "raw_reference": "chatcmpl-EZK9uhrg4X1x6BPwteiNxkEiQ2pce",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
     "text": "",
@@ -102,7 +102,7 @@
           "limit": 5,
           "query": "damaged on arrival"
         },
-        "call_id": "call_ch2oFIswlriyiohL76BQpuLc",
+        "call_id": "call_58C3vIQwqm5l1zCdaiJMiNkO",
         "sequence": 0,
         "tool_name": "search_policy"
       }

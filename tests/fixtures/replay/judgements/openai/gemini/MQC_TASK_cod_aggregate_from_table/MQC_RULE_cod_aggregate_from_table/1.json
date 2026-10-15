@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_AGGREGATE_CHECKABLE": {
-        "rationale": "Both the total orders (255) and total revenue (\u20b987,400) are correct, but they are presented as bare figures without listing or showing the row values that make up the sums.",
+        "rationale": "Both the total orders (255) and total revenue (87,400) are correct, but they are presented as bare numbers without the individual row values that make up the sum.",
         "score": 3
       }
     }
   },
-  "request_hash": "d930a872cce61279316a81a66f779608582cb94e9609a43e2a636bdd6e425964"
+  "request_hash": "b412c3dd9173965f2ef7e08a5131d4ee2f84cda962ca324c259174de77629944"
 }

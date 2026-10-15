@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_WARNS_ONLY_WHERE_DUE": {
-        "rationale": "The candidate explicitly identifies that the availability gate failed, provides the exact margin of failure (0.4 percentage points shortfall), and confirms that the incident duration gate held (41 minutes vs. 60-minute limit).",
+        "rationale": "The candidate clearly names the availability gate as the one that failed, explicitly calculates the margin (0.4 percentage points shortfall), and specifies that the incident-duration gate passed with a 41-minute longest incident against the 60-minute limit.",
         "score": 5
       }
     }
   },
-  "request_hash": "2f474400730cc5e55ebb127c8d55b39a530c1e128a403e49881351ad93e3645b"
+  "request_hash": "eb2f6440c051f9c94948f36dfc78dc3ada65a60467d2dc255dacce68356dd823"
 }

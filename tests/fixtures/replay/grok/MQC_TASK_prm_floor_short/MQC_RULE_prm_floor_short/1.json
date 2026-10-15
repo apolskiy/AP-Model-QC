@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 4325,
+    "duration_ms": 4943,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1356,
     "mode": "live",
-    "output_tokens": 50,
-    "raw_reference": "45bf4c70-7d57-97e7-b6c5-2167dbef1b82",
+    "output_tokens": 66,
+    "raw_reference": "9f0184db-88b5-9b49-8409-d5ddf00670b7",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The candidate does not clearly match the requirement. The posting requires 9 years of backend engineering experience, while the summary only states \u201c8+ years.\u201d That floor is below 9 and does not establish whether the candidate has 9 years or more.",
-    "thinking_tokens": 182,
+    "text": "The candidate does not match the requirement on the evidence given. The posting requires 9 years of backend engineering experience. The summary only states \u201c8+ years,\u201d which establishes at least 8 years and does not establish 9. It is compatible with either meeting or falling short of the requirement, so the match cannot be assumed.",
+    "thinking_tokens": 235,
     "tool_calls": []
   }
 }

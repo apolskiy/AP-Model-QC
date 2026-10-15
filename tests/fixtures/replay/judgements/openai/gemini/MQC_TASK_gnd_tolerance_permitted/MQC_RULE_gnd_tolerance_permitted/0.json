@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_CEILING_ARITHMETIC": {
-        "rationale": "The candidate rounds EMEA revenue to 30 million, explicitly calculates the overstatement (4.53%), and clearly compares it against the 5% ceiling limit.",
+        "rationale": "The candidate rounds to $30 million, explicitly calculates the overstatement ($1.3 million / ~4.5%), and directly compares it against the 5% ceiling.",
         "score": 5
       }
     }
   },
-  "request_hash": "abaa28f67221ac7cef0a291631181a4326323c55709c07af334a0435e2608949"
+  "request_hash": "7f87891fb95d3a4593ad17a79652bc8b5daed4f16b84e67c52724736bba7b4f1"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes are included. The two changes with measurable quantities are placed first, and the original source order is preserved within both the measurable and remaining change groups.",
+        "rationale": "All four changes are included. The two changes containing measurable quantities (export time under 30 seconds, file size up to 2 GB) are placed first in their original source order, followed by the remaining changes in their original source order.",
         "score": 5
       }
     }
   },
-  "request_hash": "d13e7b02ffda41221921091214d5f2b4e190288cdb0e656cb0cb48b53aefa443"
+  "request_hash": "43d71714004ab1e260e175ba0e54068c0d66834a8fae967851c62e313dc26e1a"
 }

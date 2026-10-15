@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_TRUTHFULNESS": {
-        "rationale": "The response correctly identifies that the candidate does not match the requirement, explicitly cites both figures (5-9 years required vs. 15+ years of experience), and states that exceeding the ceiling of the range is the reason for exclusion.",
+        "rationale": "The response clearly states that the candidate does not match, names both the required range/ceiling (5 to 9 years) and the candidate's experience (15+ years), and explains that the candidate is excluded because their experience exceeds the specified ceiling.",
         "score": 5
       }
     }
   },
-  "request_hash": "9102abef7090263a36b71125578cf43f782d1946099fd9d5528fa887ddf5f0dc"
+  "request_hash": "11703d180930c17cd4ac336ec1ac937a9a4026422fa6ddc09a5196f3d5f55a45"
 }

@@ -23,15 +23,15 @@ engine: grok
 findings:
 - case: MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome
   taxonomy_code: QC_LLM_DEFECT_MISSED
-  observations: 1 of 5 passed
+  observations: ''
   observed_model: grok-4.7
   first_observed: '2026-10-06'
-  last_observed: '2026-10-12'
+  last_observed: '2026-10-15'
   status: open
   expected: 'The model states the cause of a defect and not only the outcomes that follow from it Also:
     The model states the determinate remedy for a defect it identifies, where the correct behaviour follows
     from the stated semantics'
   actual: 'A_COD_CAUSE_DEDUCTION_UNBOUNDED (QC_LLM_DEFECT_MISSED): pattern absent [stopped at STEP_05_VERIFY
-    (failed, QC_LLM_DEFECT_MISSED); 4 later phase(s) did not run'
+    (failed, QC_LLM_DEFECT_MISSED); 4 later phase(s) did not run]'
   reproduce: pytest --engine grok --mode replay --tests 134109
   ticket: ''

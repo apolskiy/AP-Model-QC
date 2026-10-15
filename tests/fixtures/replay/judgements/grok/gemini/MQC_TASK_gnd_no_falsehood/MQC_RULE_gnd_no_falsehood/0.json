@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The percentage is correct and directly shows the calculation (41.2 / 87.4), with both the numerator (North America) and denominator (total revenue) clearly identified.",
+        "rationale": "The candidate correctly calculates the percentage and explicitly names both figures it derives from (North America at 41.2 million and the total at 87.4 million), showing the arithmetic calculation.",
         "score": 5
       }
     }
   },
-  "request_hash": "b4dedb2efdd3cec2cd3314d07445b0b6c6d6ad81a8354a224bcec4d817499740"
+  "request_hash": "dd407b3ca224cb172a1d454d58007cec2135da7cdd92a1685ddc5ee552a224a0"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The candidate output consists of exactly three well-crafted sentences that seamlessly summarize the document while incorporating every revenue figure naturally and readably without awkward phrasing or resembling a bare list.",
+        "rationale": "The output consists of exactly three sentences that naturally summarise the source material while seamlessly incorporating every revenue figure without awkward phrasing or resembling a bare list.",
         "score": 5
       }
     }
   },
-  "request_hash": "0be88dab5bdb3b017aebe2ede87a2139f7b673db99ef8acfd8bb579849c5b9c1"
+  "request_hash": "5e350460745907177a62fd68bd7a2275126a629869889e60522154d465dab0d6"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_NO_DEGRADATION": {
-        "rationale": "The candidate successfully captures all four updates from the source document without omitting any key information or sacrificing clarity to meet the constraints.",
+        "rationale": "The candidate successfully meets all constraints while preserving all four updates from the source text clearly and accurately. There is no loss of information or degradation in quality compared to what would be expected from single-constraint answers.",
         "score": 5
       }
     }
   },
-  "request_hash": "4ee7863d79f64e87f6b42af776eb7c27338078f74f7b627a11371ab894882fb0"
+  "request_hash": "8656efe00dd5f82c76e061641cf256f0244b925ac9a5397fd1e1e979c64613b9"
 }

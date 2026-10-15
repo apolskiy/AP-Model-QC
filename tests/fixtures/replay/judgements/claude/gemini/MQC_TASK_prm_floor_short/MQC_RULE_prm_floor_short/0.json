@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_FLOOR_INSUFFICIENCY": {
-        "rationale": "The candidate output explicitly explains why the floor of 8+ years leaves the upper bound open (and thus cannot confirm whether the 9-year requirement is met or missed) and explicitly suggests asking for the candidate's exact figures or dated history to resolve the ambiguity.",
+        "rationale": "The candidate output clearly explains that '8+' sets a floor of 8 years, meaning the actual figure could either meet the requirement (9 or more) or fall short (exactly 8), and explicitly recommends asking for the exact total years of backend experience to resolve it.",
         "score": 5
       }
     }
   },
-  "request_hash": "5c44c53d9ebaf7ff21e38ab5bd9aff353045ea085f655883206f332fa9f48d8e"
+  "request_hash": "8648f1a588005e57ae9710feba8594f780786fbb03bb45c667f84323f386c748"
 }

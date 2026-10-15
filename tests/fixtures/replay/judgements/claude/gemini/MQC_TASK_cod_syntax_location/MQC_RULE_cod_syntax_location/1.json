@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_CAUSE": {
-        "rationale": "The candidate identifies the correct line (line 2) and explicitly states that the opening parenthesis of the sorted call is never closed.",
+        "rationale": "The candidate correctly identifies line 2 as carrying the error and explicitly names the unclosed parenthesis on the call to sorted.",
         "score": 5
       }
     }
   },
-  "request_hash": "6976922d1f8d5fa72f1252eb88ebfc988cb8695a0f015f868b8529bfa55edd69"
+  "request_hash": "8c800296dc32b0ce3ad17f131f7c4398da37fc81cf556daeab67e5991f8b063b"
 }

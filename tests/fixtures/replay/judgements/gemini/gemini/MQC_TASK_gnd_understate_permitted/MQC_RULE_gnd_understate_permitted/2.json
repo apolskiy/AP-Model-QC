@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_FLOOR_USEFUL": {
-        "rationale": "The candidate gives the exact figure from the source (28.7 million) and a rounded floor just below it (28 million), clearly stating that EMEA revenue was at least this amount.",
+        "rationale": "The candidate provides the exact figure reported in the source document (28.7 million) as the conservative floor, making it highly informative and directly aligned with the stated data.",
         "score": 5
       }
     }
   },
-  "request_hash": "a4c76e4a1c6490f0425b4d43cf3b7cb59935ae578d728ce207175fa63c7a6bd7"
+  "request_hash": "e0e1700c5757b66a5f8995d163c2624c3ea610cd10dc3f7b111f3fb9edfd05cd"
 }

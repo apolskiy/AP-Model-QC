@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_DISCARD": {
-        "rationale": "The candidate provides the correct return value (the rows scoring 10 and 90) and explicitly explains that sorted() returns a new list whose return value is never assigned/retained, causing the sorted result to be discarded.",
+        "rationale": "The candidate correctly identifies the return value (the first two items in their original order, scoring 10 and 90) and clearly explains that sorted() returns a new list which is discarded because it is never assigned or captured.",
         "score": 5
       }
     }
   },
-  "request_hash": "512750478a65b2b58b20cc6309a3337bed910e2d5687b2ac840d8916cc319946"
+  "request_hash": "83211fb726a36be22868c2d97944f54db16bbba7c8e1e3ff19b7e36d58da7d26"
 }

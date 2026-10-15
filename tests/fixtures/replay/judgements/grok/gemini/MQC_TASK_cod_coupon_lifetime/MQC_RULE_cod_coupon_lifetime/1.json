@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_LIFETIME_IS_ENFORCEABLE": {
-        "rationale": "The candidate explicitly recommends bounding a code's lifetime with an absolute expiry timestamp and specifies what the lookup must carry (changing from a bare number to a record containing the discount amount and an `expires_at` timestamp) to make enforcement possible.",
+        "rationale": "The candidate recommends bounding the code's lifetime using a validity window (`valid_from` and `expires_at`) and explicitly specifies that the lookup must store and return these timestamps alongside the discount value so settlement can enforce them.",
         "score": 5
       }
     }
   },
-  "request_hash": "6e87c830c5b8d7735ff1757415ab467cb48cabfc653cdfd3884e053b331d1716"
+  "request_hash": "b4f9e5820cdd8bb6e8d9986fb1f20beac012c919a69b5f02636b80a61c4bf2c5"
 }

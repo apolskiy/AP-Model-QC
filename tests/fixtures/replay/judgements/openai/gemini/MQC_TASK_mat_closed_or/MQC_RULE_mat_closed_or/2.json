@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The response provides the correct figure (100%) and explicitly names the logical OR connector as the reason why satisfying one item meets the requirement.",
+        "rationale": "The response provides the correct figure (100%) and explicitly names the 'OR' condition as the reason why knowing one of the listed languages is sufficient to meet the requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "bc0f90f17e3dcb86c8ccc4c437da318d5c1b302d78cb15f7eb975519738bd57e"
+  "request_hash": "80d1579f35c9d2e80642155f3be76c3dca2e8728d9ae1b8c8797174752d6be32"
 }

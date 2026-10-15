@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_COD_THRESHOLD_SENSE": {
-        "rationale": "The coverage figure of 82 percent is exact, and the phrasing 'at or above' is fully preserved.",
+        "rationale": "The figure (82 percent) is exact, and the threshold comparison phrase 'at or above' is fully preserved.",
         "score": 5
       }
     }

@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 6795,
+    "duration_ms": 7537,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 113,
     "mode": "live",
-    "output_tokens": 64,
-    "raw_reference": "3GrMar-vBdPj_uMP_OKC-Aw",
+    "output_tokens": 62,
+    "raw_reference": "2Q_RasaRBpmu_uMPy_CBsAw",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Total Q3 revenue reached 87.4 million across the four reported regions. North America was the highest contributor with 41.2 million, followed by EMEA with 28.7 million. The remaining revenue came from Japan at 11.4 million and Australia at 6.1 million.",
-    "thinking_tokens": 795,
+    "text": "In Q3, total revenue reached 87.4 million across four reported regions. North America led regional performance with 41.2 million, followed by EMEA with 28.7 million. Concurrently, Japan recorded 11.4 million and Australia recorded 6.1 million.",
+    "thinking_tokens": 826,
     "tool_calls": []
   }
 }

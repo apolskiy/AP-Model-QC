@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The response arrives at the correct figure (100%) and explicitly names the logical OR connector as the reason why satisfying one item meets the requirement.",
+        "rationale": "The candidate provides the correct figure (100%) and explicitly identifies the connector 'or' as the reason why satisfying one item is sufficient to meet the requirement entirely.",
         "score": 5
       }
     }
   },
-  "request_hash": "acf3cc629c54cf647d12000b0d5c89044842429fc0269e51b7f4b01e1b7142a4"
+  "request_hash": "afc5c73d5927efd9834a27ec5d129fc1a0342ec5d5442202914a3b4206b7c57f"
 }

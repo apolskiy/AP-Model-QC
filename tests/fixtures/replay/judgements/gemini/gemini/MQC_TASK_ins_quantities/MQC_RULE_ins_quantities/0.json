@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_INS_QUANTITIES_READABLE": {
-        "rationale": "The three terse bullets meet all length constraints while accurately and comprehensively covering all three defects described in the release note.",
+        "rationale": "The three bullets are concise, informative, and together accurately cover all three defect fixes described in the release note without filler.",
         "score": 5
       }
     }

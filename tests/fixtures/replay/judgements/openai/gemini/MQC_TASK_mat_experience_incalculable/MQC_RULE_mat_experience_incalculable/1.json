@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The response asks for the missing years of experience, states the concrete consequence (the application may be overlooked), and explicitly ties this outcome to the omission alone by explaining that without the figure, the candidate cannot be shown to meet the minimum experience requirement.",
-        "score": 5
+        "rationale": "The response asks for the missing years of experience and states a concrete consequence of omitting them (recruiters often filtering out candidates who do not clearly meet required criteria, making consideration much less likely). However, it hedges the outcome ('much less likely', 'often filter out') rather than stating that the omission alone can decide the outcome.",
+        "score": 3
       }
     }
   },
-  "request_hash": "b3203dca48e7350bbdc14dd2f99c7e336ebd1e4982f6b44db87eadb70e029b30"
+  "request_hash": "48292f2922cf3f67e0f36cf9fadbc58daa2774d788c40ff93ca9ba928cb5918f"
 }

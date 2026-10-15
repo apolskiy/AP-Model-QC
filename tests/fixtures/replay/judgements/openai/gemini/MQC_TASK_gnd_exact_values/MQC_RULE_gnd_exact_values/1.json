@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response carries every revenue figure accurately across exactly three well-structured sentences. Rather than reading as a bare list, the information is naturally grouped and flows smoothly as a cohesive summary.",
+        "rationale": "The response consists of three well-constructed sentences that naturally integrate all five revenue figures from the source document without awkward phrasing or feeling like a bare list.",
         "score": 5
       }
     }
   },
-  "request_hash": "21780e3033120634023eec8e8cff2763cf1108263232e6ae8b97e6efebbcc985"
+  "request_hash": "ff6ed16af886a1db60e6f463ca6d249450cd30c06162f449975722b66bc0f93a"
 }

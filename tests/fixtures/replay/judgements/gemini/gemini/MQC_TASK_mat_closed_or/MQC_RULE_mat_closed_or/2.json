@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The candidate provides the correct figure (100%) and explicitly names the disjunctive conjunction 'or' as the reason why possessing any one of the listed languages fully satisfies the requirement.",
+        "rationale": "The response provides the correct figure (100%) and explicitly names the disjunctive connector 'OR' to explain why having a single matching language completely fulfills the requirement.",
         "score": 5
       }
     }
   },
-  "request_hash": "9ab45bd5e1b52c696fb468bfb7e0cf94a0c6afbddd6ed6b552515aed09be2877"
+  "request_hash": "0da024bb55a576239d319d6562d483d28bcc1612282ca521ec93820a0d2e3075"
 }

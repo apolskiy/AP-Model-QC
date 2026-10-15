@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The candidate output consists of exactly three sentences that smoothly integrate all five figures from the source text into readable, cohesive prose rather than presenting them as a bare list.",
+        "rationale": "The candidate output consists of exactly three well-crafted sentences that integrate all five figures smoothly and readably as prose summary rather than a disjointed list.",
         "score": 5
       }
     }
   },
-  "request_hash": "7572af76f2a0c5b0cf5b2fe2551d585b804103fcf12dfc5d36d40efdeb007873"
+  "request_hash": "e48400d056e983da679a69bbd47d2e0b62a3486a8a0663e9db1a28e4f5c498ad"
 }

@@ -358,7 +358,9 @@ class TestMQCAssertionsCanFail:
         # established nothing is not evidence against a model.
         with pytest.raises(BaseException) as nothing:
             assert_consistent_pass([gap, gap, gap])
-        assert "no observation" in str(nothing.value), (
+        # AND IT NAMES THE JUDGEMENT, since 2026-10-15, because a missing
+        # judgement and a missing response take different re-recordings.
+        assert "no judgement was recorded for any observation" in str(nothing.value), (
             f"a case that measured nothing reports something: {nothing.value}"
         )
 

@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 4980,
+    "duration_ms": 3840,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 65,
     "mode": "live",
-    "output_tokens": 118,
-    "raw_reference": "p27MaryHKfuc1MkP75CskAk",
+    "output_tokens": 100,
+    "raw_reference": "2RTRapOXDrzVjMcPys-FiA0",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The candidate meets **50%** of the requirement.\n\n### How this was arrived at:\n\n1. **Total requirements identified:** 2 items\n   * Docker\n   * Kubernetes\n\n2. **Requirements met by the candidate:** 1 item\n   * Docker (Candidate lists: *Docker*)\n   * *Kubernetes is missing.*\n\n3. **Calculation:**\n   $$\\frac{\\text{Requirements Met}}{\\text{Total Requirements}} \\times 100 = \\frac{1}{2} \\times 100 = 50\\%$$",
-    "thinking_tokens": 291,
+    "text": "The candidate meets **50%** of the requirement.\n\n### How this was calculated:\n\n1. **Total Requirements:** 2 \n   * Docker\n   * Kubernetes\n\n2. **Requirements Met by Candidate:** 1\n   * Docker (Present)\n   * Kubernetes (Missing)\n\n3. **Percentage Calculation:**\n   $$\\frac{1 \\text{ requirement met}}{2 \\text{ total requirements}} \\times 100 = 50\\%$$",
+    "thinking_tokens": 275,
     "tool_calls": []
   }
 }

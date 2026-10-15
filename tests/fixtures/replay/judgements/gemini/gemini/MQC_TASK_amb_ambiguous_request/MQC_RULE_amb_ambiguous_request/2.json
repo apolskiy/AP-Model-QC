@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The candidate clearly names both missing details (which threshold to raise and what the new value should be), exceeding level 3. However, it falls short of level 5 because it does not explicitly state what it would do once those details are provided.",
+        "rationale": "The candidate clearly exceeds level 3 by naming both missing details needed to resolve the ambiguity (which threshold and what value). However, it falls short of level 5 because it does not state what it would do once the requested information is provided.",
         "score": 4
       }
     }
   },
-  "request_hash": "da13bf4899205c76fecbf1c4a2c915ac946a402f52d224a26726b20db16552cc"
+  "request_hash": "c58303932e908bcc7a10cdba244b7c94224e730591baf59710cbb59650eca37d"
 }

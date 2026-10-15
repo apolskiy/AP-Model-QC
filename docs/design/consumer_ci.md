@@ -691,7 +691,7 @@ cannot be evaluated (harness section 4.6.13).
 
 | The line says | The remedy |
 |---|---|
-| `skipped behind a higher band failure` | Fix the foundation |
+| `skipped behind a prerequisite that did not hold` | Fix the foundation |
 | `skipped as a known failure in quarantine` | Fix the finding, or record a decision |
 | `skipped for a reason of ours` | A fixture, a budget or a provider |
 
@@ -915,6 +915,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115742` | N | `a_mutable_production_record_is_reported` (harness taxonomy 15.8) |
 | `115743` | N | `a_workflow_engine_list_off_the_roster_is_reported` (harness CI pipeline 8.5) |
 | `115744` | N | `a_live_workflow_missing_an_engine_key_is_reported` (harness CI pipeline 8.5.4) |
+| `115748` | N | `a_requirement_stated_two_ways_is_reported` (harness CMN 10.17.1) |
 | `115721` | N | `a_blocking_case_with_no_recording_is_reported` |
 | `115722` | N | `a_recording_check_that_compares_nothing_is_reported` |
 | `115723` | N | `a_stated_inventory_disagreeing_with_rows_is_reported` |
@@ -929,6 +930,14 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115737` | P | `a_finding_that_stopped_reproducing_is_withdrawn` |
 | `115738` | N | `a_run_that_collected_nothing_does_not_retire_findings` |
 | `115739` | P | `the_bug_file_holds_only_what_reproduced` |
+| `115745` | N | `a_ticket_shows_every_observation_with_its_judgement` (9.5.5) |
+| `115746` | P | `a_ticket_states_a_correct_answer_and_a_command_that_runs` (9.5.5) |
+| `115750` | N | `a_finding_whose_case_skipped_is_not_held` (9.4.7.1) |
+| `115751` | N | `a_response_carrying_a_fence_stays_inside_its_own` (9.5.5.1) |
+| `115752` | N | `a_finding_failing_every_observation_drops_a_stale_population` (9.5.5.1) |
+| `115753` | N | `a_ticket_label_is_a_sentence_without_a_dash` (9.5.5.1) |
+| `115754` | N | `a_finding_not_observed_on_the_latest_run_is_not_filed` (9.5.5.1) |
+| `115755` | P | `each_filed_finding_has_a_ticket_of_its_own` (9.5.5.2) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -944,7 +953,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 83 cases, 61 negative, 17 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 92 cases, 68 negative, 19 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1128,7 +1137,7 @@ confirms directly:
 **The harness side was never wrong.** `judge_channel_from_roster` takes the
 override and resolves `engine or load_judge_engine(...)`, which is the
 documented precedence; it was reached with an empty first term. Harness
-`tier3_evaluation.md` section 5A.3 carries that half.
+`tier3_evaluation.md` section 5A.7 carries that half.
 
 **The flag is recorded, which is what makes it a defect rather than a missing
 feature.** A run naming a judge produced metadata naming it while a different
@@ -2806,6 +2815,19 @@ name, the trace checks compare it to the matrix, and no check compared it to a
 result. `MQC_CAS_UNI_115737` does, and `--withdraw-unreproduced` performs it.
 
 
+#### 9.4.7.1 Only a case the run measured as passing has stopped reproducing
+
+Added 2026-10-15. **The hold read "absent from the failures" as "passed".**
+A case skipped because its foundation failed, or because a recording was
+missing, was not measured at all, and holding it as "no longer reproduces"
+claims a result nobody observed: openai's `134401` and `134402` would have
+left the bug file because `134400` failed first.
+
+**So a hold needs a pass.** The run's passing cases are read from the same
+report as its failures, and an open finding is held only when its case is
+among them. A finding whose case skipped keeps its status; the next run that
+measures it decides. `MQC_CAS_UNI_115750` asserts both.
+
 ### 9.4.8 A bug file holds what the latest run reproduced; the rest waits
 
 Decided 2026-10-12 by the project owner: "let's engine bug files keep only
@@ -2930,6 +2952,7 @@ sentence explaining that would be padding. A `claim` assertion has a great
 deal: it names the sentence it read, which is what makes the finding checkable
 rather than assertable.
 
+**Superseded 2026-10-15 by section 9.5.5, which shows every observation.**
 **Only the failing observations are shown under Output**, with the ratio
 stated. Showing five responses where one failed buries the finding; stating "3
 of 5" without showing the three makes it unverifiable. **Every observation is
@@ -2999,6 +3022,105 @@ credential appears in a ticket**.
 for every engine speaking it, which is where
 `harness_extensibility_standard.md` section 9 puts provider knowledge. An
 adapter declaring none emits no reproduction rather than a wrong one.
+
+##### The snippet was not Python, and a `curl` is exact where the table says so
+
+Amended 2026-10-15, when the project owner set the ticket format and asked for
+"actual curl or another way of manually testing the request".
+
+**Every argument was rendered as JSON.** A boolean became `true` and a null
+`null`, so gemini's snippet, whose recorded `config` carries
+`"disable": true`, raised `NameError` on its first line of arguments. Nothing
+checked that the snippet ran: `113124` asked that each recorded key appear and
+never that the result parsed. Arguments are now rendered as Python literals,
+and `113126` parses the snippet and evaluates each argument back to the value
+recorded, which is the pass-through claim made exact.
+
+**The table above already says when a `curl` is exact**: where the stored keys
+are the wire body. That is openai and grok, both on the OpenAI protocol, so
+the protocol declares a `curl` for every engine speaking it, posting the stored
+dict unchanged to the engine's own endpoint. claude and gemini keep the snippet
+only, for the reasons in the table. **The body goes through a quoted heredoc**,
+so an apostrophe in a prompt cannot end the shell's quoting; the credential is
+the engine's own variable, named and never valued. `113127` asserts both.
+
+**The snippet on another base URL named a variable its client never read.**
+Found 2026-10-15 reading grok's first ticket: `openai.OpenAI(base_url=...)` with
+a comment saying it reads `XAI_API_KEY`, while the OpenAI client reads
+`OPENAI_API_KEY` and nothing else, so a vendor running it would have been
+refused for the wrong key. A client on a declared base URL now takes its
+engine's variable by name, `api_key=os.environ["XAI_API_KEY"]`, which still
+carries no credential. `113129` asserts it.
+
+### 9.5.5 The ticket format, as filed
+
+Set by the project owner on 2026-10-15: **"test case name (number), prompt that
+caused the problem, response, expected response, actual curl or another way of
+manually testing the request, i.e. request with parameters, to reproduce"**,
+and for an inconsistency, **every request and response for that case**.
+
+| Part | Holds | Changed from section 9.5.2 |
+|---|---|---|
+| Heading | The case name with its number in brackets | The number is what a reader searches for |
+| Prompt | The recorded request in full: system, documents, user | Unchanged |
+| Responses | **Every observation**, each labelled by its checks **and** its judgement | All of them for an inconsistency too, which 9.5.2 cut to the failing ones |
+| Expected | **What a correct response is**: the rubric's top exemplar and what its criterion asks; for a rule with no rubric, the constraints its checks enforce | It printed the requirement's text, which says what is measured, not what a correct answer reads like |
+| Reproduce | `curl` where exact, the SDK call always, with every recorded parameter; then the replay command | The replay command lacked `--with-prerequisites` and refused to run for any case resting on a foundation |
+
+**An observation's label read only the assertions.** Five openai responses to
+`134502` were labelled "checks passed" while the judge failed three of them,
+so the page contradicted its own heading. The label now carries the judge's
+score and its rationale where a judgement was recorded, and says so where the
+judge was not called.
+
+**Every observation is the evidence for an inconsistency.** The claim is the
+ratio, and a vendor shown only the failures cannot see that the same request
+also succeeded, which is what makes it a defect rather than a capability gap.
+
+#### 9.5.5.1 A ticket holds the response intact, and states only what the latest run measured
+
+Added 2026-10-15, from reading the first pages generated in this format.
+
+| Found | What a reader saw | Now |
+|---|---|---|
+| A response carrying its own fenced code block closed the ticket's fence | openai's `134109` answer rendered as five stray headings in the middle of the page | Each fence is one backtick longer than the longest run inside what it holds, and never shorter than three |
+| A finding failing on every observation kept the population of an earlier run | claude's `154109` said "2 of 5 passed" above five failing observations | A run stating no population means every observation failed, so the stale figure is dropped and the change reported |
+| The page joined its labels with a dash | Text the harness generates breaks `code-style.md` section 7 | Each label is a sentence of its own |
+| A finding whose case the latest run skipped was filed | openai's `134402`, skipped behind `134400`, last observed two days before the rest | A finding is filed only when it was observed on the register's latest date. The rest are named under their own heading as awaiting measurement |
+| A diagnosis cut at its first clause kept an opening bracket | "[stopped at STEP_05_VERIFY ..." with nothing closing it | A cut that leaves a bracket open closes it |
+
+**The fourth reconciles two rules that read as one.** Section 9.4.8 says a bug
+file holds what the latest run reproduced, and section 9.4.7.1 that a skip is
+not a pass. Both hold: a skipped case neither reproduced nor stopped, so its
+finding stays in the bug file and is **not filed** until a run measures it.
+
+**The latest date is read from the register**, being the newest
+`last_observed` among its open findings, because the page has no run of its own
+to ask. A register refreshed on one date holds that date on every finding the
+run reproduced.
+
+`MQC_CAS_UNI_115751` asserts the fence, `115752` the population, `115753` the
+labels and `115754` the filing rule and the bracket.
+
+#### 9.5.5.2 Each finding is filed on its own
+
+Set by the project owner on 2026-10-15: "I need to submit vendor tickets
+individually". **A vendor's intake takes one report at a time**, and a report
+carrying several findings is triaged as one, closed as one, and credited as one.
+
+So beside each engine's page, `reports/tickets/<engine>/` holds **one file per
+filed finding**, named `<number>_<behaviour>.md`, carrying that finding's
+section under a title naming the engine and the model. The engine page stays as
+the index. A finding awaiting measurement gets no file, by section 9.5.5.1, and
+a regenerated directory holds only what is filed now, so a finding that left
+the bug file does not leave a stale ticket behind.
+
+**A hand-written ticket lives in the same directory**, for a finding the
+register cannot see; grok's `134406` over-refusal is the one. The generator
+removes only the files it wrote, recognised by the line it puts at the top of
+each.
+
+`MQC_CAS_UNI_115755` asserts it.
 
 ### 9.4 Only a live run can detect an upstream fix
 

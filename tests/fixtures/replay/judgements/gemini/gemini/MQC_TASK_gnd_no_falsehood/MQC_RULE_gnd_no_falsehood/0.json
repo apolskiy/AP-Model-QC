@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The candidate correctly calculates the percentage and explicitly states both underlying figures (41.2 million out of 87.4 million) from which the share is derived.",
+        "rationale": "The percentage is calculated correctly, and the two figures it derives from (41.2 million and 87.4 million) are explicitly stated in the response.",
         "score": 5
       }
     }
   },
-  "request_hash": "52b9694fda8e19768a42a611589213cb0f3fc61c834ec96d613ce10271011233"
+  "request_hash": "32a3540eff4409f7af31bc372a7913bbb30aa801075e213edff001ee7c0092d2"
 }

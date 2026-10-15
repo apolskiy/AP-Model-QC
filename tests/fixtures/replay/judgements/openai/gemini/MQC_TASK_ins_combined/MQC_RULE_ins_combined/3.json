@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_INS_NO_DEGRADATION": {
+        "rationale": "The candidate output successfully incorporates all four points from the release notes while satisfying every constraint (at most three bullets, sentence length under twelve words, measurable changes first, no dashes). The content remains clear, accurate, and just as informative as answers produced under single constraints.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "0983a7108553ef593b2a6aaf2d22d31589ec1bb9108fb2ed2768d93ecea1db90"
+}

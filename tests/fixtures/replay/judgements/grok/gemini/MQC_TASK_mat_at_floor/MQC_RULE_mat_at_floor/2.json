@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_FLOOR_MARGIN": {
-        "rationale": "Both the mandatory match (78%) and combined match (85.3%) figures are reported correctly, but the response simply states that it meets the 85% bar without remarking on the slim margin or noting that it only just clears.",
+        "rationale": "Both the mandatory figure (78%) and combined figure (85.3%) are calculated correctly, but the candidate merely notes that it clears 85% and does not remark on the narrow margin or convey that it only just clears.",
         "score": 3
       }
     }
   },
-  "request_hash": "ebc84d7e19b49473f70bfda4c0e841c1710376d80a8401f538efa581e17bec82"
+  "request_hash": "5a96b0be172e87a6b71d7bd1babb19c3f14f504719d95b13fe1707cbf49fa1f7"
 }

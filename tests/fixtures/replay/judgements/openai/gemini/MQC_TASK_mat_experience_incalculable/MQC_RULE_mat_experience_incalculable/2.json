@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The response asks for the missing figure, states the concrete consequence (being screened out), and explains that this omission alone can determine the outcome because of the 8-year requirement.",
+        "rationale": "The candidate asks for the missing years of backend engineering experience, explains the concrete consequence that the summary risks failing to demonstrate the 8-year requirement, and indicates that this omission alone could result in the application being filtered out (deciding the outcome).",
         "score": 5
       }
     }
   },
-  "request_hash": "8e5be88f0a3b775497dc1f7e9196bcdaa8f5bd86577aa77edb5527581447b606"
+  "request_hash": "bfca49f3e0390edad5ecf070110183485990e7ae07a6bb33de0bc9f537781737"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_WARNS_ONLY_WHERE_DUE": {
-        "rationale": "The candidate clearly identifies that the availability gate failed, explicitly states the exact margin by which it fell short (0.4 percentage points below the 99.5 percent minimum), and explicitly confirms that the incident-duration gate held.",
+        "rationale": "The candidate output precisely names availability as the gate that failed, calculates the exact margin (0.4 percentage points below 99.5%), and explicitly states that the incident-duration gate held/passed.",
         "score": 5
       }
     }
   },
-  "request_hash": "bfb080f7026953e4aa5a54b9b6d5da9e60409a6f63d7dd35e0df9d24fb2915af"
+  "request_hash": "59749635890cc424d1759dc6c33c0ba840fd86ae76a4beab6c78638f1e900bfa"
 }

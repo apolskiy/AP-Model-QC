@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_CONTEXT_FIDELITY": {
-        "rationale": "The response accurately provides both pieces of information directly from the glossary: it correctly explains what AMBER means (a record completed successfully and archived, not a warning) and explicitly states that the on-call rota is deliberately not notified, while the change advisory board receives a weekly digest.",
+        "rationale": "The candidate output accurately states what AMBER means based on the glossary (a record that completed successfully and has been archived) and correctly explains the notification details, explicitly noting that the on-call rota is deliberately not notified and the change advisory board receives a weekly digest instead.",
         "score": 5
       }
     }
   },
-  "request_hash": "12ae219ed2bd43c322ef7cd9dc6727c0956ca5adb4cf8fcb54ce6d19fab3633c"
+  "request_hash": "7806ff734d24853d7aa5a773c5e051f3fadd18043dde760a98df086895503529"
 }

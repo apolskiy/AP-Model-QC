@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_OPEN_EQUIVALENCE": {
-        "rationale": "The response accepts MySQL as meeting the requirement, explicitly flags the decision as determined by judging something equivalent rather than a named match, and identifies the relevant category ('similar databases').",
+        "rationale": "The candidate accepts MySQL as equivalent, explicitly flags that it was judged equivalent rather than matched as a named item, and clearly names the category (relational database comparable to PostgreSQL).",
         "score": 5
       }
     }
   },
-  "request_hash": "795d9a7ed314c7cd5be152632a30ed492bbaf0219c49331be3b9569d86c758a5"
+  "request_hash": "273f02212b3a41a210a10c46752ab078dc158d207722cecd384134a876e7edf1"
 }

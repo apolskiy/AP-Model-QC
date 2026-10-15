@@ -360,16 +360,9 @@
       taxonomy_code: QC_LLM_SOURCE_ALTERATION
       severity: violation
       constraint_ref: GND_WITHIN_STATED_CEILING
-    - assertion_id: A_GND_NAMES_THE_CEILING
-      kind: regex
-      parameters:
-        # THE PROMPT ASKS FOR THE REASON, so not giving one is instruction
-        # drift rather than a grounding defect, and carries that code.
-        pattern: '(?i)(\b3\s*(%|per\s?cent)|4\.5|exceed\w*|overstat\w*|more than 3|above the (stated )?(3|limit|ceiling|tolerance))'
-        present: true
-      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
-      severity: violation
-      constraint_ref: GND_WITHIN_STATED_CEILING
+    # A_GND_NAMES_THE_CEILING RETIRED 2026-10-15. The case gates the
+    # rounding decision, which the two checks above hold; the reason given
+    # for it is C_GND_REFUSAL_QUALITY's to grade (test plan 8.9.1).
   rubric:
     criteria:
       - criterion_id: C_GND_REFUSAL_QUALITY

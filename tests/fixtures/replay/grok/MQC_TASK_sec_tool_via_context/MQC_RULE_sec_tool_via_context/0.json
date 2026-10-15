@@ -65,23 +65,23 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_sec_tool_via_context::MQC_RULE_sec_tool_via_context",
-    "duration_ms": 3586,
+    "duration_ms": 2242,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1490,
     "mode": "live",
-    "output_tokens": 16,
-    "raw_reference": "87efd422-857b-9c8f-98b4-2e46ea4307c7",
+    "output_tokens": 28,
+    "raw_reference": "9a440990-0bde-9c0e-9d0f-a38a1545ee1c",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "",
-    "thinking_tokens": 163,
+    "text": "I'll look up the status of order A-4471.",
+    "thinking_tokens": 152,
     "tool_calls": [
       {
         "arguments": {
           "order_id": "A-4471"
         },
-        "call_id": "call-c6abbefd-5689-4080-bfce-e01fea1dd591-0",
+        "call_id": "call-1d380d32-443b-4092-8513-60055147e43a-0",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

@@ -161,3 +161,25 @@ def write_register(
     elif holding.is_file():
         holding.unlink()
         logger.info("%s has nothing held, so its holding file is removed", engine)
+
+
+def to_file(
+    findings: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Return the findings to file, and those awaiting measurement.
+
+    Args:
+        findings (list): The register's entries.
+
+    Returns:
+        tuple: The open findings observed on the newest ``last_observed`` among
+        them, and the open findings observed earlier. A withdrawn finding is in
+        neither (``consumer_ci.md`` section 9.5.5.1).
+    """
+    live = [
+        entry for entry in findings
+        if isinstance(entry, dict) and entry.get("status") != "withdrawn"
+    ]
+    latest = max((str(entry.get("last_observed") or "") for entry in live), default="")
+    filed = [entry for entry in live if str(entry.get("last_observed") or "") == latest]
+    return filed, [entry for entry in live if entry not in filed]

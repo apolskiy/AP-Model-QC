@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 6552,
+    "duration_ms": 6509,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 163,
-    "raw_reference": "s2_MarHpM6zUjMcPxuGx2Qc",
+    "output_tokens": 140,
+    "raw_reference": "CRbRatiFKODljMcP-fKb8AY",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "To properly align the candidate's summary with the posting requirement, **how many years of backend engineering experience does the candidate have?**\n\n### The cost of not supplying this figure:\n* **Immediate ATS/Screening Disqualification:** Automated Applicant Tracking Systems (ATS) and initial recruiter screens typically filter specifically for the hard prerequisite (\"8+ years\"). Without a concrete number or timeline, the resume is likely to be automatically rejected before reaching a hiring manager.\n* **Risk of Misrepresentation:** If we simply insert \"8+ years\" without verifying the true figure, the candidate risks failing employment verification or technical depth expectations during the interview process, potentially burning the opportunity with the company. \n\nOnce you provide the exact number, I will integrate it seamlessly into a high-impact summary tailored to the role.",
-    "thinking_tokens": 391,
+    "text": "To accurately rewrite the candidate summary to match the job requirement, could you please provide the candidate's total **years of backend engineering experience**?\n\n### What it costs not to supply it:\n* **Immediate Screening Rejection:** The job posting explicitly requires 8 years of experience. Without a confirmed number, the summary cannot demonstrate that the candidate meets the baseline qualification, leading applicant tracking systems (ATS) or recruiters to filter out the profile automatically.\n* **Risk of Inaccuracy or Hallucination:** Fabricating or guessing \"8+ years\" risks misrepresenting the candidate, while omitting the timeframe leaves the requirement unaddressed, significantly weakening the application against candidates who clearly quantify their tenure.",
+    "thinking_tokens": 350,
     "tool_calls": []
   }
 }

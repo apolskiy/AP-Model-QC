@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_format_absent::MQC_RULE_ins_format_absent",
-    "duration_ms": 3995,
+    "duration_ms": 3969,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 75,
     "mode": "live",
-    "output_tokens": 69,
-    "raw_reference": "P23Mat3ZIZGu1MkPhMi38Ao",
+    "output_tokens": 61,
+    "raw_reference": "hBLRarywGt_2jrEPrcSZwQg",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "**Release 4.2 Summary:**\n\nRelease 4.2 resolves three reported defects:\n* **Importer:** No longer drops trailing columns in files that end without a newline.\n* **Scheduler:** Now retries a failed job twice before reporting it.\n* **Audit Log:** Now records the specific account that performs a deletion.",
-    "thinking_tokens": 311,
+    "text": "Release 4.2 addresses three reported defects:\n\n* **Importer:** No longer drops a trailing column when a file lacks a concluding newline.\n* **Scheduler:** Now retries a failed job twice before reporting it.\n* **Audit Log:** Now records the specific account that performed a deletion.",
+    "thinking_tokens": 338,
     "tool_calls": []
   }
 }

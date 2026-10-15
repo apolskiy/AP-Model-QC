@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes from the source document are included. The two changes with measurable quantities ('under 30 seconds' and 'up to 2 GB') appear first in their original order of appearance, followed by the two non-measurable changes in their original order of appearance.",
+        "rationale": "All four changes from the release note are present. The two changes containing measurable quantities (export job under 30 seconds, importer accepts files up to 2 GB) are placed first in the order they appear in the source, followed by the remaining two changes also in their original order.",
         "score": 5
       }
     }
   },
-  "request_hash": "a9bd1765cbe2828c87c64a3548eea1f301903dc5b83382ac1f2376029bb78903"
+  "request_hash": "960730c84ba3106c87700d5a71a967d8f3e17a030055bcd75ab640c9399088ed"
 }

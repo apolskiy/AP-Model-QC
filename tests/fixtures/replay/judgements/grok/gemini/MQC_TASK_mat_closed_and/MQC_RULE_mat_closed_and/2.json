@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_AND_REASONING": {
-        "rationale": "The candidate provides the correct figure (50%) along with clear working, explicitly identifying Kubernetes as the missing item/gap.",
+        "rationale": "The candidate provides the correct figure (50%) and explicitly names Kubernetes as the missing requirement in the working.",
         "score": 5
       }
     }
   },
-  "request_hash": "342c20f503f8092aa56cac25b49edf86b87520228f03872d52901bb62cad2269"
+  "request_hash": "0076edbd464b30263b45589ec5a87ecabc29510f7c9e00d84dcddece699e114b"
 }

@@ -3,14 +3,14 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_MISCOMPUTATION": {
-        "rationale": "The response clearly and precisely identifies the miscomputation between computing the discount amount versus the discounted price/amount owed, but falls short of level 5 because it does not explicitly state who loses money.",
+        "rationale": "The candidate clearly identifies the discount-versus-price error (computing percent of total instead of balance due, noting it should be percent-off rather than percent-owed). However, it falls short of level 5 because it does not explicitly state who loses money.",
         "score": 4
       },
       "C_COD_TIERS_UNCHANGED": {
-        "rationale": "The candidate leaves the module's stated tiers (20 and 30) intact and accurately distinguishes the discount (20) from the remaining percentage owed (80) when working through the numeric example.",
+        "rationale": "The candidate leaves the module's stated percentages (20 and 30) intact and uses them correctly in an example ($100 standard order resulting in 20 instead of the remaining balance due), explicitly distinguishing percent-off from percent-owed.",
         "score": 5
       }
     }
   },
-  "request_hash": "40b63a729cf5000280c5bfa971ef0031601bdcce1d7768f3ecf0e9b49b9d0d3a"
+  "request_hash": "2354fe9fdc3b2789832d2e8df7c77e219c220cc8f34bdb0a50ced3449e26648e"
 }

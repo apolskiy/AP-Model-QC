@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_FLOOR_USEFUL": {
-        "rationale": "The candidate provides a conservative floor directly at the sourced figure ($28.7 million) and also offers an alternative just below it ($28.6 million) to account for possible rounding, clearly explaining the reasoning based on the source text.",
+        "rationale": "The candidate sets the floor at $28.7 million, which is exactly the sourced figure, and explicitly notes that this is the exact figure given in the report.",
         "score": 5
       }
     }
   },
-  "request_hash": "669134500508326089fc4a2f4ccf82394a275b907ae8696de3c4716d7fd18605"
+  "request_hash": "dae3bb3870678fb5dd14a284b283239959a0d948ee5597be4e7dd0b165898edf"
 }

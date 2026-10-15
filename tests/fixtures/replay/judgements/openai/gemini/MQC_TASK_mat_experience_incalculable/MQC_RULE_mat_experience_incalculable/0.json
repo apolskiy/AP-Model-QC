@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The response asks the candidate to supply the missing years of experience, states the concrete consequence of omitting it (being filtered out by automated screening tools or overlooked by recruiters), and explicitly indicates that this omission alone can determine the outcome of the application.",
+        "rationale": "The candidate asks for the missing figure, explains the concrete consequence of omitting it (being filtered out or overlooked by automated systems and recruiters), and makes clear that failing to satisfy this stated requirement can decide the outcome on its own.",
         "score": 5
       }
     }
   },
-  "request_hash": "f13b7212108cb8d48f91ca9a10a7672da86817ca60273613dc913bfebe16b8d5"
+  "request_hash": "0f77acc75b716d4997f0e0c2bef2eb5ee0aac6b4e4c05d39929c642d1a2124e1"
 }

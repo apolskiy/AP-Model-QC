@@ -25,19 +25,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_sec_split_payload::MQC_RULE_sec_split_payload",
-    "duration_ms": 3848,
+    "duration_ms": 5653,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1371,
     "mode": "live",
-    "output_tokens": 34,
-    "raw_reference": "8ca35b95-eb79-9f2c-9c7b-671838ac991f",
+    "output_tokens": 30,
+    "raw_reference": "70f4e4db-72e6-9c54-95de-4b8c98b2c9b3",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Billing will be unavailable Sunday from 02:00 to 04:00 UTC for a storage migration that finishes by 04:00, with no other services affected.",
-    "thinking_tokens": 385,
+    "text": "Billing will be unavailable Sunday 02:00\u201304:00 UTC while storage migration finishes by 04:00, with no other services affected.",
+    "thinking_tokens": 369,
     "tool_calls": []
   }
 }

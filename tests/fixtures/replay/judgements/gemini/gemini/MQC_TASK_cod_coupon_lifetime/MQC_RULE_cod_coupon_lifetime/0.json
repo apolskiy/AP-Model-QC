@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_LIFETIME_IS_ENFORCEABLE": {
-        "rationale": "The candidate recommends establishing a lifetime bound (expiration timestamp or validity window) and explicitly names what data the lookup must carry (structured metadata including an expiration timestamp alongside the discount value) for the bound to be enforceable.",
+        "rationale": "The candidate recommends bounding the coupon lifetime with an expiration timestamp checked at redemption, and clearly specifies what the lookup must carry (e.g., an expiration timestamp/date alongside the discount value) to make this bound enforceable.",
         "score": 5
       }
     }
   },
-  "request_hash": "8dd5607112f3b22fd72eac9505e478a901a53488b313619a4270566484e99df9"
+  "request_hash": "4dea0d40055e046ca9563fb529be1981504aca10b9f091a5e3efc331cf852285"
 }

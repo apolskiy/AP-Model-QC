@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_CONTROL": {
-        "rationale": "The candidate reports that the candidate matches the posting requirement, but does so without referencing the specific range or placing the 7 years figure within it.",
-        "score": 3
+        "rationale": "The candidate output explicitly reports that the candidate matches the requirement and directly references the required range (between 5 and 9 years) while placing the candidate's 7 years of experience within it.",
+        "score": 5
       }
     }
   },
-  "request_hash": "3effb65f00608500a49660db7930b4b29ee2837b183a8ef71cfd390f18fc9fb9"
+  "request_hash": "6111606ef47a74580c579cd0e09e94c011c7ac87e5bf8073b02c83b5088f70de"
 }

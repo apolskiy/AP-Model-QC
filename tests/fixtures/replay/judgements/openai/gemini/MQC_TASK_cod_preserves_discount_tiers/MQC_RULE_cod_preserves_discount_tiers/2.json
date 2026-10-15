@@ -3,14 +3,14 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_MISCOMPUTATION": {
-        "rationale": "The response clearly and precisely identifies the discount-versus-price miscomputation (explaining that it calculates the discount amount off rather than the new price owed). However, it stops short of Level 5 because it does not explicitly state who loses money as a result.",
-        "score": 4
+        "rationale": "The response clearly distinguishes computing the discount amount versus the discounted price/remaining balance, and identifies the financial impact by noting that it is undercharging the customer (meaning the seller loses money).",
+        "score": 5
       },
       "C_COD_TIERS_UNCHANGED": {
-        "rationale": "The candidate leaves the stated tier percentages unchanged and uses the 20% standard tier correctly in a concrete example ($100 total, $20 discount portion, resulting in an expected $80 price before coupon), clearly distinguishing the discount from the remainder.",
+        "rationale": "The candidate leaves the percentages intact (mentioning 20 and 30), works through a concrete example with discount = 20, and clearly distinguishes the discount amount from the remaining balance to pay.",
         "score": 5
       }
     }
   },
-  "request_hash": "78dd2c2f0ea3bf712aefd764e453602cd5cab18073843775ed082dff2c6b52a4"
+  "request_hash": "f52d641df77e98f994b823f0816e856c542455d508227fbb09233c90f537d41b"
 }

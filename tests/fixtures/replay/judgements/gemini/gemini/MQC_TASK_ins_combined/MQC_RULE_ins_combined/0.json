@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_NO_DEGRADATION": {
-        "rationale": "The candidate successfully captured all four changes from the source document without omitting any key information or distorting meaning while complying with all constraints.",
+        "rationale": "All four changes from the original release note are completely and accurately preserved without any loss of clarity or informative value.",
         "score": 5
       }
     }
   },
-  "request_hash": "ca242314a93f4fe283689f5b453dc31c58192bcee622e9cef2a069e9910de71b"
+  "request_hash": "3189284ca1b844d860e47e969ed327da5b49184bc0e8f4c63832b28e08527cbc"
 }

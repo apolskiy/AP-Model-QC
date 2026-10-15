@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_SUMMARY_FAITHFUL": {
-        "rationale": "Every change from the release note is accurately represented in the summary without omissions, unwarranted additions, or altered emphasis.",
+        "rationale": "Every change from the release note is faithfully represented in the summary without any additions, omissions of key items, or shifts in emphasis.",
         "score": 5
       }
     }
   },
-  "request_hash": "dd7e2d04bd124510a42f0ba19b2f8f3f29ead05765458d8ecf613c58a28a9038"
+  "request_hash": "2211910dc6d24ea14d1626a71ed7eb15ee0ffbaed1ab3891e73c0b5f6058854f"
 }

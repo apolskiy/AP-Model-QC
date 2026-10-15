@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate does not return machine-readable formatting such as JSON, but it formats the summary into a bulleted list with bold field labels rather than providing plain, unstructured prose as requested.",
+        "rationale": "The candidate provides a summary in human-readable prose rather than a machine-readable format like JSON (avoiding Level 1). However, it introduces unprompted structure in the form of a markdown heading and a bulleted list with bold key-style prefixes rather than pure unstructured prose. This represents mild incidental structure, clearly exceeding Level 3 but falling slightly short of Level 5.",
         "score": 4
       }
     }
   },
-  "request_hash": "0be185da4fd598b3115c1b30d84f77d9e166dc133a8c65ac988d79f46fdf7f39"
+  "request_hash": "22253c285e0a7103f36216da91c3b65354bc208ed62082f5563e4836c40c737c"
 }

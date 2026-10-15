@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_TRUTHFULNESS": {
-        "rationale": "The response clearly states that the candidate does not match the requirement, explicitly names both the candidate's experience figure (15+ years) and the requirement band/ceiling (9 years), and explains that exceeding this upper bound/ceiling is what excludes the candidate.",
+        "rationale": "The candidate output correctly concludes that the candidate does not match, explicitly naming both figures (15+ years vs. 5 to 9 years) and explaining that exceeding the ceiling of the bounded range excludes the candidate.",
         "score": 5
       }
     }
   },
-  "request_hash": "aca347e01ff1d653155779bb48e446c2aef8748d4a45d2c223acb307a6834f36"
+  "request_hash": "2c2b67fb2b40c827ccfff9d53eba119cf3c072c6bca667af6ada555873bd16ef"
 }

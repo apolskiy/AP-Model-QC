@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_CONTROL": {
-        "rationale": "The candidate output clearly reports a match and explicitly places the 7-year figure inside the 5\u20139 year range without manufacturing any issues or warnings.",
+        "rationale": "The candidate output confirms a match and explicitly places the 7 years of experience within the required 5\u20139 year range, noting that it is two years above the minimum and two years below the maximum.",
         "score": 5
       }
     }
   },
-  "request_hash": "6ae44fe02ce91bdd05641462c22967ea246268485bb88f7c4c9fac1921ec93bc"
+  "request_hash": "adea33e1052c547263d267215bc24640ff00eed1e6d4176829f05d2fb52c8046"
 }

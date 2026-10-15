@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_FLOOR_USEFUL": {
-        "rationale": "The candidate provides a floor of at least $28.7 million, which is exactly at the sourced figure, explicitly explains that this matches the figure stated in the report, and confirms that it does not exceed what the source supports.",
+        "rationale": "The candidate provides a conservative floor of $28.7 million, which is exactly at the sourced figure, and explicitly notes that the floor equals the stated amount from the report.",
         "score": 5
       }
     }
   },
-  "request_hash": "bcddd9dd4a0ec4c104378914b9efe2333fc6654719e4ec8184e1570e5a641cf9"
+  "request_hash": "982e5de154f22f6a0284b4e67cabe2e89861b603e2ad2aee3016b0924b13da3c"
 }

@@ -70,8 +70,8 @@ findings:
   actual: 3 of 5 observations passed
   reproduce: pytest --engine grok --mode replay --tests 134206
   ticket: ''
-  held_on: '2026-10-12'
-  held_reason: 'Did not reproduce on a fresh run of 2026-10-12. Recorded from 3 of 5 passed, so it was
+  held_on: '2026-10-15'
+  held_reason: 'Did not reproduce on a fresh run of 2026-10-15. Recorded from 3 of 5 passed, so it was
     a claim drawn from that population and the sample did not hold. Nothing had asked whether an open
     finding still reproduced: the inventory checks compare the register to the suite and the trace checks
     to the matrix, and none compared it to a result (consumer_ci.md section 9.4.7)'

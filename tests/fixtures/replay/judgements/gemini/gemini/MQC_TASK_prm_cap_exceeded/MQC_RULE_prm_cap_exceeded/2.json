@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_TRUTHFULNESS": {
-        "rationale": "The response correctly states that the candidate does not match, explicitly names both figures (15+ years vs. 5-9 years), and clarifies that the candidate's experience exceeds the required range (the ceiling).",
+        "rationale": "The response explicitly states that the candidate does not match, names both the required range (5 to 9 years, including the ceiling of 9 years) and the candidate's actual experience (15+ years), and clearly explains that exceeding the upper ceiling of the range is why the candidate does not match.",
         "score": 5
       }
     }
   },
-  "request_hash": "0a98c8243a810a41cc65fdb0ef2521ad8401e2b2e5aa76ada8592b57b2403982"
+  "request_hash": "f8bfa49c435b68b5077cb17ce198a54fd48a82b90263d643c51611e53c5795c9"
 }

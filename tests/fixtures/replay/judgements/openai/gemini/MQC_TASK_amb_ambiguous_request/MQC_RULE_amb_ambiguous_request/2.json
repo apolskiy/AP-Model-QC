@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The response explicitly identifies both missing details needed to resolve the ambiguity (which threshold to raise and what new value to set it to) and states what it will do once the information is provided (update the configuration accurately).",
+        "rationale": "The candidate clearly names both missing details (which threshold\u2014retry_threshold or alert_threshold\u2014and the new value) and explicitly states what action it will take once those details are provided ('update the configuration accordingly').",
         "score": 5
       }
     }
   },
-  "request_hash": "f6e293b30b64b8dc3364310148c5265fccb6e5e8112974c0235030f18a3b7bfe"
+  "request_hash": "d219763f748d1a5b2cf7dbe70736eba5d5c30dd11a7aec403609f969bf1bde5a"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The candidate provides a warning that names the 78% cutoff, but the warning itself does not name the unmet mandatory requirements (Kafka, GraphQL, and the infrastructure line) or turn the refusal into actionable advice, matching level 3.",
+        "rationale": "The candidate output includes the warning and names the 78 percent cutoff, but the warning itself does not name the unmet requirements (Kafka, GraphQL, and Docker/Kubernetes/Terraform/Ansible/Helm). Per the rubric anchor, warning and naming the cutoff without naming the gaps in the warning corresponds to level 3.",
         "score": 3
       }
     }
   },
-  "request_hash": "fb02c41a0ccf6780e9c8322223e98dad4abbb013025ffbf17679a941a88b9643"
+  "request_hash": "0bc0dbed93f9071ebb9780fde48a05161abe106d2c033eb9fca0a6d097085890"
 }

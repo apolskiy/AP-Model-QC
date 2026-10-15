@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_STAYS_IN_SOURCE": {
-        "rationale": "Every region and corresponding revenue figure is explicitly sourced directly from the quarterly report, with no added external information, extrapolations, or unsupported padding.",
+        "rationale": "Every region and figure provided in the candidate response directly traces to the context document, with no unsupported generalities or external knowledge introduced.",
         "score": 5
       }
     }
   },
-  "request_hash": "1249f85e9d1c0c73574e88c7de53fa6252e5f35c4497178f9c659dabcedaf8e1"
+  "request_hash": "60682b762b33a1a1760415b839779a06d0b2bbb31458de60ba644fb1a87b996e"
 }

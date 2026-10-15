@@ -485,7 +485,7 @@ reader of a skipped case actually needs:
 | `QC_HARNESS_ENGINE_UNREACHABLE` | **The path** | No | A redirect or connection failure. Check proxy, DNS, VPN |
 | `QC_HARNESS_FIXTURE_MISSING` | Ours | No | Nothing recorded yet. Record it, or run live |
 | `QC_HARNESS_FIXTURE_STALE` | Ours | No | The question or the instrument moved. Re-record |
-| `QC_HARNESS_DEPENDENCY_UNMET` | Ours | No | A foundational case did not hold. Fix that one first |
+| `QC_HARNESS_DEPENDENCY_UNMET` | The model's, one layer up | No | A prerequisite at the same or a higher priority failed or was skipped. Fix that one first |
 
 **The last three rows of the path group are worth separating in your head.** A
 gateway failure and an unreachable engine both mean you are not talking to the
@@ -676,35 +676,16 @@ python -c "from execution.adapters.registry import engines_for_role, JUDGE_ROLE;
 Derived from the registry and the declared capability, never from a list. An
 engine you add arrives in both roles or in neither.
 
-### 9.4 Wiring a second judge
+### 9.4 There is one judge
 
-```
-judge:
-  engine: gemini      # decides the verdict
-  also:
-    - claude          # scored, recorded, never gates
-```
+**A judge panel was designed and withdrawn on 2026-09-26.** Several judges
+scoring one observation needs a rule for which of them is right, and that rule
+is a judge over the judges: the regress the harness
+`harness_phase0_project_ambiguities.md` A3.2 records. One judge grades a run,
+named by `--judge-engine` or the configured default, and nothing here scores
+the same observation twice.
 
-**The primary decides and the rest measure.** Every threshold keeps the meaning
-it has with one judge, and adding a judge cannot turn a green suite red. Each
-additional judge scores the same observation and the result records the signed
-difference:
+**To compare judges, run twice.** The same recordings replayed with a live
+judge on each engine in turn give two sets of judgements against identical
+responses, which is the comparison a panel would have made, made deliberately.
 
-```
-score: 4.2
-divergence:
-  claude: +0.6
-```
-
-A positive number means that judge was kinder than the primary. **Zero is
-recorded** and means they agreed; a judge that could not be reached is
-**omitted**, because that is a missing measurement rather than agreement.
-
-**It costs quota.** Each panel member multiplies judge requests against the
-same free-tier ceiling, so nothing runs unless `also` names it. Use
-`--judge-panel off` to suppress the panel for one run without editing the
-roster.
-
-**Naming the primary in `also` does nothing**, deliberately: it would compare a
-judge with itself and record a guaranteed zero that reads exactly like
-agreement. It is dropped, and `MQC_CMN_UNI_11167` guards that.

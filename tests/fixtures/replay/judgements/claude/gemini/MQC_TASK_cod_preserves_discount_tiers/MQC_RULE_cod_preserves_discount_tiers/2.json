@@ -3,14 +3,14 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_MISCOMPUTATION": {
-        "rationale": "The response clearly and precisely identifies the discount-versus-price error (stating that the formula computes the discount amount rather than the discounted price and demonstrating that a standard customer owes 15 instead of 75), far exceeding Level 3. However, it falls short of Level 5 because it does not explicitly state who loses money (i.e., that the business/seller loses revenue due to massive undercharging), noting only that 'the better tier pays more'.",
+        "rationale": "The response clearly and precisely identifies the discount-versus-price error (stating that the formula computes the discount amount rather than the discounted price, charging 20% instead of 80%), but it does not explicitly name who loses money (the business/seller).",
         "score": 4
       },
       "C_COD_TIERS_UNCHANGED": {
-        "rationale": "The response preserves the original tier percentages (standard at 20%, premium at 30%) without alteration, and correctly distinguishes the discount from the remainder/discounted total in worked examples.",
+        "rationale": "The candidate leaves the tier percentages at 20% and 30%, uses the 20% standard tier correctly in an example, and clearly distinguishes the discount amount (20) from the remainder (80% / 80.00).",
         "score": 5
       }
     }
   },
-  "request_hash": "d95eee3008bae85dc16f2073057f013bf6ee36d9f7bb2c044b2ed8f2817e150b"
+  "request_hash": "18f5ec1a54a14771ba1bca1fc9746323376eee14edb34ad0704a05aec80c4fef"
 }

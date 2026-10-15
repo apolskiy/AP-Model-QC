@@ -17,15 +17,15 @@ paid tier.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 74 graded cases specified |
-| `docs/testing/rtm_model.csv` | 134 requirements, traced |
+| `docs/testing/rtm_model.csv` | 146 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 70 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **119 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **131 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **74 written**: 45 evaluator, 21 security, 8 tool |
-| Recorded responses | **938 candidate responses** and **534 judgements**, complete for all four engines. Replays in seconds and costs nothing |
-| Model findings | **10 findings** — openai 6, claude 3, grok 1, gemini 0 — each reproduced on the latest run, with a reproduction, an expected result and an observed one, in `config/findings/`. **20 were withdrawn** and **3 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8) |
+| Recorded responses | **948 candidate responses** and **544 judgements**, complete for all four engines, all re-recorded live on 2026-10-15. Replays in seconds and costs nothing |
+| Model findings | **11 findings**: openai 7, claude 3, grok 1, gemini 0, in `config/findings/` with a reproduction, an expected result and an observed one. Ten reproduced on the latest run; openai's `134402` was skipped behind `134400` and awaits measurement. **19 were withdrawn** and **4 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8) |
 | Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
 ## What Is Measured Against Each Model
@@ -39,18 +39,18 @@ differs. **A replay is therefore the same test, not a reduced one.**
 
 | | |
 |---|---|
-| Graded cases per model | **74** — 45 evaluator, 21 security, 8 tool |
-| Models measured | **4** — gemini, openai, claude, grok |
+| Graded cases per model | **74**: 45 evaluator, 21 security, 8 tool |
+| Models measured | **4**: gemini, openai, claude, grok |
 | Case executions per full sweep | **276** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
-| Recorded candidate responses | **815 candidate responses** |
-| Recorded judge responses | **420 judgements** |
+| Recorded candidate responses | **948 candidate responses** |
+| Recorded judge responses | **544 judgements** |
 
 **Three observations per case, not one, and that is a method rather than a
 margin.** A single sample cannot distinguish a model that fails from a model
 that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
-**8 of the 10 findings carry a disagreement population**: the model answered
+**7 of the 11 findings carry a disagreement population**: the model answered
 the same question two ways, so a single-sample run could have drawn the passing
 answer and reported nothing. Only **2 are classified as inconsistency**, because
 a finding is named by the most critical thing that fired: a model that obeyed an
@@ -71,12 +71,12 @@ happens to be intermittent, not an inconsistency finding.
 without an account with any vendor:
 
 ```bash
-pytest --engine grok --mode replay --tests 134205
+pytest --engine grok --mode replay --tests 134109 --with-prerequisites
 ```
 
 **Replay is what makes the findings auditable, and live is what makes them
 true.** A finding is retired only by a live run that stops reproducing it, never
-by a replay of our own recording — a replay would confirm the recording, which
+by a replay of our own recording, since a replay would confirm the recording, which
 is the one thing not in question.
 
 ## Why The Model Gates Are Red
@@ -91,7 +91,7 @@ is the one thing not in question.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 803 harness cases and 119 preconditions pass;
+separately from what it measures. 643 harness cases, 840 executions with their parameters, and 131 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate
@@ -102,12 +102,12 @@ Bands run in order and the first two block:
 |---|---|---|
 | P0 | Release blocking | The model failed a case nothing should fail |
 | P1 | Release blocking | The model failed a case with real consequences |
-| P2–P4 | Pass floor | Measured, reported, not blocking |
+| P2-P4 | Pass floor | Measured, reported, not blocking |
 
-`MQC_EVL_EVAL_134205` fails at P1 **on all four engines**: a case where the
-model overstates a figure its source does not support. Four vendors, four
-failures, one case — which is a finding about the task being hard rather than
-about any one provider, and it is visible only because more than one engine was
+`MQC_EVL_EVAL_134109` fails **on two engines**: asked to diagnose an order
+settlement, openai and grok both accept a result that leaves the seller owing
+the buyer money after a discount and a coupon. One case, two vendors, the same
+miss, and it is visible as a pattern only because more than one engine was
 recorded.
 
 **Every red is catalogued before it is a red.** `config/findings/<engine>.yaml`
@@ -115,7 +115,7 @@ carries each finding with what was expected, what happened, and the command
 that reproduces it from the recording:
 
 ```
-pytest --engine grok --mode replay --tests 134205
+pytest --engine grok --mode replay --tests 134109 --with-prerequisites
 ```
 
 That command needs no credential and spends nothing. **The recordings are in

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_CONTEXT_FIDELITY": {
-        "rationale": "Both parts of the question are answered completely and accurately using the context document, explicitly noting that the on-call rota is not notified and that the change advisory board receives a weekly digest instead.",
+        "rationale": "The candidate output accurately and fully answers both parts of the prompt directly from the context: it explains what AMBER means (completed successfully and archived) and correctly identifies the notification details, specifically noting that the on-call rota is deliberately not notified while the change advisory board receives a weekly digest.",
         "score": 5
       }
     }
   },
-  "request_hash": "35869336f5e93b4edc2ab864f4acaa26cacd421c987de5d1894bf9d2614bc335"
+  "request_hash": "01240183c1d4d5986d5336454912b6f02ec9c6498d7fda9a14cf14fc6221133c"
 }

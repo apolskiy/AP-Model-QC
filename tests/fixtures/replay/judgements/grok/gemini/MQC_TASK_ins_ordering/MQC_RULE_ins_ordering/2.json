@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes are present. The two changes with measurable quantities appear first in their source order, followed by the remaining two changes in their source order.",
+        "rationale": "All four release changes are included. The two changes featuring measurable quantities are listed first in their original document order, followed by the two non-measurable changes, also in source order.",
         "score": 5
       }
     }

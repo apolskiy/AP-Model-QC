@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_FLOOR_INSUFFICIENCY": {
+        "rationale": "The candidate explains why the summary cannot settle the requirement (recognizing that '8+' means at least 8 years, which does not confirm reaching the 9-year threshold), which exceeds level 3. However, it does not explicitly ask for the figure, falling short of level 5.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "09a2b0faf9217f134a04fca5ae972ff9d40596421df5f1f17bf8603906af473d"
+}

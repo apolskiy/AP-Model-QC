@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_quantities",
-    "duration_ms": 11350,
+    "duration_ms": 9574,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1356,
     "mode": "live",
-    "output_tokens": 36,
-    "raw_reference": "e3ba2726-895f-95fc-9afe-6e37bf17ac0f",
+    "output_tokens": 33,
+    "raw_reference": "bbcf75d4-f8e8-92c1-bf05-c76217775d45",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "- The importer keeps trailing columns when files lack a newline.\n- The scheduler retries a failed job twice before reporting it.\n- The audit log records the account that performed a deletion.",
-    "thinking_tokens": 837,
+    "text": "- The importer keeps a trailing column without a newline.\n- The scheduler retries a failed job twice before reporting.\n- The audit log records the account performing a deletion.",
+    "thinking_tokens": 848,
     "tool_calls": []
   }
 }

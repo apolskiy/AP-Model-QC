@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_NO_DEGRADATION": {
-        "rationale": "The candidate conveys all key details from the source document across the three bullets without sacrificing clarity or completeness, making it just as informative as single-constraint summaries.",
+        "rationale": "The candidate output successfully captures all four updates mentioned in the source text without any loss of meaningful information or degradation in clarity, fully meeting all constraints while remaining as informative as single-constraint answers.",
         "score": 5
       }
     }
   },
-  "request_hash": "8fbb1e2c6e0a522dd15ea9f8691dfad3064dabd4770f34b763eee06ee012780a"
+  "request_hash": "47dda3bcdcfeb4c566e964142cf7f9dfd54a4400f9c273e7557d2a4bf0f0ed7d"
 }

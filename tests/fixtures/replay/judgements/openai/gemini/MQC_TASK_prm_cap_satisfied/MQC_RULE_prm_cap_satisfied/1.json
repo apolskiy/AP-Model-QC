@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_CONTROL": {
-        "rationale": "The response reports that the candidate matches the requirement, but does so without referencing the specific numbers or placing the figure within the 5 to 9 year range.",
+        "rationale": "The response reports that the candidate matches the requirement, but it makes no reference to the range of years or placing the candidate's specific years of experience within it.",
         "score": 3
       }
     }

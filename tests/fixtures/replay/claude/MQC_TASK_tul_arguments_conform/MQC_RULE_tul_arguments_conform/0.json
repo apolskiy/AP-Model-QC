@@ -82,13 +82,13 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_arguments_conform::MQC_RULE_tul_arguments_conform",
-    "duration_ms": 2118,
+    "duration_ms": 2460,
     "engine": "claude",
     "finish_reason": "tool_calls",
     "input_tokens": 637,
     "mode": "live",
     "output_tokens": 77,
-    "raw_reference": "msg_011CfwoHf1dEXmUbHsesueFG",
+    "raw_reference": "msg_011Cg4V3maZho2Vpf4wQA7nU",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
     "text": "",
@@ -99,7 +99,7 @@
           "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "toolu_01LjERcJzqUEanHd6k7AnguF",
+        "call_id": "toolu_01TSNEsgeZXFNP8xPrVovmZA",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

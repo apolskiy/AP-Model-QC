@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The response provides the required warning and explicitly names the 78% cutoff without evaluating the nice-to-have items. It also clearly identifies and names the three unmet mandatory requirements (Docker/Kubernetes/Terraform/Ansible/Helm, Kafka, and GraphQL) in the itemized breakdown, but it does not integrate these gaps directly into the warning statement itself.",
+        "rationale": "The response warns and names the 78% cutoff, and it does explicitly identify all three gaps (Docker/Kubernetes/Terraform/Ansible/Helm, Kafka, and GraphQL as 'not present') in the skills breakdown. However, it falls short of Level 5 because the warning section itself does not state the unmet requirements or integrate them to turn the refusal into actionable advice, placing it between Level 3 and Level 5.",
         "score": 4
       }
     }
   },
-  "request_hash": "d7e05f2b11c21db32ff8e10e92a5910c6485c64499c11fc2047a3c242512205a"
+  "request_hash": "a63dac4aca2a23cded663473fa5054fb6b51be735ebc3970f7be1e53ed8e7f6f"
 }

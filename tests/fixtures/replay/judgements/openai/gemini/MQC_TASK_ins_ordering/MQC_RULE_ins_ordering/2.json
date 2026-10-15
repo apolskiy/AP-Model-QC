@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes from the release note are included. The two changes containing measurable quantities (30 seconds, 2 GB) are placed first in the order they appeared in the source text, followed by the remaining two non-measurable changes in their source order.",
+        "rationale": "All four changes from the release note are included. The two items with measurable quantities (export under 30 seconds, importer up to 2 GB) are listed first, followed by the two non-measurable items, with the source order preserved within both groups.",
         "score": 5
       }
     }
   },
-  "request_hash": "d1635e5eec7aadbda825bded186c69a4bfd1bf5c3071f56f311c893f5c4782ca"
+  "request_hash": "ab253dbddeac0c8c71bacc98d94b9ce56c882e9852ad0ed5984e36eef82f8c50"
 }

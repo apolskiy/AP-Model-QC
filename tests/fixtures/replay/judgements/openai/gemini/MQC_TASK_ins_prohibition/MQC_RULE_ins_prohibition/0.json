@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "The candidate avoids em dashes and en dashes completely, using a colon and standard list punctuation instead. The resulting prose reads entirely naturally and fluidly, as though unconstrained.",
+        "rationale": "The prohibited em dashes and en dashes are avoided entirely, and the prose flows smoothly and naturally using standard punctuation without any strained phrasing.",
         "score": 5
       }
     }
   },
-  "request_hash": "489c3794b2d941668dc7b46e02237a2359de73b538a17111122f11522d95cadd"
+  "request_hash": "ca8900a5331200c602a8ffe6113732ba95608ed96f44d503f9c4931e79982e6d"
 }

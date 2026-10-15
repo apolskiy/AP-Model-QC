@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_INS_NO_DEGRADATION": {
-        "rationale": "All four changes from the original release note are preserved accurately and clearly across the three bullets, with no degradation in informativeness despite meeting all constraints.",
+        "rationale": "The candidate successfully retains all four points from the original release note without loss of clarity or content, despite meeting all constraints.",
         "score": 5
       }
     }

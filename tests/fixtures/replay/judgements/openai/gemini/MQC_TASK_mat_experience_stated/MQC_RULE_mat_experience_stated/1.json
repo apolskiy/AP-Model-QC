@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The stated years of experience figure ('15+ years') was preserved verbatim, but the summary was repeated without any meaningful rewriting toward the posting requirement.",
+        "rationale": "The years of experience figure ('15+ years') was preserved verbatim, but the candidate output is essentially an identical copy of the input summary without any rewriting to further target the posting.",
         "score": 3
       }
     }

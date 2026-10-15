@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
-    "duration_ms": 19976,
+    "duration_ms": 13850,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1387,
     "mode": "live",
-    "output_tokens": 222,
-    "raw_reference": "ad86687c-0a5f-9424-818e-5b4f43f1847f",
+    "output_tokens": 238,
+    "raw_reference": "f4d97e17-447e-90f2-b38f-5239df7eba87",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function returns the wrong quantity: a slice of the total minus one coupon, not the amount still owed.\n\n**What it computes**\n\n- It treats `DISCOUNT_BY_TIER` as a fraction of the total to keep, not a percent off: `total_amount * discount / 100`.\n- It applies only `coupon_codes[0]`, ignoring every later code.\n- It then subtracts that single coupon from the discount slice.\n\nFor a $100 standard order (20) and coupons worth 5 and 3, it returns `100 * 20 / 100 - 5 = 15`.\n\n**What it should compute**\n\nLeave 20 and 30 as percents off. The amount owed is the total after that percent is removed, minus the sum of every coupon:\n\n`total_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)`\n\nThe same example should be `100 * 80 / 100 - (5 + 3) = 72`.",
-    "thinking_tokens": 812,
+    "text": "The function does not return the amount owed. It returns a fraction of the total, then subtracts only one coupon.\n\n**What it computes now**\n\n- `discount` is the tier percent from the module (`20` or `30`).\n- `coupon_sum` is only `coupon_lookup[coupon_codes[0]]`. Later codes are ignored, so this is not a sum.\n- `amount_owed = total_amount * discount / 100 - coupon_sum` is that percent of the total minus the first coupon. For a $100 standard order that is `20 - first_coupon`, not the balance due. The result can be negative.\n\n**What it should compute**\n\nKeep the stated percents as percent-off, not percent-owed:\n\n- Tier reduction: `total_amount * (100 - discount) / 100` (equivalently `total_amount - total_amount * discount / 100`).\n- Coupon reduction: the sum of `coupon_lookup[code]` for every code in `coupon_codes`.\n- Amount owed: discounted total minus that coupon sum, and not below `0`.",
+    "thinking_tokens": 835,
     "tool_calls": []
   }
 }

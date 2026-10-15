@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_CEILING_PROCEEDS": {
-        "rationale": "The candidate correctly computes the mandatory match at 90%, proceeds based on meeting the 85% threshold, and explicitly notes that the nice-to-have (optional) set does not affect or change the outcome, precisely satisfying the level 5 anchor.",
+        "rationale": "The candidate output correctly calculates the mandatory match percentage (90%), proceeds, and explicitly states that the nice-to-have items do not affect the outcome.",
         "score": 5
       }
     }
   },
-  "request_hash": "116d527c866173a369f0aaa36487afa873dba6f9bc06eb55dba4c835a97b286b"
+  "request_hash": "efaa942ccaaffa774e6c98fab28b7b6ca1b4375f042664d83e209bc57209f38d"
 }

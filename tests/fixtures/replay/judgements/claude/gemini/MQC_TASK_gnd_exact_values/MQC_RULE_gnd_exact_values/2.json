@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response is composed of exactly three sentences that successfully incorporate all five revenue figures while reading smoothly as a coherent summary rather than a disjointed list.",
+        "rationale": "The candidate output successfully integrates all five figures across exactly three well-crafted sentences. Rather than reading like a mechanical list, it reads smoothly as an informative summary with natural transitions and context.",
         "score": 5
       }
     }
   },
-  "request_hash": "2bf07d68f3196b1621768fb54fa45cd6dfd931ba1df51e2304934544d4383092"
+  "request_hash": "0920178e1877d6a370fc936d1d21c19ffd2674029e126d75ee38cb09cbd529c6"
 }

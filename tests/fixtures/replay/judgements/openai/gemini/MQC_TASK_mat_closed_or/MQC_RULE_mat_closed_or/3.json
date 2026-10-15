@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_MAT_OR_REASONING": {
+        "rationale": "The candidate provides the correct figure (100%) and explicitly identifies the connector 'OR' (noting it is a closed OR where at least one language suffices) as the reason why having Python fully satisfies the requirement.",
+        "score": 5
+      }
+    }
+  },
+  "request_hash": "5f00368bfae907c39ee6502d293a942f11e998d834f615af98eebc2af5fb5f4d"
+}

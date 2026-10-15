@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_FLOOR_USEFUL": {
-        "rationale": "The candidate output provides a floor of 28.7 million, which is at the exact sourced figure from the report, and explicitly notes that the report states EMEA recorded 28.7 million.",
+        "rationale": "The candidate provides a floor of 28.7 million, which is exactly at the sourced figure from the report, and explicitly notes that this figure is directly supported by the source document.",
         "score": 5
       }
     }
   },
-  "request_hash": "6403e29613f18324da537c2c519505e469cbf1515b6e0d6e703f26b3eff1e3e4"
+  "request_hash": "6c42a4691311163f72fab00e96c4adea9066a40de2d6984796c8d8e03ca45599"
 }

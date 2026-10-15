@@ -31,6 +31,7 @@ carries no priority marker.
 #   115010  a_graded_evaluation_rule_without_a_rubric_is_reported
 #   115006  an_authored_anchor_without_an_exemplar_is_reported
 #   115007  a_top_exemplar_failing_its_own_assertions_is_reported
+#   115012  an_exemplar_at_the_pass_mark_failing_its_gates_is_reported
 #   115008  the_shipped_task_file_differs_from_what_the_generator_builds
 #   115009  the_obfuscated_payloads_survive_a_load_as_code_points
 # ------------------------------------------------------------ end of cases
@@ -716,6 +717,50 @@ class TestMQCCorpus:
         assert not incoherent, (
             "a level 5 exemplar claims a score the case cannot award through a "
             "failed gate: " + "; ".join(incoherent[:4])
+        )
+
+    @allure.story("Calibration")
+    def MQC_CAS_UNI_115012_an_exemplar_at_the_pass_mark_failing_its_gates_is_reported(
+        self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
+    ) -> None:
+        """Every exemplar at or above the pass mark passes its rule's assertions.
+
+        A level at the rubric's threshold is a passing answer, so an exemplar
+        there that fails a gate describes a pass the case can never award.
+        Level 5 is ``115007``'s; this reads every level from the threshold up.
+
+        Design: ``model_evaluation_test_plan.md`` sections 8.9 and 8.9.1.
+
+        Returns:
+            None
+        """
+        _, rules = corpus
+        refused: list[str] = []
+        checked = 0
+
+        for rule in rules:
+            if rule.rubric is None or not rule.assertions:
+                continue
+            for criterion in rule.rubric.criteria:
+                for level, anchor in sorted(criterion.anchors.items()):
+                    if level < rule.rubric.threshold or not (anchor.exemplar or "").strip():
+                        continue
+                    checked += 1
+                    failed = [
+                        entry.assertion_id
+                        for entry in run_assertions(rule.assertions, anchor.exemplar)
+                        if not entry.passed
+                    ]
+                    if failed:
+                        refused.append(
+                            f"{rule.rule_id}/{criterion.criterion_id} level {level} "
+                            f"fails {failed}"
+                        )
+
+        assert checked, "no exemplar at a pass mark was read, so nothing is being checked"
+        assert not refused, (
+            f"{len(refused)} exemplar(s) at or above the pass mark fail a gate, so "
+            "the rubric passes an answer the case refuses: " + "; ".join(refused)
         )
 
     @allure.story("Generation")

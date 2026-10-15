@@ -85,13 +85,13 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_tul_selects_among_several::MQC_RULE_tul_selects_among_several",
-    "duration_ms": 1809,
+    "duration_ms": 1384,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1506,
     "mode": "live",
     "output_tokens": 23,
-    "raw_reference": "c4c6b393-d90d-9cd6-b228-7d17133c886c",
+    "raw_reference": "41e45abb-50f5-902e-a8f7-e992f17da93f",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
@@ -102,7 +102,7 @@
           "limit": 5,
           "query": "how many days to return an item after delivery"
         },
-        "call_id": "call-e3353677-a367-41b4-b4b7-ed62a3d1e7e7-0",
+        "call_id": "call-d7954049-c047-4ea2-85b5-16cef35195a3-0",
         "sequence": 0,
         "tool_name": "search_policy"
       }

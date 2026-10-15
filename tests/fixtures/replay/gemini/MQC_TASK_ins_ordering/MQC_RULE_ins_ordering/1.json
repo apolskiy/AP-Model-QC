@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_ordering::MQC_RULE_ins_ordering",
-    "duration_ms": 4432,
+    "duration_ms": 5505,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 99,
     "mode": "live",
-    "output_tokens": 77,
-    "raw_reference": "HW7MaqfQFIWu9MoP25aF-A8",
+    "output_tokens": 67,
+    "raw_reference": "bRPRapWDHdGg1MkPie3loQ0",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Here are the changes from the release note, ordered with measurable quantities first:\n\n**Changes with measurable quantities:**\n1. The export job now completes in under 30 seconds.\n2. The importer accepts files up to 2 GB.\n\n**Remaining changes:**\n3. The login page was restyled.\n4. The help link points to the new documentation.",
-    "thinking_tokens": 359,
+    "text": "Here are the changes from the release note, ordered with those stating measurable quantities first:\n\n1. The export job now completes in under 30 seconds.\n2. The importer accepts files up to 2 GB.\n3. The login page was restyled.\n4. The help link points to the new documentation.",
+    "thinking_tokens": 315,
     "tool_calls": []
   }
 }

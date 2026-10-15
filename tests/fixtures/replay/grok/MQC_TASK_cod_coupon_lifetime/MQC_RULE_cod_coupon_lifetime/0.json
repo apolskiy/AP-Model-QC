@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 21973,
+    "duration_ms": 10707,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 249,
-    "raw_reference": "7fbceb45-ade9-9d8b-8a6f-3c595f9f367b",
+    "output_tokens": 252,
+    "raw_reference": "33697566-b095-9b4e-9b88-daef7de1534a",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Bound each code with an absolute expiry the settlement path must check, and make the lookup return that expiry with the value.\n\nStore a server-authoritative `expires_at` (UTC timestamp) on every code. A relative TTL alone is not enough unless you also store `issued_at` and compute expiry from both. Optionally store `not_before` if codes should not be valid immediately.\n\nThe lookup cannot stay a code-to-number map. It has to yield at least:\n\n- the coupon value (what you subtract or apply today)\n- `expires_at`\n\nRedeem only if `now < expires_at`, using server time, and do that check inside `settle_order` (or whatever writes the charge), not only in the UI. If the lookup returns only a number, nothing in this function can reject an old code. Missing or unparsable expiry should fail closed.\n\nA sliding \u201clast used + N days\u201d rule is a different policy and needs `last_redeemed_at` as well; a fixed campaign end date is just `expires_at` shared by many codes. Either way, enforceability depends on the timestamp traveling with the lookup result and being checked before the value is applied.",
-    "thinking_tokens": 491,
+    "text": "Bound each code with an absolute expiry instant, and make the lookup return that instant next to the value so settlement can reject the code when it is past.\n\n**Lifetime bound.** Store an `expires_at` on every issued code (an absolute timestamp, not \u201cvalid forever unless we remember to delete it\u201d). Optionally also store `valid_from` if codes should not redeem before a start time. Issue-time plus a TTL is fine only if you persist the computed `expires_at`; do not recompute lifetime from \u201cnow\u201d at redeem time. Treat missing expiry as invalid, not as never-expiring.\n\n**What the lookup must carry.** Today `coupon_lookup[code]` is a bare number (`coupon_sum`). That cannot enforce a bound. The value has to be a record that includes at least:\n\n- the discount amount (what you subtract today)\n- `expires_at` (and `valid_from` if you use a window)\n\nSettlement must read that record, compare the redemption time to `expires_at`, and refuse the code when `now >= expires_at` (or before `valid_from`). If the lookup stays a scalar, expiry cannot be checked no matter what policy you write beside it.",
+    "thinking_tokens": 487,
     "tool_calls": []
   }
 }

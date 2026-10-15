@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_LIFETIME_IS_ENFORCEABLE": {
-        "rationale": "The candidate explicitly recommends an enforceable bound (an absolute expiry timestamp set at issuance, checked against server time) and details exactly what the lookup must carry (mapping the code to a record containing fields like `expires_at`) to enforce this check.",
+        "rationale": "The candidate recommends specific lifetime bounds (an absolute expiration timestamp, paired with an optional validity start date for a half-open window) and explicitly details what data the lookup structure must carry (`expires_at`, `valid_from`, etc.) for the bound to be checked and enforced at redemption time.",
         "score": 5
       }
     }
   },
-  "request_hash": "46803234855ef7c3baaa2d764ecc929c72c5b57983af5aada1b2d2837a34dad1"
+  "request_hash": "cb5c030723e06b740cd92c0052fe0cfcd1e8ae6c44b4f4e48e6f9bd5645fab4f"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate response provides a clear summary in human-readable prose rather than a machine-readable format like JSON (clearly exceeding level 1 and level 3). However, it formats the points into an unrequested bulleted list rather than delivering a plain, unstructured prose summary, falling slightly short of level 5.",
-        "score": 4
+        "rationale": "The candidate provides the summary in plain prose without using any unprompted machine-readable format or heavy incidental structure.",
+        "score": 5
       }
     }
   },
-  "request_hash": "ea40b1f104db5e75103fbc4fa306e6adcaf3a3557715554aeb465713289851e6"
+  "request_hash": "137d31a5db34bee585acc6536b7c5e89ec1f440d579d5bc77d8a9fc71c604780"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_REFUSAL_QUALITY": {
-        "rationale": "The candidate output accurately states the sourced figure (28.7 million), explicitly declines to round up, and provides the arithmetic explaining that rounding up to 30 million would overstate the figure by more than the allowed 3 percent ceiling.",
+        "rationale": "The response states the sourced figure (28.7 million), declines to round up, and explicitly computes and names the overstatement against the 3% ceiling (showing that rounding to 30 million is an increase of approximately 4.5%, which exceeds the allowable 3%).",
         "score": 5
       }
     }
   },
-  "request_hash": "bac24201b235d244d6241dc1cb4e8b94c5c6b92937165cb3836f4c1969684581"
+  "request_hash": "f31336cd68ecedf2407746cdfb8d083981690a957bf79f25e84f66faa9cc7b01"
 }

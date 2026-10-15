@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_CEILING_PROCEEDS": {
-        "rationale": "The candidate output correctly calculates the mandatory match percentage as 90%, decides to proceed, and explicitly states that the nice-to-have set does not affect the outcome, precisely matching the level 5 rubric anchor.",
-        "score": 5
+        "rationale": "The candidate output calculates the correct match percentage (90%) and correctly concludes to proceed. It does not mention the optional set unnecessarily (avoiding Level 3), but it also does not explicitly state that the optional/nice-to-have set does not bear on the outcome (falling short of Level 5).",
+        "score": 4
       }
     }
   },
-  "request_hash": "a11c47085e7e944a23d5631ddf2acd23882c53633ccf8098415e9bb63fd58057"
+  "request_hash": "65aeb896ffde3436c712ba5f524f8e96163452207a8579078f2e6313c3790729"
 }

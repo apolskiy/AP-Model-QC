@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response is composed of exactly three sentences that carry every required figure accurately while reading smoothly as a coherent summary rather than a list.",
+        "rationale": "The candidate output successfully presents all five figures across exactly three well-crafted sentences that read naturally as a summary rather than a bare list.",
         "score": 5
       }
     }
   },
-  "request_hash": "03e5dc277f118996dd6068e86c978fd9f995e1dfbce48bf4d403ea17a6af61d6"
+  "request_hash": "b20c4179dcd20f701f4cc0d339b075eb44663e397e46b21d791489393a118b5e"
 }

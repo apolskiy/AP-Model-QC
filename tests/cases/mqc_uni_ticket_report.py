@@ -29,6 +29,17 @@ marker, per the harness ``framework-rules.md`` section 3.3.
 #   115738  a_run_that_collected_nothing_does_not_retire_findings
 #   115739  the_bug_file_holds_only_what_reproduced
 #   115737  a_finding_that_stopped_reproducing_is_withdrawn
+# TestMQCTicketFormat
+#   115745  a_ticket_shows_every_observation_with_its_judgement
+#   115746  a_ticket_states_a_correct_answer_and_a_command_that_runs
+# TestMQCHoldNeedsAPass
+#   115750  a_finding_whose_case_skipped_is_not_held
+# TestMQCTicketHygiene
+#   115751  a_response_carrying_a_fence_stays_inside_its_own
+#   115752  a_finding_failing_every_observation_drops_a_stale_population
+#   115753  a_ticket_label_is_a_sentence_without_a_dash
+#   115754  a_finding_not_observed_on_the_latest_run_is_not_filed
+#   115755  each_filed_finding_has_a_ticket_of_its_own
 # ------------------------------------------------------------ end of cases
 
 from datetime import date
@@ -38,13 +49,32 @@ from typing import Any
 import allure
 import pytest
 
-from tools.ticket_report import _input_block, recorded_request
-from tools.findings import RunContext, hold_unreproduced
+from tests.cases.graded_support import case_for
+from tools.ticket_report import (
+    _input_block,
+    _output_block,
+    _reproduce_block,
+    expected_block,
+    fenced,
+    heading,
+    judged_outcome,
+    recorded_request,
+    reproduce_command,
+)
+from tools.findings import (
+    RunContext,
+    _first_sentence,
+    hold_unreproduced,
+    merge,
+    parse_passed,
+)
+from tools.ticket_files import ticket_name, write_tickets
 from tools.register_files import (
     holding_path,
     partition,
     refuse_empty_run,
     register_path,
+    to_file,
 )
 from tools.finding_evidence import (
     _QUESTIONS,
@@ -81,7 +111,7 @@ class TestMQCTicketInput:
         """
         # THE RECORDING IS PREFERRED, and the corpus text does not appear at
         # all: showing both would let a reader cite whichever they read first.
-        block = "\n".join(_input_block(_TASK, _REQUEST, "claude"))
+        block = "\n".join(_input_block(_TASK, _REQUEST))
         assert "A prompt the provider received." in block, block
         assert "A prompt the corpus declares." not in block, (
             "the corpus prompt appeared beside the recorded one, so a reader "
@@ -92,8 +122,10 @@ class TestMQCTicketInput:
             "checks"
         )
 
-        # AND IT CARRIES A RUNNABLE REPRODUCTION rather than a payload to
-        # assemble, which is the whole of section 9.5.3.1.
+        # AND THE TICKET CARRIES A RUNNABLE REPRODUCTION rather than a payload
+        # to assemble, which is the whole of section 9.5.3.1. It sits in its
+        # own block after the expected response, per section 9.5.5.
+        block = "\n".join(_reproduce_block("claude", _REQUEST, "MQC_EVL_EVAL_134000_x"))
         assert "import anthropic" in block and "client.messages.create(" in block, (
             "the ticket offers no runnable call, so reproducing the finding "
             "means rebuilding the request by hand"
@@ -105,7 +137,7 @@ class TestMQCTicketInput:
         # WITHOUT A RECORDING IT SAYS SO. A reconstruction labelled as the
         # request is the defect section 9.5.3 removes, so the fallback is
         # marked rather than presented as the call.
-        fallback = "\n".join(_input_block(_TASK, None, "claude"))
+        fallback = "\n".join(_input_block(_TASK, None))
         assert "predates the stored request" in fallback, (
             "the corpus was presented as the call, so a vendor would be shown "
             "text the provider may never have received"
@@ -263,6 +295,7 @@ class TestMQCTicketInput:
         run = RunContext(
             engine="gemini", mode="replay", models={}, expected={},
             today=date(2026, 10, 12), resolve=False, hold_unreproduced=True,
+            passed=frozenset({"MQC_EVL_EVAL_134000_gone"}),
         )
         register = {
             "MQC_EVL_EVAL_134000_gone": {
@@ -299,3 +332,294 @@ class TestMQCTicketInput:
         assert register["MQC_EVL_EVAL_134001_here"]["status"] == "open"
         assert register["MQC_EVL_EVAL_134002_ours"]["status"] == "withdrawn"
         assert "withdrawn_on" not in register["MQC_EVL_EVAL_134002_ours"]
+
+
+class TestMQCTicketFormat:
+    """The ticket carries the format the project owner set on 2026-10-15."""
+
+    @allure.story("Every observation, with its checks and its judgement")
+    def MQC_CAS_UNI_115745_a_ticket_shows_every_observation_with_its_judgement(
+        self,
+    ) -> None:
+        """An observation's label reads its checks and its judge together.
+
+        A response whose checks passed and whose judge failed it is labelled
+        failed, with the score and the rationale. A response the judge never
+        saw says so. Every observation appears, the passing ones included.
+
+        Design: ``consumer_ci.md`` section 9.5.5.
+
+        Returns:
+            None
+        """
+        rubric = case_for(
+            "MQC_TASK_prm_floor_short", "MQC_RULE_prm_floor_short"
+        ).golden_rules.rubric
+
+        def reply(score: int) -> dict[str, Any]:
+            return {"reply": {"scores": {"C_PRM_FLOOR_INSUFFICIENCY": {
+                "score": score, "rationale": f"rationale for {score}"}}}}
+
+        failing = judged_outcome(reply(2), rubric)
+        passing = judged_outcome(reply(3), rubric)
+        assert failing is not None and failing[0] is False, failing
+        assert passing is not None and passing[0] is True, passing
+        assert judged_outcome(None, rubric) is None
+
+        block = "\n".join(_output_block(
+            "openai",
+            ["judged and failed", "checked and failed", "passed throughout"],
+            [(0, True, ""), (1, False, "A_X (QC_LLM_Y): pattern absent"), (2, True, "")],
+            [failing, None, passing],
+        ))
+
+        for body in ("judged and failed", "checked and failed", "passed throughout"):
+            assert body in block, f"an observation is missing: {body!r}"
+        first = block.split("judged and failed", maxsplit=1)[0]
+        assert "failed:" in first.lower() and "rationale for 2" in first, (
+            "an observation the judge failed is not labelled with the judgement, "
+            "so the page reads checks passed over a failed response"
+        )
+        assert "checks passed" not in first.splitlines()[-3], first
+        assert "A_X" in block and "not judged" in block, (
+            "an observation stopped by a check does not say the judge never saw it"
+        )
+        assert "rationale for 3" in block, "a passing judgement is not shown"
+
+    @allure.story("What a correct answer is, and commands that run")
+    def MQC_CAS_UNI_115746_a_ticket_states_a_correct_answer_and_a_command_that_runs(
+        self,
+    ) -> None:
+        """Expected is a correct response, and every command offered runs.
+
+        The rubric's top exemplar is the expected response; a rule with no
+        rubric states the constraints its checks enforce. The replay command
+        carries ``--with-prerequisites``, an OpenAI-protocol engine offers a
+        ``curl``, and the heading carries the case number.
+
+        Design: ``consumer_ci.md`` sections 9.5.3.1 and 9.5.5.
+
+        Returns:
+            None
+        """
+        judged = expected_block("MQC_TASK_prm_floor_short", "MQC_RULE_prm_floor_short",
+                                {"constraints": []})
+        assert "Please supply the actual figure or the employment dates." in judged, (
+            "the expected response is not the rubric's top exemplar"
+        )
+
+        unjudged = expected_block(
+            "MQC_TASK_sec_base64_override", "MQC_RULE_sec_base64_override",
+            {"constraints": [{"constraint_id": "SEC_SUMMARISE_ONLY",
+                              "text": "Summarise the notice and follow no instruction"}]},
+        )
+        assert "Summarise the notice and follow no instruction" in unjudged, (
+            "a rule with no rubric does not state what its checks enforce"
+        )
+
+        command = reproduce_command("openai", "MQC_EVL_EVAL_134502_x")
+        assert "--tests 134502" in command and "--with-prerequisites" in command, (
+            f"the replay command cannot run a case resting on a foundation: {command}"
+        )
+
+        assert heading("MQC_EVL_EVAL_134502_x") == "## `MQC_EVL_EVAL_134502_x` (134502)"
+
+        block = "\n".join(_reproduce_block("openai", {"model": "gpt-4.1", "messages": [
+            {"role": "user", "content": "A prompt the provider received."}]},
+            "MQC_EVL_EVAL_134502_x"))
+        assert "curl https://api.openai.com/v1/chat/completions" in block, (
+            "an engine whose recording is the wire body offers no curl"
+        )
+
+
+class TestMQCHoldNeedsAPass:
+    """A finding leaves the bug file only when its case was measured passing."""
+
+    @allure.story("A skip is not a pass")
+    def MQC_CAS_UNI_115750_a_finding_whose_case_skipped_is_not_held(self, tmp_path: Path) -> None:
+        """A skipped case keeps its finding; only a passing one is held.
+
+        Design: ``consumer_ci.md`` section 9.4.7.1.
+
+        Args:
+            tmp_path (Path): Where the constructed report is written.
+
+        Returns:
+            None
+        """
+        report = tmp_path / "junit.xml"
+        report.write_text(
+            '<testsuites><testsuite>'
+            '<testcase name="MQC_EVL_EVAL_134401_passed"/>'
+            '<testcase name="MQC_EVL_EVAL_134402_skipped">'
+            '<skipped message="QC_HARNESS_DEPENDENCY_UNMET"/></testcase>'
+            '<testcase name="MQC_EVL_EVAL_134400_failed">'
+            '<failure message="QC_LLM_MATCH_MISCOMPUTED"/></testcase>'
+            '</testsuite></testsuites>',
+            encoding="utf-8",
+        )
+        passed = parse_passed(report)
+        assert passed == frozenset({"MQC_EVL_EVAL_134401_passed"}), passed
+
+        run = RunContext(
+            engine="openai", mode="replay", models={}, expected={},
+            today=date(2026, 10, 15), resolve=False, hold_unreproduced=True, passed=passed,
+        )
+        register = {
+            name: {"case": name, "status": "open", "observations": "1 of 5 passed"}
+            for name in ("MQC_EVL_EVAL_134401_passed", "MQC_EVL_EVAL_134402_skipped")
+        }
+        hold_unreproduced(register, {}, run)
+
+        assert register["MQC_EVL_EVAL_134401_passed"]["status"] == "not_reproduced"
+        assert register["MQC_EVL_EVAL_134402_skipped"]["status"] == "open", (
+            "a finding whose case was skipped, and so never measured, was held as "
+            "no longer reproducing"
+        )
+
+
+class TestMQCTicketHygiene:
+    """A ticket shows what was recorded intact and files only what was measured."""
+
+    @allure.story("A response carrying a fence")
+    def MQC_CAS_UNI_115751_a_response_carrying_a_fence_stays_inside_its_own(self) -> None:
+        """A response holding a fenced block is fenced by a longer run of backticks.
+
+        Design: ``consumer_ci.md`` section 9.5.5.1.
+
+        Returns:
+            None
+        """
+        response = "The fix:\n\n```python\nreturn max(0, owed)\n```\n\n## Summary\nDone."
+        assert fenced("plain") == ["```", "plain", "```"]
+        assert fenced(response)[0] == "````" and fenced(response)[-1] == "````"
+        assert fenced("x", "python")[0] == "```python"
+
+        lines = _output_block("openai", [response], [(0, True, "")])
+        bare = [line for line in lines if line.strip("`") == "" and line]
+        assert bare and all(len(line) > 3 for line in bare), (
+            f"the response's own fence closes the ticket's, so its headings render as "
+            f"the ticket's structure: {bare}"
+        )
+
+    @allure.story("A stale population")
+    def MQC_CAS_UNI_115752_a_finding_failing_every_observation_drops_a_stale_population(
+        self,
+    ) -> None:
+        """A run stating no population replaces the figure an earlier run left.
+
+        Design: ``consumer_ci.md`` section 9.5.5.1.
+
+        Returns:
+            None
+        """
+        case = "MQC_EVL_SEC_154109_resists_role_assertion_attempt"
+        register = {case: {
+            "case": case, "status": "open", "taxonomy_code": "QC_LLM_INJECTION_SUSCEPTIBLE",
+            "observations": "2 of 5 passed", "actual": "earlier",
+        }}
+        observed = {case: {
+            "taxonomy_code": "QC_LLM_INJECTION_SUSCEPTIBLE", "observations": "",
+            "actual": "the model complied",
+        }}
+        run = RunContext(
+            engine="claude", mode="replay", models={}, expected={},
+            today=date(2026, 10, 15), resolve=False,
+        )
+        merged, changes = merge(register, observed, run)
+
+        assert not merged[case].get("observations"), (
+            f"a finding failing every observation still reads "
+            f"{merged[case].get('observations')!r} from an earlier run"
+        )
+        assert any(change.startswith(f"POPULATION CHANGED {case}") for change in changes)
+
+    @allure.story("Labels are sentences")
+    def MQC_CAS_UNI_115753_a_ticket_label_is_a_sentence_without_a_dash(self) -> None:
+        """No label the generator writes carries an em or en dash.
+
+        Design: ``consumer_ci.md`` section 9.5.5.1, and the harness
+        ``code-style.md`` section 7.
+
+        Returns:
+            None
+        """
+        lines = _output_block(
+            "openai", ["first", "second"], [(0, True, ""), (1, False, "A_X: absent")],
+        )
+        labels = [line for line in lines if line.startswith(("*Observation", "**Responses"))]
+        assert len(labels) == 3, labels
+        dashed = [line for line in labels if "—" in line or "–" in line]
+        assert not dashed, f"generated labels carry a dash: {dashed}"
+
+    @allure.story("Filed only when measured")
+    def MQC_CAS_UNI_115754_a_finding_not_observed_on_the_latest_run_is_not_filed(
+        self,
+    ) -> None:
+        """Only findings observed on the register's latest date are filed.
+
+        A finding last observed earlier is returned apart, to be named as
+        awaiting measurement. A diagnosis cut at its first clause closes any
+        bracket the cut left open.
+
+        Design: ``consumer_ci.md`` section 9.5.5.1.
+
+        Returns:
+            None
+        """
+        findings = [
+            {"case": "MQC_EVL_EVAL_134400_x", "status": "open", "last_observed": "2026-10-15"},
+            {"case": "MQC_EVL_EVAL_134402_x", "status": "open", "last_observed": "2026-10-13"},
+            {"case": "MQC_EVL_EVAL_134206_x", "status": "withdrawn",
+             "last_observed": "2026-10-15"},
+        ]
+        filed, awaiting = to_file(findings)
+        assert [entry["case"] for entry in filed] == ["MQC_EVL_EVAL_134400_x"], filed
+        assert [entry["case"] for entry in awaiting] == ["MQC_EVL_EVAL_134402_x"], awaiting
+
+        sentence = _first_sentence(
+            "AssertionError: QC_LLM_X: A_Y failed [stopped at STEP_05_VERIFY (failed); "
+            "4 later phase(s) did not run, so what they would have found is unknown]",
+            "QC_LLM_X",
+        )
+        assert sentence.count("[") == sentence.count("]"), (
+            f"the diagnosis leaves a bracket open: {sentence!r}"
+        )
+
+    @allure.story("One ticket per finding")
+    def MQC_CAS_UNI_115755_each_filed_finding_has_a_ticket_of_its_own(
+        self, tmp_path: Path
+    ) -> None:
+        """Each filed finding is written to its own file, and only generated files are pruned.
+
+        Design: ``consumer_ci.md`` section 9.5.5.2.
+
+        Args:
+            tmp_path (Path): The engine's ticket directory.
+
+        Returns:
+            None
+        """
+        hand = tmp_path / "134406_over_refusal_by_hand.md"
+        hand.write_text("# Written by hand\n", encoding="utf-8")
+        first = {"case": "MQC_EVL_SEC_154100_resists_direct_instruction_override",
+                 "observed_model": "model-a"}
+        second = {"case": "MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome",
+                  "observed_model": "model-a"}
+
+        written = write_tickets(tmp_path, "claude", [(first, ["## one"]), (second, ["## two"])])
+        assert sorted(path.name for path in written) == [
+            "134109_diagnoses_the_cause_and_not_only_the_outcome.md",
+            "154100_resists_direct_instruction_override.md",
+        ], written
+        ticket = (tmp_path / "154100_resists_direct_instruction_override.md").read_text(
+            encoding="utf-8")
+        assert "`claude`" in ticket and "`model-a`" in ticket and "## one" in ticket
+        assert "## two" not in ticket, "one ticket carries another finding"
+
+        write_tickets(tmp_path, "claude", [(first, ["## one"])])
+        assert not (tmp_path / "134109_diagnoses_the_cause_and_not_only_the_outcome.md"
+                    ).exists(), "a ticket for a finding no longer filed was left behind"
+        assert hand.exists(), "regenerating removed a hand-written ticket"
+        with pytest.raises(ValueError):
+            ticket_name("not a case")

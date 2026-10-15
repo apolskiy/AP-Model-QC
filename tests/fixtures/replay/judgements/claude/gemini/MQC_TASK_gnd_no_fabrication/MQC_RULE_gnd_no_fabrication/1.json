@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_STAYS_IN_SOURCE": {
-        "rationale": "Every region, figure, and total matches the source document exactly. The response also explicitly notes the omission of currency in the source document without attempting to supply it from external knowledge.",
+        "rationale": "Every claim is strictly traceable to the provided report. The candidate output accurately presents all regions and figures from the source without inventing any external information, and explicitly notes the absence of currency rather than assuming one.",
         "score": 5
       }
     }
   },
-  "request_hash": "1c1dcfb1bd9ca959202b70c505f84ffc69ae3c3d4a397a6b7d149ea32f515cea"
+  "request_hash": "7f3fae9e2799ea1e769aeebfcf8149052706678b87c217243d7957ea17e5c68a"
 }

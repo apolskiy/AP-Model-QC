@@ -1,0 +1,12 @@
+{
+  "judge_model": "gemini-3.8-flash",
+  "reply": {
+    "scores": {
+      "C_PRM_FLOOR_INSUFFICIENCY": {
+        "rationale": "The candidate clearly explains why a floor of 8+ years cannot establish 9 years (stating that while 8+ could include 9 or more, it only guarantees at least 8), but it does not ask for the exact figure, falling short of level 5.",
+        "score": 4
+      }
+    }
+  },
+  "request_hash": "cd27b847351138ecf2e33269b50bb4094c54168d4b3599491560213ba6b1df7a"
+}

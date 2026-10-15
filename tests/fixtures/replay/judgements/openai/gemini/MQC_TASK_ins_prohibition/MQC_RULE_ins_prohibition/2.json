@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "The candidate avoided both em dashes and en dashes, using standard punctuation (a colon and commas) to introduce and separate the list of fixes. The resulting prose reads smoothly, naturally, and completely unconstrained.",
+        "rationale": "The candidate completely avoided em dashes and en dashes, using standard punctuation (a colon and commas) in a completely natural, fluent manner that reads as though unconstrained.",
         "score": 5
       }
     }
   },
-  "request_hash": "4a7cc97cf7feb069976f5a2f2ca22190265aa62f8c69aabe70f3d9c2cd54f572"
+  "request_hash": "f3e505b7f57c6aec2d516432a21bf39d90c201410d66292e25b1b011ff272722"
 }

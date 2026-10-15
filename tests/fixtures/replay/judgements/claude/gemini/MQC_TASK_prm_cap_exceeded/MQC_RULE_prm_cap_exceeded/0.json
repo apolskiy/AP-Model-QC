@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_TRUTHFULNESS": {
-        "rationale": "The candidate output names both figures (the requirement of 5 to 9 years and the candidate's 15+ years) and clearly states that the ceiling/upper bound is what excludes the candidate from matching the requirement.",
+        "rationale": "The response clearly states that the candidate does not match, explicitly names both figures (15+ years of experience and the 9-year upper limit/ceiling), and explains that exceeding this upper limit is precisely what excludes the candidate.",
         "score": 5
       }
     }
   },
-  "request_hash": "01faa01007daf3c7e5a99387f1e1e398a5db45d998a0c4aef587c398f323f05d"
+  "request_hash": "ca44298f45f9711082dc8aba281a64c60e7673d244677696aa3eb6a6a2a4da20"
 }

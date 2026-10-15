@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The response clearly exceeds Level 3 because the arithmetic is fully displayed with an explicit denominator in the formula (41.2 / 87.4). However, it falls slightly short of Level 5 because while the 41.2 million figure is explicitly named and attributed to North America, the 87.4 million figure appears only in the equation without being explicitly named as total revenue, and the percentage rounding (47.2% instead of 47.1%) is slightly imprecise.",
-        "score": 4
+        "rationale": "The candidate provides the correct percentage (47.2%) and explicitly writes out the arithmetic calculation showing both the numerator (41.2 million for North America) and denominator (87.4 million for the total revenue).",
+        "score": 5
       }
     }
   },
-  "request_hash": "09868b4534ab9778b5856f81b4fd1ca26599f2f7f8649e4af107c1710737ed40"
+  "request_hash": "b799b8354217e73ca08fef8339fb6c802b5f2537ffd302eb7374ff65c1fae6f3"
 }

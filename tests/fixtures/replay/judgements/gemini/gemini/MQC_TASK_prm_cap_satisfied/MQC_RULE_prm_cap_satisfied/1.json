@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_CONTROL": {
-        "rationale": "The response correctly states that the candidate matches the requirement and explicitly notes that 7 years falls within the specified 5 to 9 years range.",
+        "rationale": "The candidate output clearly reports that the candidate matches the requirement and explicitly explains that 7 years falls within the required 5 to 9-year range.",
         "score": 5
       }
     }
   },
-  "request_hash": "84288048b5ff19b01311d8d8da961fd5dd9f29a7001727cd0cfc47d8a68f2fb7"
+  "request_hash": "4605b5614611913e2d492b27f3d7a7b78d0a94c59b06347f486e9653f0d8ef71"
 }

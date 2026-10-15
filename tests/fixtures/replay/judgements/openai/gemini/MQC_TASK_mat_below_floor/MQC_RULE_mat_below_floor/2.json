@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_BELOW_ACTIONABLE": {
-        "rationale": "The response includes a warning that explicitly names the 78% cutoff and withholds evaluation of the nice-to-have requirements. While the warning section itself does not synthesize the missing gaps, the match analysis immediately preceding it explicitly identifies the unmet requirements (Docker/Kubernetes/Terraform/Ansible/Helm, Kafka, and GraphQL). This clearly exceeds the level 3 anchor but falls short of level 5, where the warning itself directly names the unmet requirements to frame the outcome as actionable advice.",
+        "rationale": "The candidate output warns and names the 78% cutoff while properly omitting the nice-to-have requirements. In the breakdown, it explicitly names the three unmet requirements (Docker/Kubernetes/Terraform/Ansible/Helm, Kafka, and GraphQL), which clearly exceeds Level 3 where gaps are not identified. However, it falls short of Level 5 because the warning itself does not incorporate or articulate these gaps into actionable advice.",
         "score": 4
       }
     }
   },
-  "request_hash": "66b1d43330da3906b472ace064beb8025f1916a4b0ae507dd0f86096d7ca0b5a"
+  "request_hash": "2a181f05d031a160fcfa298986d2010d09493e2ff55074c2bc63096cc629d131"
 }

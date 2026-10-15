@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate clearly states that missing or unrecognised coupon codes should be treated as a 0 currency discount so settlement proceeds without interruption, and names how to implement this using `coupon_lookup.get(code, 0)`.",
+        "rationale": "The response explicitly states that unrecognised codes should not stop settlement, specifies that they contribute zero, and names how settlement proceeds using safe dictionary access with a default value of 0 (`coupon_lookup.get(code, 0)`) summed across all codes.",
         "score": 5
       }
     }
   },
-  "request_hash": "8d1c63b87a28e317ea343c1350afddbafa9a336319123afa212b5658d5c7b5b8"
+  "request_hash": "2eec556e48c008aab69e2b13e2558016fa1f0d64ff96f2db101c65b25ee100ec"
 }

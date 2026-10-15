@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_FLOOR_INSUFFICIENCY": {
-        "rationale": "The candidate output explicitly explains why the floor of 8+ years cannot establish whether the 9-year requirement is met or unmet (noting that 8+ could be 9 or more, or exactly 8), and explicitly instructs to ask the candidate for their exact years of backend experience or role dates.",
+        "rationale": "The candidate output clearly states that the summary cannot settle whether the requirement is met, explicitly explains why a floor of 8+ neither confirms nor rules out 9 years of experience, and directly advises asking for or checking the candidate's total years of experience to resolve the ambiguity.",
         "score": 5
       }
     }
   },
-  "request_hash": "6b50c6152585d8ecaccad2d5bac96b68fa38b2dbfb42cff909696866e8b93ce5"
+  "request_hash": "d5eaf521fd4735313cbc3a1bd4a092b8f006d79afbb360ba9005c105754442cd"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The candidate provides the correct percentage (approximately 47.14%) and explicitly names both figures it derives from (41.2 million out of 87.4 million).",
+        "rationale": "The share percentage is correct, and the candidate explicitly names the two figures it derives from (41.2 million out of 87.4 million).",
         "score": 5
       }
     }
   },
-  "request_hash": "bfbf03fc1ed73ab1d0d2e396f1430bf5a4ac52bcb97820e8e88b5fdebb99e892"
+  "request_hash": "918059866c197af278e4c5510bf57a72f5c0c7c4d4ac4a9927d0318c54db709f"
 }

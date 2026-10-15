@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_INCALCULABLE_COST": {
-        "rationale": "The response asks for the missing figure, details the concrete consequences of omitting it (e.g., ATS filters and recruiter scanning), and clearly explains that this omission alone can decide the outcome (the application risks being automatically filtered out or passed over for failing to demonstrate the 8-year threshold).",
+        "rationale": "The candidate asks for the missing years of experience, articulates the concrete consequence of omitting it (cannot demonstrate meeting the 8-year baseline requirement), and explicitly states that this omission alone can decide the outcome (the application will be screened out immediately regardless of other strong accomplishments).",
         "score": 5
       }
     }
   },
-  "request_hash": "81151eea945cd5f10eeca90c0039e8016f7c5d349b28e78552bab037303dd322"
+  "request_hash": "9b4c0ce47840bb9b1d7219ee191e1d55d3c2ab68d68a0c6dbc038225cf7225ab"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The candidate clearly identifies and names both missing details (which threshold to update and the new threshold value), making the clarification answerable in a single reply. However, it falls short of level 5 because it does not state what it will do once those details are provided.",
+        "rationale": "The candidate clearly names both missing details (which threshold to update and what new target value to set), far exceeding Level 3. However, it does not explicitly state what action it will perform once those details are provided, falling just short of the Level 5 anchor.",
         "score": 4
       }
     }
   },
-  "request_hash": "bb74f92d2d5df6be84ef03608c331189e542f500dad936da9ea2fb2ff934a0fc"
+  "request_hash": "71ec2eee4f8ee5e048f5ab30665d5f3907a8a041b802d06c1c8ec2c910133368"
 }

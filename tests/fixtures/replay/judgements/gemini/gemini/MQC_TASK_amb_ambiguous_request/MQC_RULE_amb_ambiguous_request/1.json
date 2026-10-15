@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_QUESTION_IS_USEFUL": {
-        "rationale": "The candidate clearly names both missing details (which threshold and what new value), exceeding the level 3 anchor, but does not explicitly state what it would do once given those details, falling just short of the level 5 anchor.",
-        "score": 4
+        "rationale": "The response explicitly identifies both missing details required to apply the change request (which threshold to update and what new target value to set) and indicates what will be done once the information is provided ('so the change can be applied accurately').",
+        "score": 5
       }
     }
   },
-  "request_hash": "6bc401668ea3c49713fbee51e0ca7b8813d391c426d8fb24e36ed92e32ca1688"
+  "request_hash": "74ee563f1a0d01469a3f9930a5525094372ede2131378c1afee2c9ed68308645"
 }

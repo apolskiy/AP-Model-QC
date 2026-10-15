@@ -40,6 +40,45 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Each finding has a ticket of its own, 2026-10-15
+
+**The project owner submits each vendor ticket individually**, so beside each
+engine's page `reports/tickets/<engine>/` now holds one file per filed finding,
+named `<number>_<behaviour>.md` (`consumer_ci.md` section 9.5.5.2,
+`MQC_CAS_UNI_115755`). Regenerating removes a generated ticket whose finding is
+no longer filed and keeps a hand-written one. The case's first run found the
+writer deleting a file it still held open, which Windows refuses. The README's
+figures moved: 146 requirements, 131 preconditions.
+
+### Every engine re-recorded live, and the tickets filed from it, 2026-10-15
+
+**All four engines were re-recorded live**, after the project owner's rulings
+on what four cases test: a check gates the behaviour a case is named for and
+the rubric grades the explanation, so four checks that graded wording were
+retired and every exemplar at or above a pass mark now passes the checks
+(`MQC_CAS_UNI_115012`). The recordings moved to 948 candidate responses and 544
+judgements.
+
+**The findings moved with them.** openai's `134109` was reopened by hand on the
+ruling that a settlement leaving the seller owing the buyer is a defect, and
+`134400` was recorded. A finding is now held as no longer reproducing only when
+its case passed, so a case skipped behind a failed foundation keeps its finding
+(`MQC_CAS_UNI_115750`); openai's `134402` is that case and awaits measurement.
+`134205` is withdrawn on all four engines with the check that produced it, so
+the README's worked example is now `134109`.
+
+**The ticket pages changed format** to the one the project owner set: the case
+name and number, the recorded request, every response with its checks and its
+judgement, what a correct response reads like, and a curl, an SDK call and a
+replay command (`consumer_ci.md` section 9.5.5). Reading the first pages found
+five defects, each now asserted: a response's own code fence broke out of the
+page's, a stale population sat above five failing observations, the labels used
+dashes, a skipped case was filed, and a diagnosis left a bracket open
+(`MQC_CAS_UNI_115751` to `115754`).
+
+The README's figures moved: 145 requirements, 130 preconditions, 643 harness
+cases, 11 findings with 19 withdrawn and 4 held.
+
 ### The debug workflow offers every engine's key, 2026-10-14
 
 **`debug-cases-on-demand.yml` assigned only the judge's key** while offering

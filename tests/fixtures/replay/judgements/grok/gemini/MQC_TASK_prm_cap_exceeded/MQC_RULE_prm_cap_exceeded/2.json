@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_TRUTHFULNESS": {
-        "rationale": "The response clearly exceeds Level 3 by naming both figures (5\u20139 years required and 15+ years stated) and noting that the candidate is outside the range. However, it falls short of Level 5 because it does not explicitly state that the ceiling (the upper limit of 9 years) is what excludes the candidate.",
+        "rationale": "The response clearly exceeds Level 3 by naming both the required range (5 to 9 years) and the candidate's experience (15+ years), and correctly determining that the candidate does not match. However, it falls short of Level 5 because it only notes that 15+ years is 'outside that range' rather than explicitly identifying the ceiling/maximum limit as the factor that excludes the candidate.",
         "score": 4
       }
     }
   },
-  "request_hash": "011176fb2a5f61a98df84b117aad4f149d26c447533ab95a1f82455191a0792a"
+  "request_hash": "2693865ae86406caa9b5eb6dfbdd93a75169075e4801f6ab992e00160094b50b"
 }

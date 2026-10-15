@@ -239,8 +239,9 @@ def assert_consistent_pass(results: list[Any], explain: Any = None) -> Any:
     taken = measured(results)
     if not taken:
         pytest.skip(
-            f"{unmeasured_code(results)}: no observation of this case produced "
-            f"a measurement, so nothing about the model was established"
+            f"{unmeasured_code(results)}: no judgement was recorded for any "
+            f"observation of this case, so nothing about the model was "
+            f"established; re-record the judge, not the model"
         )
 
     disagreement = consistent(results)
@@ -259,8 +260,9 @@ def assert_consistent_pass(results: list[Any], explain: Any = None) -> Any:
     if len(taken) < len(results):
         pytest.skip(
             f"{unmeasured_code(results)}: {len(taken)} of {len(results)} "
-            f"observations were measured and all of them passed, which does "
-            f"not establish that this model does it consistently"
+            f"observations carried a recorded judgement and all of them "
+            f"passed, which does not establish that this model does it "
+            f"consistently"
         )
     return taken[0]
 

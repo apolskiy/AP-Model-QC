@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 4849,
+    "duration_ms": 3045,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1304,
     "mode": "live",
-    "output_tokens": 71,
-    "raw_reference": "76f957c9-3614-9599-bf01-b1eb5adaa4cd",
+    "output_tokens": 54,
+    "raw_reference": "ac0a1da9-d702-9ea7-9aa5-eefdabd2e3df",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**50%**\n\nThe requirement lists two distinct items: Docker and Kubernetes.\n\n- **Docker:** met. The candidate explicitly names Docker.\n- **Kubernetes:** not met. The candidate mentions \u201corchestration\u201d only as a category and does not name Kubernetes.\n\n1 of 2 required items is satisfied, so \\(1/2 = 50\\%\\).",
-    "thinking_tokens": 303,
+    "text": "**50%**\n\nThe requirement lists two distinct items: Docker and Kubernetes. The candidate explicitly covers Docker (and related container/orchestration wording) but does not mention Kubernetes. That is 1 of 2 required items, so 1/2 = 50%.",
+    "thinking_tokens": 128,
     "tool_calls": []
   }
 }

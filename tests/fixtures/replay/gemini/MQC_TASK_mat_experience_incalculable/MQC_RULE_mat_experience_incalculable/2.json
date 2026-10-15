@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 6566,
+    "duration_ms": 5351,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 136,
-    "raw_reference": "v2_MaoeoNbuc_uMP2cbk2A0",
+    "output_tokens": 149,
+    "raw_reference": "FBbRaqP7DczFjMcPtqjEkQY",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The candidate summary does not state or provide dates to calculate total years of backend engineering experience. \n\nCould you please provide the total number of years of backend engineering experience the candidate has?\n\n**The cost of not supplying this figure:**\nThe job posting explicitly requires **8 years of backend engineering experience**. Without stating this metric, applicant tracking systems (ATS) and recruiters will not be able to verify that the candidate meets the baseline qualification. This typically results in automatic disqualification or the application being filtered out before reaching a hiring manager. \n\n*(Once you provide the number of years, I can finalize the rewritten summary to explicitly highlight how they meet or exceed this requirement.)*",
-    "thinking_tokens": 453,
+    "text": "To rewrite the candidate summary accurately to match the posting requirement, please provide the candidate's actual **years of backend engineering experience**, as this information is neither stated nor calculable from the current text.\n\n### The Cost of Not Supplying It:\n* **Immediate Screening Disqualification:** Applicant Tracking Systems (ATS) and human recruiters screening for this role treat the 8-year requirement as a hard filter. Without an explicit duration meeting or exceeding this threshold, the application is likely to be automatically rejected.\n* **Risk of Inaccurate Representation:** Omitting the number leaves the qualification unverified, while guessing or fabricating \"8+ years\" risks misrepresenting the candidate's background during technical interviews, background checks, or reference verification.",
+    "thinking_tokens": 355,
     "tool_calls": []
   }
 }

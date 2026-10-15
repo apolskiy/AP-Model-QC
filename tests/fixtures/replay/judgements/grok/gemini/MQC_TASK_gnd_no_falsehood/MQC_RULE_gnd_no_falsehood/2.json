@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_ARITHMETIC_SHOWN": {
-        "rationale": "The percentage is calculated correctly (47.1%), and both underlying figures it derives from (North America at 41.2 and total revenue at 87.4) are explicitly named and shown in the calculation.",
+        "rationale": "The candidate correctly calculates the share (47.1%) and explicitly provides both the numerator and denominator figures (41.2 / 87.4) in relation to total revenue.",
         "score": 5
       }
     }
   },
-  "request_hash": "6d4d4799895a236c1fd2c4b4e518cbf8cd1f53b5171fc76905238d53d2a033dd"
+  "request_hash": "1b84c5f6a84e1f38f6d73d6d5826dd4819bbcca0df738b42664ebff3671e2c62"
 }

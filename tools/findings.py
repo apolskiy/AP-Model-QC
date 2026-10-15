@@ -42,6 +42,7 @@ from tools.register_files import (
     register_path,
     write_register,
 )
+from tools.ticket_report import reproduce_command
 
 _REGISTER_ROOT: Final[Path] = Path("config/findings")
 _MODEL_CODE: Final[re.Pattern] = re.compile(r"\b(QC_LLM_[A-Z_]+|QC_SEC_[A-Z_]+)\b")
@@ -183,6 +184,24 @@ def observe(engine: str, mode: str, *, timeout: int = 1800) -> tuple[Path, str]:
     return report, results
 
 
+def parse_passed(report: Path) -> frozenset[str]:
+    """Return every case the run measured as passing.
+
+    Args:
+        report (Path): The JUnit XML a run wrote.
+
+    Returns:
+        frozenset[str]: Each case whose element carries no failure, error or
+        skip. **A skip is not a pass**: a case skipped behind a failed
+        foundation was not measured (``consumer_ci.md`` section 9.4.7.1).
+    """
+    return frozenset(
+        str(element.get("name", ""))
+        for element in ElementTree.parse(report).getroot().iter("testcase")
+        if all(element.find(tag) is None for tag in ("failure", "error", "skipped"))
+    )
+
+
 def parse_failures(report: Path) -> dict[str, dict[str, Any]]:
     """Return each failing case and what the run said about it.
 
@@ -294,7 +313,9 @@ def _first_sentence(message: str, code: str) -> str:
         if terminator in collapsed:
             collapsed = collapsed.split(terminator, maxsplit=1)[0]
             break
-    return collapsed.strip()[:300]
+    # A CUT INSIDE A BRACKET CLOSES IT (consumer_ci.md section 9.5.5.1).
+    collapsed = collapsed.strip()[:300]
+    return collapsed + "]" * max(0, collapsed.count("[") - collapsed.count("]"))
 
 
 def expected_by_case(matrix: Path) -> dict[str, str]:
@@ -381,6 +402,8 @@ class RunContext:
             withdrawn as ours. **Replay may ask for this**, because it is a
             question about our own record rather than about the model
             (section 9.4.7).
+        passed (frozenset): The cases the run measured as passing. Only one of
+            these can have stopped reproducing (section 9.4.7.1).
     """
 
     engine: str
@@ -390,6 +413,7 @@ class RunContext:
     today: date
     resolve: bool
     hold_unreproduced: bool = False
+    passed: frozenset[str] = frozenset()
 
 
 def hold_unreproduced(
@@ -431,6 +455,10 @@ def hold_unreproduced(
     changed: list[str] = []
     for case, entry in sorted(merged.items()):
         if case in observed or entry.get("status") in (_RESOLVED, _WITHDRAWN):
+            continue
+        # A SKIP IS NOT A PASS. A case the run did not measure keeps its
+        # finding, and the next run that measures it decides (9.4.7.1).
+        if case not in run.passed:
             continue
         population = entry.get("observations") or "population not recorded"
         entry["status"] = _UNREPRODUCED
@@ -519,10 +547,10 @@ def merge(
                 "status": "open",
                 "expected": run.expected.get(case, ""),
                 "actual": measured.get("actual", ""),
-                "reproduce": (
-                    f"pytest --engine {run.engine} --mode {run.mode} --tests "
-                    f"{case.split('_')[3]}"
-                ),
+                # ONE COMMAND, SHARED WITH THE TICKET, which carries
+                # --with-prerequisites: without it a case resting on a
+                # foundation is refused (consumer_ci.md section 9.5.5).
+                "reproduce": reproduce_command(run.engine, case),
                 "ticket": "",
             }
             changes.append(f"RECORDED {case} ({measured['taxonomy_code']})")
@@ -583,14 +611,7 @@ def merge(
         if measured.get("actual") and measured["actual"] != entry.get("actual"):
             changes.append(f"MESSAGE CHANGED {case}, the failure reads differently")
             entry["actual"] = measured["actual"]
-        if measured.get("observations") and measured["observations"] != entry.get(
-            "observations"
-        ):
-            changes.append(
-                f"POPULATION CHANGED {case}: {entry.get('observations')} to "
-                f"{measured['observations']}"
-            )
-            entry["observations"] = measured["observations"]
+        changes.extend(_update_population(case, entry, measured))
 
     if run.hold_unreproduced:
         changes.extend(hold_unreproduced(merged, observed, run))
@@ -599,6 +620,30 @@ def merge(
         changes.extend(resolve_upstream(merged, observed, run))
 
     return merged, changes
+
+
+def _update_population(
+    case: str, entry: dict[str, Any], measured: dict[str, Any]
+) -> list[str]:
+    """Set an entry's population to what the latest run stated.
+
+    Args:
+        case (str): The case, for the change line.
+        entry (dict): The register entry, updated in place.
+        measured (dict): What the latest run said about the case.
+
+    Returns:
+        list[str]: One change line when the population moved, else none. A run
+        stating no population failed every observation, so an earlier figure
+        is dropped (``consumer_ci.md`` section 9.5.5.1).
+    """
+    stated = str(measured.get("observations") or "")
+    held = str(entry.get("observations") or "")
+    if stated == held:
+        return []
+    entry["observations"] = stated
+    return [f"POPULATION CHANGED {case}: {held or 'none stated'} to "
+            f"{stated or 'every observation failing'}"]
 
 
 def render(
@@ -730,6 +775,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             today=today,
             resolve=arguments.resolve_from_live,
             hold_unreproduced=arguments.hold_unreproduced,
+            passed=parse_passed(report),
         ),
     )
 

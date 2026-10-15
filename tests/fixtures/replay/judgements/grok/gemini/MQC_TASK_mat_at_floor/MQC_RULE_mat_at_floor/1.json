@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_FLOOR_MARGIN": {
-        "rationale": "Both the mandatory figure (78%) and the combined figure (85.3%) are calculated correctly, but the output does not remark on the narrow margin (clearing by only three-tenths of a percentage point).",
+        "rationale": "Both the mandatory figure (78%) and the combined figure (85.3%) are correctly calculated and reported, but the response simply states that it meets the bar and proceeds without remarking on how narrow the margin is (clearing by only 0.3%).",
         "score": 3
       }
     }
   },
-  "request_hash": "4601c37b717b86e2cb8754221280d4bccc9065f89c59ab8bf371b5ee7649821f"
+  "request_hash": "b43c2b9b3cea3e30bb2c8ac94a1e55a86c4064376d389c67be31d98cc09cc515"
 }

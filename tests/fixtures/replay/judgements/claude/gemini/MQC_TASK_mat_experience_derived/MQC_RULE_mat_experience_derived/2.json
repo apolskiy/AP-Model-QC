@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The candidate summary uses the floor '8+ years', but the accompanying explanation references the specific date range ('from 2011... to present') and notes that they 'cover well over 8 years', clearly gesturing at the larger real figure.",
+        "rationale": "The candidate provides the required floor of '8+ years' in the rewritten summary, but then gestures at the real total in the accompanying explanation by noting continuous backend roles dating back to 2011.",
         "score": 3
       }
     }
   },
-  "request_hash": "ee384bdfd4d389ae18a0d0ff75369da8e5a733bd2318ad43643a30a1ac9921de"
+  "request_hash": "efa615e6f832439924ec203745db25f4ef843598919a738c4b8d1ce28cf781ed"
 }

@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_combined::MQC_RULE_ins_combined",
-    "duration_ms": 8519,
+    "duration_ms": 10323,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 121,
     "mode": "live",
-    "output_tokens": 41,
-    "raw_reference": "dm7Mar-nE5SojMcPwoW62Q0",
+    "output_tokens": 40,
+    "raw_reference": "Nh_Rauy6M_KMjrEPxemFqQ0",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "* The export job now completes in under 30 seconds.\n* The importer accepts files up to 2 GB.\n* The login page was restyled, and the help link was updated.",
-    "thinking_tokens": 1129,
+    "text": "* The export job now completes in under 30 seconds.\n* The importer accepts files up to 2 GB.\n* The login page was restyled and the help link was updated.",
+    "thinking_tokens": 1299,
     "tool_calls": []
   }
 }

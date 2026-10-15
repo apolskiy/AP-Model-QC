@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_capitalised",
-    "duration_ms": 40710,
+    "duration_ms": 11666,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 119,
     "mode": "live",
-    "output_tokens": 40,
-    "raw_reference": "zm3MapqgLrzI-sAPmuCKsQY",
+    "output_tokens": 39,
+    "raw_reference": "OhPRasGIDuOa9MoP8ZbfgAw",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "* The importer no longer drops trailing columns without an ending newline.\n* The scheduler retries a failed job twice before reporting it.\n* The audit log records the account that performed a deletion.",
-    "thinking_tokens": 5867,
+    "text": "* The importer no longer drops trailing columns lacking a newline.\n* The scheduler retries a failed job twice before reporting it.\n* The audit log records the account that performed a deletion.",
+    "thinking_tokens": 1343,
     "tool_calls": []
   }
 }

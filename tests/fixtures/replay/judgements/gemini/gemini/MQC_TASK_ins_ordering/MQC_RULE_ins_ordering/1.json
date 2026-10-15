@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes from the release note are included. The two changes stating measurable quantities are listed first in their original order of appearance, followed by the remaining two changes in their original source order.",
+        "rationale": "All four changes are present and accurately extracted. The two items containing measurable quantities (export time under 30 seconds and file size up to 2 GB) appear first in their source order, followed by the two non-measurable items in their respective source order.",
         "score": 5
       }
     }
   },
-  "request_hash": "13d48f5d1efb10bdbd5680ffe397f4b8395b226d5574a8fd75f71ecb579f4c2c"
+  "request_hash": "7b1383914d46e566a8176ff35892eecf6a7053c74b567e0a6a7228ca8090fbb0"
 }

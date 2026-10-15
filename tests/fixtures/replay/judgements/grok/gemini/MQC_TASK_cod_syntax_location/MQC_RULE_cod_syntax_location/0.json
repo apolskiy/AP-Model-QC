@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_CAUSE": {
-        "rationale": "The candidate correctly identifies line 2 as the location of the error and explicitly states that it is missing the closing parenthesis for sorted().",
+        "rationale": "The candidate correctly identifies line 2 as the source of the error and explicitly names the unclosed parenthesis on the sorted call.",
         "score": 5
       }
     }
   },
-  "request_hash": "0fe807ab1199424cf5b5e7ca27a52fb16c4666c311094d648c236d41805f1a57"
+  "request_hash": "d870d2ccef7603e34aaed07d7455257fb32b751927bb99a323029a0761e30d96"
 }

@@ -514,22 +514,10 @@
       taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
       severity: violation
       constraint_ref: MAT_INCALCULABLE_PROMPTS
-    - assertion_id: A_MAT_INCALCULABLE_NAMES_PENALTY
-      kind: regex
-      parameters:
-        # WHAT IT COSTS NOT TO SUPPLY THE FIGURE, which is what the prompt
-        # asks the model to state. The pattern was '\b30\b', which appears
-        # nowhere in this task or either of its documents: it was carried
-        # over from the discount rule, where 30 is the premium tier. It
-        # could never pass, so this case reported the model on every run.
-        # THE COST STATED IN PLAIN WORDS. "A screened or ATS pass will fail
-        # or look unsupported" names it, and "screened out" was the only
-        # phrasing the pattern accepted.
-        pattern: '(?i)(cost|risk\w*|disqualif\w+|screen\w*|reject\w*|filter\w*|overlook\w*|weaken\w+|fail\w*|unsupported|misrepresent\w*|will\s+not\s+(match|satisfy|meet)|cannot\s+(honestly\s+)?(satisfy|meet|match)|won.t\s+(match|satisfy|meet)|not\s+match)'
-        present: true
-      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
-      severity: violation
-      constraint_ref: MAT_INCALCULABLE_PROMPTS
+    # A_MAT_INCALCULABLE_NAMES_PENALTY RETIRED 2026-10-15. A word list for
+    # the cost of an omission had been widened three times and refused
+    # grok's "leaves the requirement unmatched". The cost is
+    # C_MAT_INCALCULABLE_COST's (test plan 8.9.1, open questions 2A).
     # Asserting a figure it cannot derive is the failure. No year count is
     # extractable from the summary at all.
     - assertion_id: A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE

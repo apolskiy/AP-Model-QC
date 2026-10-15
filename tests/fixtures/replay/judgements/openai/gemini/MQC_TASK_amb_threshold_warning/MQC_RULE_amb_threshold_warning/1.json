@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_AMB_WARNS_ONLY_WHERE_DUE": {
-        "rationale": "The candidate clearly names the availability gate as the one that failed, explicitly calculates the margin by which it failed (gap: \u20130.4%), and states that the incident duration gate was met.",
+        "rationale": "The candidate specifically names the availability gate as failed, provides the exact margin of shortfall (0.4%), and explicitly confirms that the incident gate held (within the 60-minute limit).",
         "score": 5
       }
     }
   },
-  "request_hash": "b2bc900828328528547336c211392b52b256c730a62b956fdfc919e79a78b9bd"
+  "request_hash": "973dbc201a3cc0849ea48276230b6b9f7147a8b860354518beab081e5800c645"
 }

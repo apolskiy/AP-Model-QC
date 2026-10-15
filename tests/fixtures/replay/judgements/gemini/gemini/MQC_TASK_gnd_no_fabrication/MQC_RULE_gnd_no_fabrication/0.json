@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_GND_STAYS_IN_SOURCE": {
-        "rationale": "Every region and revenue figure listed is directly traceable to the source text, with no outside knowledge, unsupported generalities, or extraneous fabrications added.",
+        "rationale": "Every region and revenue figure listed is directly traceable to the context document, with no unsupported generalities or extraneous details added.",
         "score": 5
       }
     }
   },
-  "request_hash": "4331cf969bef3fa4752e5b46ef2bca880229f19825d67e18ba71d04f8224acbd"
+  "request_hash": "b969ef0bca33ca3ac05931f09f4dbcf21438f0617b1950bbae52fa2d74f7e726"
 }

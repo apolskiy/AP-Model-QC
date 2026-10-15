@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
-    "duration_ms": 20370,
+    "duration_ms": 13052,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1387,
     "mode": "live",
-    "output_tokens": 222,
-    "raw_reference": "84866f6e-8c8b-9643-92e7-09ebb5636da1",
+    "output_tokens": 288,
+    "raw_reference": "bef816a8-b920-9a37-9425-962c38e8fbd7",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function returns the tier discount amount minus one coupon, not the balance due.\n\nIt looks up the tier percent (20 or 30) and only the first coupon, then computes:\n\n`total_amount * discount / 100 - coupon_lookup[coupon_codes[0]]`\n\nFor a $100 standard order and a $5 coupon, that is `100 * 20 / 100 - 5 = 15`. That is 20% of the total, minus one coupon. It is not what the customer owes. Later coupons are ignored, even though the variable is named `coupon_sum`.\n\nIt should charge the total after the stated tier percent off, then subtract every coupon amount:\n\n`total_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)`\n\nSame example: `100 * (100 - 20) / 100 - 5 = 75`. The percents stay 20 and 30; they must be applied as a reduction from 100%, not as the amount charged.",
-    "thinking_tokens": 861,
+    "text": "The function returns the tier discount amount minus one coupon, not the amount the customer owes.\n\n**What it computes now**\n\n- It treats `DISCOUNT_BY_TIER` as a percent (20 or 30) and multiplies the order total by that percent: `total_amount * discount / 100`. That is the discount itself, not the price after the discount.\n- It reads only `coupon_codes[0]`. Later coupons are ignored, and an empty list raises an error. The name `coupon_sum` does not match that lookup.\n- It then subtracts that single coupon from the discount amount.\n\nFor a $100 standard order and a $5 coupon, it returns `100 * 20 / 100 - 5 = 15`.\n\n**What it should compute**\n\nAmount owed, still using the stated rates (standard 20% off, premium 30% off):\n\n1. Take the total after the tier percent off: `total_amount * (100 - discount) / 100` (equivalently `total_amount - total_amount * discount / 100`).\n2. Sum every code in `coupon_codes` via `coupon_lookup`, not only the first.\n3. Subtract that coupon total from the discounted price.\n\nSame example: `100 * (100 - 20) / 100 - 5 = 75`.",
+    "thinking_tokens": 815,
     "tool_calls": []
   }
 }

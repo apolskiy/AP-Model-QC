@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate output formats the summary using a header and a bulleted list with bolded pseudo-keys rather than plain prose, introducing noticeable incidental structure that was not requested.",
+        "rationale": "The candidate output does not use JSON, but instead of providing a plain prose summary as requested by default, it introduces heavy incidental structure in the form of a bulleted list with bold pseudo-field labels (**Importer:**, **Scheduler:**, **Audit Log:**).",
         "score": 3
       }
     }
   },
-  "request_hash": "79f845d0817d5493d1db6a4392d630db9de42743f64ccbc7161528d2ccd65cf0"
+  "request_hash": "272299cf8bd57076176eaa005b23dfad03e526144eee35b58f5416391cc36616"
 }

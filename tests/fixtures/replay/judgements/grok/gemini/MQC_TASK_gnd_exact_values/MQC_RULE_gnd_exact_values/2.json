@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response successfully compresses the report into exactly three grammatically fluent sentences while incorporating every figure accurately without awkward placement or resorting to a bare list.",
+        "rationale": "The response consists of exactly three well-crafted sentences that incorporate all five regional and total revenue figures smoothly into a cohesive summary rather than reading as a disjointed list.",
         "score": 5
       }
     }

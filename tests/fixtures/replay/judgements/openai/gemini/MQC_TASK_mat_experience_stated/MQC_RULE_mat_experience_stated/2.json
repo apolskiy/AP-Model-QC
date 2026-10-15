@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The years of experience statement (15+ years) was preserved verbatim, but the summary was not meaningfully rewritten to align with or highlight requirements from the posting, essentially leaving the original text unchanged.",
+        "rationale": "The candidate preserved the original figure ('15+ years') verbatim, but did not perform any meaningful rewriting to further target the posting requirement, essentially repeating the original summary unchanged.",
         "score": 3
       }
     }

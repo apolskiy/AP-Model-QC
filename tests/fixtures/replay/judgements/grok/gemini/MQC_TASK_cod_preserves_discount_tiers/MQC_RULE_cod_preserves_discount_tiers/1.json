@@ -3,14 +3,14 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_MISCOMPUTATION": {
-        "rationale": "The candidate clearly identifies the discount-versus-price miscomputation and demonstrates it numerically ($15 charged instead of $75), which far exceeds Level 3, but falls short of Level 5 by not explicitly stating who loses money.",
+        "rationale": "The candidate clearly explains the exact nature of the miscomputation (calculating the discount amount rather than price owed, charging 20% instead of 80%), far exceeding level 3, but falls short of level 5 because it does not explicitly state who loses money.",
         "score": 4
       },
       "C_COD_TIERS_UNCHANGED": {
-        "rationale": "The candidate leaves the discount percentages at 20% and 30%, explicitly keeps their meaning intact, and clearly distinguishes the discount percentage from the payable remainder (100 - discount) when working through an example.",
+        "rationale": "The candidate leaves the module's percentages unchanged (20 for standard, 30 for premium) and correctly distinguishes the discount amount from the remainder (price after discount) when working through the $100 example.",
         "score": 5
       }
     }
   },
-  "request_hash": "8053db337a4cb4d68d5f1f3115ffd1b9e5713fc4da51d1c4eb50df5c41abc822"
+  "request_hash": "82eec2eb40adf212f7fc7e1e79805087bc26af9dbe16bbc4550b4b963ff524a3"
 }
