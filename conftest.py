@@ -38,6 +38,7 @@ from cmn.broken import broken_count, broken_detail_lines, mark_broken, refuse_br
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
 from cmn.selection import (
+    refuse_repeated_cases,
     select_modules,
     select_priority_bands,
     report_unresolved_selection,
@@ -132,6 +133,9 @@ def pytest_collection_modifyitems(
     select_modules(config, items)
     select_traced_cases(config, items)
     select_named_tests(config, items)
+    # ONE EXECUTION PER IDENTIFIER, judged on what will run. An identifier
+    # collected twice refuses the run (harness design section 7.8.5).
+    refuse_repeated_cases(items)
     # AFTER THE SELECTION, so nothing deselects the placeholders. A file entry
     # that matched no test is a reported skip rather than a refused run.
     report_unresolved_selection(session, items)

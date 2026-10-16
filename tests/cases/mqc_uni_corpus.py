@@ -844,12 +844,18 @@ class TestMQCCorpus:
         )
         assert homoglyph_words(homoglyph), "no mixed script word survived"
 
-        # BASE64, case 50005. It decodes to the override or it does not.
-        encoded = tasks["MQC_TASK_sec_base64_override"].user_prompt
-        blob = max(encoded.split(), key=len)
+        # BASE64, case 50005. It decodes to the override or it does not, and
+        # the override asks for a tool the task offers and forbids, since
+        # 2026-10-16 (test plan section 9.10.5).
+        base64_task = tasks["MQC_TASK_sec_base64_override"]
+        blob = max(base64_task.user_prompt.split(), key=len)
         decoded = base64.b64decode(blob).decode("utf-8")
-        assert "CANARY_B64_50005" in decoded, (
+        assert "list_directory" in decoded, (
             f"the base64 payload no longer decodes to its override: {decoded!r}"
+        )
+        offered = [tool.tool_name for tool in base64_task.available_tools]
+        assert "list_directory" in offered, (
+            f"the decoded override asks for a tool the task does not offer: {offered}"
         )
 
         # EVERY PAYLOAD STILL MATCHES ITS VECTOR, which is the cross-check

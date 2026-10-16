@@ -10,27 +10,26 @@ dependency rather than vendored here.
 
 ## Status
 
-**Phase 3, and iterating.** The harness is complete, all 74 graded cases are
-written, and the security family is recorded in full and passing against a
-paid tier.
+**Phase 3, and iterating.** The harness is complete, all 77 graded cases are
+written, and every one is recorded for all four engines.
 
 | Piece | State |
 |---|---|
-| `docs/testing/model_evaluation_test_plan.md` | 74 graded cases specified |
-| `docs/testing/rtm_model.csv` | 148 requirements, traced |
-| `data/tasks/`, `data/rules/` | **8 corpora, 70 tasks**, loading with zero integrity violations |
+| `docs/testing/model_evaluation_test_plan.md` | 77 graded cases specified |
+| `docs/testing/rtm_model.csv` | 152 requirements, traced |
+| `data/tasks/`, `data/rules/` | **8 corpora, 73 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **133 cases, all passing** |
+| Preconditions (`CAS`, `UNI`) | **136 cases, all passing** |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
-| Graded cases (`EVAL`, `TOOL`, `SEC`) | **74 written**: 45 evaluator, 21 security, 8 tool |
-| Recorded responses | **948 candidate responses** and **544 judgements**, complete for all four engines, all re-recorded live on 2026-10-15. Replays in seconds and costs nothing |
-| Model findings | **11 findings**: openai 7, claude 3, grok 1, gemini 0, in `config/findings/` with a reproduction, an expected result and an observed one. Ten reproduced on the latest run; openai's `134402` was skipped behind `134400` and awaits measurement. **19 were withdrawn** and **4 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8) |
+| Graded cases (`EVAL`, `TOOL`, `SEC`) | **77 written**: 45 evaluator, 24 security, 8 tool |
+| Recorded responses | **964 candidate responses** and **544 judgements**, complete for all four engines, re-recorded live on 2026-10-15 and the eleven changed security cases on 2026-10-16. Replays in seconds and costs nothing |
+| Model findings | **7 findings**: openai 5, claude 1, grok 1, gemini 0, in `config/findings/` with a reproduction, an expected result and an observed one. Six reproduced on the latest run; openai's `134402` was skipped behind `134400` and awaits measurement. **24 were withdrawn** and **4 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8) |
 | Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
 ## What Is Measured Against Each Model
 
-**74 graded cases against each model**, and the same 74 whether the run is live
+**77 graded cases against each model**, and the same 77 whether the run is live
 or replayed, which holds only while every case is recorded: a case written and
 not yet recorded is skipped in replay, and `premise_discrimination` spent a day
 in that state. Selection is transport-independent: `--mode live` and
@@ -39,18 +38,18 @@ differs. **A replay is therefore the same test, not a reduced one.**
 
 | | |
 |---|---|
-| Graded cases per model | **74**: 45 evaluator, 21 security, 8 tool |
+| Graded cases per model | **77**: 45 evaluator, 24 security, 8 tool |
 | Models measured | **4**: gemini, openai, claude, grok |
 | Case executions per full sweep | **276** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
-| Recorded candidate responses | **948 candidate responses** |
+| Recorded candidate responses | **964 candidate responses** |
 | Recorded judge responses | **544 judgements** |
 
 **Three observations per case, not one, and that is a method rather than a
 margin.** A single sample cannot distinguish a model that fails from a model
 that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
-**7 of the 11 findings carry a disagreement population**: the model answered
+**5 of the 7 findings carry a disagreement population**: the model answered
 the same question two ways, so a single-sample run could have drawn the passing
 answer and reported nothing. Only **2 are classified as inconsistency**, because
 a finding is named by the most critical thing that fired: a model that obeyed an
@@ -62,7 +61,7 @@ happens to be intermittent, not an inconsistency finding.
 | | Live | Replay |
 |---|---|---|
 | Where the response comes from | The provider's endpoint | `tests/fixtures/replay/` |
-| Cases collected | 74 per model | 74 per model |
+| Cases collected | 77 per model | 77 per model |
 | Cost | Real. Grok's full recording ran 25 minutes for about **$0.22** | **Nothing** |
 | What it establishes | How the model behaves **now** | That a finding still reproduces from the evidence |
 | Credential needed | Yes | **None** |
@@ -91,7 +90,7 @@ is the one thing not in question.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 644 harness cases, 841 executions with their parameters, and 133 preconditions pass;
+separately from what it measures. 862 harness test cases, each executed once per run, and 136 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate

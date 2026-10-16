@@ -948,6 +948,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115755` | P | `each_filed_finding_has_a_ticket_of_its_own` (9.5.5.2) |
 | `115756` | N | `a_payload_in_the_user_turn_is_framed_as_precedence` (9.5.5.3) |
 | `115757` | P | `a_band_adopts_the_outcomes_the_band_before_carried` (3.12.1) |
+| `115758` | N | `a_tool_call_without_text_is_shown_on_the_ticket` (9.5.5.4) |
+| `115759` | N | `an_engine_page_is_never_named_as_an_instruction_file` (9.5.5.5) |
+| `115760` | N | `this_repository_refuses_a_case_collected_twice` (harness `cmn_verdict_and_cli.md` 7.8.5) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -963,7 +966,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 94 cases, 69 negative, 20 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 97 cases, 72 negative, 20 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3156,6 +3159,49 @@ prompt or in a context document, so a later case placing its payload in a
 document is described correctly without a change here.
 
 `MQC_CAS_UNI_115756` asserts both rows.
+
+#### 9.5.5.4 A tool call is a response, and a ticket shows it
+
+Found 2026-10-16 in the first generated ticket for a tool finding. openai's
+`154401` ticket read "No recording ... cannot show what was returned" above a
+finding observed on five recordings, each of which **is** the evidence: a
+`ping_host` call with no text beside it.
+
+**The page read only `text`.** A response answering by a call alone has empty
+text, and the page drops empty bodies as unrecorded. So every finding decided
+by the tool evaluator, the one place where a call is the whole finding, would
+have shipped a ticket with no evidence. Dropping empty bodies also shifted the
+observation numbering against the per-observation verdicts whenever an empty
+body sat between two others.
+
+**Each observation now shows its text and then each call**, one line per call
+naming the tool and its arguments as recorded. An observation is reported as
+unrecorded only when it carries neither, and the numbering follows the
+recordings rather than the non-empty ones.
+
+**The verdict beside each observation read the text alone as well.** It
+replayed the rule's assertions and never its tool expectation, so the same
+ticket labelled all five calls "passed its checks" and counted the problem on 0
+of 5. The replay now runs the tool check against each observation's calls and
+the task's offered tools, the check the case itself ran.
+
+`MQC_CAS_UNI_115758` asserts it.
+
+#### 9.5.5.5 An engine page is named so no assistant loads it as instructions
+
+Found 2026-10-16 and renamed at the project owner's instruction. **The claude
+page was `reports/tickets/claude.md`**, and on Windows, whose filesystem ignores
+case, Claude Code loaded it as a `CLAUDE.md` project instruction file. The page
+quotes an injection payload verbatim, so an assistant working in this
+repository was handed an attack as configuration. `gemini.md` meets Gemini
+CLI's `GEMINI.md` the same way.
+
+**Each engine's page is now `<engine>_findings.md`.** No assistant reads that
+name, and it still sorts beside the engine's ticket directory. The generator
+writes only the new name, and the reader in `tools/finding_evidence.py` takes
+the name from the same function.
+
+`MQC_CAS_UNI_115759` asserts it.
 
 ### 9.4 Only a live run can detect an upstream fix
 

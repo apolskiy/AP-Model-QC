@@ -15,6 +15,19 @@ GENERATED_MARK: Final[str] = (
 _CASE: Final[re.Pattern[str]] = re.compile(r"^MQC_[A-Z]{3}_[A-Z]{3,5}_(\d{6})_(\w+)$")
 
 
+def page_name(engine: str) -> str:
+    """Return the file an engine's findings page is written to.
+
+    Args:
+        engine (str): The engine.
+
+    Returns:
+        str: ``<engine>_findings.md``, a name no assistant loads as
+        instructions (``consumer_ci.md`` section 9.5.5.5).
+    """
+    return f"{engine}_findings.md"
+
+
 def ticket_name(case: str) -> str:
     """Return the file a finding's ticket is written to.
 

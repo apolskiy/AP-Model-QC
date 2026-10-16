@@ -40,8 +40,11 @@ A failure here is **not a model finding**, so the module carries no priority mar
 #   115715  a_module_at_the_runway_ceiling_is_reported
 #   115718  a_document_naming_no_repository_is_reported
 #   115719  a_case_block_disagreeing_with_its_module_is_reported
+# TestMQCExecutionIdentity
+#   115760  this_repository_refuses_a_case_collected_twice
 # ------------------------------------------------------------ end of cases
 
+import ast
 from datetime import date
 from pathlib import Path
 from typing import Final
@@ -489,4 +492,33 @@ class TestMQCModuleRunway:
             f"the cases they define; run the harness's "
             f"tools/refresh_case_summaries.py with --root here: "
             + "; ".join(problems)
+        )
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Suite governance")
+class TestMQCExecutionIdentity:
+    """One case identifier, one test case, one execution per run."""
+
+    def MQC_CAS_UNI_115760_this_repository_refuses_a_case_collected_twice(self) -> None:
+        """This repository's collection hook calls the harness guard.
+
+        Design: harness ``cmn_verdict_and_cli.md`` section 7.8.5.
+
+        Returns:
+            None
+        """
+        hook = next(
+            node for node in ast.walk(ast.parse(
+                (_REPOSITORY_ROOT / "conftest.py").read_text(encoding="utf-8")))
+            if isinstance(node, ast.FunctionDef)
+            and node.name == "pytest_collection_modifyitems"
+        )
+        called = {
+            node.func.id for node in ast.walk(hook)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+        }
+        assert "refuse_repeated_cases" in called, (
+            "the collection hook never calls the guard, so a case collected "
+            "twice would execute several test cases under one name"
         )

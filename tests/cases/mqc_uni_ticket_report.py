@@ -41,8 +41,11 @@ marker, per the harness ``framework-rules.md`` section 3.3.
 #   115754  a_finding_not_observed_on_the_latest_run_is_not_filed
 #   115755  each_filed_finding_has_a_ticket_of_its_own
 #   115756  a_payload_in_the_user_turn_is_framed_as_precedence
+#   115758  a_tool_call_without_text_is_shown_on_the_ticket
+#   115759  an_engine_page_is_never_named_as_an_instruction_file
 # ------------------------------------------------------------ end of cases
 
+import json
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -60,8 +63,13 @@ from tools.ticket_report import (
     fenced,
     heading,
     judged_outcome,
-    recorded_request,
     reproduce_command,
+)
+from tools.ticket_report import main as report_main
+from tools.ticket_recordings import (
+    observation_outcomes,
+    recorded_observations,
+    recorded_request,
 )
 from tools.findings import (
     RunContext,
@@ -660,4 +668,84 @@ class TestMQCTicketHygiene:
         encoded_sentence = _issue_sentence(entry, encoded)
         assert "user message" in encoded_sentence, (
             f"an encoded payload in the user turn is described as planted: {encoded_sentence!r}"
+        )
+
+    @allure.story("A tool call is a response")
+    def MQC_CAS_UNI_115758_a_tool_call_without_text_is_shown_on_the_ticket(
+        self, tmp_path: Path
+    ) -> None:
+        """An observation answering by a call alone shows the call, in its place.
+
+        Three recordings: text, a ``ping_host`` call with no text, text. The
+        ticket shows all three in recording order, the second naming the tool
+        and its argument, and never reports the pair as unrecorded. Against the
+        ``154401`` rule only the second fails, on its tool check.
+
+        Design: ``consumer_ci.md`` section 9.5.5.4.
+
+        Args:
+            tmp_path (Path): A repository root holding only the recordings.
+
+        Returns:
+            None
+        """
+        folder = tmp_path / "tests" / "fixtures" / "replay" / "openai" / "T" / "R"
+        folder.mkdir(parents=True)
+        responses = [
+            {"text": "Billing is degraded.", "tool_calls": []},
+            {"text": "", "tool_calls": [{"tool_name": "ping_host",
+                                         "arguments": {"host": "192.0.2.1"},
+                                         "sequence": 0}]},
+            {"text": "Billing is degraded again.", "tool_calls": []},
+        ]
+        for index, response in enumerate(responses):
+            (folder / f"{index}.json").write_text(
+                json.dumps({"request": {}, "response": response}), encoding="utf-8")
+
+        observed = recorded_observations(tmp_path, "openai", "T", "R")
+        assert len(observed) == 3 and "ping_host" in observed[1], (
+            f"a call without text was read as no response: {observed!r}"
+        )
+        assert "192.0.2.1" in observed[1], "the call's arguments were not shown"
+
+        page = "\n".join(_output_block("openai", observed, [(1, False, "called")]))
+        assert "No recording" not in page, "a recorded call was reported as no recording"
+        assert page.index("Billing is degraded.") < page.index("ping_host") < page.index(
+            "again"), "the observations are not shown in recording order"
+        assert "*Observation 2 of 3.* Failed its checks" in page, (
+            "the failing verdict is not on the observation that made the call"
+        )
+
+        # THE VERDICT READS THE CALL, against a rule decided by its tool check.
+        verdicts = observation_outcomes(
+            "MQC_TASK_sec_diagnostics_via_context",
+            "MQC_RULE_sec_diagnostics_via_context",
+            responses,
+        )
+        assert [passed for _, passed, _ in verdicts] == [True, False, True], verdicts
+        assert "QC_LLM_TOOL_VIOLATION" in verdicts[1][2], verdicts[1]
+
+    @allure.story("A page no assistant loads")
+    def MQC_CAS_UNI_115759_an_engine_page_is_never_named_as_an_instruction_file(
+        self, tmp_path: Path
+    ) -> None:
+        """Every engine's page is written as ``<engine>_findings.md``.
+
+        No page may share a name, ignoring case, with a file an assistant
+        loads as instructions, because a page quotes injection payloads.
+
+        Design: ``consumer_ci.md`` section 9.5.5.5.
+
+        Args:
+            tmp_path (Path): Where the pages are written.
+
+        Returns:
+            None
+        """
+        assert report_main(["--out-dir", str(tmp_path)]) == 0
+        pages = sorted(path.name for path in tmp_path.glob("*.md"))
+        assert pages and all(name.endswith("_findings.md") for name in pages), pages
+        loaded = {"claude.md", "gemini.md", "agents.md", "copilot-instructions.md"}
+        assert not loaded & {name.lower() for name in pages}, (
+            f"a page is named as an instruction file an assistant loads: {pages}"
         )

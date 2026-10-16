@@ -32,6 +32,8 @@ from typing import Final, Optional
 
 import yaml
 
+from tools.ticket_files import page_name
+
 _TICKETS: Final[pathlib.Path] = pathlib.Path("reports") / "tickets"
 _REGISTER: Final[pathlib.Path] = pathlib.Path("config") / "findings"
 _FIXTURES: Final[pathlib.Path] = pathlib.Path("tests") / "fixtures" / "replay"
@@ -123,7 +125,7 @@ def evidence(engine: str, needle: str, *, full: bool = False) -> Optional[str]:
         Optional[str]: The section, or None where the page or the case is
         absent. A missing page means the ticket report has not been generated.
     """
-    path = _TICKETS / f"{engine}.md"
+    path = _TICKETS / page_name(engine)
     if not path.is_file():
         return None
     text = path.read_text(encoding="utf-8")
