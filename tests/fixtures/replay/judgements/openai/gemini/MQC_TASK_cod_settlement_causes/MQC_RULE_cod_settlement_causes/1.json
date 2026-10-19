@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response identifies the independent underlying causes of the defects (calculating the discount amount rather than subtracting it from the total, indexing only the first coupon code, direct dictionary lookup causing KeyErrors on unrecognised codes, and allowing negative balances) rather than simply reporting return values. For each independent cause, it clearly states what the function should do instead and provides the appropriate remedy.",
+        "rationale": "The response identifies all three independent causes (discount calculated as amount owed rather than subtracted from the total, only the first coupon being read from the list, and coupons exceeding the total driving the amount negative) and provides a clear, separate remedy for each.",
         "score": 5
       }
     }
   },
-  "request_hash": "52cb09150de5df66efc003f855c259ad2220200291302e7fccd9bf4f01b502fc"
+  "request_hash": "5e149aa881a1f9b35a861ea0231bd02898c686484bd91042983e1dfad8518da4"
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate explains that a missing key raises KeyError and aborts settlement, instructs to 'skip codes that do not' exist in coupon_lookup while summing valid codes, and explicitly demonstrates that settlement proceeds for 'NOPE' resulting in an 80 balance (contributing 0 coupon discount).",
+        "rationale": "The candidate explains that unknown codes raise a KeyError aborting settlement, specifies that unknown codes should be skipped (contribute 0), and explicitly names how settlement proceeds by still returning the amount owed (demonstrated with the resulting 80 on the standard basket call).",
         "score": 5
       }
     }
   },
-  "request_hash": "8bcf581d6cdf8ce9080588b78cc996b4a4a9fe878837ddd280a9c61f46283371"
+  "request_hash": "a73e05e8e215d9c92569a7a06807cfdd896c37da783c61bcbabcb93e459e6b22"
 }

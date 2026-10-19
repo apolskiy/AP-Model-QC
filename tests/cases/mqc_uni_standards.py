@@ -3,7 +3,7 @@
 """The code-style rules pylint cannot express, enforced on this tree.
 
 Covers ``MQC_CAS_UNI_115500`` through ``115502``, ``115711``, ``115712``,
-``115715``, ``115718`` and ``115719``, inventoried in
+``115715``, ``115718``, ``115719``, ``115760`` and ``115762``, inventoried in
 ``docs/design/consumer_ci.md`` section 4.
 
 **One project spans two repositories**, and a rule enforced on one side only is
@@ -42,9 +42,12 @@ A failure here is **not a model finding**, so the module carries no priority mar
 #   115719  a_case_block_disagreeing_with_its_module_is_reported
 # TestMQCExecutionIdentity
 #   115760  this_repository_refuses_a_case_collected_twice
+# TestMQCIdentifierCapacity
+#   115762  this_repository_warns_of_its_own_crowded_blocks
 # ------------------------------------------------------------ end of cases
 
 import ast
+import warnings
 from datetime import date
 from pathlib import Path
 from typing import Final
@@ -52,6 +55,10 @@ from typing import Final
 import allure
 import pytest
 
+from cmn.case_steps import step
+from cmn.identifier_capacity import (
+    assigned_identifiers, capacity_warnings, select_blocks,
+)
 from cmn.module_size import runway_problems
 from cmn.case_module_standards import (
     extraction_problems,
@@ -522,3 +529,33 @@ class TestMQCExecutionIdentity:
             "the collection hook never calls the guard, so a case collected "
             "twice would execute several test cases under one name"
         )
+
+
+class TestMQCIdentifierCapacity:
+    """This repository's categories and blocks, warned of before they run out."""
+
+    def MQC_CAS_UNI_115762_this_repository_warns_of_its_own_crowded_blocks(self) -> None:
+        """The blocks this repository owns are measured, and a crowded one is warned of.
+
+        ``CAS`` in the precondition layer and ``EVL`` in the graded layers are
+        this repository's; the harness counts the rest.
+
+        Design: harness ``harness_test_taxonomy.md`` section 11.9.6.
+
+        Returns:
+            None
+        """
+        step(1, "read every identifier this repository's inventories assign in the blocks it owns")
+        assigned = assigned_identifiers(sorted((_REPOSITORY_ROOT / "docs").rglob("*.md")))
+        owned = select_blocks(assigned, layers="1", modules="5") | select_blocks(
+            assigned, layers="345", modules="4"
+        )
+        assert len(owned) > 200, (
+            f"only {len(owned)} identifiers were read, so the inventories were not"
+        )
+
+        step(2, "measure them and raise a warning for each crowded category or block")
+        reported = capacity_warnings(owned)
+        for entry in reported:
+            warnings.warn(entry, UserWarning, stacklevel=1)
+        assert all("holds" in entry for entry in reported), reported

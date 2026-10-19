@@ -198,6 +198,11 @@ def _tasks() -> list[tuple[str, ...]]:
          # wrong for a rule it was never given. `consumer_ci.md` section 9.4.6.
          "    to a currency amount, so the two are different units. An\n"
          "    unrecognised coupon code must not stop a settlement.\n"
+         # THE FLOOR IMPLIED PLAINLY, NOT STATED, since 2026-10-18 at the
+         # project owner's instruction. -10 is the code's output and not the
+         # problem's, and a model is expected to connect the two and say so
+         # (test plan section 8.9.1).
+         "    The seller does not expect to give the product away for free.\n"
          "\n"
          "    It is called in production like this, against a 100 unit basket:\n"
          "\n"

@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "The function below settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})",
+        "content": "The function below settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\nThe seller does not expect to give the product away for free.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "285408820d81e187be653a4aff964e918aa70450cf0fd6be2e407869ced47f4c",
+  "request_hash": "88acba036398d7851cd0b592d367ffceace8c7e975b250f49abba41ab53a4061",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1536,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 73656,
+    "duration_ms": 52929,
     "engine": "grok",
     "finish_reason": "stop",
-    "input_tokens": 1538,
+    "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 356,
-    "raw_reference": "fdc8f36d-1a5a-9205-a2eb-8c18332dc543",
+    "output_tokens": 408,
+    "raw_reference": "f54a03b0-c4a9-9886-ad3d-360bf5965a88",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math uses the tier percentage as the amount due, and coupon handling both drops codes and aborts on a miss.\n\n**The percentage is used as the amount due.** `total_amount * discount / 100` is the currency value of the tier discount (20 on a 100-unit standard basket), not what the customer owes. That value is then used as the base. A discount is a percentage of the original total, so it should be removed from the total: owe `total_amount - total_amount * discount / 100`, i.e. 80% of 100 for `\"standard\"`.\n\n**The coupon is taken off that discount figure, not off the order total.** A coupon lookup is a currency amount, a different unit from the tier percentage. After the percentage has been turned into a currency reduction of the total, each coupon amount should be subtracted from the remaining total. It should not be subtracted from the discount itself.\n\n**Only `coupon_codes[0]` is applied.** Later codes never change the sum. Every supplied code should be looked up and the recognised currency amounts added together. `[\"SAVE20\", \"SAVE30\"]` is 50 off, not 20.\n\n**A missing code aborts the call.** `coupon_lookup[code]` raises `KeyError`, so an unrecognised code stops settlement. Unknown codes should be skipped (contribute 0). That also means a bad first code must not prevent later recognised codes from being summed. With no recognised codes, the coupon reduction is 0 and the tier discount still applies.\n\nFor the four production calls, that is 50, \u221210, 80, and 30. The spec given here does not say to floor at zero.",
-    "thinking_tokens": 3052,
+    "text": "The settlement formula treats the tier percentage as the price, reads only the first coupon, aborts on an unknown code, and can finish at or below zero.\n\n1. **The tier discount is applied backwards.** `total_amount * discount / 100` uses the discount percent as the share the buyer pays. A discount is a percentage off the total, so standard 20 on a 100 basket is 20 currency units off, not a 20 unit price. Compute the currency reduction as `total_amount * discount / 100`, then take it off the total: `total_amount * (100 - discount) / 100`.\n\n2. **The coupon is subtracted from that wrong figure, mixing units.** The tier value is a percent; a coupon lookup is a currency amount. Those cannot be combined until the percent has been turned into a currency reduction of the total. Subtract recognised coupon currency from the discounted currency total, not from the percentage (and not from `total * discount / 100`).\n\n3. **Every coupon after the first is ignored.** `coupon_codes[0]` is the cause, not the lookup table. Sum the currency value of each supplied code. `[\"SAVE20\", \"SAVE30\"]` must reduce the basket by 20 + 30, not by 20 alone.\n\n4. **An unknown code aborts settlement.** `coupon_lookup[code]` raises `KeyError` when the code is absent, so `[\"NOPE\"]` never settles. An unrecognised code should contribute 0 and the rest of the settlement should continue.\n\n5. **Nothing stops a zero or negative charge.** After a correct percent-off and currency coupon subtraction, a large coupon still drives the result to 0 or below (the seller gives the product away, or pays the buyer). The seller does not expect that. Do not return a non-positive amount; refuse that settlement or keep a positive amount owed. The snippet does not define the exact positive floor.",
+    "thinking_tokens": 3969,
     "tool_calls": []
   }
 }

@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate clearly identifies that unrecognised codes should not cause a crash, specifies that they should contribute a value of 0, and explains how to implement this using `coupon_lookup.get(code, 0)` so that settlement proceeds smoothly.",
+        "rationale": "The candidate explicitly identifies that unrecognized coupons should be treated as having zero value rather than blocking settlement, and demonstrates how settlement proceeds via `coupon_lookup.get(code, 0)`.",
         "score": 5
       }
     }
   },
-  "request_hash": "52ba900058a62cf2206fb336395d2640cfe090c1490f1083b3d53048b9d487b5"
+  "request_hash": "1311a59065aa17eb90122b06b255a8cad96bc8fdd452edf7556e073857ce2e6f"
 }

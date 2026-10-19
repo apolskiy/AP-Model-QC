@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate clearly explains that an unrecognised coupon code should not stop settlement and should be treated as contributing a value of 0, explicitly showing how to implement this using `coupon_lookup.get(code, 0)`.",
+        "rationale": "The candidate explicitly identifies that unrecognized coupons should be ignored rather than halting settlement, specifies that they contribute zero via `.get(code, 0)`, and details how settlement proceeds by summing the valid amounts and subtracting them from the discounted total.",
         "score": 5
       }
     }
   },
-  "request_hash": "ad2bb5183920be4453b178567120c54ca8d730984e1698d305cf9436c573af5f"
+  "request_hash": "4c2ad4dc908e785cb4b0ad93a93ab99eb747a8dbf2fb7839b8824464df8d5bb5"
 }

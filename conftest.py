@@ -22,7 +22,8 @@ scaffolding rather than a capability a case repository consumes. Case fixtures
 belong beside the cases that use them.
 """
 
-from typing import Any
+import importlib
+from typing import Any, Iterator
 
 from pathlib import Path
 
@@ -59,8 +60,14 @@ from cmn.dependencies import (
     record_from_report,
 )
 from cmn.prerequisites import record_rule_set_hash
+from cmn.case_steps import begin_case_steps, record_assertion, record_call
 from execution.adapters.registry import credential_variables
-from tests.cases.graded_support import shipped_corpus
+
+# EVERY ASSERTION A PRECONDITION REACHES IS A RECORDED STEP, including those in
+# the support modules (harness harness_test_taxonomy.md section 8.2.4). So
+# nothing under `tests` is imported before this line: a module pytest has
+# already loaded cannot be rewritten, and its assertions would go unrecorded.
+pytest.register_assert_rewrite("tests")
 
 
 def pytest_addoption(parser: Any) -> None:
@@ -162,7 +169,43 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
     # response leaves the case's name and module behind. A traceback
     # names the line that raised, not the case that reached it.
     announce_test(item)
+    # ITS STEPS ARE RECORDED FROM HERE, by the engine graded cases use
+    # (harness taxonomy section 8.2.4).
+    begin_case_steps(item)
     enforce_dependencies(item)
+
+
+def pytest_assertion_pass(item: pytest.Item, lineno: int, orig: str, expl: str) -> None:
+    """Record a passing assertion as the case's next verification step.
+
+    Args:
+        item (pytest.Item): The test running.
+        lineno (int): The assertion's line.
+        orig (str): Its condition as written.
+        expl (str): pytest's explanation, which a passing assertion does not need.
+
+    Returns:
+        None
+    """
+    del expl
+    record_assertion(item, lineno, orig)
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_call(item: pytest.Item) -> Iterator[None]:
+    """Record a failing assertion, or fail a precondition that verified nothing.
+
+    Args:
+        item (pytest.Item): The test running.
+
+    Yields:
+        None: The call runs inside the record.
+
+    Returns:
+        None
+    """
+    outcome = yield
+    record_call(item, outcome)
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -202,7 +245,10 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     # THE DIGEST BEFORE THE ADOPTION, which compares it. Recorded later, every
     # band after P0 compared a real digest with an empty one and exited 3
     # (harness `cmn_verdict_and_cli.md` section 7.6.2).
-    record_rule_set_hash(session.config, shipped_corpus()[1])
+    # LOADED HERE, after the rewrite registration above, so the support
+    # modules it brings in are rewritten.
+    graded_support = importlib.import_module("tests.cases.graded_support")
+    record_rule_set_hash(session.config, graded_support.shipped_corpus()[1])
     adopt_prerequisites(session.config)
 
 

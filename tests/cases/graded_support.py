@@ -24,11 +24,10 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Final, Optional
 
-import allure
 import pytest
 
 from cmn.observations import further_observations
-from cmn.steps import entering, ledger, summary as step_summary
+from cmn.steps import entering
 from cmn.pytest_support import corpus_selection
 from cmn.config import (
     load_quarantine_for,
@@ -48,6 +47,11 @@ from execution.dispatch import DispatchPlan, DispatchSession, dispatch_case
 from execution.judge_channel import JudgementPlan, judge_channel_from_roster
 from ingestion.cases import build_evaluation_cases
 from ingestion.loaders import load_corpus
+
+from tests.cases.step_recording import (
+    record_observation_step,
+    record_remaining_steps,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -592,7 +596,7 @@ def observe(
     if outcome.taxonomy_code and outcome.taxonomy_code.startswith("QC_HARNESS_"):
         # RECORDED BEFORE THE SKIP, because a case that stopped at dispatch is
         # exactly the one whose later steps nobody can see.
-        _record_steps(case.case_id, outcome, None)
+        record_observation_step(case.case_id, observation_index + 1, outcome, None)
         # AND THE OBSERVATION, carrying `environmental`: our infrastructure did
         # not produce a measurement, which is not the model's failure and leaves
         # the pass rate (harness `harness_test_taxonomy.md` section 7.4.1).
@@ -651,12 +655,10 @@ def observe(
     with entering(marker, 4, "ACTION", "screen, assertions and judge"):
         result = evaluate_observation(context, judge)
 
-    # THE NUMBERED STEPS, PER `harness_test_taxonomy.md` SECTION 8. Two entries per
-    # step, an action and its verification, named so a collector parses them.
-    # Emitted after the fact from what the outcome and the result already
-    # carry: the harness computes the ledger and this records it, which keeps
-    # Allure out of the harness and the rule out of the cases.
-    _record_steps(case.case_id, outcome, result)
+    # THIS OBSERVATION'S STEP, per harness `harness_test_taxonomy.md` section
+    # 8.2.2: one dispatch, its action and one verification, the pipeline
+    # phases beneath. The harness computes it and this records it.
+    record_observation_step(case.case_id, observation_index + 1, outcome, result)
 
     # RECORDED FOR THE REPORTING HOOK, which is the only place that knows the
     # case's verdict and so whether to attach the reproduction. Every
@@ -668,42 +670,6 @@ def observe(
         outcome,
     )
     return result
-
-
-
-def _record_steps(case_id: str, outcome: Any, result: Any) -> None:
-    """Record every numbered step's two phases against this observation.
-
-    Each phase becomes an ``allure.step`` named ``STEP_<NN>_<PHASE>``, which is
-    what `harness_test_taxonomy.md` section 8.2 requires and what a collector reading
-    the format already parses. The same lines go to the log, carrying the case
-    identifier, the step number, the phase, the outcome and any taxonomy code.
-
-    **A phase that did not run is recorded as such**, because the steps nobody
-    reached are what an early stop hides: more failures in the harness and in
-    the model both sit behind one.
-
-    Args:
-        case_id (str): Which case.
-        outcome (Any): The dispatch outcome, or None where dispatch returned
-            nothing.
-        result (Any): The evaluation result, or None where evaluation never
-            ran.
-
-    Returns:
-        None
-    """
-    entries = ledger(outcome, result)
-    for entry in entries:
-        with allure.step(f"{entry.label} [{entry.outcome}]"):
-            if entry.detail:
-                allure.attach(
-                    entry.detail,
-                    name=f"{entry.label} detail",
-                    attachment_type=allure.attachment_type.TEXT,
-                )
-    for line in step_summary(case_id, entries):
-        logger.info("%s", line)
 
 
 @lru_cache(maxsize=8)
@@ -796,9 +762,10 @@ def observe_repeatedly(
         **Never empty**, the count being at least one, and longer than the
         configured count where a disagreement earned more.
     """
+    configured = observation_count(config)
     results = [
         observe(config, task_id, rule_id, observation_index=index, judge=judge)
-        for index in range(observation_count(config))
+        for index in range(configured)
     ]
 
     # ESCALATION IS THE HARNESS'S RULE AND THIS LOOP DECIDES NOTHING, which is
@@ -810,6 +777,13 @@ def observe_repeatedly(
         observe(config, task_id, rule_id, observation_index=taken + offset, judge=judge)
         for offset in range(extra)
     ]
+
+    # THE ESCALATION STEPS NOT TAKEN AND THE COMPARISON, consumer_ci.md
+    # section 9.4.3.3. Recorded only; the case is still decided by
+    # `assert_consistent_pass`.
+    record_remaining_steps(
+        case_for(task_id, rule_id).case_id, results, configured=configured
+    )
     return results
 
 

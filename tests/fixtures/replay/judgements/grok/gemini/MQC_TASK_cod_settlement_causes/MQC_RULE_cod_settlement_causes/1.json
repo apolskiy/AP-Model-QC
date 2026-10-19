@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response identifies all three independent causes of failure (treating the tier discount amount as the balance owed instead of subtracting it from the total, only evaluating the first coupon code in the list, and raising a KeyError on unrecognised coupon codes) and provides a clear remedy for each defect separately.",
+        "rationale": "The response identifies all three specified causes of arithmetic error (discount used as payable amount rather than deducted from total, only the first coupon being processed, and unconstrained subtraction leading to negative amounts owed) and provides a clear, separate remedy for each.",
         "score": 5
       }
     }
   },
-  "request_hash": "3ea81816b9bef52736ab35034c5ca55c4ee5a91105ca51f4120eac2070e9dca9"
+  "request_hash": "b940557b53824b07e38e17083ea8aa282b70b5e36083d13434b1a90da820970c"
 }

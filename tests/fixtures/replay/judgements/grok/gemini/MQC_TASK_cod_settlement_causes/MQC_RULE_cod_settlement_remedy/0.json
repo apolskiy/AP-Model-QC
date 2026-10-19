@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate explicitly notes that unrecognised codes should be skipped and contribute 0, explaining that a bad code must not prevent later valid codes from being summed, and that settlement proceeds with the tier discount applied.",
-        "score": 5
+        "rationale": "The candidate states that an unrecognised code should contribute 0 and settlement should continue, but does not name how settlement proceeds (such as using a default lookup like `.get(code, 0)` or specifying the exact handling mechanism).",
+        "score": 3
       }
     }
   },
-  "request_hash": "96276d4f8b3fafe56e7e11da5ef9fd4dedff0c923fc384a6303eafaac4911466"
+  "request_hash": "348384acfa5b328f6e5dec533e1772b5af39d544f75f1a0bb71650f2dad1467d"
 }

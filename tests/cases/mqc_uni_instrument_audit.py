@@ -3,7 +3,7 @@
 """Whether a result from this suite means what it says.
 
 Covers ``MQC_CAS_UNI_115713``, ``115714``, ``115716``, ``115728``,
-``115729`` and ``115731``, inventoried in
+``115729``, ``115731``, ``115761`` and ``115016``, inventoried in
 ``docs/design/consumer_ci.md`` section 4 and designed in sections 9.4.2 and
 9.4.3.
 
@@ -32,10 +32,13 @@ harness ``framework-rules.md`` section 3.3.
 #   115728  an_unmeasured_observation_is_not_counted_as_a_failure
 #   115729  a_replay_store_refreshed_in_part_is_reported
 #   115731  an_observation_that_records_no_steps_is_reported
+#   115761  the_steps_after_the_observations_are_recorded
+#   115016  a_caught_injection_is_recorded_as_a_failure_not_a_skip
 # ------------------------------------------------------------ end of cases
 
 import ast
 import json
+import logging
 import re
 from pathlib import Path
 from types import SimpleNamespace
@@ -44,12 +47,15 @@ from typing import Final
 import allure
 import pytest
 
+from cmn.case_steps import step
 from cmn.registries import is_registered_harness_code, registered_codes
 from cmn.replay_audit import divergent_recordings
 from evaluation.screening import screen_text
 
 from tests.cases.graded_support import (
     FIXTURE_ROOT,
+    _measured_fields,
+    case_for,
     repository_root,
     shipped_corpus,
 )
@@ -60,6 +66,8 @@ from tests.cases.consistency_support import (
     measured,
     unmeasured_code,
 )
+from tests.cases.instrument_support import checked_result, dispatch_outcome
+from tests.cases.step_recording import record_remaining_steps
 from tests.cases.vacuity_support import unfailable_assertions
 
 pytestmark = pytest.mark.unit
@@ -439,8 +447,8 @@ class TestMQCAssertionsCanFail:
             for node in ast.walk(observe)
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
         }
-        assert "_record_steps" in called, (
-            "observe records no step ledger, so every JUnit and Allure "
+        assert "record_observation_step" in called, (
+            "observe records no observation step, so every JUnit and Allure "
             "artifact arrives without the numbered steps section 8 specifies"
         )
         assert "entering" in called, (
@@ -455,10 +463,10 @@ class TestMQCAssertionsCanFail:
             1 for node in ast.walk(observe)
             if isinstance(node, ast.Call)
             and isinstance(node.func, ast.Name)
-            and node.func.id == "_record_steps"
+            and node.func.id == "record_observation_step"
         )
         assert recorded >= 2, (
-            f"observe records the ledger {recorded} time(s): the measured path "
+            f"observe records its step {recorded} time(s): the measured path "
             f"and the skip path each need one, or a case that never reached "
             f"evaluation reports nothing about where it stopped"
         )
@@ -477,4 +485,106 @@ class TestMQCAssertionsCanFail:
         assert {1, 2} <= entered, (
             f"the request is formed and sent outside any entered phase, so a "
             f"timeout there records nothing: entered {sorted(entered)}"
+        )
+
+        # AND THE REPEATING LOOP RECORDS WHAT FOLLOWS THE OBSERVATIONS: the
+        # escalation steps not taken and the comparison (section 9.4.3.3).
+        repeating = next(
+            (
+                node for node in ast.walk(tree)
+                if isinstance(node, ast.FunctionDef)
+                and node.name == "observe_repeatedly"
+            ),
+            None,
+        )
+        assert repeating is not None, "graded_support.py defines no observe_repeatedly"
+        assert "record_remaining_steps" in {
+            node.func.id
+            for node in ast.walk(repeating)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+        }, (
+            "observe_repeatedly records no escalation or comparison step, so a "
+            "case's last step never reaches the artifact"
+        )
+
+    @allure.story("A case records the steps after its observations")
+    def MQC_CAS_UNI_115761_the_steps_after_the_observations_are_recorded(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """Escalation steps not taken, then the comparison, numbered after the observations.
+
+        Design: ``consumer_ci.md`` section 9.4.3.3, implementing harness
+        ``harness_test_taxonomy.md`` section 8.2.2.
+
+        Returns:
+            None
+        """
+        step(1, "record the steps after three agreeing observations")
+        agreed = [checked_result(passed=True)] * 3
+        with caplog.at_level(logging.INFO, logger="tests.cases.step_recording"):
+            recorded = record_remaining_steps("MQC_CASE", agreed, configured=3)
+        assert [entry.number for entry in recorded] == [4, 5, 6], (
+            [entry.number for entry in recorded]
+        )
+
+        step(2, "read the two escalation steps")
+        assert all(entry.action.outcome == "not run" for entry in recorded[:2]), recorded
+
+        step(3, "read the comparison step")
+        assert recorded[-1].verification.outcome == "ok", recorded[-1].verification
+
+        lines = [entry.getMessage() for entry in caplog.records]
+        for index, label in enumerate(("STEP_04_ACTION", "STEP_05_VERIFY", "STEP_06_VERIFY")):
+            step(4 + index, f"read the log for {label} against the case")
+            assert any(label in line and line.startswith("MQC_CASE") for line in lines), (
+                f"{label} was not logged against the case: {lines}"
+            )
+
+        step(7, "record the steps after five observations, one failing")
+        escalated = [checked_result(passed=True)] * 4 + [checked_result(passed=False)]
+        tail = record_remaining_steps("MQC_CASE", escalated, configured=3)
+        assert [entry.number for entry in tail] == [6], [entry.number for entry in tail]
+
+        step(8, "read the comparison's code")
+        assert tail[0].verification.taxonomy_code == "QC_LLM_INCONSISTENT", (
+            tail[0].verification
+        )
+
+    @allure.story("A caught injection is a failure")
+    def MQC_CAS_UNI_115016_a_caught_injection_is_recorded_as_a_failure_not_a_skip(
+        self,
+    ) -> None:
+        """Unscored because the injection was caught fails; unscored and not failed skips.
+
+        Design: ``model_evaluation_test_plan.md`` section 9.10.7.1.
+
+        Returns:
+            None
+        """
+        case = case_for(
+            "MQC_TASK_sec_hidden_passage_styled_told",
+            "MQC_RULE_sec_hidden_passage_styled_told_detect",
+        )
+        outcome = dispatch_outcome("gpt-4.1", mode="replay")
+
+        step(1, "record an observation whose injection the screen caught")
+        caught = SimpleNamespace(
+            passed=False, judge_skipped_reason="screen_abort",
+            taxonomy_codes=["QC_SEC_INJECTION_ATTEMPT"],
+        )
+        recorded = _measured_fields(case, outcome, caught, 0)
+        assert recorded["outcome"] == "fail", (
+            f"an answer whose injection the screen caught was recorded as "
+            f"{recorded['outcome']!r}, not as a failure"
+        )
+        step(2, "read the code the failure was recorded with")
+        assert recorded["taxonomy_code"] == "QC_SEC_INJECTION_ATTEMPT", recorded["taxonomy_code"]
+
+        step(3, "record an observation whose judgement could not be made")
+        unscored = SimpleNamespace(
+            passed=False, judge_skipped_reason="judgement_unavailable",
+            taxonomy_codes=["QC_HARNESS_FIXTURE_MISSING"],
+        )
+        assert _measured_fields(case, outcome, unscored, 0)["outcome"] == "skip", (
+            "an answer nobody could score was recorded as something other than a skip"
         )

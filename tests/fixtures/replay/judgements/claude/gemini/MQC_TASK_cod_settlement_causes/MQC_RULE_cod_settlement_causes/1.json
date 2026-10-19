@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response identifies all three independent arithmetic causes (using the discount as the amount owed rather than subtracting it, reading only the first coupon code, and allowing the amount owed to go negative when coupons exceed the balance) and provides a clear, separate remedy for each.",
+        "rationale": "The response identifies all three core causes separately and provides a clear remedy for each: (1) calculating the discount amount rather than the discounted remainder (remedied by subtracting the percentage discount from the total), (2) reading only the first coupon code (remedied by looping over all codes and summing them), and (3) allowing coupons to drive the total to zero or negative (remedied by enforcing a floor/minimum charge).",
         "score": 5
       }
     }
   },
-  "request_hash": "55b7a01c1e787c9ff16f801c6c6b5b1251788922f1b19118151e1b87a1113ab7"
+  "request_hash": "821c10f0a9e6d790e5bc6f7d327bd814ebc282e031bda2b052ca940241666af1"
 }

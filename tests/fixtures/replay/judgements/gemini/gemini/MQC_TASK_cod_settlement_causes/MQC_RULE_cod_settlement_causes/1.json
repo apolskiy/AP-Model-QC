@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly identifies all three core arithmetic causes (calculating the discount amount rather than the remainder, negative balance resulting from coupons exceeding the total, and only reading the first coupon code) and provides an explicit, appropriate remedy for each one while keeping them separate.",
+        "rationale": "The response identifies all three independent causes specified in the rubric: computing the discount amount instead of the remainder, reading only the first coupon code, and allowing coupon values to drive the total negative/zero (seller paying the buyer). Furthermore, it provides a distinct, correct remedy for each cause while keeping them separate.",
         "score": 5
       }
     }
   },
-  "request_hash": "ba75fbe42c5f3c7196e8995fcc75590f7840e8c3876bafa2fdfdc042fb1a80c7"
+  "request_hash": "384c42d41023e3ca2eb8e47c84131798ce575ad27eacd9da50e42a897d16b26a"
 }

@@ -951,6 +951,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115758` | N | `a_tool_call_without_text_is_shown_on_the_ticket` (9.5.5.4) |
 | `115759` | N | `an_engine_page_is_never_named_as_an_instruction_file` (9.5.5.5) |
 | `115760` | N | `this_repository_refuses_a_case_collected_twice` (harness `cmn_verdict_and_cli.md` 7.8.5) |
+| `115761` | P | `the_steps_after_the_observations_are_recorded` (9.4.3.3) |
+| `115762` | P | `this_repository_warns_of_its_own_crowded_blocks` (harness taxonomy 11.9.6) |
+| `115763` | N | `a_held_finding_keeps_its_date_and_reason_on_a_later_run` (9.4.8) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -966,7 +969,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 97 cases, 72 negative, 20 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 100 cases, 73 negative, 22 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2189,6 +2192,14 @@ checks and a rubric there would never run.
 `CLAUDE.md` gives: the harness owns no case data, and which family a rule
 serves is a fact about this corpus.
 
+**One exception since 2026-10-18: a security rule declaring
+`judge_response_only`.** Its rubric runs: the harness judges such a rule's
+answer alone once the answer screens clean (harness `tier3_evaluation.md`
+section 4C.4), which the hidden-passage cases of test plan section 9.10.7
+rely on. So `115010` admits a rubric in a deterministic family's file only on
+a rule carrying the flag, the same narrow exception the harness's R6 makes,
+and still refuses one on any other.
+
 
 ### 4.9 The plan and the matrix are compared here too
 
@@ -2488,6 +2499,38 @@ annotations, headers, encodings and inline support code.
 **Reading the source is weaker than running it and is what is available.** It
 cannot tell that the lines are correct, only that they are asked for, and the
 harness cases cover the rest.
+
+### 9.4.3.3 A graded case records one step per dispatch
+
+Added 2026-10-16, implementing harness `harness_test_taxonomy.md` section
+8.2.2: each dispatch is a step of its own, the two escalation steps run only if
+one of the first three failed, and no step verifies more than one request.
+
+**Until then the artifacts carried phases under a step's name.** `observe`
+recorded `STEP_01` to `STEP_07` for every observation, so a case of three
+observations showed three runs of the same seven "steps" and none of them was
+a dispatch.
+
+| Recorded by | What | When |
+|---|---|---|
+| `observe` | Step *n* for observation *n*: its ACTION with phases 1 to 3 beneath, its VERIFY with phases 4 to 7 | Every observation, on the measured path and the skip path |
+| `observe_repeatedly` | The escalation steps not taken, recorded as not run with the reason, then the comparison step | Once, after the last observation |
+
+**Both halves come from the harness.** `cmn.steps.observation_step` builds an
+observation's step and `case_steps` decides which escalation steps were not
+taken and what the comparison found; this repository writes them into Allure
+and the log and decides nothing, which is the boundary in `CLAUDE.md`. The
+recording sits in `tests/cases/step_recording.py`, a subject of its own,
+because `graded_support.py` is at the runway ceiling.
+
+**The comparison step does not decide the case.** `assert_consistent_pass`
+still does, over the measured population (section 9.4.5); the step records
+the same agreement where a reader of the artifact looks for it.
+
+| Asserted | By |
+|---|---|
+| `observe` records its observation's step on both paths, and `observe_repeatedly` records the rest | `115731`, read at the call site |
+| What the rest is: escalation steps not taken, then the comparison, numbered after the observations | `115761`, run against doubles |
 
 ### 9.4.4 Every open finding read against its recording, and eleven of twenty-three withdrawn
 
@@ -2856,6 +2899,17 @@ a holding list rather than a verdict.
 |---|---|
 | `config/findings/<engine>.yaml` | **Reproduced on the latest run.** Whatever its failure rate |
 | `config/findings/unconfirmed/<engine>.yaml` | Did not reproduce on the latest run, or was withdrawn as ours |
+
+#### An entry is held once, and its reason is never written over
+
+Fixed 2026-10-18. **Every run re-held every entry already held**, stamping
+today's date and the generic reason over whatever was there, so a reason
+written by hand, such as why `134109` stopped reproducing after its prompt
+changed, was erased by the next run of `tools/findings.py`. The project owner:
+"we need to fix tools. Recording means nothing." So `hold_unreproduced` leaves
+an entry already held exactly as it is: its `held_on` is the day it was first
+held, and its `held_reason` is whatever the register says. `MQC_CAS_UNI_115763`
+holds it.
 
 #### Intermittent is a run-to-run property, not a failure rate
 

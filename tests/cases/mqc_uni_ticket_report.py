@@ -34,6 +34,7 @@ marker, per the harness ``framework-rules.md`` section 3.3.
 #   115746  a_ticket_states_a_correct_answer_and_a_command_that_runs
 # TestMQCHoldNeedsAPass
 #   115750  a_finding_whose_case_skipped_is_not_held
+#   115763  a_held_finding_keeps_its_date_and_reason_on_a_later_run
 # TestMQCTicketHygiene
 #   115751  a_response_carrying_a_fence_stays_inside_its_own
 #   115752  a_finding_failing_every_observation_drops_a_stale_population
@@ -52,6 +53,8 @@ from typing import Any
 
 import allure
 import pytest
+
+from cmn.case_steps import step
 
 from tests.cases.graded_support import case_for
 from tools.ticket_report import (
@@ -486,6 +489,44 @@ class TestMQCHoldNeedsAPass:
             "a finding whose case was skipped, and so never measured, was held as "
             "no longer reproducing"
         )
+
+    @allure.story("A held finding is held once")
+    def MQC_CAS_UNI_115763_a_held_finding_keeps_its_date_and_reason_on_a_later_run(
+        self,
+    ) -> None:
+        """Holding an entry already held changes nothing, so a written reason survives.
+
+        Design: ``consumer_ci.md`` section 9.4.8.
+
+        Returns:
+            None
+        """
+        case = "MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome"
+        reason = "Did not reproduce after the case changed; written by hand."
+        register = {
+            case: {
+                "case": case, "status": "not_reproduced", "observations": "1 of 5 passed",
+                "held_on": "2026-10-15", "held_reason": reason,
+            }
+        }
+        run = RunContext(
+            engine="openai", mode="replay", models={}, expected={},
+            today=date(2026, 10, 18), resolve=False, hold_unreproduced=True,
+            passed=frozenset({case}),
+        )
+        step(1, "re-run the hold on an entry already held with a reason written by hand")
+        lines = hold_unreproduced(register, {}, run)
+        assert register[case]["held_reason"] == reason, (
+            f"a later run wrote over the held reason: {register[case]['held_reason']!r}"
+        )
+
+        step(2, "read the date the entry was first held")
+        assert register[case]["held_on"] == "2026-10-15", (
+            f"a later run moved the date it was first held: {register[case]['held_on']!r}"
+        )
+
+        step(3, "read what the run reported about the entry")
+        assert not lines, f"an entry already held was reported as newly held: {lines}"
 
 
 class TestMQCTicketHygiene:

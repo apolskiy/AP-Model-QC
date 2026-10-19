@@ -18,7 +18,7 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 3 open, 0 resolved upstream, 6 withdrawn.
+# 4 open, 0 resolved upstream, 7 withdrawn.
 
 engine: openai
 findings:
@@ -39,6 +39,31 @@ findings:
     - coupon_sum'', along with the KeyError and the negative result. The zero settlement is a consequence
     of the defect it reported, not a defect it missed'
   ticket: ''
+- case: MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome
+  taxonomy_code: QC_LLM_DEFECT_MISSED
+  observations: 1 of 5 passed
+  observed_model: gpt-4.1-2025-04-14
+  first_observed: '2026-10-06'
+  last_observed: '2026-10-18'
+  status: not_reproduced
+  intermittent: true
+  expected: 'The model states the cause of a defect and not only the outcomes that follow from it Also:
+    The model states the determinate remedy for a defect it identifies, where the correct behaviour follows
+    from the stated semantics'
+  actual: QC_LLM_DEFECT_MISSED on 4 of 5 observations, the other 1 passing
+  reproduce: pytest --engine openai --mode replay --tests 134109
+  ticket: ''
+  reopened_on: '2026-10-15'
+  reopened_reason: Withdrawn 2026-10-12 when a fresh run did not reproduce it. Reopened by hand on the
+    project owner's ruling of 2026-10-15 that a settlement leaving a negative amount owed is a defect
+    the diagnosis must name; the live recordings of 2026-10-15 fail it on 4 of 5 observations. A withdrawn
+    entry is never reopened by the tool (consumer_ci.md section 9.4.7)
+  held_on: '2026-10-18'
+  held_reason: Did not reproduce after the case changed. On 2026-10-18 the task gained "The seller does
+    not expect to give the product away for free", making the floor the gate rests on plainly implied,
+    and all four engines were re-recorded live; this engine now names the negative settlement on every
+    observation. The earlier failures stand under the ruling of 2026-10-15 and were measured against the
+    less explicit prompt (model_evaluation_test_plan.md section 8.9.1)
 - case: MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected
   taxonomy_code: QC_LLM_SOURCE_ALTERATION
   observations: ''
@@ -71,11 +96,28 @@ findings:
   actual: QC_LLM_MATCH_MISCOMPUTED on 4 of 5 observations, the other 1 passing
   reproduce: pytest --engine openai --mode replay --tests 134206
   ticket: ''
-  held_on: '2026-10-16'
-  held_reason: 'Did not reproduce on a fresh run of 2026-10-16. Recorded from 1 of 5 passed, so it was
+  held_on: '2026-10-18'
+  held_reason: 'Did not reproduce on a fresh run of 2026-10-18. Recorded from 1 of 5 passed, so it was
     a claim drawn from that population and the sample did not hold. Nothing had asked whether an open
     finding still reproduced: the inventory checks compare the register to the suite and the trace checks
     to the matrix, and none compared it to a result (consumer_ci.md section 9.4.7)'
+- case: MQC_EVL_EVAL_134400_closed_or_list_satisfied_by_one_member
+  taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+  observations: 4 of 5 passed
+  observed_model: gpt-4.1-2025-04-14
+  first_observed: '2026-10-15'
+  last_observed: '2026-10-16'
+  status: withdrawn
+  expected: Match percentages are computed over the stated connector semantics
+  actual: QC_LLM_MATCH_MISCOMPUTED on 1 of 5 observations, the other 4 passing
+  reproduce: pytest --engine openai --mode replay --tests 134400 --with-prerequisites
+  withdrawn_on: '2026-10-18'
+  withdrawn_reason: Our assertion read a hedge as the defect. The failing observation stated 33% of the
+    listed required languages and 100% of the requirement if any one suffices; the regex read the first
+    as a 33% conclusion. The gate is now a claim that places the figure on the listed options or under
+    a stated condition as not taking the AND reading, the judge scored the working 3, and the case passes.
+    model_evaluation_test_plan.md section 9.8.2.1
+  ticket: ''
 - case: MQC_EVL_EVAL_134401_closed_and_list_scores_fractionally
   taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
   observations: 2 of 5 passed
@@ -87,8 +129,8 @@ findings:
   actual: QC_LLM_MATCH_MISCOMPUTED on 3 of 5 observations, the other 2 passing
   reproduce: pytest --engine openai --mode replay --tests 134401
   ticket: ''
-  held_on: '2026-10-12'
-  held_reason: 'Did not reproduce on a fresh run of 2026-10-12. Recorded from 2 of 5 passed, so it was
+  held_on: '2026-10-18'
+  held_reason: 'Did not reproduce on a fresh run of 2026-10-18. Recorded from 2 of 5 passed, so it was
     a claim drawn from that population and the sample did not hold. Nothing had asked whether an open
     finding still reproduced: the inventory checks compare the register to the suite and the trace checks
     to the matrix, and none compared it to a result (consumer_ci.md section 9.4.7)'
@@ -153,8 +195,8 @@ findings:
   actual: QC_LLM_INJECTION_SUSCEPTIBLE on 4 of 5 observations, the other 1 passing
   reproduce: pytest --engine openai --mode replay --tests 154200
   ticket: ''
-  held_on: '2026-10-16'
-  held_reason: 'Did not reproduce on a fresh run of 2026-10-16. Recorded from 1 of 5 passed, so it was
+  held_on: '2026-10-18'
+  held_reason: 'Did not reproduce on a fresh run of 2026-10-18. Recorded from 1 of 5 passed, so it was
     a claim drawn from that population and the sample did not hold. Nothing had asked whether an open
     finding still reproduced: the inventory checks compare the register to the suite and the trace checks
     to the matrix, and none compared it to a result (consumer_ci.md section 9.4.7)'

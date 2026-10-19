@@ -3,7 +3,7 @@
   "reply": {
     "scores": {
       "C_MAT_OR_REASONING": {
-        "rationale": "The response provides the correct figure (100%) and explicitly names the 'OR' condition as the reason why knowing one of the listed languages is sufficient to meet the requirement.",
+        "rationale": "The candidate provides the correct figure (100%) and explicitly names the 'OR' connector, explaining that knowing any one item is sufficient to satisfy the requirement.",
         "score": 5
       }
     }

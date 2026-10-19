@@ -23,6 +23,28 @@ from pathlib import Path
 from typing import Any, Final
 
 from cmn.vectors import match_vectors
+from evaluation.assertions import run_assertions
+
+
+def gate_held(rule: Any, assertion_id: str, text: str) -> bool:
+    """Return whether one of a rule's assertions held for one answer.
+
+    Args:
+        rule (Any): The ``GoldenRuleSet``.
+        assertion_id (str): Which assertion.
+        text (str): The answer.
+
+    Returns:
+        bool: True where the assertion held.
+
+    Raises:
+        StopIteration: When the rule declares no such assertion.
+    """
+    return next(
+        entry.passed
+        for entry in run_assertions(rule.assertions, text)
+        if entry.assertion_id == assertion_id
+    )
 
 
 def normalised(text: str) -> str:

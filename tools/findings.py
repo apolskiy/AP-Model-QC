@@ -456,6 +456,10 @@ def hold_unreproduced(
     for case, entry in sorted(merged.items()):
         if case in observed or entry.get("status") in (_RESOLVED, _WITHDRAWN):
             continue
+        # HELD ONCE. An entry already held keeps the day it was first held and
+        # its reason, which may have been written by hand (section 9.4.8).
+        if entry.get("status") == _UNREPRODUCED:
+            continue
         # A SKIP IS NOT A PASS. A case the run did not measure keeps its
         # finding, and the next run that measures it decides (9.4.7.1).
         if case not in run.passed:

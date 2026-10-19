@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate clearly explains that an unrecognised code should contribute zero rather than crashing the settlement, shows the settlement calculation continuing (e.g. 80 - 0 = 80), and specifies exactly how settlement proceeds (using `.get(code, 0)` or skipping unknown codes in a loop, while optionally returning or logging the unknown codes without blocking settlement).",
+        "rationale": "The candidate clearly identifies that an unrecognized coupon should not abort the process. It specifies that unrecognised codes contribute zero to the discount (by skipping them using a lookup check), explicitly details how settlement proceeds (settling the order against the remaining discount and recognized coupons, while optionally reporting/logging the unknown code), and provides both the code implementation and expected call outputs.",
         "score": 5
       }
     }
   },
-  "request_hash": "1167bc85b74e47e26811cf01cd5341dad5a2362f00755f92984d842bd856a89e"
+  "request_hash": "1c0fa7e9ba2559282c2a016c8fccda59d5d733fcbe16fc38adc0a6b86ea79ab4"
 }

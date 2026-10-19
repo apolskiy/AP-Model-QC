@@ -12,7 +12,7 @@
             "text": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>"
           },
           {
-            "text": "The function below settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})"
+            "text": "The function below settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\nThe seller does not expect to give the product away for free.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})"
           }
         ],
         "role": "user"
@@ -20,24 +20,24 @@
     ],
     "model": "gemini-3.8-flash"
   },
-  "request_hash": "3a349e8cc7a08ec038df766e2dae3836acd7db6c308883823c5013be473e23f3",
+  "request_hash": "9232c0a872c397870d466ce4bfb1ad872306f770ff85cb7c4ac80d478083cf09",
   "resolved_model": "gemini-3.8-flash",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 20074,
+    "duration_ms": 11569,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 335,
+    "input_tokens": 349,
     "mode": "live",
-    "output_tokens": 625,
-    "raw_reference": "pB7Rav6GPNOc1MkP9L7AuAg",
+    "output_tokens": 513,
+    "raw_reference": "HDTVaqe2D8uK_uMP1eX8UA",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Here are the defects in `settle_order`, their causes, and how to fix them:\n\n---\n\n### 1. Calculates the Discount Amount Instead of the Amount Remaining\n* **Cause:** `total_amount * discount / 100` calculates the *value of the discount*, not the remaining balance to be paid.\n* **What it should do instead:** Subtract the discount from the total amount (e.g., `total_amount * (1 - discount / 100)` or `total_amount - (total_amount * discount / 100)`).\n\n---\n\n### 2. Unrecognized Coupon Codes Cause a Crash (`KeyError`)\n* **Cause:** Accessing coupons via direct dictionary subscripting (`coupon_lookup[...]`) raises a `KeyError` when a coupon is invalid or not in the dictionary (e.g., `settle_order(..., [\"NOPE\"], ...)`).\n* **What it should do instead:** Use safe retrieval such as `coupon_lookup.get(code, 0)` so that invalid/unrecognized codes resolve to `0` without halting settlement.\n\n---\n\n### 3. Only the First Coupon Is Processed\n* **Cause:** The code hardcodes `coupon_codes[0]`. This ignores any subsequent coupons when a list of multiple coupons is provided (e.g., `[\"SAVE20\", \"SAVE30\"]`), and will also raise an `IndexError` if `coupon_codes` is empty.\n* **What it should do instead:** Iterate through all codes in `coupon_codes` and sum their values (e.g., `sum(coupon_lookup.get(code, 0) for code in coupon_codes)`).\n\n---\n\n### 4. `amount_owed` Can Become Negative\n* **Cause:** When coupons exceed the post-discount total (as seen in Call 2 with `\"SAVE90\"` on an 80-unit balance), simple subtraction causes `amount_owed` to become negative (`-10`).\n* **What it should do instead:** Clamp the result at zero (e.g., `max(0.0, amount_owed)`), since an order balance cannot be negative.\n\n---\n\n### Corrected Implementation\n\n```python\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount_pct = DISCOUNT_BY_TIER[account_tier]\n    discounted_total = total_amount * (1 - discount_pct / 100)\n    \n    coupon_sum = sum(coupon_lookup.get(code, 0) for code in coupon_codes)\n    \n    amount_owed = max(0.0, discounted_total - coupon_sum)\n    return amount_owed\n```",
-    "thinking_tokens": 1744,
+    "text": "Based on the provided code and requirements, here are the defects, their causes, and the required behavior:\n\n---\n\n### 1. Incorrect Price Calculation from Discount Percentage\n* **Cause:** The formula `total_amount * discount / 100` computes the **discount value itself**, not the price after discount. Subtracting `coupon_sum` from this gives `(discount - coupons)` rather than deducting both from the original total.\n* **What it should do instead:** It should subtract the discount from `total_amount` (i.e., `total_amount * (1 - discount / 100)` or `total_amount - (total_amount * discount / 100)`) before deducting coupons.\n\n---\n\n### 2. Only the First Coupon Code is Evaluated (and Fails on Empty Lists)\n* **Cause:** `coupon_lookup[coupon_codes[0]]` hardcodes the index `[0]`. This ignores any subsequent coupons when multiple codes are provided (e.g., `[\"SAVE20\", \"SAVE30\"]`), and raises an `IndexError` if `coupon_codes` is empty.\n* **What it should do instead:** It should iterate through the entire `coupon_codes` list and aggregate the values of all valid coupons into `coupon_sum`.\n\n---\n\n### 3. Unrecognised Coupons Cause a Crash (`KeyError`)\n* **Cause:** The code accesses `coupon_lookup` using direct dictionary subscript indexing (`coupon_lookup[...]`). When an unknown code like `\"NOPE\"` is passed, Python raises a `KeyError`, halting execution.\n* **What it should do instead:** It should safely look up codes without throwing an error (e.g., using `coupon_lookup.get(code, 0)`), ignoring unrecognized codes so that settlement proceeds.\n\n---\n\n### 4. Amount Owed Can Become Zero or Negative\n* **Cause:** There is no minimum floor or validation on `amount_owed`. Large coupons (such as `\"SAVE90\"` on an 80-unit subtotal) can reduce the amount to zero or a negative number.\n* **What it should do instead:** Because the seller does not expect to give products away for free, the function should enforce a floor (e.g., ensuring `amount_owed` is capped at a minimum value greater than zero, or preventing coupons from exceeding the payable balance).",
+    "thinking_tokens": 995,
     "tool_calls": []
   }
 }

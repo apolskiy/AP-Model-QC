@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The response clearly identifies all three independent arithmetic/logic causes (discount computed instead of remainder subtracted from total, only the first coupon index being read, and the lack of a zero floor allowing negative amounts owed) and provides a distinct remedy for each.",
+        "rationale": "The candidate explicitly identifies all three independent causes of arithmetic error: computing the discount amount instead of the remainder, reading only the first coupon code from the list, and allowing coupons larger than the discounted total to drive the amount owed negative/to zero. Furthermore, it provides clear and separate remedies for each defect.",
         "score": 5
       }
     }
   },
-  "request_hash": "991f4661a3835e201222ee45d523e57d52cb714a2b25d8887a2c246727f7d0a8"
+  "request_hash": "c8c1ec9beb33669788848d9ced49f337adba4776f47213ac500d1ac6955329dc"
 }

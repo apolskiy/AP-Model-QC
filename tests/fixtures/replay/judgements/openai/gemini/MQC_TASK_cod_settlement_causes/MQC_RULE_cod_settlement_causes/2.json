@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly diagnoses two of the three independent causes (discount computed as amount owed instead of remainder, and only the first coupon code being read) along with their remedies. However, it does not explicitly diagnose the cause regarding coupons exceeding the total driving the amount owed negative (it merely includes 'never go below 0' and `max(0, ...)` as part of its remedy without identifying the defect/cause itself). Because it identifies causes rather than merely reporting returned values, it exceeds Level 1, but failing to name all three causes keeps it short of Level 3, meriting a score of 2.",
-        "score": 2
+        "rationale": "The response identifies all three required arithmetic causes: calculating and using the discount amount rather than the remainder (discounted total), only evaluating the first coupon code, and allowing coupons larger than the total to result in a negative amount owed. Furthermore, it keeps each cause distinct and provides a specific remedy for each.",
+        "score": 5
       }
     }
   },
-  "request_hash": "f52a8ea0bffbb391b542e9ab9cd8675c261beb4e081828f00db9e0d9423ba53c"
+  "request_hash": "7e65b30338c6c47a6a575ed94888499bd351f49ecfd58c832d55016ea85c1e62"
 }

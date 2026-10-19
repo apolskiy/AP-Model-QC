@@ -607,8 +607,10 @@ class TestMQCCorpus:
             for rule in load_rule_sets_from_yaml(source):
                 if not judged:
                     # THE OTHER DIRECTION. A rubric here would never run, and
-                    # its presence would suggest these families are judged.
-                    assert rule.rubric is None, (
+                    # its presence would suggest these families are judged,
+                    # unless the rule declares it is judged on its answer
+                    # alone (section 4.8).
+                    assert rule.rubric is None or rule.judge_response_only, (
                         f"{rule.rule_id} carries a rubric in {source.name}, "
                         f"whose family is decided by deterministic checks, so "
                         f"the rubric would never be evaluated"

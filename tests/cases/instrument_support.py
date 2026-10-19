@@ -29,27 +29,52 @@ from execution.normalize import NormalizedResponse
 
 
 def designed_foundations(plan: Path) -> dict[str, set[str]]:
-    """Return what each security inventory row says a case presupposes.
+    """Return what the section 9.10.2 table says each security case presupposes.
+
+    Reads only the rows between the ``9.10.2`` heading and the next heading,
+    and finds the ``Case`` and ``Presupposes`` columns by their headers.
+
+    Design: ``model_evaluation_test_plan.md`` section 9.10.2.3.
 
     Args:
         plan (Path): The test plan carrying the inventory table.
 
     Returns:
-        dict: Case number to the case numbers its row names.
+        dict: Case number to the case numbers its row names, empty where the
+        section holds no such table.
+
+    Raises:
+        ValueError: When the table lists one case twice.
     """
     designed: dict[str, set[str]] = {}
+    inside = False
+    columns: dict[str, int] = {}
     for line in plan.read_text(encoding="utf-8").splitlines():
+        heading = HEADING.match(line)
+        if heading is not None:
+            inside = heading.group(1) == FOUNDATION_SECTION
+            columns = {}
+            continue
         row = line.strip()
-        if INVENTORY_ROW.match(row) is None:
+        if not inside or not row.startswith("|"):
             continue
         cells = [cell.strip() for cell in row.strip("|").split("|")]
-        if len(cells) < 4:
+        if not columns:
+            if "Case" in cells and "Presupposes" in cells:
+                columns = {"case": cells.index("Case"), "basis": cells.index("Presupposes")}
             continue
-        number = BACKTICKED_ID.search(cells[0])
+        if len(cells) <= max(columns.values()):
+            continue
+        number = BACKTICKED_ID.search(cells[columns["case"]])
         if number is None:
             continue
+        if number.group(1) in designed:
+            raise ValueError(
+                f"{number.group(1)} is listed twice in the section "
+                f"{FOUNDATION_SECTION} table, so what it presupposes is undecided"
+            )
         designed[number.group(1)] = {
-            found.group(1) for found in BACKTICKED_ID.finditer(cells[3])
+            found.group(1) for found in BACKTICKED_ID.finditer(cells[columns["basis"]])
         }
     return designed
 
@@ -255,11 +280,37 @@ class FakeDispatchConfig:
         """
         return self._values.get(name, default)
 
-# A security inventory row, whose fourth cell names the cases it presupposes.
-# THE SECURITY BLOCK, which the six-digit scheme moved from 5xxxx to 15xxxx:
-# domain 1, layer 5. This encoded the block prefix rather than a digit count,
-# so the widening sweep did not reach it and the row stopped matching at all.
-INVENTORY_ROW: Final[re.Pattern] = re.compile(r"^\|\s*`(15\d{4})`\s*\|")
+
+def checked_result(*, passed: bool) -> SimpleNamespace:
+    """Return an evaluation result decided by one assertion, as the ledger reads it.
+
+    Args:
+        passed (bool): Whether the assertion held.
+
+    Returns:
+        SimpleNamespace: A result authoring no rubric, so its judge phases do
+        not apply.
+    """
+    return SimpleNamespace(
+        screen=SimpleNamespace(taxonomy_code=None),
+        rubric_authored=False,
+        assertion_results=[
+            SimpleNamespace(
+                passed=passed, assertion_id="A_STEP", detail="",
+                taxonomy_code="" if passed else "QC_LLM_INSTRUCTION_DRIFT",
+            )
+        ],
+        score=None,
+        judge_skipped_reason="",
+        taxonomy_codes=[],
+        passed=passed,
+    )
+
+# THE ONE SECTION WHOSE TABLE STATES SECURITY FOUNDATIONS, and a markdown
+# heading's section number. Reading every row led by a case number let a later
+# table overwrite this one (test plan section 9.10.2.3).
+FOUNDATION_SECTION: Final[str] = "9.10.2"
+HEADING: Final[re.Pattern] = re.compile(r"^#{1,6}\s+(\S+)")
 
 
 BACKTICKED_ID: Final[re.Pattern] = re.compile(r"`(\d{6})`")

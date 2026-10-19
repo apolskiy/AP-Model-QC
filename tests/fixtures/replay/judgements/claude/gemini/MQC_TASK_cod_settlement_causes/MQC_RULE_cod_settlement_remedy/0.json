@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate explicitly identifies that an unrecognised coupon code must not halt settlement, specifies that unknown codes should default to a contribution of 0 (e.g., using `.get(code, 0)` or skipping them while summing), and demonstrates exactly how settlement proceeds to calculate the final amount owed.",
+        "rationale": "The candidate clearly explains that an unrecognised coupon code must not halt settlement, stating that unknown codes should be skipped (contributing zero to the coupon sum) while settlement proceeds to compute the remaining balance (e.g., returning 80 and tracking/reporting the unrecognised code).",
         "score": 5
       }
     }
   },
-  "request_hash": "6cda5babb3434fcf1740b1df5fc7282fff4205a48b344ddcc80da1c4f3058bd4"
+  "request_hash": "369d4db2bc859782f0af6df9233e31f3267edf78c6bd54008f2b4405d401ee4d"
 }

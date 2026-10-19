@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_REMEDY_IS_DETERMINATE": {
-        "rationale": "The candidate clearly states that an unrecognized code should not crash the process, explicitly specifying that unrecognized codes should be skipped / treated as 0 and that settlement should proceed.",
+        "rationale": "The candidate identifies that unrecognised codes abort settlement via KeyError, specifies that unknown codes should add nothing, and explicitly names how settlement proceeds: by skipping those codes and still returning an amount owed.",
         "score": 5
       }
     }
   },
-  "request_hash": "5cf51d4b39df898b2a1281f2db03c386f0b0367c70b2afd581163d909ba45053"
+  "request_hash": "e87215d73aff20339ff3f04b90f747c9f7a3393d6dbbd4816dbd6b682efb1060"
 }

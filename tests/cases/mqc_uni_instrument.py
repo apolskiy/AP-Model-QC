@@ -31,6 +31,7 @@ harness ``framework-rules.md`` section 3.3.
 #   115401  an_assertion_sensitive_to_trailing_whitespace_is_reported
 #   115402  a_recorded_refusal_without_a_stated_reason_is_reported
 #   115403  a_declared_foundation_the_design_does_not_state_is_reported
+#   115419  only_the_section_9_10_2_table_states_foundations
 #   115404  an_undeclared_or_unregistered_vector_is_reported
 #   115405  an_inventory_row_without_an_implementation_is_reported
 # TestMQCNamedInstrument
@@ -54,6 +55,7 @@ from typing import Final
 import allure
 import pytest
 
+from cmn.case_steps import step
 from cmn.observations import further_observations
 from cmn.config import load_quarantine_for
 from cmn.vectors import is_registered_vector, match_vectors
@@ -326,6 +328,66 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"{len(unimplemented)} designed foundation(s) the code does not "
             f"declare, so a case runs without its premise: {unimplemented}"
         )
+
+    @allure.story("Declared foundations")
+    def MQC_CAS_UNI_115419_only_the_section_9_10_2_table_states_foundations(
+        self, tmp_path: Path
+    ) -> None:
+        """Foundations come from the 9.10.2 table alone, its column found by header.
+
+        A row led by a case number in any other table is not read, a case the
+        table lists twice is refused, and the ``Presupposes`` column is found
+        by its header rather than its position.
+
+        Design: ``model_evaluation_test_plan.md`` section 9.10.2.3.
+
+        Returns:
+            None
+        """
+        table = (
+            "#### 9.10.2 One vector per task\n\n"
+            "| Case | Priority | Vector | Presupposes | Why |\n"
+            "|---|---|---|---|---|\n"
+            "| `154100` | P0 | none | Nothing | the root |\n"
+            "| `154101` | P1 | document | `154100` | elaborates it |\n"
+        )
+        plan = tmp_path / "plan.md"
+        # THE OTHER TABLES CARRY THE SAME HEADERS, as the plan's own later
+        # tables do, so only the section decides what is read.
+        later = (
+            "| Case | Priority | Asks | Presupposes |\n|---|---|---|---|\n"
+            "| `154101` | P2 | another | `154200` |\n"
+        )
+        plan.write_text(
+            "#### 9.10.1 Before\n\n"
+            + later.replace("154101", "154100").replace("154200", "154999")
+            + "\n" + table + "\n#### 9.10.5 Later\n\n" + later,
+            encoding="utf-8",
+        )
+        step(1, "read foundations from a plan whose other sections share the table headers")
+        designed = designed_foundations(plan)
+        assert designed == {"154100": set(), "154101": {"154100"}}, (
+            f"a table outside section 9.10.2 was read as the inventory: {designed}"
+        )
+
+        step(2, "read foundations from a table whose Presupposes column is second, not fourth")
+        plan.write_text(
+            "#### 9.10.2 One vector per task\n\n"
+            "| Case | Presupposes | Priority | Vector |\n"
+            "|---|---|---|---|\n"
+            "| `154101` | `154100` | P1 | `154300` |\n",
+            encoding="utf-8",
+        )
+        assert designed_foundations(plan) == {"154101": {"154100"}}, (
+            f"the Presupposes column was read by position: {designed_foundations(plan)}"
+        )
+
+        step(3, "read foundations from a table listing one case twice")
+        plan.write_text(
+            table + "| `154101` | P1 | document | `154200` | again |\n", encoding="utf-8"
+        )
+        with pytest.raises(ValueError, match="154101"):
+            designed_foundations(plan)
 
     @allure.story("Declared vectors")
     def MQC_CAS_UNI_115404_an_undeclared_or_unregistered_vector_is_reported(

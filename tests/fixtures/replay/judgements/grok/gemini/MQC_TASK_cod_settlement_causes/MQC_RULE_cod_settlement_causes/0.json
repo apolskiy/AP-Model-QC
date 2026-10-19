@@ -3,10 +3,10 @@
   "reply": {
     "scores": {
       "C_COD_CAUSES_DIAGNOSED": {
-        "rationale": "The candidate clearly identifies the independent causes of defect (incorrect tier discount calculation treating the discount as the owed balance, only using the first coupon, and raising a KeyError on unrecognised codes) and provides the remedy for each.",
+        "rationale": "The candidate clearly identifies all three independent causes (the discount percentage being charged instead of the remainder, a coupon exceeding the post-discount total driving the amount negative so the seller pays the buyer, and only the first coupon code being read). Furthermore, it provides distinct and accurate remedies for each defect while keeping them separate.",
         "score": 5
       }
     }
   },
-  "request_hash": "9c5678b4a1d111fc2ef5f8066f09ae9faeb09a2cfe40c601460f962c3ee323b9"
+  "request_hash": "4a5ab827d1f69f6e8dbf4192b51406b3356393c630edae37280b0bc6e2228e01"
 }

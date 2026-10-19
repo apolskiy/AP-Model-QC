@@ -30,7 +30,7 @@
     # 33 percent on this line. Rejecting that figure is what makes the
     # interpretation observable rather than requiring reasoning to be read.
     - assertion_id: A_MAT_OR_NOT_READ_AS_AND
-      kind: regex
+      kind: claim
       parameters:
         # THE CONCLUSION, not any occurrence of the number. The model
         # answered "meets **100%**" correctly and then added "(Note: if
@@ -38,8 +38,16 @@
         # candidate covers 1 of 3 = 33%)". Reading OR as AND is what this
         # forbids; naming the alternative reading while not taking it is
         # arguably better than silence, and the old pattern failed it.
+        #
+        # A SENTENCE, SINCE 2026-10-16, because openai wrote "meets 33% of
+        # the listed required languages ..., but fully satisfies the
+        # requirement if any one suffices (100%)" and the regex refused it.
+        # A sentence placing the figure on the listed options or under a
+        # stated condition does not claim it of the requirement (test plan
+        # section 9.8.2.1).
         pattern: '(?i)\b(meets?|satisfies|fulfil\w*|achieves?)\b[^.]{0,30}\b33(\.3+)?\s*(%|per\s?cent)'
         present: false
+        unless: ["of the listed", "if asking", "if interpreted", "if read"]
       taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
       severity: violation
       constraint_ref: MAT_OR_IS_DISJUNCTION
