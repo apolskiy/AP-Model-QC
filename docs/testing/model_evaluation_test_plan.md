@@ -124,6 +124,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0053` | A band carrying the outcomes of the band before it adopts them: the corpus digest is recorded at session start, before adoption compares it | consumer_ci.md section 3.12.1 |
 | `MQC_REQ_CAS_CI_0054` | A graded case records one step per dispatch, then the escalation steps it did not take as not run, then the comparison, as the harness computes them | consumer_ci.md section 9.4.3.3 |
 | `MQC_REQ_CAS_CI_0056` | A finding already held keeps the date it was first held and its reason when a later run holds it again, so a reason written by hand is never erased | consumer_ci.md section 9.4.8 |
+| `MQC_REQ_CAS_CI_0057` | A run refuses to start while a module of the harness it imports is under mutation, calling the harness check with the imported harness's root | consumer_ci.md section 5.4 |
+| `MQC_REQ_CAS_CI_0058` | A harness gate cancelled because a newer commit replaced it is followed to the newer commit's gate, up to three times, and the run records the chain; a red gate, a gate cancelled with the ref unmoved, and every other refusal are not followed | consumer_ci.md section 3.11.3 |
 | `MQC_REQ_CAS_CI_0055` | This repository's identifier categories and blocks are measured with the harness's capacity reader, and a crowded one is warned of without failing the run | harness_test_taxonomy.md section 11.9.6 |
 | `MQC_REQ_CAS_CI_0034` | The instrument is checked for manufacturing findings: no recorded response on an ordinary case matches an attack vector, and every failure message names a registered taxonomy code, so a defect in our reading is not reported as a defect in a model and a real failure is not unrecordable | consumer_ci.md section 9.4.2 |
 

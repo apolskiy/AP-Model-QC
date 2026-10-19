@@ -40,6 +40,27 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A harness gate cancelled by a newer push is followed, 2026-10-18
+
+**A harness gate cancelled because a newer push replaced it reached no verdict
+on the harness, and every gate here refused on it.** Three harness pushes in four
+minutes cancelled the gate the resolver waited on, and the commit that settled
+passed with nothing re-running against it. The resolver now resolves the paired
+ref again when the gate it waited on concluded cancelled, and when the ref names
+a newer commit it waits on that commit's gate, at most three times; the reason
+names every commit it followed and the run installs the commit followed to. A
+red harness gate, a gate cancelled with the ref unmoved, and every other refusal
+are not followed (`consumer_ci.md` section 3.11.3). The README's figures moved:
+148 preconditions and 163 requirements.
+
+### A run refuses a harness under mutation, 2026-10-18
+
+**This suite imports the harness, so a harness module under mutation was measured
+here too.** Session start now calls the harness check first, with the root of
+the harness it imported, and refuses with exit 3 while a module is under
+mutation or was left so (`consumer_ci.md` section 5.4). The README's figures
+moved: 145 preconditions, 162 requirements and 898 harness test cases.
+
 ### A score hidden in a resume, and every precondition's numbered steps, 2026-10-18
 
 **Nine cases ask whether a passage hidden in a resume steers the model
@@ -70,7 +91,7 @@ and it is withdrawn. The answer stated 33% of the listed languages and 100% of
 the requirement if any one suffices; the gate now reads sentence by sentence
 and refuses only 33 percent claimed of the requirement (section 9.8.2.1, case
 `115013`). With `134400` passing, `134402` is measured again and reproduces.
-`134109`'s negative-settlement gate stands by the project owner's ruling
+`134109`'s negative-settlement gate stands, a model being expected to raise it
 (section 8.9.1), and its task now implies the floor plainly: "The seller does
 not expect to give the product away for free" (case `115014`). `134109` and
 `134110`, which share the task, were re-recorded live on all four engines, and
@@ -167,7 +188,7 @@ moved: 147 requirements, 132 preconditions, 644 harness cases.
 
 ### Each finding has a ticket of its own, 2026-10-15
 
-**The project owner submits each vendor ticket individually**, so beside each
+**Vendor tickets are submitted one at a time**, so beside each
 engine's page `reports/tickets/<engine>/` now holds one file per filed finding,
 named `<number>_<behaviour>.md` (`consumer_ci.md` section 9.5.5.2,
 `MQC_CAS_UNI_115755`). Regenerating removes a generated ticket whose finding is
@@ -177,14 +198,14 @@ figures moved: 146 requirements, 131 preconditions.
 
 ### Every engine re-recorded live, and the tickets filed from it, 2026-10-15
 
-**All four engines were re-recorded live**, after the project owner's rulings
+**All four engines were re-recorded live**, after the rulings
 on what four cases test: a check gates the behaviour a case is named for and
 the rubric grades the explanation, so four checks that graded wording were
 retired and every exemplar at or above a pass mark now passes the checks
 (`MQC_CAS_UNI_115012`). The recordings moved to 948 candidate responses and 544
 judgements.
 
-**The findings moved with them.** openai's `134109` was reopened by hand on the
+**The findings moved with them.** openai's `134109` was reopened on the
 ruling that a settlement leaving the seller owing the buyer is a defect, and
 `134400` was recorded. A finding is now held as no longer reproducing only when
 its case passed, so a case skipped behind a failed foundation keeps its finding
@@ -192,7 +213,7 @@ its case passed, so a case skipped behind a failed foundation keeps its finding
 `134205` is withdrawn on all four engines with the check that produced it, so
 the README's worked example is now `134109`.
 
-**The ticket pages changed format** to the one the project owner set: the case
+**The ticket pages changed format** to what a vendor ticket needs: the case
 name and number, the recorded request, every response with its checks and its
 judgement, what a correct response reads like, and a curl, an SDK call and a
 replay command (`consumer_ci.md` section 9.5.5). Reading the first pages found

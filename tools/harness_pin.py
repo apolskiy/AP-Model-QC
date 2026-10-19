@@ -380,6 +380,64 @@ def await_verdict(
 
     return verdict
 
+
+# A GATE CANCELLED BY A NEWER PUSH reached no verdict on the harness, so it is
+# the one conclusion that is followed (consumer_ci.md section 3.11.3).
+_CANCELLED: Final[str] = "cancelled"
+_FOLLOW_LIMIT: Final[int] = 3
+
+
+def follow_replaced(
+    ref: str,
+    commit: str,
+    resolve: Callable[[], str],
+    verdict_of: Callable[[str], Greenness],
+) -> tuple[str, Greenness]:
+    """Return the commit to run against and its verdict, following replaced commits.
+
+    Design: ``consumer_ci.md`` section 3.11.3.
+
+    A gate that concluded ``cancelled`` while the ref now names a newer commit
+    is followed to that commit's gate, at most three times. Any other verdict,
+    and a cancelled gate whose ref has not moved, is returned as it is.
+
+    Args:
+        ref (str): The paired harness ref, named in the recorded chain.
+        commit (str): The commit the ref first resolved to.
+        resolve (Callable): Resolves the ref to the commit it names now.
+        verdict_of (Callable): Waits for a commit's gate verdict.
+
+    Returns:
+        tuple[str, Greenness]: The commit followed to and its verdict. A
+        followed verdict's reason names every commit in the chain.
+
+    Raises:
+        RuntimeError: When the ref no longer resolves, as :func:`head_commit` does.
+    """
+    chain = [commit]
+    verdict = verdict_of(commit)
+    while verdict.conclusion == _CANCELLED and len(chain) <= _FOLLOW_LIMIT:
+        newer = resolve()
+        if newer == chain[-1]:
+            break
+        chain.append(newer)
+        verdict = verdict_of(newer)
+    if len(chain) == 1:
+        return commit, verdict
+    note = (
+        f"followed harness {ref} from {' to '.join(sha[:12] for sha in chain)}, each "
+        f"replaced commit's gate cancelled"
+    )
+    if verdict.conclusion == _CANCELLED and len(chain) > _FOLLOW_LIMIT:
+        note += (
+            f"; followed {_FOLLOW_LIMIT} times and the gate is still cancelled, so "
+            f"nothing is established"
+        )
+    return chain[-1], Greenness(
+        green=verdict.green, reason=f"{verdict.reason}; {note}", conclusion=verdict.conclusion
+    )
+
+
 def fetch_runs(
     repository: str, head_sha: str, token: Optional[str] = None
 ) -> list[dict[str, Any]]:
@@ -504,8 +562,14 @@ def main(argv: Optional[list[str]] = None) -> int:
     # Strictness does not apply here. It governs whether an UNVERIFIED harness
     # may be used, and cannot govern whether a NONEXISTENT one may be: there is
     # no commit to install and nothing to fall back to.
+    token = os.environ.get("GITHUB_TOKEN")
     try:
-        commit = head_commit(repository, pairing.harness_ref)
+        commit, verdict = follow_replaced(
+            pairing.harness_ref,
+            head_commit(repository, pairing.harness_ref),
+            lambda: head_commit(repository, pairing.harness_ref),
+            lambda sha: await_verdict(repository, sha, token, required_workflow),
+        )
     except RuntimeError as error:
         _emit(
             {
@@ -521,10 +585,6 @@ def main(argv: Optional[list[str]] = None) -> int:
         )
         print(f"::error::{error}", file=sys.stderr)
         return _EXIT_REFUSED
-
-    verdict = await_verdict(
-        repository, commit, os.environ.get("GITHUB_TOKEN"), required_workflow
-    )
 
     _emit(
         {

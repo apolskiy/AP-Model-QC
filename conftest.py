@@ -38,6 +38,7 @@ from cmn.band_summary import Alarms, result_lines, skipped_cases_from
 from cmn.broken import broken_count, broken_detail_lines, mark_broken, refuse_broken
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
+from cmn.mutation_guard import imported_harness_root, refuse_if_mutating
 from cmn.selection import (
     refuse_repeated_cases,
     select_modules,
@@ -234,7 +235,7 @@ def pytest_runtest_makereport(item: pytest.Item, call: Any) -> Any:
 
 
 def pytest_sessionstart(session: pytest.Session) -> None:
-    """Record this run's corpus digest, then adopt what an earlier band published.
+    """Refuse a harness under mutation, record the corpus digest, then adopt outcomes.
 
     Args:
         session (pytest.Session): The starting session.
@@ -242,6 +243,9 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     Returns:
         None
     """
+    # FIRST, because this suite imports the harness and would measure a mutant
+    # (consumer_ci.md section 5.4).
+    refuse_if_mutating(imported_harness_root())
     # THE DIGEST BEFORE THE ADOPTION, which compares it. Recorded later, every
     # band after P0 compared a real digest with an empty one and exited 3
     # (harness `cmn_verdict_and_cli.md` section 7.6.2).

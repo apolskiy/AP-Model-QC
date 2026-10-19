@@ -470,6 +470,45 @@ consumer job all day.
 **The clock is injected**, so `MQC_CAS_UNI_115318` exercises the timeout without
 spending it.
 
+#### 3.11.3 A gate cancelled because a newer commit replaced it is followed
+
+Added 2026-10-18. **Three harness pushes landed within four minutes**, and each
+cancelled the gate of the one before it. This repository was pushed in between,
+resolved harness `main` to the middle commit, and waited on its gate until the
+third push cancelled it. Every gate here refused with
+`QC_HARNESS_UPSTREAM_UNVERIFIED ... concluded cancelled`, and the third commit's
+gate passed minutes later with nothing re-running against it.
+
+**A gate cancelled by a newer push never reached a verdict on the harness.**
+It is not a red: nothing about the harness was measured. So the resolver
+resolves the paired ref again, and when it now names a different commit it
+waits on that commit's gate instead.
+
+| What the gate the resolver waited on did | What it does |
+|---|---|
+| Concluded `cancelled`, and the ref now names a newer commit | **Follows**: waits on the newer commit's gate, on a budget of its own |
+| Concluded `cancelled`, and the ref still names the same commit | Refuses. Somebody cancelled it, and nothing replaced it |
+| Concluded `failure` or `timed_out` | Refuses at once. The harness was measured and did not pass |
+| Did not conclude within the wait | Refuses, as section 3.11 says |
+| Followed three times and still cancelled | Refuses, naming every commit it followed |
+
+**It follows only when the harness was never resolved.** A harness gate that
+concluded red, and every other refusal, refuses without following: following
+past a red would be choosing a harness until one passes, which is the opposite
+of a gate. Section 3.11.2 still applies, since each follow waits for a gate that
+was started by a deliberate push.
+
+**Three follows, then a refusal.** A burst longer than that is not a race to
+absorb but a harness in heavy churn, and running against whichever commit
+happens to settle is what the ordering rule of section 3.11.2 exists to avoid.
+
+**The run records what it followed.** The reason names the chain, for example
+`followed harness main from 1c4b250f6f3c to 7128d75b1c2e, each replaced
+commit's gate cancelled`, and `harness_sha` is the commit followed to, so the
+commit installed is the commit whose gate passed (section 3.1).
+
+`MQC_CAS_UNI_115765` to `115767` assert it.
+
 ### 3.12 One job per band, because the job name is the diagnosis
 
 Added 2026-10-01.
@@ -954,6 +993,10 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115761` | P | `the_steps_after_the_observations_are_recorded` (9.4.3.3) |
 | `115762` | P | `this_repository_warns_of_its_own_crowded_blocks` (harness taxonomy 11.9.6) |
 | `115763` | N | `a_held_finding_keeps_its_date_and_reason_on_a_later_run` (9.4.8) |
+| `115764` | N | `this_repository_refuses_a_harness_under_mutation` (5.4) |
+| `115765` | P | `a_gate_a_newer_commit_cancelled_is_followed_to_its_verdict` (3.11.3) |
+| `115766` | N | `a_red_gate_or_one_cancelled_in_place_is_refused_unfollowed` (3.11.3) |
+| `115767` | B | `following_stops_after_three_replaced_commits` (3.11.3) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -969,7 +1012,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 100 cases, 73 negative, 22 positive, 5 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 104 cases, 75 negative, 23 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1828,6 +1871,23 @@ rules.
 behaviour drift.** That is the property worth having: a rule restated slightly
 differently in two places is a documentation defect, while a rule *enforced*
 differently in two places is a defect that ships.
+
+### 5.4 A run refuses a harness under mutation
+
+Added 2026-10-18. **This repository imports the harness, so a harness module
+under mutation is measured here as surely as there.** A background audit that
+outlived its stopped task went on mutating `cmn/layers.py` while this suite ran
+against it (harness `harness_test_taxonomy.md` section 15.12).
+
+So `pytest_sessionstart` calls `cmn.mutation_guard.refuse_if_mutating` with
+the root of the harness it imported, before anything else it does. A live audit
+of another process refuses the run, and an abandoned backup is restored,
+verified and the run refused. Either refusal exits 3 with
+`QC_HARNESS_PREFLIGHT_FAILURE`. Against an installed wheel the check finds
+nothing, since a wheel carries no backup and no lock.
+
+`MQC_CAS_UNI_115764` asserts the call is made with the imported harness's root,
+the one-implementation-two-callers arrangement of section 5.1.
 
 ---
 

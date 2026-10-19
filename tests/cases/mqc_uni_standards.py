@@ -3,7 +3,7 @@
 """The code-style rules pylint cannot express, enforced on this tree.
 
 Covers ``MQC_CAS_UNI_115500`` through ``115502``, ``115711``, ``115712``,
-``115715``, ``115718``, ``115719``, ``115760`` and ``115762``, inventoried in
+``115715``, ``115718``, ``115719``, ``115760``, ``115762`` and ``115764``, inventoried in
 ``docs/design/consumer_ci.md`` section 4.
 
 **One project spans two repositories**, and a rule enforced on one side only is
@@ -44,6 +44,8 @@ A failure here is **not a model finding**, so the module carries no priority mar
 #   115760  this_repository_refuses_a_case_collected_twice
 # TestMQCIdentifierCapacity
 #   115762  this_repository_warns_of_its_own_crowded_blocks
+# TestMQCHarnessUnderMutation
+#   115764  this_repository_refuses_a_harness_under_mutation
 # ------------------------------------------------------------ end of cases
 
 import ast
@@ -60,6 +62,7 @@ from cmn.identifier_capacity import (
     assigned_identifiers, capacity_warnings, select_blocks,
 )
 from cmn.module_size import runway_problems
+from cmn.mutation_guard import imported_harness_root
 from cmn.case_module_standards import (
     extraction_problems,
     unbounded_subprocess_calls,
@@ -559,3 +562,37 @@ class TestMQCIdentifierCapacity:
         for entry in reported:
             warnings.warn(entry, UserWarning, stacklevel=1)
         assert all("holds" in entry for entry in reported), reported
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Governance parity")
+class TestMQCHarnessUnderMutation:
+    """This suite refuses to measure a harness a mutation audit holds."""
+
+    def MQC_CAS_UNI_115764_this_repository_refuses_a_harness_under_mutation(self) -> None:
+        """Session start calls the harness check first, with the imported harness's root.
+
+        Design: ``consumer_ci.md`` section 5.4, harness ``harness_test_taxonomy.md``
+        section 15.12.
+
+        Returns:
+            None
+        """
+        step(1, "read the first statement of this repository's session start")
+        tree = ast.parse((_root() / "conftest.py").read_text(encoding="utf-8"))
+        start = next(
+            node for node in tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == "pytest_sessionstart"
+        )
+        body = [node for node in start.body if not isinstance(node, ast.Expr)
+                or not isinstance(node.value, ast.Constant)]
+        assert ast.unparse(body[0]) == "refuse_if_mutating(imported_harness_root())", (
+            "QC_HARNESS_PREFLIGHT_FAILURE: session start does not refuse a harness under "
+            f"mutation before anything else, so this suite measures its mutants: "
+            f"{ast.unparse(body[0])}"
+        )
+
+        step(2, "resolve the root the check is given and look for the harness in it")
+        assert (imported_harness_root() / "cmn" / "mutation_guard.py").is_file(), (
+            f"{imported_harness_root()} is not the harness this suite imports"
+        )

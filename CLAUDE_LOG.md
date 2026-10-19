@@ -4967,3 +4967,43 @@ carrying the request that produced it.
   pylint 10.00/10, exit 0; 161 requirements. Replay: gemini and grok fail the
   six hidden-passage cases noted; openai those and `134502`, `134402`,
   `154401`; claude seven of them and `154103`, with three skipped behind it.
+
+## 2026-10-18: A harness under mutation is refused, and a replaced harness commit is followed
+
+* **A harness module under mutation was measured here too**, because this suite
+  imports the harness. Session start now calls `refuse_if_mutating` first, with
+  the root of the harness it imported (`consumer_ci.md` section 5.4,
+  `MQC_REQ_CAS_CI_0057`, `MQC_CAS_UNI_115764`). The mechanism is the harness's,
+  section 15.12 of its taxonomy.
+* **Every gate refused on the push after the harness commits**, with
+  `QC_HARNESS_UPSTREAM_UNVERIFIED ... concluded cancelled`. Three harness pushes
+  landed within four minutes, each cancelling the gate of the one before; this
+  repository resolved `main` to the middle commit and waited on its gate until
+  the third push cancelled it. The project owner restarted the gates by hand,
+  and they then failed only on graded bands.
+* **Decided by the project owner**, from four options weighed: the resolver
+  follows a replaced commit, and retries "only if failure is due to unresolved
+  harness. Otherwise, no retries." Not cancelling in-progress harness gates was
+  rejected because a concurrency group holds one waiting run, so a burst of
+  three still cancels the middle one; falling back to the last green harness was
+  rejected because this push needed the newer harness's `cmn.case_steps`.
+* **Built, `consumer_ci.md` section 3.11.3, `MQC_REQ_CAS_CI_0058`:** a gate that
+  concluded `cancelled` while the paired ref names a newer commit is followed to
+  that commit's gate, at most three times, and the reason names the chain. A red
+  harness gate, a gate cancelled with the ref unmoved, and every other refusal
+  are returned unfollowed. `follow_replaced` takes the resolver and the wait as
+  functions, so the cases script both.
+* **Cases, each failing first:** `MQC_CAS_UNI_115765` to `115767`, three
+  injections caught.
+* **Six changelog passages** that named the project owner now state the
+  purpose, under the harness rule `code-style.md` section 7.4.1.
+* **Digressions the user spotted, and the fix:** none in this repository's
+  work.
+* **Found while building, and fixed:** the follower took seven arguments and the
+  case module held its helpers; the helpers moved to `follow_support.py`, and one
+  case name exceeded the naming pattern.
+* **Code Quality & Compliance Audit:** 148 preconditions, all passing, exit 0;
+  pylint 10.00/10, exit 0; 163 requirements. Replay, 234 executions per engine:
+  claude 223 passed, 8 failed, 3 skipped behind `154103`; gemini and grok 228
+  passed, 6 failed; openai 225 passed, 9 failed, every failure a recorded
+  finding.
