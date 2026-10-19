@@ -40,6 +40,14 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The harness screen no longer aborts a rating out of 5, 2026-10-18
+
+**A rating written as a ratio was aborted before judging.** The harness
+injection screen took the 5 of "3 out of 5" as a top mark aimed at the judge;
+it now reads the mark from the number that states it (harness
+`tier3_evaluation.md` section 5.2.5). The README's figure moved: 899 harness
+test cases.
+
 ### A harness gate cancelled by a newer push is followed, 2026-10-18
 
 **A harness gate cancelled because a newer push replaced it reached no verdict

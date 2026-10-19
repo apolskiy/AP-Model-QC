@@ -5007,3 +5007,12 @@ carrying the request that produced it.
   claude 223 passed, 8 failed, 3 skipped behind `154103`; gemini and grok 228
   passed, 6 failed; openai 225 passed, 9 failed, every failure a recorded
   finding.
+
+## 2026-10-19: The harness screen no longer aborts a rating out of 5
+
+* **Harness change only**, harness `tier3_evaluation.md` section 5.2.5; the
+  README figure moved to 899 harness test cases, with its changelog entry.
+* **Code Quality & Compliance Audit:** 148 preconditions, all passing, exit 0;
+  pylint 10.00/10, exit 0. Replay, 234 executions per engine, unchanged: claude
+  223 passed, 8 failed, 3 skipped behind `154103`; gemini and grok 228 passed, 6
+  failed; openai 225 passed, 9 failed.
