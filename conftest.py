@@ -2,6 +2,21 @@
 # SPDX-License-Identifier: MIT
 """pytest configuration for the case repository.
 
+Created: 2026-09-22
+Last updated: 2026-10-21
+
+This file contains the pytest hooks for the case suite. They declare the
+execution flags, record what the run was invoked with, label severity, select
+the requested bands and order the cascade at collection, skip a case whose
+foundation did not hold, record each assertion as a verification step, and at
+the end of the session publish what the run established, refuse a skipped
+precondition or a broken case, and print the band lines.
+
+pytest loads it for every run in this repository, locally and in CI, before any
+case is collected. What ``pytest_sessionfinish`` publishes is what the next
+band in a sequence adopts at its session start, so a foundation's outcome
+decides whether its dependents in a later band run.
+
 **A delegation, not a second configuration.** Every hook body lives in
 ``cmn.pytest_support`` in the harness and is called from both repositories, so
 a flag cannot exist on one surface and not the other, and neither can accept a

@@ -1,23 +1,35 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Unit preconditions for the page a finding is filed from.
+"""Unit preconditions for the ticket page a graded finding is filed from, and its register.
 
-Covers `MQC_CAS_UNI_115733`, inventoried in ``docs/design/consumer_ci.md``
-section 9.5.3.
+Created: 2026-10-12
+Last updated: 2026-10-21
+
+This file contains seventeen cases on ``tools/ticket_report.py`` and the findings,
+recordings, evidence and register tools it joins. ``TestMQCTicketInput`` checks a
+ticket's input is the recorded request, and that findings are retired, withdrawn or
+filed only on what reproduced. ``TestMQCTicketFormat`` checks a ticket shows every
+observation with its judgement, a correct answer and a command that runs;
+``TestMQCHoldNeedsAPass`` that a held finding needs a pass and keeps its date and
+reason; and ``TestMQCTicketHygiene`` covers fences, stale populations, labels, one
+ticket per finding, payload framing, tool calls and engine page names.
+
+**These run in the ``unit`` precondition gate.** A ticket is the last artefact a person
+reads before filing with a vendor, so these keep its evidence honest before any graded
+run produces a finding for it. A failure is an instrument defect, **not a model
+finding**: the run exits 3 and no graded case executes, and the module carries no
+priority marker, per the harness ``framework-rules.md`` section 3.3.
+
+Specified by ``docs/design/consumer_ci.md`` section 9.5.3.
 
 **`ticket_report.py` had no cases at all** when this module was written, at 607
-lines and named by the design as the thing that joins three sources. It is the
-last artefact a person reads before filing with a vendor, so what it claims
-about its own evidence is worth asserting.
+lines and named by the design as the thing that joins three sources.
 
 **The Input block is the claim under test.** It used to read the corpus and
 present it as the call, which the tool said in its own docstring: "the request
 is reconstructed, not recorded". A ticket that asks a vendor to trust our
 composer is asking them to debug our adapter, and the thing they are being
 asked about is their model.
-
-A failure here is **not a model finding**, so the module carries no priority
-marker, per the harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

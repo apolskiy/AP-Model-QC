@@ -1,9 +1,21 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Unit preconditions for what this repository's own registers must satisfy.
+"""Unit preconditions for whether this repository's own registers are self-consistent.
 
-Covers `MQC_CAS_UNI_115723` and `115732`, inventoried in
-``docs/design/consumer_ci.md`` section 4.
+Created: 2026-10-11
+Last updated: 2026-10-21
+
+This file contains two cases, each calling a harness checker from
+``cmn.document_standards`` over this repository's documents. ``TestMQCStatedInventory``
+checks a stated inventory total agrees with the rows it counts, and
+``TestMQCIdentifierBinding`` that no case identifier is bound twice.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band. A failure is an
+instrument defect, **not a model finding**: the run exits 3 and no graded case executes,
+and the module carries no priority marker, per the harness ``framework-rules.md``
+section 3.3.
+
+Specified by ``docs/design/consumer_ci.md`` section 4.
 
 **Split from `mqc_uni_corpus.py` on 2026-10-10**, which this subject took to
 902 lines against the nine-hundred-line runway ceiling. That module is about
@@ -14,9 +26,6 @@ bound once.
 **Both were checks the harness had and this repository did not.** The inventory
 figure drifted to 52 against 48 rows, and five identifiers were bound twice for
 a week, each while every per-row check passed.
-
-A failure here is **not a model finding**, so the module carries no priority
-marker, per the harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

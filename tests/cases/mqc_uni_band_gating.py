@@ -1,10 +1,24 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""How a band's result is gated and how it is reported.
+"""Unit preconditions for how a priority band's result is gated and reported.
 
-Covers ``MQC_CAS_UNI_115717``, ``115720``, ``115724`` through ``115727``
-and ``115730``, inventoried in
-``docs/design/consumer_ci.md`` section 4 and designed in sections 3.12.2,
+Created: 2026-10-07
+Last updated: 2026-10-21
+
+This file contains eight cases on the band jobs the workflows define, read through
+``workflow_support``, and on the floor in ``tools/band_floor.py``. They check a band publishes
+its result even when red, never passes a blocking band on cases that did not run,
+releases a blocker only on a recorded dispensation, reports a skipped floor step and
+refuses an impossible floor, runs every band from the one shared definition within its
+case ceiling, and reads a command behind a local ``uses:``.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band, so a band
+that would misreport its own result is caught before it reports one. A failure is an
+instrument defect, **not a model finding**: the run exits 3 and no graded case executes,
+and the module carries no priority marker, per the harness ``framework-rules.md``
+section 3.3.
+
+Specified by ``docs/design/consumer_ci.md`` section 4 and sections 3.12.2,
 3.12.3 and 3.12.5.
 
 **Split from ``mqc_uni_workflows.py`` on 2026-10-07**, which the blocking floor
@@ -18,9 +32,6 @@ not call that result a pass when a third of the band never ran. A band reporting
 green at seven of eleven was the defect that produced the second. The third
 states the one exception, and that it has to be recorded somewhere a reader can
 go and read it.
-
-A failure here is **not a model finding**, so the module carries no priority marker, per the
-harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

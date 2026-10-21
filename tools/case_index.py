@@ -1,6 +1,20 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Generate the per-case index a selector resolves a family or a tag through.
+"""The case index generator, which writes one row per graded case with its families and tags.
+
+Created: 2026-10-04
+Last updated: 2026-10-21
+
+This file contains ``build``, which reads the corpus and returns one row per
+graded case with its test families and its task's tags, ``render``, which turns
+the rows into the file's text, ``current``, which reports whether the written
+file still matches the corpus, and ``main``, the command line for writing or
+checking ``docs/testing/case_index.csv``.
+
+It is run by hand with ``python -m tools.case_index`` after a corpus edit. The
+harness selector reads the file to resolve ``--family`` and ``--tag`` to exact
+cases, and a precondition in ``mqc_uni_families.py`` fails the run when the
+file is stale.
 
 Specified by harness ``cmn_verdict_and_cli.md`` section 7.7.6.
 
@@ -24,7 +38,8 @@ import sys
 from pathlib import Path
 from typing import Final, Optional
 
-from tests.cases.graded_support import case_rules_from_suite, shipped_corpus
+from tests.cases.graded_support import shipped_corpus
+from tests.cases.suite_support import case_rules_from_suite
 
 _COLUMNS: Final[tuple[str, ...]] = ("case", "families", "tags")
 _DEFAULT_OUT: Final[Path] = Path("docs/testing/case_index.csv")

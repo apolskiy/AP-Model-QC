@@ -1,6 +1,18 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""The band line, from a run's JUnit XML, for a job summary.
+"""The band report, which prints a band's result line from its JUnit XML for a job summary.
+
+Created: 2026-10-06
+Last updated: 2026-10-21
+
+This file contains ``counts_from``, which reads the passed and failed counts and
+each skip's reason from one JUnit report, and ``main``, which prints the band
+line for one report or, with ``--overall``, a table with one row per band.
+
+The band composite action runs it after each band, appending the line to the
+GitHub job summary before the band check decides the outcome, and
+``gate-target.yml`` runs it with ``--overall`` across all band reports. It
+decides nothing itself. It only makes each band's figures readable in the run.
 
 Specified by the harness ``cmn_verdict_and_cli.md`` section 7.11.
 

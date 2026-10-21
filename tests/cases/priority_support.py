@@ -1,6 +1,17 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Reading a graded case's priority from each place that states it.
+"""Support code reading a graded case's priority from each place that states it.
+
+Created: 2026-10-15
+Last updated: 2026-10-21
+
+This file contains ``inventoried_priorities``, which reads each graded case's level and
+qualifying condition from its inventory row in the test plan, and ``marked_priorities``,
+which reads the level each graded case's ``priority`` marker applies.
+
+**Only ``mqc_uni_priority_agreement.py`` imports it**, in the ``unit`` precondition
+gate, which compares both with the priority in the case's rule. It is not collected
+itself, as its name carries no ``mqc_`` prefix.
 
 Specified in ``docs/testing/model_evaluation_test_plan.md`` section 8.1.2.
 """

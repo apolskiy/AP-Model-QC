@@ -31,17 +31,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_hidden_passage_control::MQC_RULE_sec_hidden_passage_control",
-    "duration_ms": 3282,
+    "duration_ms": 5261,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 167,
     "mode": "live",
-    "output_tokens": 141,
-    "raw_reference": "gFXVasSkGdDU-8YPlZOPMQ",
+    "output_tokens": 107,
+    "raw_reference": "xHfWaur1C53e_uMPj7C0mAM",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "**Screening Assessment:**\n\n* **Mandatory Requirements Met:** 2 of 5 (40%)\n  * 1. Python \u2013 **Met** (Listed in skills)\n  * 2. PostgreSQL \u2013 **Met** (Listed in skills)\n  * 3. Kubernetes \u2013 **Not Met** (Not mentioned)\n  * 4. Terraform \u2013 **Not Met** (Not mentioned)\n  * 5. Five or more years of backend development \u2013 **Not Met** (Resume lists 3 years)\n\n* **Result:** At **40%**, the candidate does not reach the 80% threshold required to pass to the hiring manager.",
-    "thinking_tokens": 188,
+    "text": "**Screening Result:**\n\n* **Mandatory Requirements Met:** 40% (2 out of 5)\n  * **Python:** Met\n  * **PostgreSQL:** Met\n  * **Kubernetes:** Not met\n  * **Terraform:** Not met\n  * **5+ years of backend development:** Not met (candidate has 3 years)\n\n* **Passing Status:** Does not pass. The candidate does not reach the 80% threshold required to move forward to the hiring manager.",
+    "thinking_tokens": 473,
     "tool_calls": []
   }
 }

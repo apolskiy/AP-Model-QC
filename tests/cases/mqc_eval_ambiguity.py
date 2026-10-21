@@ -1,9 +1,23 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether the model asks when something is unclear, and only then.
+"""Graded cases for whether the model asks when something is unclear, and only then.
 
-Covers ``MQC_EVL_EVAL_134000`` through ``134002``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
+Created: 2026-09-25
+Last updated: 2026-10-21
+
+This file contains ``TestMQCClarificationDiscrimination``, three cases on the model
+under test. It must ask for clarification when the input cannot be answered as asked
+(``134000``), must not ask when nothing is missing (``134001``), and, handed data below
+a stated threshold, must warn and name the threshold that failed (``134002``).
+
+**These run in the graded ``evaluator`` gate**, once per engine and in the band job
+for each case's priority. Each case sends its shipped task and rule pair through
+``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure
+is a finding about the model, and the case's priority decides whether it blocks the
+band. ``134000`` is foundational, so its failure skips the other two.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and
 section 9.6.
 
 **A second ablation pair, running the opposite way from the first.** The

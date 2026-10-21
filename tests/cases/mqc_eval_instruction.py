@@ -1,9 +1,25 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether the model does what the instruction said, in the shape it said.
+"""Graded cases for whether the model does what the instruction said, in its shape.
 
-Covers ``MQC_EVL_EVAL_134300`` through ``134308``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
+Created: 2026-09-25
+Last updated: 2026-10-21
+
+This file contains nine instruction-following cases on the model under test.
+``TestMQCDeclaredFormat`` checks it obeys a declared output format and that a violation
+is recorded; ``TestMQCQuantitativeCeilings`` that it keeps bullet and word ceilings and
+writes sentences that start with a capital and carry a subject and verb; and
+``TestMQCOrderingAndProhibition`` that it orders measurables first, avoids a prohibited
+glyph, and keeps every constraint when several are combined.
+
+**These run in the graded ``evaluator`` gate**, once per engine and in the band job
+for each case's priority. Each case sends its shipped task and rule pair through
+``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure
+is a finding about the model, and the case's priority decides whether it blocks the
+band.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and
 section 9.5.
 
 **This family can be judged from the answer alone**, which is what separates it

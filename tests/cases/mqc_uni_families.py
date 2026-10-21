@@ -1,20 +1,30 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Every rule set declares its evaluation family, and the matrix agrees.
+"""Unit preconditions for evaluation families, live workflow steps and the findings register.
 
-Covers ``MQC_CAS_UNI_115414`` and ``115415``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 8.1 and designed in
-harness ``harness_test_taxonomy.md`` sections 11.7 and 11.8, and the workflow
-checks ``115418``, ``115743`` and ``115744``, designed in harness
-``harness_ci_pipeline.md`` sections 8.2, 8.5 and 8.5.4.
+Created: 2026-10-04
+Last updated: 2026-10-21
+
+This file contains seven cases. ``TestMQCDeclaredFamilies`` checks every rule set
+declares a registered evaluation family and that the matrix and ``tools/case_index.py``
+agree with the corpus about it, then that every live workflow step carries a spend
+ceiling, names only rostered engines and has each engine's key. ``TestMQCFindingsRegister``
+checks ``tools/findings.py`` records a finding and refuses a run that measured nothing.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band. A failure
+is an instrument defect, **not a model finding**: the run exits 3 and no graded case
+executes, and the module carries no priority marker, per harness ``framework-rules.md``
+section 3.3.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.1, the
+harness ``harness_test_taxonomy.md`` sections 11.7 and 11.8, and, for the
+workflow checks, the harness ``harness_ci_pipeline.md`` sections 8.2, 8.5 and
+8.5.4.
 
 **Written 2026-10-04, when the declaration became possible.** Until then
 nothing outside the matrix said what family a case belonged to, so the one
 check written to compare the two had no second source and abstained silently.
 Harness section 11.4.2 carries what that cost.
-
-A failure here is **not a model finding**, so the module carries no priority marker, per
-harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -46,12 +56,8 @@ from cmn.workflow_standards import (
     unoffered_credentials,
 )
 from execution.adapters.registry import adapter_for
-from tests.cases.graded_support import (
-    case_families_from_suite,
-    case_rules_from_suite,
-    engine_roster,
-    shipped_corpus,
-)
+from tests.cases.graded_support import engine_roster, shipped_corpus
+from tests.cases.suite_support import case_families_from_suite, case_rules_from_suite
 from tools import case_index
 from tools import findings as findings_tool
 

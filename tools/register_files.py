@@ -1,13 +1,25 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Where a finding's record lives: the bug file, and the holding list.
+"""The findings file writer, which puts each finding in the bug file or the holding list.
+
+Created: 2026-10-12
+Last updated: 2026-10-21
+
+This file contains ``register_path`` and ``holding_path``, which name an
+engine's bug file and holding list, ``partition`` and ``to_file``, which split
+a register into what is fileable and what waits, ``refuse_empty_run``, which
+refuses a merge from a run that measured too little, and ``write_register``,
+which writes both files from one merged register.
+
+``tools.findings`` calls it after reading a run, to refuse or write, and
+``tools.ticket_report`` calls ``to_file`` to choose the findings that get a
+ticket. Which file an entry lands in therefore decides whether it is filed with
+a vendor.
 
 Specified by ``docs/design/consumer_ci.md`` section 9.4.8.
 
 **Split from ``findings.py`` on 2026-10-12**, which this subject took to 903
-lines against the nine-hundred-line runway ceiling. That module is about
-observing a run and merging what it saw; this one is about which file an entry
-belongs in once the merge has decided.
+lines against the nine-hundred-line runway ceiling.
 
 **A bug file is what gets filed**, so it carries only what the latest run
 reproduced, whatever that finding's failure rate. Everything else waits in

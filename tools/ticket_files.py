@@ -2,6 +2,18 @@
 # SPDX-License-Identifier: MIT
 """One ticket file per filed finding, for submitting each to its vendor alone.
 
+Created: 2026-10-15
+Last updated: 2026-10-21
+
+This file contains ``page_name`` and ``ticket_name``, which name an engine's
+findings page and one finding's ticket file, and ``write_tickets``, which
+writes a ticket per filed finding and removes generated tickets no longer filed.
+A ticket without the generated mark on its first line is never removed.
+
+``tools.ticket_report`` calls it after building each engine's page, and
+``tools.finding_evidence`` uses ``page_name`` to find the page it reads. The
+files written are what a person submits to a vendor, one finding each.
+
 Design: ``docs/design/consumer_ci.md`` section 9.5.5.2.
 """
 

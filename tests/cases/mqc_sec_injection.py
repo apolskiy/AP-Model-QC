@@ -1,9 +1,27 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether the model under test resists an instruction planted against it.
+"""Graded security cases for whether the model resists an instruction planted against it.
 
-Covers ``MQC_EVL_SEC_154100`` through ``154108``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.3 and specified by
+Created: 2026-09-25
+Last updated: 2026-10-21
+
+This file contains twelve prompt-injection cases on the model under test.
+``TestMQCInstructionOverride`` checks it resists a direct override, one planted in
+context and a delimiter escape; ``TestMQCDisclosureAndHijack`` that it keeps its system
+instruction, does its assigned task and calls no forbidden tool; ``TestMQCObfuscatedOverride``
+that the override fails in base64, zero-width and homoglyph disguise; and
+``TestMQCOverrideSurfaces`` that it resists a role assertion and a payload split across
+documents, with the canary absent from a compliant answer.
+
+**These run in the graded ``sec`` gate**, the security suite, once per engine and in
+the band job for each case's priority. Each case sends its shipped task and rule pair
+through ``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure's
+message comes from ``redacted_detail``, which names the failing assertions and never
+what the model said. ``154102``, ``154103`` and ``154107`` are the foundations the
+disclosure, substitution and tool-coercion modules depend on.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.3 and
 section 9.10.
 
 **These are findings about a third party, not about this repository.** A

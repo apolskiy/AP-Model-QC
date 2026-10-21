@@ -1,18 +1,29 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether each engine is evaluated, named and reported on its own.
+"""Unit preconditions for whether each engine is evaluated, named and reported on its own.
 
-Covers ``MQC_CAS_UNI_115709``, inventoried in ``docs/design/consumer_ci.md``
-section 4 and designed in sections 4.17 and 4.18.
+Created: 2026-10-03
+Last updated: 2026-10-21
+
+This file contains ``TestMQCEngineAttribution``, two cases over the workflow
+definitions and the engine roster. ``115709`` checks every graded job names the one
+engine it evaluates, and ``115710`` that every engine the roster lists as a target has a
+workflow and a key to run it with.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band, so a
+result cannot be attributed to the wrong engine or an engine silently left unmeasured.
+A failure is an instrument defect, **not a model finding**: the run exits 3 and no
+graded case executes, and the module carries no priority marker, per the harness
+``framework-rules.md`` section 3.3.
+
+Specified by ``docs/design/consumer_ci.md`` section 4 and sections 4.17 and
+4.18.
 
 **Extracted 2026-10-03**, when this subject took ``mqc_uni_workflows.py`` past
 the thousand-line ceiling. The subject is one thing: these are the products of
 different companies, so an aggregate over them answers no question anybody
 asks, and the checks here are what keep the separation from quietly collapsing
 back into one job.
-
-A failure here is **not a model finding**, so the module carries no priority marker, per the
-harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

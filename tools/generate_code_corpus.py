@@ -1,6 +1,18 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Generate the code comprehension task file from the guarded excerpts.
+"""The code corpus generator, which writes the code comprehension task file from its excerpts.
+
+Created: 2026-09-24
+Last updated: 2026-10-21
+
+This file contains ``excerpt``, which reads one guarded fixture from
+``tests/fixtures/excerpts/``, ``build``, which returns the whole task file with
+each excerpt inlined into its task, and ``main``, which writes the result to
+``data/tasks/code_comprehension.yaml``.
+
+It is run by hand after an excerpt or a task in it changes. The file it writes
+is the input the code comprehension cases send to a model, so what a model is
+asked about is exactly the code the excerpt guards execute.
 
 Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.11.
 

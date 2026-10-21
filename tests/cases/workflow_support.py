@@ -1,6 +1,19 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Reading the workflow definitions, for the cases that check them.
+"""Support code reading the CI workflow definitions, for the cases that check them.
+
+Created: 2026-10-03
+Last updated: 2026-10-21
+
+This file contains ``load``, ``jobs`` and ``needs``, which parse a workflow and its job
+graph; ``run_lines``, which returns each step's run body, following a local ``uses:``;
+``selects_a_graded_marker`` and ``graded_invocations``, which find the pytest calls that
+run graded cases; ``floor_conditions`` and ``band_action_inputs``, which read the shared
+band definition; and ``cases_by_priority`` and ``repository_root``.
+
+**``mqc_uni_workflows.py``, ``mqc_uni_engine_jobs.py`` and ``mqc_uni_band_gating.py``
+import it**, all in the ``unit`` precondition gate, so every check on a workflow reads
+the workflow one way.
 
 Extracted 2026-10-03, when the engine-separation cases took
 ``mqc_uni_workflows.py`` past the thousand-line ceiling and two modules needed

@@ -2,28 +2,48 @@
 # SPDX-License-Identifier: MIT
 """What each recorded observation holds, and how its checks and judgement came out.
 
-Specified by ``docs/design/consumer_ci.md`` sections 9.5 and 9.5.5.4.
+Created: 2026-10-16
+Last updated: 2026-10-21
 
-Reads the replay fixtures for one engine, task and rule: the request as sent,
-every response with its text and its tool calls, the recorded judgements, and
-the outcome of replaying the rule's assertions and tool expectation against
-each observation. ``tools.ticket_report`` renders what this returns.
+This file reads the replay fixtures for one engine, task and rule.
+``recorded_request`` returns the request as sent, ``recorded_responses`` and
+``recorded_observations`` every response with its text and tool calls,
+``recorded_judgements`` the stored judge replies and ``judge_prompts`` what each
+judge received. ``observation_outcomes`` replays the harness screen, the rule's
+assertions and its tool expectation against each observation.
+
+``tools.ticket_report`` calls these while building a finding's section and
+renders what they return as the ticket's request, responses and per-observation
+labels. Nothing is sent to a model, so a ticket shows exactly what the run saw.
+
+Specified by ``docs/design/consumer_ci.md`` sections 9.5 and 9.5.5.4.
 """
 
 import json
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Final, Optional
 
 from evaluation.assertions import run_assertions
+from evaluation.judge import JudgeBinding
+from evaluation.pipeline import (
+    ObservationContext, evaluate_observation, observation_judge_request,
+)
 from evaluation.tool_compliance import evaluate_tool_compliance
 from execution.normalize import ToolCall
-from tests.cases.graded_support import case_for
+from tests.cases.graded_support import case_for, task_material
+
+# THE NAME A SCREEN STOP IS REPORTED UNDER, read by `tools.ticket_reasons`.
+_SCREEN_CHECK: Final[str] = "A_HARNESS_SCREEN"
 
 
 def observation_outcomes(
     task_id: str, rule_id: str, recordings: list[dict[str, Any]]
 ) -> list[tuple[int, bool, str]]:
-    """Return each observation's outcome, by replaying its assertions and tool checks.
+    """Return each observation's outcome, by replaying the screen, its assertions and tool checks.
+
+    **The harness screen decides first**, as it does in the run: an observation
+    it stopped fails as ``A_HARNESS_SCREEN`` and its checks are not read
+    (``consumer_ci.md`` section 9.5.5.7).
 
     **The checks are re-run rather than read from a report.** They are pure
     functions of the recorded text and calls, so this is deterministic, needs
@@ -62,8 +82,13 @@ def observation_outcomes(
             for position, call in enumerate(response.get("tool_calls") or ())
             if isinstance(call, dict)
         )
+        text = str(response.get("text") or "")
+        stopped = _screen_stop(case, index, text)
+        if stopped:
+            outcomes.append((index, False, stopped))
+            continue
         results = run_assertions(
-            case.golden_rules.assertions, str(response.get("text") or "")
+            case.golden_rules.assertions, text
         ) + evaluate_tool_compliance(
             calls, getattr(case.golden_rules, "tool_expectation", None), offered
         )
@@ -74,6 +99,93 @@ def observation_outcomes(
         ]
         outcomes.append((index, not failures, "; ".join(failures)))
     return outcomes
+
+
+def _screen_stop(case: Any, index: int, text: str) -> str:
+    """Return what the harness screen stopped an observation on, or nothing.
+
+    **The run's own decision**, from the harness evaluation with no judge
+    bound, so the exemption for a rejected report is the one the run applied
+    (``consumer_ci.md`` section 9.5.5.7).
+
+    Args:
+        case (Any): The evaluation case.
+        index (int): The observation's index.
+        text (str): The recorded response.
+
+    Returns:
+        str: The failure as ``A_HARNESS_SCREEN (QC_SEC_INJECTION_ATTEMPT): ...``
+        naming each vector and what it matched, or empty when the screen let it
+        through.
+    """
+    screen = evaluate_observation(_context(case, index, text), JudgeBinding()).screen
+    if not screen.aborts:
+        return ""
+    matched = ", ".join(
+        f"{finding.vector} matched '{finding.excerpt}'".replace(";", ",")
+        for finding in screen.findings
+    )
+    return f"{_SCREEN_CHECK} ({screen.taxonomy_code}): {matched}"
+
+
+def _context(case: Any, index: int, text: str) -> ObservationContext:
+    """Return one recorded observation as the run evaluated it.
+
+    Args:
+        case (Any): The evaluation case.
+        index (int): The observation's index.
+        text (str): The recorded response.
+
+    Returns:
+        ObservationContext: The context the pipeline is given.
+    """
+    return ObservationContext(
+        case_id=case.case_id,
+        rules=case.golden_rules,
+        material=task_material(case.task, text),
+        declared_adversarial=case.task.contains_adversarial_content,
+        observation_index=index,
+    )
+
+
+def judge_prompts(
+    task_id: str, rule_id: str, recordings: list[dict[str, Any]],
+    judgements: list[Optional[dict[str, Any]]],
+) -> list[str]:
+    """Return the prompt each judged observation's judge received, empty where none was.
+
+    The prompt its recording stored, or the one the harness composes from the
+    recorded response for a recording made before recordings stored one
+    (``consumer_ci.md`` section 9.5.5.8).
+
+    Args:
+        task_id (str): The task identifier.
+        rule_id (str): The rule set identifier.
+        recordings (list): Each recorded observation's response, as stored.
+        judgements (list): Each observation's recorded judgement, None where
+            the judge never saw it.
+
+    Returns:
+        list[str]: One prompt per observation, in order.
+    """
+    try:
+        case = case_for(task_id, rule_id)
+    except (KeyError, ValueError):
+        case = None
+    prompts: list[str] = []
+    for index, response in enumerate(recordings):
+        judgement = judgements[index] if index < len(judgements) else None
+        if judgement is None:
+            prompts.append("")
+        elif judgement.get("prompt"):
+            prompts.append(str(judgement["prompt"]))
+        elif case is not None and case.golden_rules.rubric is not None:
+            prompts.append(observation_judge_request(
+                _context(case, index, str(response.get("text") or ""))
+            ).rendered())
+        else:
+            prompts.append("")
+    return prompts
 
 
 def recorded_responses(

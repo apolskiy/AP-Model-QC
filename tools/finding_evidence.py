@@ -1,14 +1,28 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""One finding's evidence, and the questions that decide whether it is ours.
+"""The finding review tool, which prints one finding's evidence for a person to judge.
+
+Created: 2026-10-12
+Last updated: 2026-10-21
+
+This file contains ``evidence``, which cuts one finding's section out of an
+engine's generated ticket page, ``register_rows``, which reads an engine's
+findings register, ``other_engines``, which reports how every other engine
+stands on the same case, and ``main``, which prints the evidence, the other
+engines and the review questions, or with ``--open`` lists the open findings.
+
+It is run by hand after ``tools.ticket_report`` has written the pages, when a
+reviewer decides whether a finding is the model's defect or our assertion's.
+The answer is acted on by a person, who withdraws a finding with its reason or
+leaves it to be filed.
 
 Specified by ``docs/design/consumer_ci.md`` section 9.5.4.
 
 **Reading a ticket page end to end is the wrong unit of work.** A page carries
-every finding for an engine and the decision is made one finding at a time: is
-this the model's defect, or our assertion's? This prints exactly one, drops the
-reproduction block a reader does not need in order to judge it, and ends with
-the questions that have decided every withdrawal so far.
+every finding for an engine and the decision is made one finding at a time.
+This prints exactly one, drops the reproduction block a reader does not need in
+order to judge it, and ends with the questions that have decided every
+withdrawal so far.
 
 **Fifteen findings have been withdrawn and every one was ours.** None fell to
 inspiration; each fell to one of the questions below, and leaving them implicit

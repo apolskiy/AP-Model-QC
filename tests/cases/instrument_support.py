@@ -1,13 +1,26 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""The apparatus the instrument cases assert against, doubles included.
+"""Support code for the instrument preconditions, the readers and doubles they assert against.
+
+Created: 2026-10-05
+Last updated: 2026-10-21
+
+This file contains readers of what the designs and suite declare, ``designed_foundations``
+and ``declared_foundations`` for the security foundations, ``named_pairs_in``,
+``stripped`` and ``recorded_text``; the configuration doubles ``SimulatedGradedConfig`` and
+``SimulatedDispatchConfig``, which stand in for pytest's config on the graded and dispatch
+paths; and
+the builders ``dispatch_outcome`` and ``checked_result``.
+
+**It is imported by ``mqc_uni_instrument.py`` and ``mqc_uni_instrument_audit.py``**,
+both in the ``unit`` precondition gate. It is not collected itself, as its name carries
+no ``mqc_`` prefix.
 
 Specified by the harness ``harness_test_taxonomy.md`` section 13.
 
-**Extracted 2026-10-05**, when the case module stood at 939 lines. Two kinds of
-thing live here: readers that answer what the designs and the suite declare,
-and two configuration doubles the graded and dispatch paths are driven with.
-A double is apparatus by definition.
+**Extracted 2026-10-05**, when the case module stood at 939 lines. The doubles
+live here rather than in a case module because a double is apparatus by
+definition.
 
 **Public names, deliberately.** A support module is an interface, and a leading
 underscore on something another module imports says the opposite of what is
@@ -181,20 +194,22 @@ def recorded_text(fixture: Path) -> str:
     return max(found, key=len) if found else ""
 
 
-class FakeGradedConfig:
+class SimulatedGradedConfig:
     """Enough of pytest's config for the graded helpers to read a run.
 
     Built here rather than through a pytest run because the question is what
     the helpers conclude from a given command line, which needs no session.
     """
 
-    def __init__(self, judge_engine: str, observations: int = 0) -> None:
-        """Hold the flags these two cases vary, with the rest at their defaults.
+    def __init__(self, judge_engine: str, observations: int = 0, *, judge_mode: str = "") -> None:
+        """Hold the flags these cases vary, with the rest at their defaults.
 
         Args:
             judge_engine (str): What ``--judge-engine`` was given.
             observations (int): What ``--observations`` was given, zero for
                 unnamed.
+            judge_mode (str): What ``--judge-mode`` was given, empty to follow
+                ``--mode``.
 
         Returns:
             None
@@ -202,7 +217,7 @@ class FakeGradedConfig:
         self._values: dict[str, Any] = {
             "--engine": "gemini",
             "--mode": "replay",
-            "--judge-mode": "",
+            "--judge-mode": judge_mode,
             "--judge-engine": judge_engine,
             "--observations": observations,
             "--keep-connection": False,
@@ -247,7 +262,7 @@ def dispatch_outcome(model: str, mode: str = "live") -> Any:
     )
 
 
-class FakeDispatchConfig:
+class SimulatedDispatchConfig:
     """The flags ``dispatch_session`` reads, with the rest at their defaults."""
 
     def __init__(self, engine: str = "gemini", ceiling: float = 0.0) -> None:

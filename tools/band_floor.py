@@ -1,6 +1,20 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Decide whether a lower-priority band cleared its pass floor.
+"""The band check, which decides from a band's JUnit XML whether that band passed.
+
+Created: 2026-10-01
+Last updated: 2026-10-21
+
+This file contains ``assess``, which compares a lower-priority band's pass rate
+against the project's pass floor, ``assess_blocking``, which requires a release
+blocking band to have measured and passed every case it selected, and ``main``,
+the command line both run behind. Skips are explained by cause, and a skip the
+engine's quarantine file or a recorded dispensation excuses is counted apart.
+
+The band composite action runs it after each band's pytest job, with
+``--blocking --engine`` for P0 and P1 and without them for the lower band. Its
+exit status is the band job's outcome, ``0`` cleared, ``1`` failed and ``4``
+refused, so it decides whether a band reads green in the run.
 
 Specified by ``docs/design/consumer_ci.md`` section 3.12.2.
 

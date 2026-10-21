@@ -1,10 +1,23 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""The matrix checked against the two things that are not the matrix.
+"""Unit preconditions checking the traceability matrix against the test plan and the suite.
 
-Covers ``MQC_CAS_UNI_115600``, ``115601`` and ``115602``, inventoried in
-``docs/design/consumer_ci.md`` section 3.2. The checks themselves are the
-harness's, specified in ``cmn_verdict_and_cli.md`` section 6.
+Created: 2026-10-01
+Last updated: 2026-10-21
+
+This file contains ``TestMQCMatrixIntegrity``, three cases on ``rtm_model.csv``, run
+through the harness's traceability checks. They report a requirement traced but stated
+in no plan, a matrix row naming a test the suite lacks, and a collected test named in
+no matrix row.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band, so every
+graded result traces to a requirement and every requirement to a case that runs. A
+failure is an instrument defect, **not a model finding**: the run exits 3 and no graded
+case executes, and the module carries no priority marker, per the harness
+``framework-rules.md`` section 3.3.
+
+Specified by ``docs/design/consumer_ci.md`` section 3.2. The checks themselves
+are the harness's, specified in ``cmn_verdict_and_cli.md`` section 6.
 
 **Three directions, and each one was blind to the others.** `115600` compares
 the matrix against the test plan, `115601` the matrix against the suite, and
@@ -16,9 +29,6 @@ past the thousand-line ceiling. Matrix integrity is not what that module is
 about: it is about which harness this repository runs against. The harness keeps
 these checks in a file of this name too, which is the vocabulary rule applied to
 a filename.
-
-A failure here is **not a model finding**, so the module carries no priority marker, per the
-harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

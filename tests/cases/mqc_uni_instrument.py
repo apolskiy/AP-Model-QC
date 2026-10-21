@@ -1,11 +1,27 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether the instrument measures the claim each case name makes.
+"""Unit preconditions for whether the instrument measures the claim each case name makes.
 
-Covers ``MQC_CAS_UNI_115400``, ``115401`` and ``115402``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 8.1, and
-``MQC_CAS_UNI_115406`` and ``115407``, inventoried in ``consumer_ci.md``
-section 4 and designed in sections 4.13 and 4.13.1.
+Created: 2026-10-01
+Last updated: 2026-10-21
+
+This file contains thirteen cases. ``TestMQCCasesMeasureTheirOwnClaim`` checks no task
+and rule pair is bound by two graded cases, no assertion turns on trailing whitespace, a
+recorded refusal states its reason, security foundations and vectors are declared as the
+design states them, and every inventory row is implemented. ``TestMQCNamedInstrument``
+checks the judge engine and observation count a run names are the ones it uses;
+``TestMQCRunLevelSession`` that one dispatch session serves a run and records its
+models; and ``TestMQCQuarantineTool`` that ``tools/quarantine.py`` writes what
+reconciling decided and refuses a date it cannot parse.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band, so a
+graded red names the claim that failed and the instrument that measured it. A failure
+is an instrument defect, **not a model finding**: the run exits 3 and no graded case
+executes, and the module carries no priority marker, per the harness
+``framework-rules.md`` section 3.3.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.1 and
+``docs/design/consumer_ci.md`` sections 4, 4.13 and 4.13.1.
 
 **Three failures of one kind, found on one day.** Four cases bound one task and
 rule pair and asserted the conjunction of its four assertions, so a red named
@@ -18,9 +34,6 @@ been filed against a vendor.
 thousand-line ceiling. The subject is not the corpus: these ask whether a result
 means what it says, which is a property of the measuring apparatus rather than
 of the data it measures.
-
-A failure here is **not a model finding**, so the module carries no priority marker, per the
-harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -72,8 +85,8 @@ from tests.cases.graded_support import (
 )
 
 from tests.cases.instrument_support import (
-    FakeDispatchConfig,
-    FakeGradedConfig,
+    SimulatedDispatchConfig,
+    SimulatedGradedConfig,
     declared_foundations,
     designed_foundations,
     dispatch_outcome,
@@ -550,14 +563,14 @@ class TestMQCNamedInstrument:
         Returns:
             None
         """
-        configured = judge_binding(FakeGradedConfig(""), "gemini")
+        configured = judge_binding(SimulatedGradedConfig(""), "gemini")
         assert configured.judge_engine == "gemini", (
             "an unnamed judge did not resolve to the configured one, so this "
             "case cannot tell an override from the default"
         )
 
         for named in ("openai", "claude"):
-            binding = judge_binding(FakeGradedConfig(named), "gemini")
+            binding = judge_binding(SimulatedGradedConfig(named), "gemini")
 
             assert binding.judge_engine == named, (
                 f"--judge-engine {named} graded with "
@@ -583,10 +596,10 @@ class TestMQCNamedInstrument:
         Returns:
             None
         """
-        assert observation_count(FakeGradedConfig("", observations=0)) >= 1
+        assert observation_count(SimulatedGradedConfig("", observations=0)) >= 1
 
         for named in (1, 2, 5):
-            counted = observation_count(FakeGradedConfig("", observations=named))
+            counted = observation_count(SimulatedGradedConfig("", observations=named))
 
             assert counted == named, (
                 f"--observations {named} dispatched {counted}, so the run "
@@ -622,7 +635,7 @@ class TestMQCRunLevelSession:
         Returns:
             None
         """
-        config = FakeDispatchConfig(ceiling=5.0)
+        config = SimulatedDispatchConfig(ceiling=5.0)
         first = dispatch_session(config)
 
         assert dispatch_session(config) is first, (
@@ -640,12 +653,12 @@ class TestMQCRunLevelSession:
 
         # A DIFFERENT CEILING IS A DIFFERENT SESSION, so one run's budget does
         # not silently govern another's.
-        other = dispatch_session(FakeDispatchConfig(ceiling=1.0))
+        other = dispatch_session(SimulatedDispatchConfig(ceiling=1.0))
         assert other is not first
         assert other.max_spend == 1.0
 
         # AND SO IS A DIFFERENT ENGINE, which paces on its own roster entry.
-        assert dispatch_session(FakeDispatchConfig(engine="openai")) is not first
+        assert dispatch_session(SimulatedDispatchConfig(engine="openai")) is not first
 
     @allure.story("The session reports what it served")
     def MQC_CAS_UNI_115410_the_session_records_the_models_it_served(self) -> None:

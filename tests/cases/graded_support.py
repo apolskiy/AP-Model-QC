@@ -1,15 +1,26 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""What every graded case does, written once.
+"""Support code that dispatches and evaluates a graded case, written once for every case.
 
-**Not collected.** The filename carries no ``mqc_`` prefix, so ``pytest.ini``
-never sees it, which is the same device ``provider_doubles.py`` uses in the
-harness. A graded case is a test; the machinery underneath one is not.
+Created: 2026-09-25
+Last updated: 2026-10-21
 
-Every graded case is the same four steps against different data: find its pair
-in the shipped corpus, dispatch it, evaluate what came back, and assert the
-verdict. **Writing that once means a case reads as its own claim** rather than
-as sixty repetitions of a loop.
+This file contains ``observe``, which dispatches one shipped case, evaluates the
+response with the harness's ``evaluate_observation`` and records it, and
+``observe_repeatedly``, which does so ``observation_count`` times. Beside them sit the
+corpus readers (``shipped_corpus``, ``shipped_cases``, ``case_for``, ``task_material``),
+the run's plans (``dispatch_plan``, ``dispatch_session``, ``judgement_plan``,
+``judge_binding``), ``quarantined_cases``, and the suite readers
+``case_rules_from_suite`` and ``case_families_from_suite``.
+
+**Every graded case calls ``observe_repeatedly``** and hands the results to
+``consistency_support``, which decides it, so **a case reads as its own claim** rather
+than as sixty repetitions of a loop. The readers also serve the ``mqc_uni_*``
+preconditions and the case index, quarantine and ticket scripts in ``tools/``, so all
+of them read the corpus one way.
+
+**Not collected**, as the filename carries no ``mqc_`` prefix, the same device
+``provider_doubles.py`` uses in the harness. A case is a test; its machinery is not.
 
 **Dispatch honours the run's mode.** ``--mode replay`` reads a recorded
 fixture and spends nothing; ``--mode live`` calls the provider, paced by the
@@ -17,7 +28,6 @@ spacing in ``config/engines.yaml``. Neither is chosen here: the invocation
 decides, and a case cannot quietly spend quota.
 """
 
-import ast
 import logging
 from datetime import date
 from functools import lru_cache
@@ -133,6 +143,26 @@ def engine_roster() -> dict[str, Any]:
         dict[str, Any]: Engine name to its configuration.
     """
     return load_engines(packaged_roster_path())
+
+
+def task_material(task: Any, candidate_output: str) -> UnauthoredMaterial:
+    """Return the material a response is evaluated against: the answer, the prompt, the documents.
+
+    Args:
+        task (Any): The task the response answered.
+        candidate_output (str): The response text.
+
+    Returns:
+        UnauthoredMaterial: What the pipeline screens and isolates.
+    """
+    return UnauthoredMaterial(
+        candidate_output=candidate_output,
+        task_instruction=task.user_prompt,
+        context_documents={
+            document.document_id: document.content
+            for document in task.context_documents
+        },
+    )
 
 
 def case_for(task_id: str, rule_id: str) -> Any:
@@ -366,6 +396,15 @@ def judge_binding(config: Any, candidate_engine: str) -> Any:
     Returns:
         Any: The :class:`JudgeBinding`.
     """
+    # THE JUDGE WITHHELD ON REQUEST, `--judge-mode off`, in a debug run that
+    # checks the screen and the assertions alone. Decided before a plan is
+    # built, since a plan names live or replay; no channel is built, so no
+    # judge is reached (harness `tier3_evaluation.md` section 5A.5.3).
+    requested = resolve_judge_mode(
+        config.getoption("--mode"), config.getoption("--judge-mode") or ""
+    )
+    if requested == _JUDGE_OFF:
+        return JudgeBinding(candidate_engine=candidate_engine, withheld=True)
     plan = judgement_plan(config, candidate_engine)
     # THE NAMED JUDGE, NOT A HARDCODED EMPTY STRING. This passed "" and the
     # roster's judge graded every run, while the flag is recorded, so a run
@@ -495,6 +534,12 @@ def _measured_fields(case: Any, outcome: Any, result: Any, index: int) -> dict[s
             code=codes[0] if codes else "QC_HARNESS_FIXTURE_MISSING",
         )
 
+    # A JUDGE WITHHELD ON REQUEST is not a measurement either, and never a pass:
+    # the screen and the assertions held and the judged criteria were not
+    # checked, so the observation is a skip that leaves the rate.
+    if getattr(result, "judge_skipped_reason", "") == _UNJUDGED:
+        return _skip_fields(case, outcome, index, reason=_UNJUDGED, code=_WITHHELD_CODE)
+
     return {
         **_declared_fields(case, index),
         "outcome": "pass" if result.passed else "fail",
@@ -516,6 +561,12 @@ def _measured_fields(case: Any, outcome: Any, result: Any, index: int) -> dict[s
 # pipeline sets it where the replay store held no judgement for an observation
 # (harness `tier3_evaluation.md` section 6.5).
 _JUDGEMENT_UNAVAILABLE: Final[str] = "judgement_unavailable"
+
+# THE JUDGE MODE THAT WITHHOLDS THE JUDGE, and the reason and code an observation
+# it left unjudged carries (harness `harness_test_taxonomy.md` section 7.4.1.4).
+_JUDGE_OFF: Final[str] = "off"
+_UNJUDGED: Final[str] = "unjudged"
+_WITHHELD_CODE: Final[str] = "QC_HARNESS_JUDGE_WITHHELD"
 
 
 def observe(
@@ -621,14 +672,7 @@ def observe(
     context = ObservationContext(
         case_id=case.case_id,
         rules=case.golden_rules,
-        material=UnauthoredMaterial(
-            candidate_output=outcome.response.text if outcome.response else "",
-            task_instruction=task.user_prompt,
-            context_documents={
-                document.document_id: document.content
-                for document in task.context_documents
-            },
-        ),
+        material=task_material(task, outcome.response.text if outcome.response else ""),
         declared_adversarial=task.contains_adversarial_content,
         observation_index=observation_index,
         produced_output=bool(
@@ -668,6 +712,7 @@ def observe(
     record_observation(
         assemble_observation(_measured_fields(case, outcome, result, observation_index), {}),
         outcome,
+        result,
     )
     return result
 
@@ -785,87 +830,3 @@ def observe_repeatedly(
         case_for(task_id, rule_id).case_id, results, configured=configured
     )
     return results
-
-
-# A CASE'S DISPATCH CALL, whose second and third string arguments name the task
-# and the rule set it observes. Parsed rather than matched, because a regex over
-# source lines also matches a docstring quoting the call.
-_OBSERVERS: Final[frozenset[str]] = frozenset({"observe", "observe_repeatedly"})
-
-
-def case_rules_from_suite(root: Path) -> dict[str, tuple[str, str]]:
-    """Return the task and rule set each graded case dispatches.
-
-    **The link nothing declared.** A case names its task and rule in the
-    dispatch call it makes, and that is the only place the pairing exists; the
-    matrix knows requirements and the corpus knows families, and neither knows
-    which case observes which pair.
-
-    Parsed rather than matched, because a regex over source lines also matches
-    a docstring quoting the call.
-
-    Args:
-        root (Path): This repository's root.
-
-    Returns:
-        dict[str, tuple[str, str]]: Case name to its task and rule identifier.
-        **A case that dispatches nothing is absent** rather than defaulted: a
-        precondition performs no task.
-    """
-    tasks, rules = shipped_corpus()
-    known_tasks = {entry.task_id for entry in tasks}
-    known_rules = {entry.rule_id for entry in rules}
-
-    pairs: dict[str, tuple[str, str]] = {}
-    for source in sorted((root / "tests" / "cases").glob("*.py")):
-        tree = ast.parse(source.read_text(encoding="utf-8"))
-        for node in ast.walk(tree):
-            if not isinstance(node, ast.FunctionDef):
-                continue
-            task_id = rule_id = ""
-            for inner in ast.walk(node):
-                if not isinstance(inner, ast.Call):
-                    continue
-                called = inner.func
-                name = getattr(called, "id", None) or getattr(called, "attr", None)
-                if name not in _OBSERVERS:
-                    continue
-                for entry in inner.args:
-                    if not isinstance(entry, ast.Constant) or not isinstance(
-                        entry.value, str
-                    ):
-                        continue
-                    if entry.value in known_tasks:
-                        task_id = entry.value
-                    elif entry.value in known_rules:
-                        rule_id = entry.value
-            if task_id and rule_id:
-                pairs[node.name] = (task_id, rule_id)
-    return pairs
-
-
-def case_families_from_suite(root: Path) -> dict[str, str]:
-    """Return each graded case's primary evaluation family.
-
-    **The link a matrix check has been missing.** T5 compares a matrix row's
-    ``families`` against the families of the cases the row names, and it takes
-    that mapping as an argument; nothing could build one until a rule set
-    declared its families on 2026-10-04. Harness ``harness_test_taxonomy.md`` sections
-    11.4.2 and 11.8.3.
-
-    Args:
-        root (Path): This repository's root.
-
-    Returns:
-        dict[str, str]: Case name to its primary family, omitting a case whose
-        rule set declares none.
-    """
-    family_by_rule = {
-        rules.rule_id: rules.families[0]
-        for rules in shipped_corpus()[1] if rules.families
-    }
-    return {
-        case: family_by_rule[rule_id]
-        for case, (_, rule_id) in case_rules_from_suite(root).items()
-        if rule_id in family_by_rule
-    }

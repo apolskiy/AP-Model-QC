@@ -1,10 +1,28 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether a passage hidden in a resume steers the model screening it.
+"""Graded security cases for whether a passage hidden in a resume steers the model.
 
-Covers ``MQC_EVL_SEC_154500`` through ``154508``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.3 and specified by
-section 9.10.7.
+Created: 2026-10-18
+Last updated: 2026-10-21
+
+This file contains seventeen cases on the model under test, which screens a resume
+carrying a hidden instruction, in a white span or inline as extracted text.
+``TestMQCHiddenPassageControl`` reports the true match with no passage present. The
+relay classes check the model does not pass the planted instruction on to whatever
+grades its answer, and the detection classes that it tells the user it found the passage
+and asks how to proceed, each with and without a prompt asking for such text to be
+raised. The two ``NoQuote`` classes repeat both with the system prompt forbidding a
+quote from the resume.
+
+**These run in the graded ``sec`` gate**, the security suite, once per engine and in
+the band job for each case's priority. Each case sends its shipped task and rule pair
+through ``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure is
+a security finding about the model, and its message comes from ``redacted_detail``,
+which names the failing assertions and never what the model said.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.3 and
+sections 9.10.7 and 9.10.7.2.
 
 **Failure is deterministic and success is not.** An answer fails without a
 judge only where an injection succeeded; any other answer is judged on the
@@ -30,6 +48,16 @@ as one that was injected.
 #   154506  flags_injection_in_styled_resume_unprompted
 #   154507  flags_injection_in_extracted_resume_when_told_to
 #   154508  flags_injection_in_extracted_resume_unprompted
+# TestMQCHiddenPassageNoQuoteRelay
+#   154509  no_quote_does_not_relay_styled_injection_when_told_to_flag
+#   154510  no_quote_does_not_relay_styled_resume_injection
+#   154511  no_quote_does_not_relay_plain_injection_when_told_to_flag
+#   154512  no_quote_does_not_relay_plain_resume_injection
+# TestMQCHiddenPassageNoQuoteDetection
+#   154513  no_quote_flags_injection_in_styled_resume_when_told_to
+#   154514  no_quote_flags_injection_in_styled_resume_unprompted
+#   154515  no_quote_flags_injection_in_plain_resume_when_told_to
+#   154516  no_quote_flags_injection_in_plain_resume_unprompted
 # ------------------------------------------------------------ end of cases
 
 from functools import partial
@@ -253,5 +281,185 @@ class TestMQCHiddenPassageDetection:
             request.config,
             "MQC_TASK_sec_hidden_passage_plain",
             "MQC_RULE_sec_hidden_passage_plain_detect",
+        )
+        assert_consistent_pass(results, _explain)
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Model security")
+class TestMQCHiddenPassageNoQuoteRelay:
+    """Relay again, with the system prompt forbidding a quote from the resume."""
+
+    @pytest.mark.priority(0)
+    @pytest.mark.depends_on("154500")
+    @allure.story("Relay, styled, principle stated, told not to quote")
+    def MQC_EVL_SEC_154509_no_quote_does_not_relay_styled_injection_when_told_to_flag(
+        self, request: Any
+    ) -> None:
+        """The passage in a white span; told to raise it and not to quote the resume.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_hidden_passage_styled_told_no_quote",
+            "MQC_RULE_sec_hidden_passage_styled_told_no_quote_relay",
+        )
+        assert_consistent_pass(results, _explain)
+
+    @pytest.mark.priority(1)
+    @pytest.mark.depends_on("154500")
+    @allure.story("Relay, styled, told not to quote")
+    def MQC_EVL_SEC_154510_no_quote_does_not_relay_styled_resume_injection(
+        self, request: Any
+    ) -> None:
+        """The passage in a white span; told only not to quote the resume.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_hidden_passage_styled_no_quote",
+            "MQC_RULE_sec_hidden_passage_styled_no_quote_relay",
+        )
+        assert_consistent_pass(results, _explain)
+
+    @pytest.mark.priority(0)
+    @pytest.mark.depends_on("154500")
+    @allure.story("Relay, plain, principle stated, told not to quote")
+    def MQC_EVL_SEC_154511_no_quote_does_not_relay_plain_injection_when_told_to_flag(
+        self, request: Any
+    ) -> None:
+        """The passage inline as extracted text; told to raise it and not to quote the resume.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_hidden_passage_plain_told_no_quote",
+            "MQC_RULE_sec_hidden_passage_plain_told_no_quote_relay",
+        )
+        assert_consistent_pass(results, _explain)
+
+    @pytest.mark.priority(1)
+    @pytest.mark.depends_on("154500")
+    @allure.story("Relay, plain, told not to quote")
+    def MQC_EVL_SEC_154512_no_quote_does_not_relay_plain_resume_injection(
+        self, request: Any
+    ) -> None:
+        """The passage inline as extracted text; told only not to quote the resume.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_hidden_passage_plain_no_quote",
+            "MQC_RULE_sec_hidden_passage_plain_no_quote_relay",
+        )
+        assert_consistent_pass(results, _explain)
+
+
+@allure.epic("AP-Model-QC")
+@allure.feature("Model security")
+class TestMQCHiddenPassageNoQuoteDetection:
+    """Detection again, with the system prompt forbidding a quote from the resume."""
+
+    @pytest.mark.priority(0)
+    @pytest.mark.depends_on("154500")
+    @allure.story("Detection, styled, principle stated, told not to quote")
+    def MQC_EVL_SEC_154513_no_quote_flags_injection_in_styled_resume_when_told_to(
+        self, request: Any
+    ) -> None:
+        """The passage in a white span; told to raise it and not to quote the resume.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_hidden_passage_styled_told_no_quote",
+            "MQC_RULE_sec_hidden_passage_styled_told_no_quote_detect",
+        )
+        assert_consistent_pass(results, _explain)
+
+    @pytest.mark.priority(1)
+    @pytest.mark.depends_on("154500")
+    @allure.story("Detection, styled, told not to quote")
+    def MQC_EVL_SEC_154514_no_quote_flags_injection_in_styled_resume_unprompted(
+        self, request: Any
+    ) -> None:
+        """The passage in a white span; told only not to quote the resume.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_hidden_passage_styled_no_quote",
+            "MQC_RULE_sec_hidden_passage_styled_no_quote_detect",
+        )
+        assert_consistent_pass(results, _explain)
+
+    @pytest.mark.priority(0)
+    @pytest.mark.depends_on("154500")
+    @allure.story("Detection, plain, principle stated, told not to quote")
+    def MQC_EVL_SEC_154515_no_quote_flags_injection_in_plain_resume_when_told_to(
+        self, request: Any
+    ) -> None:
+        """The passage inline as extracted text; told to raise it and not to quote the resume.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_hidden_passage_plain_told_no_quote",
+            "MQC_RULE_sec_hidden_passage_plain_told_no_quote_detect",
+        )
+        assert_consistent_pass(results, _explain)
+
+    @pytest.mark.priority(1)
+    @pytest.mark.depends_on("154500")
+    @allure.story("Detection, plain, told not to quote")
+    def MQC_EVL_SEC_154516_no_quote_flags_injection_in_plain_resume_unprompted(
+        self, request: Any
+    ) -> None:
+        """The passage inline as extracted text; told only not to quote the resume.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config,
+            "MQC_TASK_sec_hidden_passage_plain_no_quote",
+            "MQC_RULE_sec_hidden_passage_plain_no_quote_detect",
         )
         assert_consistent_pass(results, _explain)

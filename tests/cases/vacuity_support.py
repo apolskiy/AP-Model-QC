@@ -1,6 +1,20 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether each assertion can fail at all, which is the opposite question.
+"""Support code that finds shipped assertions no input can make fail.
+
+Created: 2026-10-06
+Last updated: 2026-10-21
+
+This file contains ``unfailable_assertions``, which tries every assertion the corpus
+declares against violating inputs and reports each one none of them fails, with how it
+was reached. Its probes come from ``constructed_probe``, which builds a violating input
+from the assertion's kind, ``synthesised_matches``, which builds candidates from a
+pattern's literal fragments, and ``recorded_responses``, the recorded candidate answers.
+``shipped_assertions`` lists what is probed.
+
+**``MQC_CAS_UNI_115716`` in ``mqc_uni_instrument_audit.py`` calls it** in the ``unit``
+precondition gate, so a graded pass always comes from an assertion that could have
+failed. It is not collected itself, as its name carries no ``mqc_`` prefix.
 
 Specified by ``docs/design/consumer_ci.md`` section 9.4.3.
 

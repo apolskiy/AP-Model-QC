@@ -1,10 +1,20 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Records a graded case's steps into Allure and the log.
+"""Support code that records a graded case's steps into Allure and the log.
 
-One step per dispatch, then the escalation steps not taken, then the
-comparison. The harness computes every step (``cmn.steps``); this module writes
-them and decides nothing.
+Created: 2026-10-16
+Last updated: 2026-10-21
+
+This file contains ``record_observation_step``, which writes the step one observation
+is, with its pipeline phases nested beneath it, and ``record_remaining_steps``, which
+writes the steps after the observations, the escalation not taken and then the
+comparison.
+
+**``graded_support`` calls both** as each graded case is observed, so every case's
+Allure report and log carry one step per dispatch, then the escalation steps not taken,
+then the comparison. ``mqc_uni_instrument_audit.py`` asserts the calls are made. The
+harness computes every step (``cmn.steps``); this module writes them and decides
+nothing.
 
 Design: ``consumer_ci.md`` section 9.4.3.3, implementing harness
 ``harness_test_taxonomy.md`` section 8.2.2.

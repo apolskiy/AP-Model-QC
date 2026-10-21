@@ -1,16 +1,33 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Grounding again, in the code domain, where the same defects look different.
+"""Graded cases for grounding in code, where the same defects look different.
 
-Covers ``MQC_EVL_EVAL_134100`` through ``134108``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
+Created: 2026-09-25
+Last updated: 2026-10-21
+
+This file contains twelve cases on the model under test, answering over code excerpts
+and tabular sources. ``TestMQCCodeFabrication`` checks it invents no API, behaviour or
+row the source lacks; ``TestMQCLiteralPreservation`` that it keeps literal values and
+stated thresholds while correcting; ``TestMQCVerifiableClaims`` that it states correctly
+where a syntax error is and what an excerpt computes; and ``TestMQCDefectAnalysis``
+that it diagnoses a defect's cause and states its remedy.
+
+**These run in the graded ``evaluator`` gate**, once per engine and in the band job
+for each case's priority. Each case sends its shipped task and rule pair through
+``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure
+is a finding about the model, and the case's priority decides whether it blocks the
+band.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and
 sections 9.9 and 8.11.
 
-**This family brings no requirements of its own.** These formulate
+**The first three classes bring no requirements of their own.** They formulate
 ``MQC_REQ_MDL_GND_0001``, ``0002`` and ``0004`` over code: a grounding
 requirement is domain-independent, and **the point of a second formulation is
-that the behaviour survives a change of domain**. Every case here therefore
+that the behaviour survives a change of domain**. Each of their cases therefore
 depends on the prose case that first established the requirement.
+``TestMQCDefectAnalysis`` carries ``MQC_REQ_MDL_DEF_0001`` to ``0003``.
 
 **The excerpts are inlined copies of guarded fixtures.** ``ContextDocument``
 carries inline content and has no file reference, so the corpus holds a second

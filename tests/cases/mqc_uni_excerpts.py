@@ -1,9 +1,22 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Preconditions guarding the code excerpts the graded cases assert against.
+"""Unit preconditions guarding the code excerpts the graded code cases assert against.
 
-Covers `MQC_CAS_UNI_115100` through `115104`, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 8.
+Created: 2026-09-23
+Last updated: 2026-10-21
+
+This file contains ``TestMQCCodeExcerptFixtures``, five cases over
+``tests/fixtures/excerpts``. They parse or execute each excerpt and check it still has
+the defect recorded for it, a syntax error at its recorded line, a wrong value, or every
+recorded settlement defect; that the two top-scorer excerpts are the same function; and
+that no excerpt is collected or linted as case code.
+
+**These run in the ``unit`` precondition gate**, ahead of the graded code family in
+``mqc_eval_code.py``, whose expectations rest on those defects. A failure is an
+instrument defect, **not a model finding**: the run exits 3 and no graded case executes,
+and the module carries no priority marker, per ``framework-rules.md`` section 3.3.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.
 
 **These were harness cases until the repository split.** They read files this
 repository owns, which worked only while both lived in one tree, and they failed
@@ -15,9 +28,6 @@ verdict.** Every graded case built on it would assert against an expectation
 that no longer holds, and nothing would raise. That is why the guards are
 preconditions rather than graded cases: a stale fixture is an instrument
 defect.
-
-A failure here is **not a model finding**, so the module carries no priority marker, per
-``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

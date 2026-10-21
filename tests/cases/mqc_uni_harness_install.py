@@ -1,9 +1,25 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""How this case set finds the harness, which is by install and not by path.
+"""Unit preconditions for how this case set reaches the installed harness, never by path.
 
-Covers ``MQC_CAS_UNI_115200`` and ``115201``, inventoried in
-``docs/design/consumer_ci.md`` section 4A.
+Created: 2026-09-28
+Last updated: 2026-10-21
+
+This file contains nine cases. ``TestMQCHarnessLocatedByInstall`` checks no file locates
+harness material by directory adjacency and that the engine roster resolves from the
+installed harness and names engines. ``TestMQCOptionsReachTheHarness`` checks the
+run's fill-gaps, candidate engine and spend ceiling reach the dispatch session and judge
+channel ``graded_support`` builds, and that a single disagreement dispatches two more
+observations. ``TestMQCBandFloor`` checks ``tools/band_floor.py`` judges a
+lower band against its floor, drops a skip from the denominator and refuses on an error.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band, so a
+graded run cannot read an empty roster or ignore an option it was given. A failure is
+an instrument defect, **not a model finding**: the run exits 3 and no graded case
+executes, and the module carries no priority marker, per the harness
+``framework-rules.md`` section 3.3.
+
+Specified by ``docs/design/consumer_ci.md`` section 4A.
 
 **Gate 4 failed in CI and could not fail on any developer's disk.** The roster
 was read from ``../AP-Harness-QC/config/engines.yaml``, true only where both
@@ -13,9 +29,6 @@ engine missing from a roster it never read.
 
 Separate from ``mqc_uni_harness_pin`` because the question differs: that module
 asks which harness commit may be used, this one asks where the harness is.
-
-A failure here is **not a model finding**, so the module carries no priority marker, per the
-harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

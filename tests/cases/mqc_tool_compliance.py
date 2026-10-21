@@ -1,9 +1,24 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether the model invoked what it was told to, and nothing it was not.
+"""Graded tool-use cases for whether the model calls what it was told to, and nothing else.
 
-Covers ``MQC_EVL_TOOL_144000`` through ``144007``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.2 and specified by
+Created: 2026-09-25
+Last updated: 2026-10-21
+
+This file contains eight cases on the model under test. ``TestMQCToolInvocation``
+checks it calls a required tool, avoids a forbidden one and has its call captured
+without execution; ``TestMQCToolArguments`` that its arguments conform to the tool's
+schema, a malformed set being a model finding; and
+``TestMQCToolSelection`` that it calls nothing when nothing is needed, picks the right
+tool among several, and never calls one it was not offered.
+
+**These run in the graded ``tool`` gate**, once per engine and in the band job for
+each case's priority. Each case sends its shipped task and rule pair through
+``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure is
+a finding about the model, and the case's priority decides whether it blocks the band.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.2 and
 section 9.11.
 
 **The finding is what the model invoked**, settled by the evaluator in

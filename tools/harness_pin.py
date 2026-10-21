@@ -1,6 +1,21 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Resolve which harness to run against, and refuse an unverified one.
+"""The harness resolver, which picks the harness commit CI installs and refuses an unverified one.
+
+Created: 2026-09-23
+Last updated: 2026-10-21
+
+This file contains ``resolve_pairing``, which reads ``config/harness_pin.yaml``
+and returns the harness ref paired with a branch of this repository,
+``head_commit``, which resolves that ref to a commit, ``assess_greenness``,
+which decides from the harness's workflow runs whether that commit passed,
+``await_verdict`` and ``follow_replaced``, which wait for a pending verdict and
+follow a commit that was replaced, and ``main``, the command line around them.
+
+The CI workflows run it in a resolve step before anything from the harness is
+installed, and it writes the resolved commit to the step outputs. Every later
+install step takes that commit, so a refusal stops a gated run before a single
+case executes against a harness no gate has seen.
 
 Specified by ``docs/design/consumer_ci.md``.
 

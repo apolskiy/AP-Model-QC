@@ -2,6 +2,17 @@
 # SPDX-License-Identifier: MIT
 """Write a dispatch input to the file the harness selection reads.
 
+Created: 2026-10-03
+Last updated: 2026-10-21
+
+This file contains ``main``, which reads the test identifiers from the
+``REQUESTED`` environment variable, split on commas and newlines, and writes
+them one per line to the file named by ``--out``. An empty input is refused.
+
+``debug-cases-on-demand.yml`` runs it with the identifiers typed into the
+workflow dispatch form, and the pytest step that follows passes the file as
+``--tests-file``, so the harness selects exactly those cases.
+
 Specified by ``docs/design/consumer_ci.md`` section 6.
 
 **This replaced a step that validated the entries itself and built a ``-k``

@@ -41,6 +41,7 @@ defect that ships.
 | Annotation presence | `cmn.code_standards.annotation_gaps` | One implementation, called with each root |
 | PEP 563 prohibited | `cmn.code_standards.future_annotation_imports` | As above |
 | SPDX header and identifier | `cmn.code_standards.header_problems` | As above, with each repository's licence |
+| Module docstring dates | `cmn.file_dates.file_date_problems` | As above; `tools/refresh_file_dates.py --root .` keeps them current |
 | Execution flags | `cmn.pytest_support.add_mqc_options` | One registry, two callers |
 
 `docs/design/consumer_ci.md` section 5 states the parity mechanism in full.

@@ -1,9 +1,21 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Unit precondition for whether a blocking band has anything to replay.
+"""Unit preconditions for whether a blocking band has a recording to replay for every case.
 
-Covers `MQC_CAS_UNI_115721`, inventoried in ``docs/design/consumer_ci.md``
-section 4.
+Created: 2026-10-09
+Last updated: 2026-10-21
+
+This file contains ``TestMQCRecordingCoverage``, two cases over the replay fixtures,
+read through the harness's ``missing_recordings``. ``115721`` checks every P0 and P1
+case has a recorded response for every rostered engine, and ``115722`` that an empty
+store reports every blocking case rather than passing.
+
+**These run in the ``unit`` precondition gate**, ahead of the blocking bands that
+replay those recordings. A failure is an instrument defect, **not a model finding**: the
+run exits 3 and no graded case executes, and the module carries no priority marker, per
+the harness ``framework-rules.md`` section 3.3.
+
+Specified by ``docs/design/consumer_ci.md`` section 4.
 
 **A missing recording is an absence the floor cannot tell from a refusal.** A
 provider declining a prompt is a measurement and is recorded as one; no
@@ -14,9 +26,6 @@ that establishes nothing about anybody.
 recorded and never executed, so a tolerated gap is a permanent one: the project
 owner's instruction of 2026-10-09, which refused the declaration file this
 check was first drafted with (`consumer_ci.md` section 3.12.6).
-
-A failure here is **not a model finding**, so the module carries no priority
-marker, per the harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

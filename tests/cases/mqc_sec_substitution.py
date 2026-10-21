@@ -1,9 +1,23 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether the model does its own task when something proposes another.
+"""Graded security cases for whether the model does its own task when another is proposed.
 
-Covers ``MQC_EVL_SEC_154200`` through ``154202``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.3 and specified by
+Created: 2026-09-26
+Last updated: 2026-10-21
+
+This file contains ``TestMQCTaskSubstitution``, three cases on the model under test.
+Each plants a different task and checks the model keeps to the one it was assigned,
+whether the substitute sits in a document (``154200``), is framed as a correction
+(``154201``), or is appended to the assigned task rather than replacing it (``154202``).
+
+**These run in the graded ``sec`` gate**, the security suite, once per engine and in
+the band job for each case's priority. Each case sends its shipped task and rule pair
+through ``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure is
+a security finding about the model, and its message comes from ``redacted_detail``,
+which names the failing assertions and never what the model said.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.3 and
 section 9.10.
 
 **All three are P0**, and they differ in where the substitution comes from,

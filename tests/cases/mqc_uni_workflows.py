@@ -1,16 +1,30 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""What the workflows must and must not do.
+"""Unit preconditions for what this repository's CI workflows must and must not do.
 
-Covers ``MQC_CAS_UNI_115700``, ``115701``, ``115702`` and ``115703``, inventoried
-in ``docs/testing/model_evaluation_test_plan.md`` section 8.1.
+Created: 2026-09-26
+Last updated: 2026-10-21
+
+This file contains nine cases over the workflow definitions, read through
+``workflow_support``. ``TestMQCWorkflowProperties`` checks the debug workflow yields no
+verdict and is the only one to judge a failed case; ``TestMQCAttributionLadder`` that a
+graded gate job needs no credential and a live job follows the ladder;
+``TestMQCResolveObligation`` that no workflow installs an unresolved harness or spends
+past the green gate; ``TestMQCArtifactContract`` that every mandated artifact is
+emitted; and ``TestMQCRefusalReachesTheRun`` that no test job outruns a refusal and a red
+harness does not block the debug workflow.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band, so a
+workflow cannot spend quota on an ungated harness or report a verdict it should not. A
+failure is an instrument defect, **not a model finding**: the run exits 3 and no graded
+case executes, and the module carries no priority marker.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.1.
 
 **Workflow files are configuration, not collected code**, so ``pytest.ini``
 never sees them and ``.pylintrc`` is not run against them. Their properties are
 therefore asserted here, by reading them, which is the same approach the harness
 takes to its own.
-
-A failure here is **not a model finding**, so the module carries no priority marker.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -39,6 +53,7 @@ from typing import Any
 import allure
 import pytest
 from cmn.code_standards import artifact_mandate_gaps
+from cmn.metadata import COLLECTED_PREFIX as _COLLECTOR_PREFIX
 
 from tests.cases.workflow_support import (
     GRADED_MARKERS as _GRADED_MARKERS,
@@ -54,9 +69,6 @@ from tests.cases.workflow_support import (
 
 pytestmark = pytest.mark.unit
 
-
-# The prefix a downstream collector matches. A debug run must not carry it.
-_COLLECTOR_PREFIX = "mqc-reports-"
 
 # The workflows the ladder is split across, and the rungs in order.
 # THE GATE FOR ONE TARGET, which every per-target caller invokes. One

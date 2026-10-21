@@ -1,6 +1,20 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""What a set of repeat observations concludes, and over which population.
+"""Support code deciding what a graded case's repeated observations conclude.
+
+Created: 2026-10-06
+Last updated: 2026-10-21
+
+This file contains ``assert_consistent_pass``, which refuses observations that disagree,
+then refuses a failure, and returns the first result; the readers it rests on,
+``measured``, ``unmeasured_code``, ``consistent`` and ``failure_detail``; and
+``redacted_detail``, which names the failing assertions and never what the model said.
+
+**Every graded case ends here.** Each ``mqc_eval_*``, ``mqc_sec_*`` and ``mqc_tool_*``
+case passes the results of ``observe_repeatedly`` to ``assert_consistent_pass``, so this
+is where a case's pass, its model finding or its skip is decided, and the security
+modules pass ``redacted_detail`` as their explanation. ``mqc_uni_instrument_audit.py``
+asserts the unmeasured path. Not collected, as the name carries no ``mqc_`` prefix.
 
 **Split from `graded_support.py` on 2026-10-06**, which the measured-population
 subject took to 960 lines against the 900-line runway ceiling. The rule is to
@@ -33,6 +47,13 @@ import pytest
 # the judge for the first time and the replay store has nothing for it.
 _UNMEASURED: Final[str] = "judgement_unavailable"
 
+# A JUDGE WITHHELD ON REQUEST, `--judge-mode off`, measured nothing either. It is
+# the requester's choice rather than a gap, so its message says so (harness
+# `harness_test_taxonomy.md` section 7.4.1.4).
+_UNJUDGED: Final[str] = "unjudged"
+_WITHHELD_CODE: Final[str] = "QC_HARNESS_JUDGE_WITHHELD"
+_NOT_MEASURED: Final[frozenset[str]] = frozenset({_UNMEASURED, _UNJUDGED})
+
 def measured(results: list[Any]) -> list[Any]:
     """Return only the observations that produced a measurement.
 
@@ -49,7 +70,7 @@ def measured(results: list[Any]) -> list[Any]:
     """
     return [
         entry for entry in results
-        if getattr(entry, "judge_skipped_reason", None) != _UNMEASURED
+        if getattr(entry, "judge_skipped_reason", None) not in _NOT_MEASURED
     ]
 
 def unmeasured_code(results: list[Any]) -> str:
@@ -61,6 +82,8 @@ def unmeasured_code(results: list[Any]) -> str:
     Returns:
         str: The store's own code, or the parser code when none is named.
     """
+    if any(getattr(entry, "judge_skipped_reason", None) == _UNJUDGED for entry in results):
+        return _WITHHELD_CODE
     for entry in results:
         if getattr(entry, "judge_skipped_reason", None) != _UNMEASURED:
             continue
@@ -237,6 +260,12 @@ def assert_consistent_pass(results: list[Any], explain: Any = None) -> Any:
     # evidence and survives a gap elsewhere, while a pass on part of the
     # population has not established a claim about repeat behaviour.
     taken = measured(results)
+    if not taken and unmeasured_code(results) == _WITHHELD_CODE:
+        pytest.skip(
+            f"{_WITHHELD_CODE}: the judge was withheld on request, and the screen "
+            f"and assertions held on every observation; the judged criteria were "
+            f"not checked"
+        )
     if not taken:
         pytest.skip(
             f"{unmeasured_code(results)}: no judgement was recorded for any "

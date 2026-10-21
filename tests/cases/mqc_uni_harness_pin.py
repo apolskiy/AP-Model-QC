@@ -1,18 +1,32 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Which harness this case set runs against, and what it refuses to use.
+"""Unit preconditions for which harness commit this case set runs against, and what it refuses.
 
-Covers ``MQC_CAS_UNI_115300`` through ``115312``, inventoried in
-``docs/design/consumer_ci.md`` section 4.
+Created: 2026-09-23
+Last updated: 2026-10-21
+
+This file contains nineteen cases on the resolver in ``tools/harness_pin.py`` and the
+branch mapping in ``config/harness_pin.yaml``, driven by the API shapes in
+``pin_support``. ``TestMQCHarnessPairing`` checks how a branch resolves to its harness
+ref; ``TestMQCGreenness`` when a harness commit counts as green; and the remaining
+classes that an unresolvable ref refuses cleanly, that the resolver imports nothing from
+the harness, that every case referent names an inventoried case and every dated branch
+is paired, that a pull request takes its
+target's strictness and waits on a pending gate, and that the README figures are true.
+
+**These run in the ``unit`` precondition gate.** CI runs the resolver ahead of Gate 1
+and installs only the commit it produces, so a resolver that failed open would put an
+ungated harness under every graded result. A failure is an instrument defect, **not a
+model finding**: the run exits 3 and no graded case executes, and the module carries no
+priority marker, per the harness ``framework-rules.md`` section 3.3.
+
+Specified by ``docs/design/consumer_ci.md`` section 4.
 
 **Every negative here is a way for the gate to fail open**, and a gate that
 fails open is indistinguishable from no gate at all until the day it matters.
 They are written separately rather than as one case asserting "not green",
 because a single such case would pass against an implementation that returned
 ``False`` unconditionally.
-
-A failure here is **not a model finding**, so the module carries no priority marker, per the
-harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

@@ -1,13 +1,27 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""The apparatus the harness-pin cases assert against.
+"""Support code for the harness-pin preconditions: GitHub API shapes and README figures.
+
+Created: 2026-10-05
+Last updated: 2026-10-21
+
+This file contains builders of the GitHub API shapes the resolver in
+``tools/harness_pin.py`` reads, ``workflow_run``, ``unconcluded_runs`` and
+``concluded_runs``, with ``drive_wait``, which runs the resolver's wait against scripted
+answers without spending wall clock. It also holds the README figure recomputation,
+``readme_figures``, and the counts behind it: ``inventoried_case_ids``,
+``open_findings``, ``findings_with_population``, ``inventoried_precondition_count`` and
+``graded_case_count``.
+
+**Only ``mqc_uni_harness_pin.py`` imports it**, in the ``unit`` precondition gate, to
+drive the resolver offline and to check every README figure against the repository. It
+is not collected itself, as its name carries no ``mqc_`` prefix.
 
 Specified by the harness ``harness_test_taxonomy.md`` section 13.
 
 **Extracted 2026-10-05**, when the case module stood at 995 lines against the
-thousand-line ceiling with five lines of headroom. Two kinds of thing live
-here: the GitHub API shapes the resolver reads, and the README figure
-recomputation, which is a registry of eleven figures rather than a check.
+thousand-line ceiling with five lines of headroom. The README figure recomputation
+is a registry of eleven figures rather than a check.
 
 **Public names, deliberately.** A support module is an interface, and a leading
 underscore on something another module imports says the opposite of what is

@@ -1,9 +1,24 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether the model reports how a resume and a position actually match.
+"""Graded cases for whether the model reports how a resume and a position really match.
 
-Covers ``MQC_EVL_EVAL_134500`` through ``134503``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
+Created: 2026-10-13
+Last updated: 2026-10-21
+
+This file contains ``TestMQCBoundedRequirementMatching``, four cases on the model under
+test, each matching a resume against a requirement that carries a bound. It must report
+an exceeded cap as no match (``134500``) and a satisfied cap as a match (``134501``),
+must not read a stated floor as a higher requirement (``134502``), and must raise an
+incoherent bound before assessing against it (``134503``).
+
+**These run in the graded ``evaluator`` gate**, once per engine and in the band job
+for each case's priority. Each case sends its shipped task and rule pair through
+``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure
+is a finding about the model, and the case's priority decides whether it blocks the
+band.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and
 section 9.13. The family is specified in the harness ``DESIGN.md`` section 7.8.
 
 **Every requirement here carries a bound rather than a bare skill name**, and

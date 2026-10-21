@@ -1,9 +1,20 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Unit preconditions for citations between this repository's documents.
+"""Unit preconditions for this repository's citations, changelog, markers and records.
 
-Covers `MQC_CAS_UNI_115734`, inventoried in ``docs/design/consumer_ci.md``
-section 4.
+Created: 2026-10-12
+Last updated: 2026-10-21
+
+This file contains four cases, each calling a harness checker with this repository's
+root. ``TestMQCDocumentCitations`` checks every section citation in the documents
+resolves to exactly one section, and that a README has its changelog;
+``TestMQCMarkerRegistry`` that the ``pytest.ini`` marker registry agrees with the
+harness's and that no production record is mutable.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band. A failure
+is an instrument defect, **not a model finding**: the run exits 3 and no graded case
+executes, and the module carries no priority marker, per the harness
+``framework-rules.md`` section 3.3.
 
 **One implementation, called with each root**, which is the arrangement the
 encoding, annotation, header and naming rules already use: a rule enforced
@@ -14,10 +25,8 @@ differently is only a documentation defect.
 sections 9.5, one about joining three sources to file a finding and one about
 what the register does not try to be, and `ticket_report.py` cited the number.
 
-Specified by the harness ``.claude/rules/code-style.md`` section 7.3.
-
-A failure here is **not a model finding**, so the module carries no priority
-marker, per the harness ``framework-rules.md`` section 3.3.
+Specified by ``docs/design/consumer_ci.md`` section 4 and the harness
+``.claude/rules/code-style.md`` section 7.3.
 """
 
 # ------------------------------------------------------------- cases in here

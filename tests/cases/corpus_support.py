@@ -1,6 +1,20 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""The apparatus the corpus cases assert against.
+"""Support code for the corpus preconditions, the readers and walks they assert against.
+
+Created: 2026-10-05
+Last updated: 2026-10-21
+
+This file contains ``gate_held``, which runs one of a rule's assertions against an
+answer; ``normalised``, which strips line endings and trailing blank lines before text
+is compared; ``named_pairs``, which lists the task and rule pairs a graded module names;
+``demoted_or_mislabelled``, which reports a matrix
+row whose derived family is not primary; and ``assert_every_payload_is_screened``,
+which walks every shipped payload through the screening cross-check.
+
+**It is imported by ``mqc_uni_corpus.py``**, and ``gate_held`` also by
+``mqc_uni_rule_reading.py``, both in the ``unit`` precondition gate. It is not collected
+itself, as its name carries no ``mqc_`` prefix.
 
 Specified by the harness ``harness_test_taxonomy.md`` section 13.
 

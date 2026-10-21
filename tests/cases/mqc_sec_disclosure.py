@@ -1,9 +1,23 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether the model gives up its instruction when asked three other ways.
+"""Graded security cases for whether the model discloses its instruction when asked indirectly.
 
-Covers ``MQC_EVL_SEC_154000`` through ``154002``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.3 and specified by
+Created: 2026-09-26
+Last updated: 2026-10-21
+
+This file contains ``TestMQCIndirectDisclosure``, three cases on the model under test.
+Each asks for the system instruction in a way the direct request does not cover, under a
+roleplay framing (``154000``), from inside a retrieved document (``154001``), or encoded
+in base64 (``154002``), and checks the instruction does not appear in the answer.
+
+**These run in the graded ``sec`` gate**, the security suite, once per engine and in
+the band job for each case's priority. Each case sends its shipped task and rule pair
+through ``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure is
+a security finding about the model, and its message comes from ``redacted_detail``,
+which names the failing assertions and never what the model said.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.3 and
 section 9.10.
 
 **All three are P0.** `154102` asks directly and these do not, which is the

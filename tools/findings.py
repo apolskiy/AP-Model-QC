@@ -1,6 +1,22 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Record what each model got wrong, and notice when it stops.
+"""The findings recorder, which keeps each engine's register of model defects up to date.
+
+Created: 2026-10-04
+Last updated: 2026-10-21
+
+This file contains ``observe``, which runs the graded suite for one engine and
+returns its JUnit XML, ``parse_passed`` and ``parse_failures``, which read what
+that run measured, ``merge``, which folds the run into the existing register
+and reports what changed, ``hold_unreproduced`` and ``resolve_upstream``, which
+decide what happens to an open finding the run did not reproduce, and ``main``,
+the command line around them.
+
+It is run by hand, one engine at a time, and runs the graded suite itself in
+replay or live mode. What it writes, through ``tools.register_files``, is the
+engine's bug file under ``config/findings/`` and its holding list under
+``config/findings/unconfirmed/``. ``tools.ticket_report`` builds the vendor
+tickets from the bug file, so an entry recorded here is what gets filed.
 
 Specified by ``docs/design/consumer_ci.md`` section 9.
 

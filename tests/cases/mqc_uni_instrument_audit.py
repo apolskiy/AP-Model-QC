@@ -1,10 +1,25 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether a result from this suite means what it says.
+"""Unit preconditions for whether a graded result from this suite means what it says.
 
-Covers ``MQC_CAS_UNI_115713``, ``115714``, ``115716``, ``115728``,
-``115729``, ``115731``, ``115761`` and ``115016``, inventoried in
-``docs/design/consumer_ci.md`` section 4 and designed in sections 9.4.2 and
+Created: 2026-10-06
+Last updated: 2026-10-21
+
+This file contains eight cases. ``TestMQCTheInstrumentDoesNotManufactureFindings``
+checks the injection screen raises nothing on an ordinary case and every failure message
+carries a taxonomy code. ``TestMQCAssertionsCanFail`` checks every shipped assertion can
+fail, through ``vacuity_support``; that an unmeasured observation is not counted as a
+failure; that a replay store refreshed in part is reported; that every observation
+records its steps, as do the steps after it; and that a caught injection is a failure,
+not a skip.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band, so a
+graded red is never the instrument's own fault and a graded pass is one that could have
+failed. A failure is an instrument defect, **not a model finding**: the run exits 3 and
+no graded case executes, and the module carries no priority marker, per the harness
+``framework-rules.md`` section 3.3.
+
+Specified by ``docs/design/consumer_ci.md`` section 4 and sections 9.4.2 and
 9.4.3.
 
 **Split from ``mqc_uni_instrument.py`` on 2026-10-05**, which these two
@@ -16,9 +31,6 @@ outcome it was written for: the next subject belongs in a module of its own.
 and a pass that could never have been a failure. Both are the instrument
 describing itself wrongly, and both reached a ticket page before anything
 caught them.
-
-A failure here is **not a model finding**, so the module carries no priority marker, per the
-harness ``framework-rules.md`` section 3.3.
 """
 
 # ------------------------------------------------------------- cases in here

@@ -1,13 +1,22 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""A requirement states the same thing in this repository's plan and matrix.
+"""Unit precondition that each requirement reads the same in the test plan and the matrix.
 
-Covers `MQC_CAS_UNI_115748`, inventoried in ``docs/design/consumer_ci.md``
-section 4.
+Created: 2026-10-15
+Last updated: 2026-10-21
 
-The comparison is the harness's, called with this repository's pair, the
-arrangement every shared standard here uses. A failure here is **not a model
-finding**, so the module carries no priority marker.
+This file contains ``TestMQCRequirementStatements``, one case. It compares every model
+requirement's statement in ``docs/testing/model_evaluation_test_plan.md`` with its
+statement in ``rtm_model.csv`` and reports a requirement stated two ways.
+
+**It runs in the ``unit`` precondition gate**, ahead of every graded band. A failure
+is an instrument defect, **not a model finding**: the run exits 3 and no graded case
+executes, and the module carries no priority marker.
+
+Specified by ``docs/design/consumer_ci.md`` section 4.
+
+The comparison is the harness's ``statement_problems``, called with this repository's
+pair, the arrangement every shared standard here uses.
 """
 
 # ------------------------------------------------------------- cases in here

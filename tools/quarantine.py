@@ -1,6 +1,19 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Re-observe the quarantined cases and write back what that decided.
+"""The quarantine tool, which re-runs an engine's quarantined cases and rewrites its file.
+
+Created: 2026-10-02
+Last updated: 2026-10-21
+
+This file contains ``main``, which loads ``config/quarantine/<engine>.yaml``,
+re-observes every case in it, lets the harness decide what each entry becomes
+and writes the file back, and ``parse_as_of``, which reads the date the run is
+stamped with. ``--dry-run`` prints the changes and writes nothing.
+
+An operator runs it by hand, normally live with a spend ceiling. The file it
+rewrites is the quarantine list the band check honours, so an entry it keeps
+still excuses that case in a release blocking band, and an entry it drops no
+longer does.
 
 Specified by ``docs/design/consumer_ci.md`` section 4.14, against harness
 ``cmn_verdict_and_cli.md`` sections 4.6.5 and 4.6.10.

@@ -2,8 +2,18 @@
 # SPDX-License-Identifier: MIT
 """Scripted ref heads and gate verdicts, for the cases that follow a replaced harness commit.
 
-**A sibling module collection does not reach**, so the case module holds cases
-and nothing else. Designed in ``docs/design/consumer_ci.md`` section 3.11.3.
+Created: 2026-10-18
+Last updated: 2026-10-21
+
+This file contains five fixed commit hashes, ``FIRST`` to ``FIFTH``; ``cancelled`` and
+``passed``, which build a gate verdict; and ``follow``, which runs ``follow_replaced``
+from ``tools/harness_pin.py`` from ``FIRST`` against scripted ref heads and verdicts,
+returning the commit followed to, its verdict and every commit asked about.
+
+**Only ``mqc_uni_harness_follow.py`` imports it**, so those cases can drive the
+follower without calling GitHub. A sibling module collection does not
+reach, so the case module holds cases and nothing else. Designed in
+``docs/design/consumer_ci.md`` section 3.11.3.
 """
 
 from typing import Final

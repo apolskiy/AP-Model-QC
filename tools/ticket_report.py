@@ -1,6 +1,21 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""One ticket-ready page per engine: the finding, the request, the responses.
+"""The ticket report, which writes each engine's filed findings as pages ready to submit.
+
+Created: 2026-10-05
+Last updated: 2026-10-21
+
+This file contains ``page_for``, which builds one engine's findings page,
+``finding_section``, which writes one finding's defect report with its problem,
+the request as sent, every recorded response, the expected rule and a replay
+command, and ``main``, which writes a page per engine and one ticket file per
+filed finding under ``reports/tickets/``.
+
+It is run by hand, normally after ``tools.findings`` has updated a register.
+Its sections are assembled from ``tools.ticket_recordings``,
+``tools.ticket_reasons`` and ``tools.ticket_framing``, and ``tools.ticket_files``
+writes the files. A person submits each ticket to its vendor, and
+``tools.finding_evidence`` reads the page when a finding is reviewed.
 
 Specified by ``docs/design/consumer_ci.md`` section 9.5.
 
@@ -45,9 +60,11 @@ import yaml
 
 from evaluation.aggregation import CriterionScore, aggregate
 from execution.adapters.registry import reproduction_curl, reproduction_snippet
-from tests.cases.graded_support import case_for, case_rules_from_suite
+from tests.cases.graded_support import case_for
+from tests.cases.suite_support import case_rules_from_suite
 from tools.register_files import to_file
 from tools.ticket_recordings import (
+    judge_prompts,
     observation_outcomes,
     recorded_judgements,
     recorded_observations,
@@ -56,6 +73,7 @@ from tools.ticket_recordings import (
 )
 from tools.ticket_files import page_name, write_tickets
 from tools.ticket_framing import framed_problem
+from tools.ticket_reasons import failure_reasons, rule_lines
 
 _DEFAULT_OUT: Final[Path] = Path("reports") / "tickets"
 _ENGINES: Final[tuple[str, ...]] = ("gemini", "openai", "claude", "grok")
@@ -104,6 +122,14 @@ _PROBLEM: Final[dict[str, str]] = {
     "QC_LLM_INCONSISTENT":
         "The model answered the same request differently on different "
         "attempts",
+    # A BARE CODE IS NOT A PROBLEM STATEMENT (section 9.5.5.6). Both of these
+    # opened fifteen tickets on 2026-10-20 as the code and the register's
+    # instrumentation text.
+    "QC_SEC_INJECTION_ATTEMPT":
+        "The model's answer carried an instruction planted in the content it "
+        "was asked to process",
+    "QC_LLM_TOOL_VIOLATION":
+        "The model called a tool it was told never to use",
 }
 
 
@@ -203,39 +229,26 @@ def expected_block(task_id: str, rule_id: str, task: Optional[dict[str, Any]]) -
         task (Optional[dict]): The task definition, for its constraint texts.
 
     Returns:
-        str: Markdown. Each rubric criterion with what it asks and its top
-        exemplar, which is a correct response by construction; for a rule with
-        no rubric, the constraints its checks and tool expectation enforce.
+        str: Markdown opening with **the rule** (section 9.5.5.6): the
+        constraints the case references, the standing rule a check kind
+        enforces, the tools it requires or forbids, and a judged criterion's
+        threshold. Then each rubric criterion with what it asks and its top
+        exemplar, which is a correct response by construction.
     """
     try:
         rules = case_for(task_id, rule_id).golden_rules
     except (KeyError, ValueError):
         return "_The rule could not be resolved, so no expected response is shown._"
-    lines: list[str] = []
+    stated = rule_lines(rules, task) or ["_The rule states no constraint text._"]
+    lines: list[str] = ["**The rule**", "", *stated, ""]
     rubric = getattr(rules, "rubric", None)
-    if rubric is not None:
-        for criterion in rubric.criteria:
-            top = criterion.anchors.get(max(criterion.anchors)) if criterion.anchors else None
-            lines.append(f"*{criterion.name}*: {_sentence(criterion.description)}")
-            if top is not None and top.exemplar:
-                lines.extend(["", "A response that meets it:", "",
-                              *fenced(top.exemplar)])
-            lines.append("")
-        return "\n".join(lines).rstrip()
-
-    referenced = {assertion.constraint_ref for assertion in rules.assertions}
-    expectation = getattr(rules, "tool_expectation", None)
-    if expectation is not None:
-        referenced.add(expectation.constraint_ref)
-    for constraint in (task or {}).get("constraints") or []:
-        if isinstance(constraint, dict) and constraint.get("constraint_id") in referenced:
-            lines.append(f"- {_sentence(str(constraint.get('text', '')))}")
-    if expectation is not None:
-        if expectation.required_tools:
-            lines.append(f"- Calls {', '.join(sorted(expectation.required_tools))}.")
-        if expectation.forbidden_tools:
-            lines.append(f"- Never calls {', '.join(sorted(expectation.forbidden_tools))}.")
-    return "\n".join(lines) or "_The rule states no constraint text._"
+    for criterion in getattr(rubric, "criteria", []):
+        top = criterion.anchors.get(max(criterion.anchors)) if criterion.anchors else None
+        lines.append(f"*{criterion.name}*: {_sentence(criterion.description)}")
+        if top is not None and top.exemplar:
+            lines.extend(["", "A response that meets it:", "", *fenced(top.exemplar)])
+        lines.append("")
+    return "\n".join(lines).rstrip()
 
 
 def _message_texts(request: dict[str, Any]) -> list[tuple[str, str]]:
@@ -367,6 +380,11 @@ def _diagnosis(entry: dict[str, Any]) -> str:
     # it would be the old layout's defect in a new place.
     if actual == f"{code}: pattern found" or actual.endswith("required substring present"):
         return ""
+    # "NO ASSERTION FAILED" ON A FAILING FINDING reads as the opposite of the
+    # claim: the screen or the judge decided it, and Why it fails says which
+    # (section 9.5.5.6).
+    if actual.rstrip(".") == "no assertion failed":
+        return ""
     return _sentence(actual)
 
 
@@ -470,6 +488,7 @@ def _output_block(
     responses: list[str],
     outcomes: list[tuple[int, bool, str]],
     judged: Optional[list[Optional[tuple[bool, float, str]]]] = None,
+    prompts: Optional[list[str]] = None,
 ) -> list[str]:
     """Return every observation, each labelled by its checks and its judgement.
 
@@ -480,6 +499,9 @@ def _output_block(
             when the case could not be resolved.
         judged (Optional[list]): Per-observation judgement outcomes from
             :func:`judged_outcome`, None where the judge was not called.
+        prompts (Optional[list]): Each observation's judge prompt, empty where
+            the judge never saw it, shown collapsed beneath the response
+            (``consumer_ci.md`` section 9.5.5.8).
 
     Returns:
         list[str]: Markdown lines. **Every observation is shown**, passing ones
@@ -505,11 +527,16 @@ def _output_block(
     failing = sum(1 for failed, _ in labelled if failed)
     out = [f"**Responses.** The problem appeared on {failing} of {len(bodies)} "
            f"observations, every one shown.", ""]
+    shown = list(prompts or [])
     for index, body in enumerate(bodies):
         label = labelled[index][1]
         out.extend([f"*Observation {index + 1} of {len(bodies)}.* "
                     f"{label[:1].upper()}{label[1:]}", "",
                     *fenced(body or "[no text and no tool call]"), ""])
+        if index < len(shown) and shown[index]:
+            out.extend(["<details>",
+                        f"<summary>Judge prompt, observation {index + 1} of {len(bodies)}"
+                        f"</summary>", "", *fenced(shown[index]), "", "</details>", ""])
     return out
 
 
@@ -584,25 +611,14 @@ def finding_section(
     task = tasks.get(task_id)
 
     try:
-        rubric = getattr(case_for(task_id, rule_id).golden_rules, "rubric", None)
+        rules = case_for(task_id, rule_id).golden_rules
     except (KeyError, ValueError):
-        rubric = None
-    judged = [
-        judged_outcome(judgement, rubric)
-        for judgement in recorded_judgements(root, engine, task_id, rule_id, len(responses))
-    ]
+        rules = None
+    observed = _observed(root, engine, (task_id, rule_id), rules, len(responses))
 
-    out = [heading(case), "", f"**Problem:** {_issue_sentence(entry, task)}", ""]
-    diagnosis = _diagnosis(entry)
-    if diagnosis:
-        out.extend([f"**Diagnosis:** {diagnosis}", ""])
+    out = [heading(case), "", *_claim_lines(entry, task, rules, observed[:2])]
     out.extend(_input_block(task, request))
-    out.extend(_output_block(
-        engine, responses,
-        observation_outcomes(
-            task_id, rule_id, recorded_responses(root, engine, task_id, rule_id)
-        ), judged,
-    ))
+    out.extend(_output_block(engine, responses, *observed))
     out.extend(["**Expected**", "", expected_block(task_id, rule_id, task), ""])
     out.extend(_reproduce_block(engine, request, case))
     out.extend([
@@ -616,6 +632,62 @@ def finding_section(
     if str(entry.get("observations") or "").strip():
         out.append(f"| Population | {entry.get('observations')} |")
     out.extend([f"| Task | `{task_id}` |", "", "---", ""])
+    return out
+
+
+def _observed(
+    root: Path, engine: str, pair: tuple[str, str], rules: Any, count: int
+) -> tuple[list[tuple[int, bool, str]], list[Optional[tuple[bool, float, str]]], list[str]]:
+    """Return how each recorded observation came out, and the prompt its judge received.
+
+    Args:
+        root (Path): The repository root.
+        engine (str): The engine being reported.
+        pair (tuple): The task and rule set identifiers.
+        rules (Any): The case's golden rule set, or None.
+        count (int): How many observations were recorded.
+
+    Returns:
+        tuple: Each observation's check outcome, its judged outcome, and its
+        judge prompt, empty where the judge never saw it (section 9.5.5.8).
+    """
+    task_id, rule_id = pair
+    stored = recorded_judgements(root, engine, task_id, rule_id, count)
+    recordings = recorded_responses(root, engine, task_id, rule_id)
+    return (
+        observation_outcomes(task_id, rule_id, recordings),
+        [judged_outcome(judgement, getattr(rules, "rubric", None)) for judgement in stored],
+        judge_prompts(task_id, rule_id, recordings, stored),
+    )
+
+
+def _claim_lines(
+    entry: dict[str, Any],
+    task: Optional[dict[str, Any]],
+    rules: Any,
+    observed: tuple[list[tuple[int, bool, str]], list[Optional[tuple[bool, float, str]]]],
+) -> list[str]:
+    """Return a finding's problem, why it fails, and its diagnosis.
+
+    Args:
+        entry (dict): The register entry.
+        task (Optional[dict]): The task the finding was measured on.
+        rules (Any): The case's golden rule set, or None when unresolved.
+        observed (tuple): Each observation's check outcome, and its judged
+            outcome.
+
+    Returns:
+        list[str]: Markdown lines. **Why it fails** sits between the problem
+        and the evidence, since a check firing is not yet a reason
+        (section 9.5.5.6).
+    """
+    out = [f"**Problem:** {_issue_sentence(entry, task)}", ""]
+    reasons = failure_reasons(rules, task, *observed) if rules is not None else []
+    if reasons:
+        out.extend(["**Why it fails:**", "", *(f"- {reason}" for reason in reasons), ""])
+    diagnosis = _diagnosis(entry)
+    if diagnosis:
+        out.extend([f"**Diagnosis:** {diagnosis}", ""])
     return out
 
 

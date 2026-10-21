@@ -2,6 +2,18 @@
 # SPDX-License-Identifier: MIT
 """How a security ticket describes where the instruction it followed came from.
 
+Created: 2026-10-15
+Last updated: 2026-10-21
+
+This file contains ``framed_problem``, which returns the problem sentence for an
+injection or goal hijack finding whose canary sits in the user message rather
+than in a supplied document, and ``payload_in_user_turn``, which makes that
+check on the task, finding the canary written plainly or base64-encoded.
+
+``tools.ticket_report`` calls ``framed_problem`` while writing a ticket's
+problem statement. Where it returns nothing, the report keeps its usual
+planted-content wording, so this decides only which of the two a vendor reads.
+
 Design: ``docs/design/consumer_ci.md`` section 9.5.5.3.
 """
 

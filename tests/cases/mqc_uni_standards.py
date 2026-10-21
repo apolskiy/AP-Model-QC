@@ -1,10 +1,23 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""The code-style rules pylint cannot express, enforced on this tree.
+"""Unit preconditions enforcing on this tree the code-style rules pylint cannot express.
 
-Covers ``MQC_CAS_UNI_115500`` through ``115502``, ``115711``, ``115712``,
-``115715``, ``115718``, ``115719``, ``115760``, ``115762`` and ``115764``, inventoried in
-``docs/design/consumer_ci.md`` section 4.
+Created: 2026-09-23
+Last updated: 2026-10-21
+
+This file contains sixteen cases, each calling a harness checker with this repository's
+root. They check annotations, the PEP 563 prohibition, MIT SPDX headers on code,
+documents and data, declared runbook inputs, declared file encodings, identifiers
+inside their module's block, case modules holding only cases, subprocess timeouts, the
+module runway, a repository named in each document's filename, the generated case
+blocks, and that this repository refuses a case collected twice, warns of crowded
+identifier blocks and refuses a harness under mutation.
+
+**These run in the ``unit`` precondition gate**, after pylint's Gate 1 and ahead of
+every graded band. A failure is an instrument defect, **not a model finding**: the run
+exits 3 and no graded case executes, and the module carries no priority marker.
+
+Specified by ``docs/design/consumer_ci.md`` section 4.
 
 **One project spans two repositories**, and a rule enforced on one side only is
 a rule that holds until somebody moves a file. The checkers live in
@@ -15,8 +28,6 @@ else.
 Copying the checkers to state that one difference would be two implementations
 of one rule, and the copy would drift toward whichever repository was edited
 less often.
-
-A failure here is **not a model finding**, so the module carries no priority marker.
 """
 
 # ------------------------------------------------------------- cases in here

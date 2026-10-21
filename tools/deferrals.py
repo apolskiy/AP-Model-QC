@@ -1,6 +1,19 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Which cases each finding defers, read from the declarations and the registers.
+"""The deferral table, which lists the cases each open finding keeps from running.
+
+Created: 2026-10-05
+Last updated: 2026-10-21
+
+This file contains ``dependency_edges``, which maps each case to the cases
+resting on it, ``deferred_behind``, which follows those edges transitively from
+one base case, ``findings_for``, which lists the cases an engine's findings
+register carries, and ``main``, which prints one row per finding per engine
+with the cases it defers and a total.
+
+It is run by hand, as the usage below shows, when a reader wants to know how
+much of the suite a finding holds back. Nothing downstream reads its
+output, and it changes no file.
 
 **Not reported to vendors.** A vendor receives actual defects; a deferral is a
 consequence of one, and `consumer_ci.md` section 4.14.1 records the reading: a

@@ -1,9 +1,25 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether the answer stays inside what the source actually says.
+"""Graded cases for whether the model's answer stays inside what its source says.
 
-Covers ``MQC_EVL_EVAL_134200`` through ``134206``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
+Created: 2026-09-25
+Last updated: 2026-10-21
+
+This file contains seven cases on the model under test, each answering from a supplied
+document. ``TestMQCFabricationAndAlteration`` checks it asserts nothing absent and
+alters no stated value; ``TestMQCContextAndTruth`` that it uses the context and states
+no verifiable falsehood; and ``TestMQCDirectionalFigures`` that it refuses to overstate
+a sourced figure, rounds when a stated ceiling admits it, and may understate a figure
+where a conservative floor is asked for.
+
+**These run in the graded ``evaluator`` gate**, once per engine and in the band job
+for each case's priority. Each case sends its shipped task and rule pair through
+``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure
+is a finding about the model, and the case's priority decides whether it blocks the
+band. The code family in ``mqc_eval_code.py`` depends on the foundations here.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and
 section 9.7.
 
 **Grounding is measured against a source**, which is what separates this family

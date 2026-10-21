@@ -1,9 +1,25 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Whether requirement matching lands exactly on the gate boundaries.
+"""Graded cases for whether the model's requirement matching lands on the gate boundaries.
 
-Covers ``MQC_EVL_EVAL_134400`` through ``134409``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 4.1 and specified by
+Created: 2026-09-25
+Last updated: 2026-10-21
+
+This file contains ten cases on the model under test, matching resumes against one job
+posting. ``TestMQCConnectorArithmetic`` checks how it scores OR, AND and open
+enumerations of requirements; ``TestMQCGateBoundaries`` that it proceeds or warns
+exactly at the mandatory floor and ceiling; and ``TestMQCExperienceDisclosure`` that it
+preserves a stated experience figure, states the floor behind a derived one, asks when
+experience cannot be calculated, and classifies an unfamiliar section header.
+
+**These run in the graded ``evaluator`` gate**, once per engine and in the band job
+for each case's priority. Each case sends its shipped task and rule pair through
+``observe_repeatedly``, replayed or live as the run's mode decides, and
+``assert_consistent_pass`` passes it only when every observation passes. A failure
+is a finding about the model, and the case's priority decides whether it blocks the
+band.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 4.1 and
 section 9.8. The matching semantics are normative in the harness ``DESIGN.md``
 section 7.1 and are not restated here.
 

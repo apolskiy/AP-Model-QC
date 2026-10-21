@@ -1,18 +1,30 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""The authored corpus loads, and says what it was designed to say.
+"""Unit preconditions for the shipped corpus: it loads, and says what it was designed to say.
 
-Covers ``MQC_CAS_UNI_115000`` through ``115002``, inventoried in
-``docs/testing/model_evaluation_test_plan.md`` section 8.3.
+Created: 2026-09-24
+Last updated: 2026-10-21
+
+This file contains ``TestMQCCorpus``, sixteen cases over the task and golden rule files
+in ``tests/fixtures``, run through the harness's own loaders and integrity checks. They
+check the corpus loads and passes referential integrity, that every graded case names a
+built pair, that kinds, taxonomy codes and families are registered, that the ablation
+control checks nothing, that inlined excerpts match their fixtures, that rubrics carry
+exemplars that clear their own gates, that the generated task file is current, that the
+obfuscated payloads survive loading, and that every document is in the register.
+
+**These run in the ``unit`` precondition gate**, ahead of every graded band, so no
+graded case dispatches a task or applies a rule the corpus does not hold as designed.
+A failure is an instrument defect, **not a model finding**: the run exits 3 and no
+graded case executes, and the module carries no priority marker.
+
+Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.3.
 
 **These run the real loaders over the shipped files.** The harness already has
 88 cases proving the loaders work, and none of them say whether *this* corpus
 loads. Authoring the instruction-following family hit two shape errors no
 schema test could have caught: a wrapper key where the loader wanted a bare
 list, and a flow mapping whose commas YAML read as key separators.
-
-A failure here is **not a model finding**, so the module
-carries no priority marker.
 """
 
 # ------------------------------------------------------------- cases in here
