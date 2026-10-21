@@ -90,7 +90,7 @@ is the one thing not in question.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 934 harness test cases, each executed once per run, and 155 preconditions pass;
+separately from what it measures. 937 harness test cases, each executed once per run, and 155 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate

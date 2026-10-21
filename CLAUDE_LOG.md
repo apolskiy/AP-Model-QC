@@ -5121,3 +5121,13 @@ carrying the request that produced it.
   | gemini | 23 passed, 4 failed | 17 passed, 4 failed | 55 passed |
   | grok | 23 passed, 4 failed | 17 passed, 4 failed | 55 passed |
   | openai | 19 passed, 8 failed | 17 passed, 4 failed | 53 passed, 2 failed |
+
+## 2026-10-21: A run here no longer waits for a harness mutation audit
+
+* **When:** 18:40 to 20:00 UTC.
+* **Harness change**, harness `harness_test_taxonomy.md` section 15.15: a
+  harness audit measures in copies and never writes the module this repository
+  imports, so its isolated lock refuses no run here. The README figure moved to
+  937 harness test cases, with its changelog entry.
+* **Code Quality & Compliance Audit:** 155 preconditions, all passing, exit 0;
+  pylint 10.00/10, exit 0. Replay not re-run: nothing a band reads changed.

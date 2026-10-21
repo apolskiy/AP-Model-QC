@@ -40,6 +40,14 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### This repository's runs no longer wait for a harness mutation audit, 2026-10-21
+
+**A precondition run here refused while the harness audited a module**, because
+the audit rewrote the module this repository imports. The harness now measures
+each mutant in a copy of itself and leaves the installed module untouched, so a
+run here proceeds during an audit. The README figure moved to 937 harness test
+cases.
+
 ### Every Python file says when it was created and last updated, 2026-10-21
 
 **A reader opening a file could not tell how old it was** without leaving the
