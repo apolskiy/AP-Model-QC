@@ -3,7 +3,7 @@
 """Unit preconditions enforcing on this tree the code-style rules pylint cannot express.
 
 Created: 2026-09-23
-Last updated: 2026-10-21
+Last updated: 2026-10-22
 
 This file contains seventeen cases, each calling a harness checker with this repository's
 root. They check annotations, the PEP 563 prohibition, MIT SPDX headers on code,
@@ -73,7 +73,8 @@ import pytest
 
 from cmn.case_steps import step
 from cmn.identifier_capacity import (
-    assigned_identifiers, capacity_warnings, select_blocks,
+    assigned_identifiers, capacity_warnings, identifier_block_problems,
+    select_blocks,
 )
 from cmn.module_size import runway_problems
 from cmn.mutation_guard import imported_harness_root
@@ -88,7 +89,6 @@ from cmn.document_naming import (
     undifferentiated_documents,
 )
 from cmn.code_standards import (
-    identifier_block_problems,
     annotation_gaps,
     encoding_gaps,
     future_annotation_imports,

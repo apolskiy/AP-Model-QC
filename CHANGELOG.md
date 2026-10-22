@@ -40,6 +40,21 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The digit check is imported from where it now lives, 2026-10-22
+
+`identifier_block_problems` moved from `cmn.code_standards` to
+`cmn.identifier_capacity` in the harness, because a declared partition is the
+authority for an identifier whose digits no longer carry its layer and module
+and the partition table lives there (`harness_test_taxonomy.md` section
+3.2.1.5). This repository imports it from the new module; what it checks here
+is unchanged.
+
+**No partition is declared here.** `1157xx` holds 78 of 100 and `1158xx` and
+`1159xx` are free, so the next subject takes the next free category, which is
+the remedy section 11.9.1 still names for a block with room.
+
+160 preconditions, 175 requirements.
+
 ### The sections of four documents read in the order they are numbered, 2026-10-22
 
 **The test plan read 9.10, then 9.13, then 9.11.** Every citation of the three

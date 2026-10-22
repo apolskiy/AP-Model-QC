@@ -5240,3 +5240,18 @@ carrying the request that produced it.
 * **Code Quality & Compliance Audit:** 160 preconditions, all passing, exit 0;
   pylint 10.00/10, exit 0; 175 requirements. Replay not re-run: nothing a band
   reads changed.
+
+## 2026-10-22, later: The digit check moved, and this repository follows it
+
+* **One import changed.** `identifier_block_problems` moved from
+  `cmn.code_standards` to `cmn.identifier_capacity` in the harness, because a
+  declared partition is the authority for an identifier whose digits no longer
+  carry its layer and module, and the partition table lives there
+  (`harness_test_taxonomy.md` section 3.2.1.5).
+* **Nothing else here changes.** This repository has no declared partition:
+  `1157xx` holds 78 of 100 and `1158xx` and `1159xx` are free, so the next
+  subject takes the next free category, which is the remedy section 11.9.1
+  still names for a block with room.
+* **Code Quality & Compliance Audit:** 160 preconditions, all passing, exit 0;
+  pylint 10.00/10, exit 0; 175 requirements. Replay not re-run: nothing a band
+  reads changed.
