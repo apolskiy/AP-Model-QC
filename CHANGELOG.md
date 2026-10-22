@@ -40,6 +40,23 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The findings tool's refusal carries a registered code, 2026-10-21
+
+**`tools/findings.py` refused to write a register under a code no registry
+held**, so the refusal could not be counted with any other. It now names
+`QC_HARNESS_REGISTER_REFUSED`, and `MQC_CAS_UNI_115774` checks that code here
+outside `tests/` names no unregistered code, with the harness's implementation.
+The README figures moved to 156 preconditions, 171 requirements and 955 harness
+test cases.
+
+### A CI run here outside the debug workflow is gated in every job, 2026-10-21
+
+**Every row this repository published read as ungated**, because nothing told
+a run it was in CI and a band job counted as a hand-typed subset. The
+`conftest.py` now adopts the run context the harness derives from the
+environment, and writes the precondition record a graded job reads when it is
+named (harness `cmn_verdict_and_cli.md` section 7.1.4).
+
 ### This repository's runs no longer wait for a harness mutation audit, 2026-10-21
 
 **A precondition run here refused while the harness audited a module**, because

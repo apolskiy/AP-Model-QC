@@ -5,13 +5,14 @@
 Created: 2026-09-23
 Last updated: 2026-10-21
 
-This file contains sixteen cases, each calling a harness checker with this repository's
+This file contains seventeen cases, each calling a harness checker with this repository's
 root. They check annotations, the PEP 563 prohibition, MIT SPDX headers on code,
 documents and data, declared runbook inputs, declared file encodings, identifiers
 inside their module's block, case modules holding only cases, subprocess timeouts, the
 module runway, a repository named in each document's filename, the generated case
 blocks, and that this repository refuses a case collected twice, warns of crowded
-identifier blocks and refuses a harness under mutation.
+identifier blocks, refuses a harness under mutation and names no unregistered
+failure code.
 
 **These run in the ``unit`` precondition gate**, after pylint's Gate 1 and ahead of
 every graded band. A failure is an instrument defect, **not a model finding**: the run
@@ -57,6 +58,8 @@ less often.
 #   115762  this_repository_warns_of_its_own_crowded_blocks
 # TestMQCHarnessUnderMutation
 #   115764  this_repository_refuses_a_harness_under_mutation
+# TestMQCCodeRegistration
+#   115774  every_code_production_code_names_is_registered
 # ------------------------------------------------------------ end of cases
 
 import ast
@@ -92,6 +95,7 @@ from cmn.code_standards import (
     header_problems,
     markup_header_problems,
     markup_sources,
+    unregistered_code_literals,
 )
 
 # This repository's root, two levels above a case module.
@@ -607,3 +611,18 @@ class TestMQCHarnessUnderMutation:
         assert (imported_harness_root() / "cmn" / "mutation_guard.py").is_file(), (
             f"{imported_harness_root()} is not the harness this suite imports"
         )
+
+
+class TestMQCCodeRegistration:
+    """A code is registered in the harness before any code here names it."""
+
+    def MQC_CAS_UNI_115774_every_code_production_code_names_is_registered(self) -> None:
+        """This repository's code outside ``tests/`` names no unregistered code.
+
+        Design: harness ``harness_test_taxonomy.md`` section 6.2.1.
+
+        Returns:
+            None
+        """
+        found = unregistered_code_literals(_root())
+        assert not found, "code here names unregistered codes: " + "; ".join(found)

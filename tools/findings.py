@@ -823,7 +823,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     refusal = refuse_empty_run(report, observed, held_count)
     if refusal is not None:
         print(
-            f"QC_HARNESS_PRECONDITION: refusing to write the register because "
+            f"QC_HARNESS_REGISTER_REFUSED: refusing to write the register because "
             f"{refusal}.",
             file=sys.stderr,
         )

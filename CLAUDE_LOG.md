@@ -5131,3 +5131,19 @@ carrying the request that produced it.
   937 harness test cases, with its changelog entry.
 * **Code Quality & Compliance Audit:** 155 preconditions, all passing, exit 0;
   pylint 10.00/10, exit 0. Replay not re-run: nothing a band reads changed.
+
+## 2026-10-21: A run here learns it is in CI, and the findings tool's refusal carries a registered code
+
+* **When:** 20:30 to 00:00 UTC. The machine lost power at 00:10 and this entry
+  is written from its draft, with the figures re-measured on the recovered tree.
+* **Harness change**, `cmn_verdict_and_cli.md` section 7.1.4: the `conftest.py`
+  adopts the run context the harness reads from the environment and publishes
+  the precondition record a graded job reads. **The gate's band jobs stay
+  ungated** until `gate-target.yml` passes that record from its preconditions
+  job, which comes with the ladder taking the gate's shape.
+* **Found by the checks, and fixed:** `tools/findings.py` refused under a code no
+  registry held; it now names `QC_HARNESS_REGISTER_REFUSED`, and `115774` checks
+  this repository's code with the harness implementation.
+* **Code Quality & Compliance Audit:** 156 preconditions, all passing, exit 0;
+  pylint 10.00/10, exit 0; 171 requirements. Replay not re-run: nothing a band
+  reads changed.
