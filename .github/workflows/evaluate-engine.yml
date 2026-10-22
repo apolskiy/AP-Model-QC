@@ -8,8 +8,8 @@
 # job that moves both can only report that something changed. Each rung holds
 # everything fixed except one thing.
 #
-#   1  fixture candidate, fixture judge  ->  OUR CODE changed a frozen outcome
-#   2  fixture candidate, live judge     ->  THE JUDGE moved
+#   1  replay candidate, replay judge    ->  OUR CODE changed a frozen outcome
+#   2  replay candidate, live judge      ->  THE JUDGE moved
 #   3  live candidate,    live judge     ->  THE MODEL moved
 #
 # ONE ENGINE PER CALL, AND NOTHING AGGREGATES. These are the products of
@@ -31,6 +31,14 @@ on:
       engine:
         description: "Which engine the ladder evaluates"
         required: true
+        type: string
+      judge:
+        description: >-
+          Which engine grades rungs 2 and 3. Rung 1 has no judge dimension:
+          it replays both halves, and the code reading a stored judgement does
+          not vary with the engine that produced it (section 7.7.1).
+        required: false
+        default: "gemini"
         type: string
 
 permissions:
@@ -165,7 +173,7 @@ jobs:
   # verdicts is known-correct. An exemplar is known-correct by construction, so
   # calibration says whether the judge still means what the anchors say.
   judge:
-    name: 2 - the judge (replay, live) on ${{ inputs.engine }}
+    name: 2 - the judge (replay, live) on ${{ inputs.engine }}, judged by ${{ inputs.judge }}
     needs: [resolve, deterministic]
     concurrency:
       group: evaluate-live-${{ inputs.engine }}-${{ github.ref }}
@@ -204,12 +212,18 @@ jobs:
 
       - name: Calibration, against the anchors the exemplars were written for
         env:
+          # EVERY JUDGE'S KEY IS OFFERED AND THE NAMED ONE READS ITS OWN, the
+          # arrangement rung 3 already uses for candidates. A judge whose key
+          # is absent refuses at preflight, which is our configuration rather
+          # than a finding (section 4.17.2).
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           pytest -m "evaluator or tool or sec" \
             --engine ${{ inputs.engine }} \
             --mode replay \
             --judge-mode live \
+            --judge-engine ${{ inputs.judge }} \
             -k calibration \
             --max-spend "${{ inputs.max_spend }}" \
             --junitxml=reports/junit_calibration.xml \
@@ -218,12 +232,18 @@ jobs:
       - name: Graded layers, stored responses judged live
         if: always()
         env:
+          # EVERY JUDGE'S KEY IS OFFERED AND THE NAMED ONE READS ITS OWN, the
+          # arrangement rung 3 already uses for candidates. A judge whose key
+          # is absent refuses at preflight, which is our configuration rather
+          # than a finding (section 4.17.2).
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           pytest -m "evaluator or tool or sec" \
             --engine ${{ inputs.engine }} \
             --mode replay \
             --judge-mode live \
+            --judge-engine ${{ inputs.judge }} \
             --max-spend "${{ inputs.max_spend }}" \
             --junitxml=reports/junit_replay_live.xml \
             --alluredir=reports/allure-results
@@ -231,7 +251,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: mqc-reports-cases-${{ inputs.engine }}-replay-live
+          name: mqc-reports-cases-${{ inputs.engine }}-replay-live-by-${{ inputs.judge }}
           path: reports/
           retention-days: 90
 
@@ -262,7 +282,7 @@ jobs:
   # MODEL, and per A2 a model regression never blocks a merge: it is reported
   # as an alert and gates nothing.
   model:
-    name: 3 - the model (live, live) on ${{ inputs.engine }}
+    name: 3 - the model (live, live) on ${{ inputs.engine }}, judged by ${{ inputs.judge }}
     needs: [resolve, judge]
     concurrency:
       group: evaluate-live-${{ inputs.engine }}-${{ github.ref }}
@@ -318,6 +338,7 @@ jobs:
           pytest -m "evaluator or tool or sec" \
             --engine ${{ inputs.engine }} \
             --mode live \
+            --judge-engine ${{ inputs.judge }} \
             --max-spend "${{ inputs.max_spend }}" \
             --junitxml=reports/junit_live_live.xml \
             --alluredir=reports/allure-results
@@ -325,7 +346,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: mqc-reports-cases-${{ inputs.engine }}-live-live
+          name: mqc-reports-cases-${{ inputs.engine }}-live-live-by-${{ inputs.judge }}
           path: reports/
           retention-days: 90
 

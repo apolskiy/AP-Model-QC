@@ -40,6 +40,42 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### claude joins as a second judge, and one word names each concept, 2026-10-21
+
+**gemini scored its own engine unchecked.** The project owner: "gemini judging
+itself, adn finding least problems, can look suspect." The ladder takes the
+judge as an input, rungs 2 and 3 name it on every graded invocation and carry
+it in their job names and artifacts, and one caller per engine runs it with
+claude. **Rung 1 takes no judge**, at the owner's reading: it replays both
+halves, so it measures our code, and the code reading a stored judgement does
+not vary with the engine that produced it (section 7.7, `MQC_REQ_CAS_PRE_0014`,
+case `115777`, five injections).
+
+**A claude-judged run is started by hand and is still counted.** Its cadence is
+`on-dispatch`, never `on-demand`, because the cadence in the filename is what
+`run_context` reads and the debug one yields no verdict. The two differ by one
+word and by whether the run counts, which nothing enforces: recorded as a gap
+in the harness register (section 7.7.4).
+
+**Raised and not acted on: rung 3's judge comparison is confounded.** Two live
+runs draw their own candidates, so a verdict differing between two judges there
+is a difference in the responses, the judges, or both. The comparison the
+second judge was added for lives at rung 2, where the responses are a
+recording. Rung 3 runs as instructed and the question is open as 2.5 in the
+harness register (section 7.7.2).
+
+**One word per concept, after reading every document for drift.** The mode is
+**`replay`**, never `fixture` or `Frozen`: `--mode replay` is the flag, and four
+design tables headed a column `Fixtures` and filled it `Frozen`. A step of the
+ladder is a **`rung`**, never `Job 1`: eighteen sites in one document said job
+while forty others and every workflow job name said rung, and a CI job is also
+a job. **`consumer` and `the case repository` both stay**, and the reason is
+recorded: a consumer is the role and the harness has a registry of them, while
+the case repository is the one that exists. 199 uses against 55 read as drift
+and are not.
+
+159 preconditions, 174 requirements.
+
 ### Every band job learns that the preconditions held, 2026-10-21
 
 **The gate's band rows stayed ungated**, because a band job could not tell the

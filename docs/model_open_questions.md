@@ -139,6 +139,8 @@ These need no decision. They are recorded so the absence is on the record.
 |---|---|
 | A replay-built findings register cannot see an over-refusal or a dependent dispatched under an inquest | `consumer_ci.md` section 9.4.8. grok's `QC_LLM_OVER_REFUSAL` and claude's seven security dependents are real and absent from it |
 | A re-record needing fewer observations than the previous run leaves the surplus behind | Pruned by hand three times on 2026-10-12. Nothing prunes at the point of recording |
+| `model_evaluation_test_plan.md` reads 9.10, 9.13, 9.11, 9.12 | `9.13` was appended where the next number fell rather than where it belongs, and `9.12` is written `#### 9.12`, a fourth-level heading carrying a third-level number, so it reads as a subsection of `9.11`. Every citation still resolves, which is why nothing caught it; the harness records the same disorder in its own documents and the remedy for both is a check on the order |
+| Nothing can replay a claude judgement until a claude-judged rung 2 has recorded one | `consumer_ci.md` section 7.7.3. The store is keyed `judgements/<engine>/<judge>/` and its claude side is empty, so a claude-judged gate would skip every case for a missing judgement. **This is an ordering constraint rather than a defect**, and it is why the per-push gate was not given a claude-judged twin |
 
 ---
 

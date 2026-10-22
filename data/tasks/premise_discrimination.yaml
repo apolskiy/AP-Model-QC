@@ -9,10 +9,13 @@
 # bound rather than a bare skill name, and the question is whether the response
 # says how the resume and the posting actually match.
 #
-# THE RESUME IS HELD FIXED WHERE IT CAN BE. `prm_cap_exceeded` and
-# `prm_floor_short` reuse the 15+ summary the requirement matching family
-# already records, so the only thing that differs between those cases and
-# `mat_experience_stated` is the shape of the bound.
+# THE RESUME IS HELD FIXED WHERE IT CAN BE, AND WHERE IT CANNOT THE REASON IS
+# THE BOUND. `prm_cap_exceeded` reuses the 15+ summary the requirement matching
+# family already records, so the only thing differing from
+# `mat_experience_stated` is the shape of the bound. `prm_floor_short` carries
+# 8+ instead, because a floor case needs a summary that CANNOT settle the
+# requirement: 15+ against a floor of nine settles it, and the case would then
+# be asking nothing. Corrected 2026-10-21, having claimed both reused 15+.
 #
 # A CAP IS NOT A FLOOR, AND THAT IS THE WHOLE FAMILY. Against a floor of 8,
 # answering "8+" while holding fifteen is correct and `mat_experience_derived`

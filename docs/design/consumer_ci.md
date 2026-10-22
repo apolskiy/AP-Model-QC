@@ -1036,6 +1036,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115774` | N | `every_code_production_code_names_is_registered` |
 | `115775` | N | `a_band_not_reading_the_precondition_record_is_reported` (3.12.1.1) |
 | `115776` | N | `a_graded_invocation_leaving_out_a_layer_is_reported` (4.21) |
+| `115777` | N | `a_rung_that_grades_without_naming_its_judge_is_reported` (7.7) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -1051,7 +1052,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 113 cases, 84 negative, 23 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 114 cases, 85 negative, 23 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2036,9 +2037,9 @@ never a live call (harness `tier2_execution.md` section 7.9).
 
 | Run | Candidate | Judge | Spends |
 |---|---|---|---|
-| Gate, replay | Fixture | Fixture | Nothing |
-| Debug, replay, judging on failure | Fixture | Fixture, or a skip where none is stored | Nothing |
-| Ladder Job 2 | Fixture | **Live**, by `--judge-mode live` | One judge request per judged case |
+| Gate, replay | Replay | Replay | Nothing |
+| Debug, replay, judging on failure | Replay | Replay, or a skip where none is stored | Nothing |
+| Ladder rung 2 | Replay | **Live**, by `--judge-mode live` | One judge request per judged case |
 | Live schedule | Live | Live | Both |
 
 **Corrected 2026-10-14.** This section said there was no judge fixture and a
@@ -2061,17 +2062,22 @@ fixtures the same way (harness `harness_test_taxonomy.md` section 7.4.2).
 
 | Candidate | Judge | What a result establishes |
 |---|---|---|
-| Fixture | Fixture | **Our code**, against a frozen outcome. Job 1 of the ladder in section 7 |
-| Fixture | Live | **The judge** moved. Job 2 |
-| Live | Live | **The model** moved. Job 3, and the only source of a finding |
+| Replay | Replay | **Our code**, against a frozen outcome. Rung 1 of the ladder in section 7 |
+| Replay | Live | **The judge** moved. Rung 2 |
+| Live | Live | **The model** moved. Rung 3, and the only source of a finding |
+
+**`replay` is the mode's name, and a fixture is the file it reads.** These
+tables said "fixture" in the column naming a mode, which is the word
+`--mode replay` uses and the word the job names use; corrected 2026-10-21 at
+the project owner's reading.
 
 **So a finding filed against a vendor cites a live candidate.** That is the rule
-a reader needs, and it is not a restriction on the store: Job 1 is the
+a reader needs, and it is not a restriction on the store: rung 1 is the
 pull-request gate and is meant to be free and deterministic. What is refused is
 reading a number produced that way as a statement about a provider.
 
 **The second fixture kind exists and is keyed separately**, by judge engine as
-well, which is what made Job 2 separable from Job 3 in the first place.
+well, which is what made rung 2 separable from rung 3 in the first place.
 
 
 ---
@@ -2092,41 +2098,48 @@ judgement does. A case all of whose observations were unjudged skips with that
 code and says the judged criteria were not checked; a failing check still fails.
 `MQC_CAS_UNI_115772` asserts it.
 
-## 7. The Three-Job Attribution Ladder
+## 7. The Three-Rung Attribution Ladder
 
 Added 2026-09-24. A graded run has two moving parts, the candidate and the
 judge, and a single job that moves both can only report that something changed.
 
-**Each job holds everything fixed except one thing**, which is the same
+**Each rung holds everything fixed except one thing**, which is the same
 principle the repository split was built on and the same one
 `diagnose-on-demand.yml` applies to code and fixtures.
 
-| Job | Candidate | Judge | A failure means | Blocks | Credentials |
+**One word for a step of this ladder, and it is `rung`.** Corrected 2026-10-21:
+this section called them `Job 1` to `Job 3` while forty other places, every
+workflow job name and the harness's own designs said `rung`. **A CI job is also
+a job**, so "job 2 needs job 1 green" read as a claim about the job graph, which
+is precisely what a rung is not: rung 2 is three jobs in the gate's shape, and
+one rung's relation to the next is an attribution, not a dependency edge.
+
+| Rung | Candidate | Judge | A failure means | Blocks | Credentials |
 |---|---|---|---|---|---|
-| 1 | fixture | fixture | **Our code** changed a frozen outcome | Yes | **None** |
-| 2 | fixture | live | **The judge** moved | No | Judge only |
+| 1 | replay | replay | **Our code** changed a frozen outcome | Yes | **None** |
+| 2 | replay | live | **The judge** moved | No | Judge only |
 | 3 | live | live | **The model** moved | No | All |
 
 The fourth quadrant is refused rather than run: a stored score describes a
 specific response, so replaying one against a newly generated response answers
 a question nobody asked (`tier3_evaluation.md` section 5A.5.1).
 
-### 7.1 Job 1 can now live in the gate, which it could not before
+### 7.1 Rung 1 can now live in the gate, which it could not before
 
 Until judge fixtures existed, a graded gate meant **a live judge call for every
 case whose assertions passed**. That is quota on every push, a verdict that
 could differ between two runs of one commit, and a credential inside the
 workflow A1 keeps credential-free.
 
-With both sides replayed, job 1 is deterministic, costs nothing and needs no
+With both sides replayed, rung 1 is deterministic, costs nothing and needs no
 secret, so **the gate grades**. That is the payoff of the judge fixture and the
 reason it was worth building.
 
 ### 7.2 They run in sequence, and a red job stops the ladder
 
-Job 2 needs job 1 green, and job 3 needs job 2 green.
+Rung 2 needs rung 1 green, and rung 3 needs rung 2 green.
 
-**A failing job 1 means our code changed a frozen outcome.** Running the judge
+**A failing rung 1 means our code changed a frozen outcome.** Running the judge
 live after that spends quota to rediscover something already established, which
 is the reasoning `framework-rules.md` section 1 uses for preconditions gating
 the graded layers, applied one level up.
@@ -2147,14 +2160,14 @@ cannot live there.
 | `gate-on-change.yml` | 1 | Every push and pull request |
 | `evaluate-live-weekly.yml` | 1, then 2, then 3 | Weekly, and on dispatch |
 
-**Job 1 runs in both, deliberately.** In the gate it is the gate; in the weekly
+**Rung 1 runs in both, deliberately.** In the gate it is the gate; in the weekly
 run it is the precondition that decides whether spending quota is worth it. It
 is free, so running it twice costs nothing and removes the need to reason about
 a result carried between workflows.
 
-### 7.4 What job 2 reports, and what calibration adds
+### 7.4 What rung 2 reports, and what calibration adds
 
-Job 2 re-judges stored responses with the live judge and compares the verdict.
+Rung 2 re-judges stored responses with the live judge and compares the verdict.
 It also runs **calibration**, because the two answer different halves of one
 question.
 
@@ -2168,11 +2181,11 @@ known-correct by construction and neither of two verdicts is. A job reporting
 the first alone would tell an operator that something moved and leave them
 without a way to decide what to do about it.
 
-### 7.5 A red job 2 does not refresh anything
+### 7.5 A red rung 2 does not refresh anything
 
 **Drift that changes no outcome** is recorded, and the judgements may be
 refreshed. **Drift that changes an outcome** is not: the stored judgements stay
-authoritative, job 1 keeps working, and the new judge is quarantined until the
+authoritative, rung 1 keeps working, and the new judge is quarantined until the
 rubrics are recalibrated.
 
 Auto-refreshing there would silently rewrite what a pass means and break every
@@ -2215,6 +2228,110 @@ quota, so it does not start.
 
 
 ---
+
+### 7.7 A second judge, and the one rung where comparing two judges means anything
+
+Decided 2026-10-21 by the project owner, on gemini scoring its own engine:
+"gemini judging itself, adn finding least problems, can look suspect." claude
+joins as a second judge. Both judges score every engine, **each engine and
+judge pair is a separate independent run**, and the CI names carry the judge.
+Refined the same evening: the gemini-judged runs behave as they do today, and
+the claude-judged ones are started by hand with a documented switch to make
+them behave the same way, citing the spend.
+
+**Agreement between two judges decides nothing by itself.** Two judges agreeing
+on a failure is not a second confirmation and two disagreeing is not a
+tie-break; either prompts an investigation of the case, the prompt, the
+responses and the two judgements. Section 9.4 of `model_running_jobs.md` records
+why a panel was withdrawn and it still holds: several judges scoring one
+observation needs a rule for which of them is right, and that rule is a judge
+over the judges. **Two runs, each with one judge, is how the comparison is made
+deliberately** rather than by a mechanism that has to resolve it.
+
+#### 7.7.1 Rung 1 has no judge dimension
+
+The project owner, 2026-10-21: "replay replay was used to test harness. Since
+harness gets tested on gemini, is there a point to retest the whole harness on a
+different judge?"
+
+**There is not.** Rung 1 replays both halves, so what it establishes is that our
+code reads its own recordings the same way. **The code path does not vary with
+which engine produced a stored judgement**: the same functions parse, score and
+aggregate it whatever the file says the judge was. Running rung 1 against a
+second judge's store spends runner time re-establishing a property already
+established, and the run is deterministic, so it cannot even be flaky.
+
+**So rung 1 runs once, replaying the judgements as recorded**, and rungs 2 and 3
+carry the judge.
+
+#### 7.7.2 Rung 2 is the comparison, and rung 3's is confounded
+
+**Raised 2026-10-21 while building this, and not acted on.** The project owner
+named rung 1 as the one exception, so a claude-judged ladder runs rung 3 as
+instructed. What follows is the reason to reconsider, recorded where the
+decision would be made.
+
+| Rung | Candidate | Two judges give | Comparable |
+|---|---|---|---|
+| 1 | Replay | The same deterministic result | Nothing to compare |
+| 2 | **Replay** | Two scores over **one** set of responses | **Yes.** A difference is the judge |
+| 3 | Live | Two scores over **two** sets of responses | **No.** Each live run draws its own candidates |
+
+**A live run cannot be held fixed across judges.** Rung 3 dispatches the
+candidate afresh, so a claude-judged rung 3 and a gemini-judged rung 3 score
+different responses. A verdict that differs between them is a difference in the
+responses, in the judges, or in both, and nothing in the result separates them.
+The comparison the second judge was added for lives at **rung 2**, where the
+responses are a recording and the judge is the only thing that moved.
+
+**What a claude-judged rung 3 does still buy, which is why this is recorded
+rather than removed:** a finding filed against a vendor must cite a live
+candidate (section 6.4.1), so a finding only claude's judging produces needs a
+live run before it can be filed at all.
+
+#### 7.7.3 What a second judge costs
+
+| Run | Candidate spend | Judge spend |
+|---|---|---|
+| Rung 2, claude-judged | **None.** The responses are a recording | One claude request per judged case |
+| Rung 3, claude-judged | One per observation, on the candidate's provider | One claude request per judged case |
+
+**Rung 2 is the cheap half and the only one that produces something no gemini
+run can**, which is the argument for running it first and often and rung 3
+rarely.
+
+**Nothing can replay a claude judgement until a claude-judged rung 2 has
+recorded one.** The store is keyed `judgements/<engine>/<judge>/` and the claude
+side of it is empty, so a claude-judged gate would skip every case for a missing
+judgement. That ordering is why the gate is not given a claude-judged twin here.
+
+#### 7.7.4 A manual trigger is not a debug run, and the filename decides
+
+**This is load-bearing and one word wide.** `run_context` is derived from the
+workflow filename: a cadence of `on-demand` reads as `ci_debug` and yields no
+verdict (harness `cmn_verdict_and_cli.md` section 7.1.4). A claude-judged run is
+started by hand and **is** counted, which is what the project owner asked for:
+"manual ci job for claude as judge will still run lints and all p0-p4 jobs in
+sequence, why would they not be gated?"
+
+So its cadence is `on-dispatch`, which `harness_ci_pipeline.md` section 2.1
+reserves for exactly this, and never `on-demand`. **The two differ by one word
+and by whether the run counts at all**, and nothing enforces the set: that gap
+is recorded in the harness `harness_open_questions.md` section 2B, along with
+the three other filenames already outside the listed cadences. A check is what
+would make the suffix safe to read, and until there is one this paragraph is
+the whole of the enforcement.
+
+#### 7.7.5 The gemini callers keep their filenames for now
+
+The judge belongs in the names and it is in the **job and rung** names today:
+`2 - the judge (replay, live) on openai, judged by claude`. The four
+`evaluate-<engine>-weekly.yml` files are **not** renamed yet, because a filename
+is a cross-workflow reference and the harness probe dispatches these by name
+(`harness_ci_pipeline.md` section 2.1, which also records that renaming a
+workflow twice costs a dangling reference in between). The probe moves to this
+repository at the next step of the probe and calibration plan, and the rename
+happens with it: one rename rather than two.
 
 ## 8. The Operator Runbook
 

@@ -5171,3 +5171,45 @@ carrying the request that produced it.
 * **Code Quality & Compliance Audit:** 158 preconditions, all passing, exit 0;
   pylint 10.00/10, exit 0; 173 requirements. Replay not re-run: nothing a band
   reads changed.
+
+## 2026-10-21, late: A second judge, and one word for each concept
+
+* **Asked by the project owner:** "it should be the same as gemini judge setup
+  only for claude, the rest does not change. Except replay replay was used to
+  test harness. Since harness gets tested on gemini, is there a point to retest
+  the whole harness on a different judge?" **There is not**, and that settled
+  the shape: rung 1 takes no judge, rungs 2 and 3 carry it.
+* **I had asked the wrong question first.** I offered a choice between giving
+  every rung the gate's band structure and giving it only to rung 2, and the
+  owner rejected the premise: nothing else changes. The question I should have
+  asked was about rung 1, which they raised unprompted.
+* **Built:** the judge is an input to the ladder, the grading rungs name it and
+  carry it in their job names and artifact names, and one `on-dispatch` caller
+  per engine runs it with claude. `MQC_REQ_CAS_PRE_0014`, `115777`. Five
+  injections.
+* **Raised and not acted on:** rung 3's judge comparison is confounded, because
+  two live runs draw their own candidates. The owner named rung 1 as the one
+  exception, so rung 3 runs; the question is open as 2.5 in the harness
+  register, and what keeps it open is that a finding filed against a vendor
+  must cite a live candidate.
+* **Asked by the project owner:** review every document for functionality
+  present in one place and absent in another, and for one concept carrying two
+  words. **`replay`, not `fixture` or `Frozen`:** the owner, "we even call the
+  mode replay", and four tables headed a column `Fixtures` while filling it
+  `Frozen`. **`rung`, not `Job 1`:** eighteen sites in one document against
+  forty elsewhere, and a CI job is also a job.
+* **Digressions the user spotted, and the fix:**
+  * **I was about to standardise `consumer` and `the case repository` into one
+    word**, on a count of 199 against 55. They are not synonyms: a consumer is
+    the role, `cmn/registries.py` holds a registry of them and
+    `regress-consumers-on-merge.yml` fans out across it, and the case
+    repository is the one that exists. **55 edits would have destroyed the
+    distinction**; the rule now records it.
+  * **An injection went NOT CAUGHT and the check was reading a word.** Rung 2 is
+    named "the judge" whatever grades it, so asserting "judge" appears in the
+    name passed with no judge in it. It reads the interpolation now.
+  * **The new case took its module past the runway**, as the harness case did
+    this morning. `mqc_uni_judge_dimension.py` holds it.
+* **Code Quality & Compliance Audit:** 159 preconditions, all passing, exit 0;
+  pylint 10.00/10, exit 0; 174 requirements. Replay not re-run: nothing a band
+  reads changed.

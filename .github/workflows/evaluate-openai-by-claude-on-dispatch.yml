@@ -1,0 +1,68 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# The attribution ladder for openai, judged by claude.
+#
+# WHY A SECOND JUDGE. The project owner, 2026-10-21: "gemini judging itself,
+# adn finding least problems, can look suspect." Both judges score every
+# engine, each engine and judge pair is a separate independent run, and the
+# names carry the judge. Design `consumer_ci.md` section 7.7.
+#
+# ONE JUDGE PER RUN, NEVER A PANEL. Several judges scoring one observation
+# needs a rule for which of them is right, and that rule is a judge over the
+# judges. Two runs, each with one judge, is the comparison made deliberately.
+# Agreement decides nothing by itself: it prompts an investigation of the case,
+# the prompt, the responses and the two judgements.
+#
+# STARTED BY HAND, AND STILL COUNTED. `on-dispatch`, never `on-demand`: the
+# cadence in the filename is what `run_context` reads, and `on-demand` means a
+# debug run whose rows yield no verdict. The project owner: "manual ci job for
+# claude as judge will still run lints and all p0-p4 jobs in sequence, why
+# would they not be gated?" Section 7.7.4, and harness
+# `cmn_verdict_and_cli.md` section 7.1.4.
+#
+# TO MAKE IT BEHAVE LIKE THE GEMINI-JUDGED RUN, add the schedule its caller
+# carries and the `workflow_run` dispatch from the probe, and rename this file
+# to `evaluate-openai-by-claude-weekly.yml`, which is a paired change with
+# whatever dispatches it. **What that costs:** rung 2 spends one claude request
+# per judged case and nothing on candidates, since the responses are a
+# recording; rung 3 spends on both. The monthly cap is $20 per provider, and a
+# second judge on every engine weekly is a second judge bill, not a second
+# candidate bill. Section 7.7.3.
+#
+# RUNG 1 IS NOT REPEATED FOR A SECOND JUDGE. It replays both halves, so it
+# measures our code, and the code reading a stored judgement does not vary
+# with the engine that produced it. The project owner: "Since harness gets
+# tested on gemini, is there a point to retest the whole harness on a
+# different judge?" Section 7.7.1.
+name: evaluate-openai-by-claude-on-dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_spend:
+        description: "USD ceiling for this run. The monthly cap is $20 per provider"
+        required: false
+        default: "2.00"
+        type: string
+
+# NOT cancel-in-progress, and KEYED WITH THE JUDGE. A cancelled live run yields
+# partial artifacts, which A6 forbids presenting as complete. The judge is in
+# the key because a claude-judged run and a gemini-judged run of this engine
+# measure different things and must not exclude one another.
+concurrency:
+  group: evaluate-live-openai-by-claude
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  ladder:
+    name: openai, judged by claude
+    uses: ./.github/workflows/evaluate-engine.yml
+    with:
+      max_spend: ${{ inputs.max_spend || '2.00' }}
+      engine: openai
+      judge: claude
+    secrets: inherit
