@@ -617,8 +617,6 @@ configurable and is not meant to be: the two would otherwise spend one
 free-tier quota from two uncounted directions.
 
 
-## 10. Adding An Engine, Or A Second Judge
-
 ### 9.1 An engine on a protocol somebody already serves
 
 xAI (Grok), DeepSeek, Mistral, Groq, Together, OpenRouter and Ollama all serve
@@ -688,4 +686,6 @@ the same observation twice.
 **To compare judges, run twice.** The same recordings replayed with a live
 judge on each engine in turn give two sets of judgements against identical
 responses, which is the comparison a panel would have made, made deliberately.
+
+## 10. Adding An Engine, Or A Second Judge
 

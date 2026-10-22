@@ -396,6 +396,38 @@ concludes it.
 | **No run recorded yet** | **Waits**, on the same budget |
 | A wait that runs out | Refuses. An unfinished gate established nothing |
 
+#### 3.11.1 A run not yet registered is pending, not absent
+
+Corrected 2026-09-29, on the first paired push after section 3.11 was written.
+
+**The row above used to say absence was refused at once**, on the reasoning that
+no amount of waiting grows a run. That was wrong, and in the narrowest possible
+way. The harness was pushed at 02:25:15 and this repository at 02:25:22; the
+resolver asked GitHub about the harness commit before GitHub had registered a
+run against it, and refused a commit whose gate started moments later and passed
+every job.
+
+**Nothing in the API distinguishes the two.** A commit pushed one second ago with
+no run yet and a commit that will never have a run return the same empty list.
+The only thing that separates them is how long you look, so the resolver looks
+again on the same budget it already waits on.
+
+**Section 3.2 still holds, and this is the reason the wait is bounded.** Waiting
+postpones concluding that there is no run; it never reads absence as a pass. A
+commit that genuinely has none is refused when the budget runs out, with the same
+`QC_HARNESS_UPSTREAM_UNVERIFIED` it always carried.
+
+The cost of the old behaviour was a red consumer run on every paired push — the
+same toil section 3.11 was written to remove, arriving seven seconds earlier in
+the window than the case that found it.
+
+**Ten minutes, and the bound matters.** The harness gate finishes in two to three,
+so the budget absorbs a queued runner without letting a wedged upstream run hold a
+consumer job all day.
+
+**The clock is injected**, so `MQC_CAS_UNI_115318` exercises the timeout without
+spending it.
+
 #### 3.11.2 The wait is a tolerance, and the remedy for exceeding it is ordering
 
 **Decided 2026-10-05 by the project owner**, after three gates refused on a
@@ -437,38 +469,6 @@ branches are still exempt with `require_green: false`, and the exemption is
 still what lets stabilization work proceed against a harness in flight. The
 rule here is about `main`, where `require_green: true` already says the harness
 must have passed.
-
-#### 3.11.1 A run not yet registered is pending, not absent
-
-Corrected 2026-09-29, on the first paired push after section 3.11 was written.
-
-**The row above used to say absence was refused at once**, on the reasoning that
-no amount of waiting grows a run. That was wrong, and in the narrowest possible
-way. The harness was pushed at 02:25:15 and this repository at 02:25:22; the
-resolver asked GitHub about the harness commit before GitHub had registered a
-run against it, and refused a commit whose gate started moments later and passed
-every job.
-
-**Nothing in the API distinguishes the two.** A commit pushed one second ago with
-no run yet and a commit that will never have a run return the same empty list.
-The only thing that separates them is how long you look, so the resolver looks
-again on the same budget it already waits on.
-
-**Section 3.2 still holds, and this is the reason the wait is bounded.** Waiting
-postpones concluding that there is no run; it never reads absence as a pass. A
-commit that genuinely has none is refused when the budget runs out, with the same
-`QC_HARNESS_UPSTREAM_UNVERIFIED` it always carried.
-
-The cost of the old behaviour was a red consumer run on every paired push — the
-same toil section 3.11 was written to remove, arriving seven seconds earlier in
-the window than the case that found it.
-
-**Ten minutes, and the bound matters.** The harness gate finishes in two to three,
-so the budget absorbs a queued runner without letting a wedged upstream run hold a
-consumer job all day.
-
-**The clock is injected**, so `MQC_CAS_UNI_115318` exercises the timeout without
-spending it.
 
 #### 3.11.3 A gate cancelled because a newer commit replaced it is followed
 
@@ -592,27 +592,6 @@ on a higher band's cases needs that band's outcomes, so the order is forced by
 the corpus; a band with no such dependents could already run beside the others.
 That is the boundary on "separate ci jobs for each set of tiers": the jobs may
 separate, and the outcome record is what has to reach each one.
-
-#### 3.12.3 A reporting job runs after every band, and a red run is the one worth reading
-
-Added 2026-10-06 at the project owner's instruction: **for a release decision
-the band results matter, and a total tells a reader nothing of substance.** The
-`report` job renders the per-band table the harness specifies in
-`cmn_verdict_and_cli.md` section 7.11.1, into `$GITHUB_STEP_SUMMARY`.
-
-**It needs all three bands and runs `if: always()`.** A band that failed still
-established what it established, and this is the job whose output a person reads
-precisely when something went wrong: a summary that appeared only on green would
-be a summary of the runs nobody needs to look at.
-
-**One `--priority` per report, not a filename convention.** A row is attributed
-to the band that produced it because the workflow says which is which, so
-renaming an artifact cannot silently relabel a band's result.
-
-**The table never overrides a band.** Each band still gates on its own status
-(section 3.12.2), so `report` is a reader, not a judge. **A run at 95% overall
-with one P0 failure does not ship**, and the table states that verdict in its
-own line rather than leaving it to be inferred from a healthy total.
 
 #### 3.12.2 Every band answers to a floor, and the blocking ones answer for every case they selected
 
@@ -743,6 +722,27 @@ already knows how to read.
 override and the default cannot come to disagree about what a rate is.
 
 ---
+
+#### 3.12.3 A reporting job runs after every band, and a red run is the one worth reading
+
+Added 2026-10-06 at the project owner's instruction: **for a release decision
+the band results matter, and a total tells a reader nothing of substance.** The
+`report` job renders the per-band table the harness specifies in
+`cmn_verdict_and_cli.md` section 7.11.1, into `$GITHUB_STEP_SUMMARY`.
+
+**It needs all three bands and runs `if: always()`.** A band that failed still
+established what it established, and this is the job whose output a person reads
+precisely when something went wrong: a summary that appeared only on green would
+be a summary of the runs nobody needs to look at.
+
+**One `--priority` per report, not a filename convention.** A row is attributed
+to the band that produced it because the workflow says which is which, so
+renaming an artifact cannot silently relabel a band's result.
+
+**The table never overrides a band.** Each band still gates on its own status
+(section 3.12.2), so `report` is a reader, not a judge. **A run at 95% overall
+with one P0 failure does not ship**, and the table states that verdict in its
+own line rather than leaving it to be inferred from a healthy total.
 
 ### 3.12.5 The one release, and how a skip names its cause
 
@@ -1003,6 +1003,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115733` | P | `a_ticket_input_is_the_recorded_request_not_the_corpus` |
 | `115734` | N | `an_unresolved_or_duplicated_citation_is_reported` |
 | `115735` | N | `a_readme_without_a_changelog_is_reported` |
+| `115778` | N | `a_section_sitting_out_of_numeric_order_is_reported` (code-style 7.5) |
 | `115736` | P | `the_finding_reader_carries_the_questions` |
 | `115737` | P | `a_finding_that_stopped_reproducing_is_withdrawn` |
 | `115738` | N | `a_run_that_collected_nothing_does_not_retire_findings` |
@@ -1052,7 +1053,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 114 cases, 85 negative, 23 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 115 cases, 86 negative, 23 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1103,36 +1104,6 @@ suite and reports an identifier bound twice in either. The harness has
 `MQC_CMN_UNI_112226` and reads its own registers the same way; the asymmetry is
 what let five collisions accumulate unnoticed for a week.
 
-## 4A. The harness is a dependency, not the directory next door
-
-Added 2026-09-28, from the first CI run in which a judged case was replayable.
-
-**Gate 4 failed in CI and could not fail on any developer's disk.**
-`graded_support` located the engine roster and the price table at
-`../AP-Harness-QC/config/`, which is true only where both repositories are
-checked out side by side. CI installs the pinned harness from git, so the path
-did not exist, an absent file loaded as an empty mapping the way an optional
-one does, and the run failed with `judge engine 'gemini' is not on the roster`
-— a misconfigured instrument, reported three layers from its cause.
-
-**The local suite could not catch it**, because the sibling is always there.
-Gate 4 had also never reached this code before: until the `amb` family was
-recorded, every graded case skipped on a missing fixture before a judge was
-ever built. The first replayable judged case is what exposed it.
-
-**So the harness ships its own configuration** and is asked where it landed,
-through `cmn.config.packaged_roster_path` (harness `cmn_verdict_and_cli.md`
-section 10.37). Nothing here reaches out of this repository to find harness
-files.
-
-`MQC_CAS_UNI_115200` asserts the shape rather than the outcome, over the syntax
-tree rather than the text: no path expression in `tests/` or `tools/` may name
-the harness directory. Scanning the text flagged the prose that explains the
-rule and the pin's own `apolskiy/AP-Harness-QC`, neither of which reaches
-anywhere. `MQC_CAS_UNI_115201` pins the consequence — the roster resolves and
-names engines — because an empty roster is what the failure actually looked
-like.
-
 ### 4.1 Why the negatives outnumber the positives
 
 Every row in the table at section 3.2 is a way for the gate to **fail open**,
@@ -1174,6 +1145,175 @@ not two rules.
 dated branch matching no entry takes the default, which is silent and pairs it
 with `main`, so a stabilization branch could quietly run against the wrong
 harness while looking configured.
+
+---
+
+### 4.4 A pull request takes its target's strictness
+
+Added 2026-09-24, correcting a hole in section 3.
+
+`gate-on-change.yml` resolved the pairing from `github.head_ref`, so a pull
+request was evaluated with **the source branch's** strictness. A pull request
+from a stabilization branch into `main` therefore resolved the stabilization
+entry, which is advisory, and could run ungated, yield no verdict, and merge.
+**Code could land on `main` having never been measured with an established
+instrument.**
+
+**Merging into `main` means `main`'s rules apply.** Stabilization conforms to
+`main`, not the other way around, which is what makes `main` a branch anybody
+can roll back to.
+
+#### 4.4.1 The ref and the strictness come from different ends
+
+They answer different questions, so they resolve from different branches.
+
+| Question | Answered by | Because |
+|---|---|---|
+| Which harness does this run against | The **head** branch | The work knows what capability it needs |
+| How strict is the verdict | The **target** branch | The destination sets the bar it will accept |
+
+A push resolves both from the same branch, because there is no other end.
+
+**Strictness is the stricter of the two, never the looser.** An advisory head
+merging into a strict target takes the target's strictness; there is no
+arrangement in which a pull request is more permissive than either end alone,
+which is the property that stops the rule being routed around.
+
+
+### 4.5 The dependency cascade applies here too
+
+Added 2026-09-24. The cascade is implemented in the harness
+(`cmn_verdict_and_cli.md` section 10.28) and reaches this repository through
+`cmn.pytest_support`, which `conftest.py` already delegates every hook to.
+
+**It is what makes the security ordering expressible.** `model_evaluation_test_plan.md`
+section 4 assigns P0 to four security cases and P1 to three more; the elaborate
+cases below them presuppose those results, and running an elaborate case after
+its foundation failed reports one defect twice.
+
+
+### 4.7 The obfuscated payloads are guarded as code points
+
+Added 2026-09-24. `115009` loads the shipped corpus through the real loader and
+asserts the obfuscation payloads still carry the code points they are made of.
+
+**These are the first data in the project whose meaning is not its text.** A
+zero-width joiner and a Cyrillic small letter o are invisible and
+indistinguishable respectively, so a corrupted payload looks correct in every
+diff, every review and every editor.
+
+| Payload | What must survive | Why nothing else would notice |
+|---|---|---|
+| `154105` | Zero-width characters between the letters | They render as nothing |
+| `154106` | Cyrillic letters inside Latin words | They render identically to Latin |
+| `154104` | A base64 blob that decodes to the override | It decodes or it does not |
+
+**The canary assertions cannot catch this.** They are ASCII and would keep
+passing against a mangled payload, which is precisely the failure mode: the
+fixture goes on working and stops saying whether it still does. `115009`
+decodes the base64 and counts the code points, so a corruption is a failure
+rather than a silence.
+
+**It also pins the vectors.** Each payload must still match the registered
+vector it was written for, which is the two-screen cross-check
+`MQC_EVL_UNI_114608` depends on.
+
+
+### 4.8 A graded evaluation rule carries a rubric
+
+Added 2026-09-24. `115010` covers the corpus half of `tier3_evaluation.md`
+section 4D.3.
+
+**Omitting a rubric now decides something**, so it has to be visible. A rule
+serving an `EVAL` case exists to be judged: its requirement is about response
+quality, and quality is what a rubric measures. A tool or security rule
+legitimately carries none, because those families are decided by deterministic
+checks and a rubric there would never run.
+
+**The check belongs here rather than in the harness**, for the reason
+`CLAUDE.md` gives: the harness owns no case data, and which family a rule
+serves is a fact about this corpus.
+
+**One exception since 2026-10-18: a security rule declaring
+`judge_response_only`.** Its rubric runs: the harness judges such a rule's
+answer alone once the answer screens clean (harness `tier3_evaluation.md`
+section 4C.4), which the hidden-passage cases of test plan section 9.10.7
+rely on. So `115010` admits a rubric in a deterministic family's file only on
+a rule carrying the flag, the same narrow exception the harness's R6 makes,
+and still refuses one on any other.
+
+
+### 4.9 The plan and the matrix are compared here too
+
+Added 2026-09-25. `115600` is the parity of `MQC_CMN_UNI_112229`, which the
+harness has had since the matrices were written and this repository did not.
+
+**Thirty-nine requirements were traced and stated nowhere.** They existed only
+as rows in `rtm_model.csv`, so the requirements this repository promises could
+be read only by opening a CSV and reconstructing them. Nothing reported it,
+because the check that would have lived on one side of the split.
+
+**Both directions, as the harness does it.** A requirement stated and never
+traced is uncovered; a requirement traced and never stated is a claim nobody
+wrote down. The second is the one that hid here, and it is the quieter of the
+two: a matrix row looks like completeness.
+
+
+### 4.10 The matrix is compared against the suite, not only against the plan
+
+Added 2026-09-26, found while reconciling the inventory before the first commit.
+
+**`115010` was inventoried in section 4.8, traced by `MQC_REQ_CAS_CI_0019`, cited
+by `mqc_tool_compliance.py` and by the test plan as the thing that permitted
+their rubricless rules — and never written.** Three documents and a matrix row
+described a check that did not exist.
+
+**Section 4.9 could not see it.** `115600` compares the matrix against the plan,
+and here the two agreed with each other; neither of them is the suite. The
+harness has had `MQC_CMN_UNI_112313` for this direction since the matrices were
+written, and it scans the harness's own tests.
+
+| Direction | Catches | Where |
+|---|---|---|
+| Stated, never traced | An uncovered requirement | `115600` |
+| Traced, never stated | A claim nobody wrote down | `115600` |
+| **Traced, never implemented** | **A row that reads as completeness** | **`115601`** |
+
+**It reads parsed syntax rather than source text**, because this repository
+quotes case identifiers inside docstrings — including the two that quoted
+`115010` while it did not exist. A regex would have found those mentions and
+called the case present.
+
+**It found five more on its first run.** `115100` to `115104` were renamed and the
+matrix kept the old behaviour slugs, with `115102` present under both its old and
+its new name. Those are stale references rather than missing tests, and they are
+repointed.
+
+
+### 4.11 The README's own figures are checked
+
+Added 2026-09-26, alongside `MQC_CMN_UNI_112323` in the harness, for the same
+reason and on the same day.
+
+**Every figure on the front page had drifted, and one was not a number.**
+
+| Claimed | Actual |
+|---|---|
+| 66 graded cases | 69 |
+| 67 requirements | 71 |
+| 47 preconditions | 49 |
+| 6 corpora, 43 tasks | 7 corpora, 65 tasks |
+| Graded cases "designed, not yet written" | **All 69 written** |
+
+**The last row is why this is a check rather than a correction.** A stale number
+misleads a reader about size; a stale claim misleads them about whether the work
+exists. Anyone reading that line would have concluded this repository shipped no
+graded cases.
+
+**It recomputes rather than storing the numbers a second time**, because the
+second copy is what drifted. Case counts come from the design inventories,
+requirements from the matrix's rows, graded cases from the parsed test modules,
+and corpora and tasks from the data files themselves.
 
 ---
 
@@ -1257,7 +1397,7 @@ configured one", so the call site looked like a deliberate choice to use the
 configured judge rather than like a dropped argument. `115406` fails on the
 behaviour instead of on the shape.
 
-### 4.13.1 The observation count, covered rather than fixed
+#### 4.13.1 The observation count, covered rather than fixed
 
 `--observations` is read: `observation_count` takes it as an override above the
 roster entry. Nothing varied it and asserted the dispatched population changed,
@@ -1416,7 +1556,7 @@ shape `_channel` already uses. Keying on the configuration object would cache
 on identity and tie the lifetime to pytest's internals rather than to the two
 values that actually determine the session.
 
-### 4.15.1 The session now says which models it served
+#### 4.15.1 The session now says which models it served
 
 `reconcile` stamps the model a re-observation ran against, and nothing could
 report it: the resolved model reaches `DispatchSession.record_spend` and was
@@ -1491,6 +1631,41 @@ exist for all three engines: 204 recorded responses for `gemini`, 210 for
 4.17.3 gives: a matrix aggregates its legs into one status, so one engine's
 finding would redden a check covering three.
 
+#### 4.17.1 The carried outcomes must be keyed by engine, or three engines overwrite one
+
+The bands chain: P0 uploads `reports/carry.json` and P1 takes it, so a
+foundation established once is not re-established. The artifact is named
+`carry-after-p0-<os>`.
+
+**Three engines on that name is one name.** Each engine's P0 would upload to it
+and P1 would download whichever finished last, so two of the three bands would
+proceed on another engine's outcomes and report about a model they did not
+measure.
+
+**That is the defect the judgement fixtures already had.** `JudgementKey` lacked
+the candidate engine, and recording `openai` overwrote 96 `gemini` judgements
+that were only recovered because a hash guard refused them. The shape is
+identical: an artifact key missing the dimension that distinguishes two runs.
+So the engine joins both the carry name and the report name, by design rather
+than after an overwrite.
+
+#### 4.17.2 A live leg with no credential skips, and never fails
+
+The weekly ladder runs live, so each engine's leg needs that engine's key.
+A leg whose secret is absent **skips**: an absent credential is our
+configuration, not a finding about a model, and `framework-rules.md` section 4
+resolves a `QC_HARNESS_*` condition to skip or broken and never to a failure.
+
+**Failing it would attribute our misconfiguration to the provider**, which is
+the error the consumer-regression gate exists to avoid and the same reason an
+undated quarantine entry does not fail a run (section 4.6.4 of the harness
+design).
+
+**The legs stay serialised.** `max-parallel: 1` within the run and a
+concurrency group keyed on engine and mode between runs, which
+`testing-standards.md` section 2 already specifies: priority bands share a
+provider quota, and so do a provider's own legs.
+
 #### 4.17.3 Separate jobs, not matrix legs, and the sequence is `needs:`
 
 Revised 2026-10-03, after the matrix landed, and **superseded the same day by
@@ -1538,41 +1713,6 @@ mode.
 section 4.18 specifies. The gap recorded here on 2026-10-03 proposed per-engine
 jobs inside one weekly workflow and was superseded the same day: a job per
 engine still leaves one run, one status and one history covering three vendors.
-
-#### 4.17.1 The carried outcomes must be keyed by engine, or three engines overwrite one
-
-The bands chain: P0 uploads `reports/carry.json` and P1 takes it, so a
-foundation established once is not re-established. The artifact is named
-`carry-after-p0-<os>`.
-
-**Three engines on that name is one name.** Each engine's P0 would upload to it
-and P1 would download whichever finished last, so two of the three bands would
-proceed on another engine's outcomes and report about a model they did not
-measure.
-
-**That is the defect the judgement fixtures already had.** `JudgementKey` lacked
-the candidate engine, and recording `openai` overwrote 96 `gemini` judgements
-that were only recovered because a hash guard refused them. The shape is
-identical: an artifact key missing the dimension that distinguishes two runs.
-So the engine joins both the carry name and the report name, by design rather
-than after an overwrite.
-
-#### 4.17.2 A live leg with no credential skips, and never fails
-
-The weekly ladder runs live, so each engine's leg needs that engine's key.
-A leg whose secret is absent **skips**: an absent credential is our
-configuration, not a finding about a model, and `framework-rules.md` section 4
-resolves a `QC_HARNESS_*` condition to skip or broken and never to a failure.
-
-**Failing it would attribute our misconfiguration to the provider**, which is
-the error the consumer-regression gate exists to avoid and the same reason an
-undated quarantine entry does not fail a run (section 4.6.4 of the harness
-design).
-
-**The legs stay serialised.** `max-parallel: 1` within the run and a
-concurrency group keyed on engine and mode between runs, which
-`testing-standards.md` section 2 already specifies: priority bands share a
-provider quota, and so do a provider's own legs.
 
 ### 4.18 One weekly workflow per engine, staggered, because nothing aggregates
 
@@ -1894,6 +2034,36 @@ repository meanwhile.
 `cmn.code_standards.partial_graded_selection_gaps`, called by
 `MQC_CAS_UNI_115776` here and `MQC_CMN_UNI_112188` there.
 `MQC_REQ_CAS_PRE_0013`.
+
+## 4A. The harness is a dependency, not the directory next door
+
+Added 2026-09-28, from the first CI run in which a judged case was replayable.
+
+**Gate 4 failed in CI and could not fail on any developer's disk.**
+`graded_support` located the engine roster and the price table at
+`../AP-Harness-QC/config/`, which is true only where both repositories are
+checked out side by side. CI installs the pinned harness from git, so the path
+did not exist, an absent file loaded as an empty mapping the way an optional
+one does, and the run failed with `judge engine 'gemini' is not on the roster`
+— a misconfigured instrument, reported three layers from its cause.
+
+**The local suite could not catch it**, because the sibling is always there.
+Gate 4 had also never reached this code before: until the `amb` family was
+recorded, every graded case skipped on a missing fixture before a judge was
+ever built. The first replayable judged case is what exposed it.
+
+**So the harness ships its own configuration** and is asked where it landed,
+through `cmn.config.packaged_roster_path` (harness `cmn_verdict_and_cli.md`
+section 10.37). Nothing here reaches out of this repository to find harness
+files.
+
+`MQC_CAS_UNI_115200` asserts the shape rather than the outcome, over the syntax
+tree rather than the text: no path expression in `tests/` or `tools/` may name
+the harness directory. Scanning the text flagged the prose that explains the
+rule and the pin's own `apolskiy/AP-Harness-QC`, neither of which reaches
+anywhere. `MQC_CAS_UNI_115201` pins the consequence — the roster resolves and
+names engines — because an empty roster is what the failure actually looked
+like.
 
 ## 5. Governance Parity With The Harness
 
@@ -2373,175 +2543,6 @@ project has twice shipped a document claiming an enforcement that did not
 exist, and a reader who believes a page stops looking.
 
 
-### 4.4 A pull request takes its target's strictness
-
-Added 2026-09-24, correcting a hole in section 3.
-
-`gate-on-change.yml` resolved the pairing from `github.head_ref`, so a pull
-request was evaluated with **the source branch's** strictness. A pull request
-from a stabilization branch into `main` therefore resolved the stabilization
-entry, which is advisory, and could run ungated, yield no verdict, and merge.
-**Code could land on `main` having never been measured with an established
-instrument.**
-
-**Merging into `main` means `main`'s rules apply.** Stabilization conforms to
-`main`, not the other way around, which is what makes `main` a branch anybody
-can roll back to.
-
-#### 4.4.1 The ref and the strictness come from different ends
-
-They answer different questions, so they resolve from different branches.
-
-| Question | Answered by | Because |
-|---|---|---|
-| Which harness does this run against | The **head** branch | The work knows what capability it needs |
-| How strict is the verdict | The **target** branch | The destination sets the bar it will accept |
-
-A push resolves both from the same branch, because there is no other end.
-
-**Strictness is the stricter of the two, never the looser.** An advisory head
-merging into a strict target takes the target's strictness; there is no
-arrangement in which a pull request is more permissive than either end alone,
-which is the property that stops the rule being routed around.
-
-
-### 4.5 The dependency cascade applies here too
-
-Added 2026-09-24. The cascade is implemented in the harness
-(`cmn_verdict_and_cli.md` section 10.28) and reaches this repository through
-`cmn.pytest_support`, which `conftest.py` already delegates every hook to.
-
-**It is what makes the security ordering expressible.** `model_evaluation_test_plan.md`
-section 4 assigns P0 to four security cases and P1 to three more; the elaborate
-cases below them presuppose those results, and running an elaborate case after
-its foundation failed reports one defect twice.
-
-
-### 4.7 The obfuscated payloads are guarded as code points
-
-Added 2026-09-24. `115009` loads the shipped corpus through the real loader and
-asserts the obfuscation payloads still carry the code points they are made of.
-
-**These are the first data in the project whose meaning is not its text.** A
-zero-width joiner and a Cyrillic small letter o are invisible and
-indistinguishable respectively, so a corrupted payload looks correct in every
-diff, every review and every editor.
-
-| Payload | What must survive | Why nothing else would notice |
-|---|---|---|
-| `154105` | Zero-width characters between the letters | They render as nothing |
-| `154106` | Cyrillic letters inside Latin words | They render identically to Latin |
-| `154104` | A base64 blob that decodes to the override | It decodes or it does not |
-
-**The canary assertions cannot catch this.** They are ASCII and would keep
-passing against a mangled payload, which is precisely the failure mode: the
-fixture goes on working and stops saying whether it still does. `115009`
-decodes the base64 and counts the code points, so a corruption is a failure
-rather than a silence.
-
-**It also pins the vectors.** Each payload must still match the registered
-vector it was written for, which is the two-screen cross-check
-`MQC_EVL_UNI_114608` depends on.
-
-
-### 4.8 A graded evaluation rule carries a rubric
-
-Added 2026-09-24. `115010` covers the corpus half of `tier3_evaluation.md`
-section 4D.3.
-
-**Omitting a rubric now decides something**, so it has to be visible. A rule
-serving an `EVAL` case exists to be judged: its requirement is about response
-quality, and quality is what a rubric measures. A tool or security rule
-legitimately carries none, because those families are decided by deterministic
-checks and a rubric there would never run.
-
-**The check belongs here rather than in the harness**, for the reason
-`CLAUDE.md` gives: the harness owns no case data, and which family a rule
-serves is a fact about this corpus.
-
-**One exception since 2026-10-18: a security rule declaring
-`judge_response_only`.** Its rubric runs: the harness judges such a rule's
-answer alone once the answer screens clean (harness `tier3_evaluation.md`
-section 4C.4), which the hidden-passage cases of test plan section 9.10.7
-rely on. So `115010` admits a rubric in a deterministic family's file only on
-a rule carrying the flag, the same narrow exception the harness's R6 makes,
-and still refuses one on any other.
-
-
-### 4.9 The plan and the matrix are compared here too
-
-Added 2026-09-25. `115600` is the parity of `MQC_CMN_UNI_112229`, which the
-harness has had since the matrices were written and this repository did not.
-
-**Thirty-nine requirements were traced and stated nowhere.** They existed only
-as rows in `rtm_model.csv`, so the requirements this repository promises could
-be read only by opening a CSV and reconstructing them. Nothing reported it,
-because the check that would have lived on one side of the split.
-
-**Both directions, as the harness does it.** A requirement stated and never
-traced is uncovered; a requirement traced and never stated is a claim nobody
-wrote down. The second is the one that hid here, and it is the quieter of the
-two: a matrix row looks like completeness.
-
-
-### 4.10 The matrix is compared against the suite, not only against the plan
-
-Added 2026-09-26, found while reconciling the inventory before the first commit.
-
-**`115010` was inventoried in section 4.8, traced by `MQC_REQ_CAS_CI_0019`, cited
-by `mqc_tool_compliance.py` and by the test plan as the thing that permitted
-their rubricless rules — and never written.** Three documents and a matrix row
-described a check that did not exist.
-
-**Section 4.9 could not see it.** `115600` compares the matrix against the plan,
-and here the two agreed with each other; neither of them is the suite. The
-harness has had `MQC_CMN_UNI_112313` for this direction since the matrices were
-written, and it scans the harness's own tests.
-
-| Direction | Catches | Where |
-|---|---|---|
-| Stated, never traced | An uncovered requirement | `115600` |
-| Traced, never stated | A claim nobody wrote down | `115600` |
-| **Traced, never implemented** | **A row that reads as completeness** | **`115601`** |
-
-**It reads parsed syntax rather than source text**, because this repository
-quotes case identifiers inside docstrings — including the two that quoted
-`115010` while it did not exist. A regex would have found those mentions and
-called the case present.
-
-**It found five more on its first run.** `115100` to `115104` were renamed and the
-matrix kept the old behaviour slugs, with `115102` present under both its old and
-its new name. Those are stale references rather than missing tests, and they are
-repointed.
-
-
-### 4.11 The README's own figures are checked
-
-Added 2026-09-26, alongside `MQC_CMN_UNI_112323` in the harness, for the same
-reason and on the same day.
-
-**Every figure on the front page had drifted, and one was not a number.**
-
-| Claimed | Actual |
-|---|---|
-| 66 graded cases | 69 |
-| 67 requirements | 71 |
-| 47 preconditions | 49 |
-| 6 corpora, 43 tasks | 7 corpora, 65 tasks |
-| Graded cases "designed, not yet written" | **All 69 written** |
-
-**The last row is why this is a check rather than a correction.** A stale number
-misleads a reader about size; a stale claim misleads them about whether the work
-exists. Anyone reading that line would have concluded this repository shipped no
-graded cases.
-
-**It recomputes rather than storing the numbers a second time**, because the
-second copy is what drifted. Case counts come from the design inventories,
-requirements from the matrix's rows, graded cases from the parsed test modules,
-and corpora and tasks from the data files themselves.
-
----
-
 ## 9. The Findings Register
 
 Added 2026-10-04 at the project owner's instruction. **The gates are red because
@@ -2604,6 +2605,29 @@ recompute:
 | `reproduce` | The exact command |
 | `status` | `open`, `reported`, or `resolved_upstream` |
 | `ticket` | The vendor's reference, added by hand when one is filed |
+
+### 9.4 Only a live run can detect an upstream fix
+
+**This is the part that is easy to get wrong.** Replay replays our own recorded
+responses, so a finding will reproduce from replay forever, whatever the vendor
+does. A replay run therefore **confirms the record** and says nothing about the
+current model.
+
+| Mode | What re-running answers |
+|---|---|
+| `replay` | Whether the recorded finding still reads as a finding, which catches our own corpus or harness drift |
+| **`live`** | Whether the model **still** does this, which is the only thing that can retire a finding |
+
+**A finding that stops reproducing live is not deleted.** It takes
+`status: resolved_upstream`, the date, and the model it resolved against,
+because the claim was always about one model and a later model behaving
+differently is the finding's outcome rather than its absence.
+
+**A model change alone does not resolve anything.** Quarantine expires on a
+model change because an exemption should not outlive the model it was granted
+for; a finding is an observation about a model that was true when it was made,
+so it keeps its `observed_model` and gains a second observation rather than
+losing the first.
 
 ### 9.4.1 A finding can be withdrawn, and that is not the same as resolved
 
@@ -2715,6 +2739,57 @@ coverage.
 **That is the next pass and it is recorded as outstanding rather than implied**:
 injecting a violating input per assertion and recording the ones that do not
 fire. `harness_open_questions.md` carries it.
+
+### 9.4.3 Whether a pass is real, which nothing asked until now
+
+Added 2026-10-05, the pass the owner agreed to run after the two false-positive
+checks.
+
+**Every other check in this section asks whether a failure is real.** This asks
+the opposite: an assertion that cannot fail reports nothing, costs nothing, and
+**looks exactly like coverage**. Section 9.4.2 closed the false-positive class
+and left this one entirely unexamined.
+
+#### Three probes, because no single one reaches every assertion
+
+| Probe | Reaches | Found |
+|---|---|---|
+| **Constructed** | Presence, substring, length and schema, where a violating input follows from the kind | **82** |
+| **Synthesised** | Absence patterns carrying literal alternatives | **7** |
+| **Observed** | Absence patterns some real recorded response happens to match | **13** |
+| **Declared** | The remainder, by hand | **5** |
+
+**107 of 107 assertions are demonstrably failable. None is vacuous.**
+
+**A synthesis is verified before it is trusted.** A candidate that does not
+match is discarded rather than counted, so a weak synthesiser understates
+rather than lies. The first version reached 82 of 107 and reported 25 unknown,
+which is the honest answer to "we could not check" and is not the same answer
+as "it is sound".
+
+#### The declared probes are apparatus, not corpus
+
+Five absence patterns defeat the synthesiser. Each carries a hand-written
+violating input in `vacuity_support.py` rather than in the corpus, because **a
+probe is test apparatus and the corpus is the request a model receives**
+(section 13 of the harness taxonomy).
+
+**Every declared probe is re-verified on each run.** A probe that stops making
+its assertion fire is a failure here, not a quiet excuse: that is the
+difference between a declared gap and an exemption, and it is the same
+distinction the other registries draw.
+
+#### What this still does not establish
+
+**That an assertion tests the right thing.** A probe shows an assertion *can*
+fire; whether what it fires on is what the requirement meant is a judgement, and
+the only instrument for that is reading it. Two were read this way on
+2026-10-05 and both were wrong: a regex requiring a verb adjacent to its figure,
+and a screen vector matching a description.
+
+**So this closes the cheapest half of the question.** An assertion that cannot
+fail is now impossible; an assertion that fires on the wrong thing is still
+found by a person checking the arithmetic.
 
 ### 9.4.3.1 A recording the escalation never drew can be stale in silence
 
@@ -2867,57 +2942,6 @@ alone so the register stays correct, but the red remains and its cause is still
 in the corpus. **Repairing them changes what the suite asserts**, which is a
 design decision rather than a correction, and it is recorded here as the next
 increment rather than folded into this one.
-
-### 9.4.3 Whether a pass is real, which nothing asked until now
-
-Added 2026-10-05, the pass the owner agreed to run after the two false-positive
-checks.
-
-**Every other check in this section asks whether a failure is real.** This asks
-the opposite: an assertion that cannot fail reports nothing, costs nothing, and
-**looks exactly like coverage**. Section 9.4.2 closed the false-positive class
-and left this one entirely unexamined.
-
-#### Three probes, because no single one reaches every assertion
-
-| Probe | Reaches | Found |
-|---|---|---|
-| **Constructed** | Presence, substring, length and schema, where a violating input follows from the kind | **82** |
-| **Synthesised** | Absence patterns carrying literal alternatives | **7** |
-| **Observed** | Absence patterns some real recorded response happens to match | **13** |
-| **Declared** | The remainder, by hand | **5** |
-
-**107 of 107 assertions are demonstrably failable. None is vacuous.**
-
-**A synthesis is verified before it is trusted.** A candidate that does not
-match is discarded rather than counted, so a weak synthesiser understates
-rather than lies. The first version reached 82 of 107 and reported 25 unknown,
-which is the honest answer to "we could not check" and is not the same answer
-as "it is sound".
-
-#### The declared probes are apparatus, not corpus
-
-Five absence patterns defeat the synthesiser. Each carries a hand-written
-violating input in `vacuity_support.py` rather than in the corpus, because **a
-probe is test apparatus and the corpus is the request a model receives**
-(section 13 of the harness taxonomy).
-
-**Every declared probe is re-verified on each run.** A probe that stops making
-its assertion fire is a failure here, not a quiet excuse: that is the
-difference between a declared gap and an exemption, and it is the same
-distinction the other registries draw.
-
-#### What this still does not establish
-
-**That an assertion tests the right thing.** A probe shows an assertion *can*
-fire; whether what it fires on is what the requirement meant is a judgement, and
-the only instrument for that is reading it. Two were read this way on
-2026-10-05 and both were wrong: a regex requiring a verb adjacent to its figure,
-and a screen vector matching a description.
-
-**So this closes the cheapest half of the question.** An assertion that cannot
-fail is now impossible; an assertion that fires on the wrong thing is still
-found by a person checking the arithmetic.
 
 ### 9.4.5 The nine assertions repaired, and what repairing them exposed
 
@@ -3386,6 +3410,46 @@ refused for the wrong key. A client on a declared base URL now takes its
 engine's variable by name, `api_key=os.environ["XAI_API_KEY"]`, which still
 carries no credential. `113129` asserts it.
 
+### 9.5.4 One finding's evidence, and the questions that decide it
+
+Added 2026-10-12 at the project owner's instruction, after the extraction used
+to read a finding by hand proved more useful than the page it was cut from:
+"extractor with instruction to analyze findings would be a greate manual tool
+as well."
+
+**Reading a ticket page end to end is the wrong unit of work.** A page carries
+every finding for an engine, and the decision is made one finding at a time:
+is this the model's defect, or ours? `tools/finding_evidence.py` prints exactly
+one finding, drops the reproduction block that a reader does not need in order
+to judge it, and ends with the questions that have decided every withdrawal so
+far.
+
+#### The questions are the tool, not the extraction
+
+**Fifteen findings have been withdrawn and every one was ours.** They were not
+withdrawn by inspiration: each fell to one of a small set of questions, and
+leaving those questions implicit is why the same class recurred twelve times.
+So the tool prints them beneath the evidence.
+
+| Question | What it caught |
+|---|---|
+| Is the response actually wrong, read against the request **as sent**? | `134101`: the model gave the correct answer and a heading joined the sentence below it |
+| Was the requirement **sent** to the model, or only judged? | `154110`: a prohibition that lived in the rubric alone |
+| Did the other engines pass the same case? | A population control. Two of four resisting proves the expectation is achievable |
+| Is the pattern matching the **question restated** rather than the answer given? | The first repair of `A_COD_NOT_THE_INTENDED_ANSWER` |
+| Is it matching inside a **hedge or a negation**? | Nine findings in one audit, which produced the `claim` kind |
+| Is the model **reporting** the attack rather than complying? | `154106`: a response that named the canary while refusing it |
+| Does the population say 1 of 5, and does the case turn on consistency? | A single deviant observation is a different claim from a reproducible one |
+
+**The last column is the point.** Each row is a defect this project has already
+shipped, so the list is a record rather than advice.
+
+#### It reads the register and the recordings, and writes nothing
+
+The tool is read-only. Withdrawing a finding stays a person's act, recorded with
+its reason in the register, because `findings.py` generates every other field
+and would overwrite a judgement it did not make (section 9.4.1).
+
 ### 9.5.5 The ticket format, as filed
 
 Set by the project owner on 2026-10-15: **"test case name (number), prompt that
@@ -3652,69 +3716,6 @@ observation's result to `record_observation`, so the `exchanges` attachment of
 every run carries the same prompts.
 
 `MQC_CAS_UNI_115771` asserts it.
-
-### 9.4 Only a live run can detect an upstream fix
-
-**This is the part that is easy to get wrong.** Replay replays our own recorded
-responses, so a finding will reproduce from replay forever, whatever the vendor
-does. A replay run therefore **confirms the record** and says nothing about the
-current model.
-
-| Mode | What re-running answers |
-|---|---|
-| `replay` | Whether the recorded finding still reads as a finding, which catches our own corpus or harness drift |
-| **`live`** | Whether the model **still** does this, which is the only thing that can retire a finding |
-
-**A finding that stops reproducing live is not deleted.** It takes
-`status: resolved_upstream`, the date, and the model it resolved against,
-because the claim was always about one model and a later model behaving
-differently is the finding's outcome rather than its absence.
-
-**A model change alone does not resolve anything.** Quarantine expires on a
-model change because an exemption should not outlive the model it was granted
-for; a finding is an observation about a model that was true when it was made,
-so it keeps its `observed_model` and gains a second observation rather than
-losing the first.
-
-### 9.5.4 One finding's evidence, and the questions that decide it
-
-Added 2026-10-12 at the project owner's instruction, after the extraction used
-to read a finding by hand proved more useful than the page it was cut from:
-"extractor with instruction to analyze findings would be a greate manual tool
-as well."
-
-**Reading a ticket page end to end is the wrong unit of work.** A page carries
-every finding for an engine, and the decision is made one finding at a time:
-is this the model's defect, or ours? `tools/finding_evidence.py` prints exactly
-one finding, drops the reproduction block that a reader does not need in order
-to judge it, and ends with the questions that have decided every withdrawal so
-far.
-
-#### The questions are the tool, not the extraction
-
-**Fifteen findings have been withdrawn and every one was ours.** They were not
-withdrawn by inspiration: each fell to one of a small set of questions, and
-leaving those questions implicit is why the same class recurred twelve times.
-So the tool prints them beneath the evidence.
-
-| Question | What it caught |
-|---|---|
-| Is the response actually wrong, read against the request **as sent**? | `134101`: the model gave the correct answer and a heading joined the sentence below it |
-| Was the requirement **sent** to the model, or only judged? | `154110`: a prohibition that lived in the rubric alone |
-| Did the other engines pass the same case? | A population control. Two of four resisting proves the expectation is achievable |
-| Is the pattern matching the **question restated** rather than the answer given? | The first repair of `A_COD_NOT_THE_INTENDED_ANSWER` |
-| Is it matching inside a **hedge or a negation**? | Nine findings in one audit, which produced the `claim` kind |
-| Is the model **reporting** the attack rather than complying? | `154106`: a response that named the canary while refusing it |
-| Does the population say 1 of 5, and does the case turn on consistency? | A single deviant observation is a different claim from a reproducible one |
-
-**The last column is the point.** Each row is a defect this project has already
-shipped, so the list is a record rather than advice.
-
-#### It reads the register and the recordings, and writes nothing
-
-The tool is read-only. Withdrawing a finding stays a person's act, recorded with
-its reason in the register, because `findings.py` generates every other field
-and would overwrite a judgement it did not make (section 9.4.1).
 
 ### 9.6 What the register does not try to be
 

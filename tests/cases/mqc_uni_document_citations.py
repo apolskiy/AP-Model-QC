@@ -3,13 +3,13 @@
 """Unit preconditions for this repository's citations, changelog, markers and records.
 
 Created: 2026-10-12
-Last updated: 2026-10-21
+Last updated: 2026-10-22
 
-This file contains four cases, each calling a harness checker with this repository's
+This file contains five cases, each calling a harness checker with this repository's
 root. ``TestMQCDocumentCitations`` checks every section citation in the documents
-resolves to exactly one section, and that a README has its changelog;
-``TestMQCMarkerRegistry`` that the ``pytest.ini`` marker registry agrees with the
-harness's and that no production record is mutable.
+resolves to exactly one section, that the sections read in numeric order, and that a
+README has its changelog; ``TestMQCMarkerRegistry`` that the ``pytest.ini`` marker
+registry agrees with the harness's and that no production record is mutable.
 
 **These run in the ``unit`` precondition gate**, ahead of every graded band. A failure
 is an instrument defect, **not a model finding**: the run exits 3 and no graded case
@@ -26,7 +26,7 @@ sections 9.5, one about joining three sources to file a finding and one about
 what the register does not try to be, and `ticket_report.py` cited the number.
 
 Specified by ``docs/design/consumer_ci.md`` section 4 and the harness
-``.claude/rules/code-style.md`` section 7.3.
+``.claude/rules/code-style.md`` sections 7.3 and 7.5.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -35,6 +35,7 @@ Specified by ``docs/design/consumer_ci.md`` section 4 and the harness
 # TestMQCDocumentCitations
 #   115734  an_unresolved_or_duplicated_citation_is_reported
 #   115735  a_readme_without_a_changelog_is_reported
+#   115778  a_section_sitting_out_of_numeric_order_is_reported
 # TestMQCMarkerRegistry
 #   115741  a_marker_registry_disagreeing_with_the_harness_is_reported
 #   115742  a_mutable_production_record_is_reported
@@ -45,7 +46,11 @@ from pathlib import Path
 import allure
 import pytest
 
-from cmn.document_citations import duplicate_sections, unresolved_citations
+from cmn.document_citations import (
+    disordered_sections,
+    duplicate_sections,
+    unresolved_citations,
+)
 from cmn.environments import environment_marker, registered_markers
 from cmn.code_standards import unfrozen_records
 from cmn.document_standards import changelog_problems
@@ -104,6 +109,29 @@ class TestMQCDocumentCitations:
         assert not reported, (
             f"the README has no changelog beside it, so a figure that moves "
             f"there leaves no record of when it moved or why: {reported}"
+        )
+
+    @allure.story("A document's sections read in numeric order")
+    def MQC_CAS_UNI_115778_a_section_sitting_out_of_numeric_order_is_reported(
+        self,
+    ) -> None:
+        """Every numbered heading here sorts after the heading above it.
+
+        **A resolving citation says nothing about where the section sits.**
+        This repository's test plan read 9.10, then 9.13, then 9.11, with every
+        citation of the three resolving, so a reader scrolling for 9.11
+        arrived at the section after it.
+
+        Design: the harness ``code-style.md`` section 7.5.
+
+        Returns:
+            None
+        """
+        reported = disordered_sections(_ROOT)
+        assert not reported, (
+            f"{len(reported)} heading(s) sort at or before the heading above "
+            f"them, so a reader scrolling for a number arrives somewhere "
+            f"else: {reported}"
         )
 
 

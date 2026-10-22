@@ -40,6 +40,30 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The sections of four documents read in the order they are numbered, 2026-10-22
+
+**The test plan read 9.10, then 9.13, then 9.11.** Every citation of the three
+resolved and each number was used once, which is why nothing reported it, and
+`9.12` carried a third-level number at a fourth-level rank so it rendered as a
+subsection of 9.11. The harness now checks the order, and
+`MQC_CAS_UNI_115778` calls it with this repository's root
+(`MQC_REQ_CAS_GOV_0012`, the harness `code-style.md` section 7.5).
+
+**Fifteen headings were out of order here, in four documents rather than the
+one the register named**: the test plan, `consumer_ci.md`,
+`model_open_questions.md` and `model_running_jobs.md`. Sixteen moves put them
+in order, each proved to have carried its section whole, and `9.12` is a
+third-level heading again. Two subsections of `consumer_ci.md` 4.13 and 4.15
+also carried a rank that rendered them as siblings, and they are corrected.
+
+**The closed gap moved rather than being deleted**, to a new section 3A, for
+the reason section 2A gives for a closed question: a reader who remembers it
+should find where the answer is. The harness register has kept its own section
+2C since 2026-10-21.
+
+160 preconditions, 175 requirements. Replay not re-run: nothing a band reads
+changed.
+
 ### claude joins as a second judge, and one word names each concept, 2026-10-21
 
 **gemini scored its own engine unchecked.** The project owner: "gemini judging

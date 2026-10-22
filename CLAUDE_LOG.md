@@ -5213,3 +5213,30 @@ carrying the request that produced it.
 * **Code Quality & Compliance Audit:** 159 preconditions, all passing, exit 0;
   pylint 10.00/10, exit 0; 174 requirements. Replay not re-run: nothing a band
   reads changed.
+
+## 2026-10-22: Fifteen headings here were out of order, in four documents
+
+* **Asked by the project owner:** close whatever is still open in both
+  registers. This repository's row named one document and one defect, the test
+  plan reading 9.10, 9.13, 9.11, with `9.12` carrying a third-level number at a
+  fourth-level rank.
+* **Found:** four documents and fifteen headings, `consumer_ci.md` holding
+  seven of them. `MQC_CAS_UNI_115778` calls the harness implementation with
+  this root, which is the arrangement every shared standard here uses.
+* **Digressions the user spotted, and the fix:**
+  * **The first reordering pass orphaned two subsections of `consumer_ci.md`
+    4.14**, leaving them under section 4A: the mover ended a block at an
+    unnumbered heading of equal rank. An unnumbered heading is not a section in
+    the numbering, so it continues the numbered section above it and travels
+    with it. Reverted and re-run, then every section's content compared
+    against the committed version to prove the content only moved.
+  * **Two subsections carried a rank that made them siblings.** 4.13.1 and
+    4.15.1 rendered beside their parents rather than under them, which the
+    reordering exposed rather than caused. Corrected; sixty nine such
+    disagreements remain across the two repositories and are recorded as a gap
+    in the harness register.
+* **Closed gaps now move rather than vanish**, to section 3A, matching the
+  harness register's section 2C.
+* **Code Quality & Compliance Audit:** 160 preconditions, all passing, exit 0;
+  pylint 10.00/10, exit 0; 175 requirements. Replay not re-run: nothing a band
+  reads changed.

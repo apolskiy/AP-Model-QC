@@ -63,6 +63,18 @@ restated here, because a second copy drifts.
 
 ---
 
+## 3. Known gaps, which are work rather than questions
+
+These need no decision. They are recorded so the absence is on the record.
+
+| Gap | Where it bites |
+|---|---|
+| A replay-built findings register cannot see an over-refusal or a dependent dispatched under an inquest | `consumer_ci.md` section 9.4.8. grok's `QC_LLM_OVER_REFUSAL` and claude's seven security dependents are real and absent from it |
+| A re-record needing fewer observations than the previous run leaves the surplus behind | Pruned by hand three times on 2026-10-12. Nothing prunes at the point of recording |
+| Nothing can replay a claude judgement until a claude-judged rung 2 has recorded one | `consumer_ci.md` section 7.7.3. The store is keyed `judgements/<engine>/<judge>/` and its claude side is empty, so a claude-judged gate would skip every case for a missing judgement. **This is an ordering constraint rather than a defect**, and it is why the per-push gate was not given a claude-judged twin |
+
+---
+
 ## 3.1 Why three naming assertions stay a substring
 
 Settled 2026-10-13 by the project owner, against my recommendation to convert
@@ -89,6 +101,18 @@ fuller answer; it is a different one.
 **So the instruction is the measure, not ordinary helpfulness.** Each prompt
 says *only what is present*, and a response that inventories what is absent has
 exceeded it whether or not the addition is true.
+
+### 3.1.1 The probe has to satisfy the whole prompt
+
+**Three assertions were condemned on probes that were not compliant**, here and
+at `134403` and `134407`. The common error was writing a sentence that avoided
+the forbidden string and reads plausibly, and never checking that it did what
+the prompt asked: `134403` evaluated a nice-to-have below the floor, `134407`
+disclosed the total it claimed to withhold, and `134200` stated no revenues.
+
+**A probe is a candidate answer, so it is held to the candidate's
+instruction.** `tools/finding_evidence.py` now asks this before the others,
+because it is the question that was skipped each time.
 
 ### 3.1.2 Anchoring the other two was tried and reverted
 
@@ -119,30 +143,16 @@ and anchoring buys nothing while costing most of the coverage.
 **The general lesson, which cost two reverts:** a narrower pattern is only
 safe where the broad one actually misfires on a compliant answer. Neither did.
 
-### 3.1.1 The probe has to satisfy the whole prompt
+## 3A. Gaps since closed, and where the closure is recorded
 
-**Three assertions were condemned on probes that were not compliant**, here and
-at `134403` and `134407`. The common error was writing a sentence that avoided
-the forbidden string and reads plausibly, and never checking that it did what
-the prompt asked: `134403` evaluated a nice-to-have below the floor, `134407`
-disclosed the total it claimed to withhold, and `134200` stated no revenues.
+A closed gap moves here rather than being deleted, for the reason section 2A
+gives for a closed question: a reader who remembers it should find where the
+answer is, and the answer is not restated. The harness register keeps its own
+section 2C for the same purpose.
 
-**A probe is a candidate answer, so it is held to the candidate's
-instruction.** `tools/finding_evidence.py` now asks this before the others,
-because it is the question that was skipped each time.
-
-## 3. Known gaps, which are work rather than questions
-
-These need no decision. They are recorded so the absence is on the record.
-
-| Gap | Where it bites |
-|---|---|
-| A replay-built findings register cannot see an over-refusal or a dependent dispatched under an inquest | `consumer_ci.md` section 9.4.8. grok's `QC_LLM_OVER_REFUSAL` and claude's seven security dependents are real and absent from it |
-| A re-record needing fewer observations than the previous run leaves the surplus behind | Pruned by hand three times on 2026-10-12. Nothing prunes at the point of recording |
-| `model_evaluation_test_plan.md` reads 9.10, 9.13, 9.11, 9.12 | `9.13` was appended where the next number fell rather than where it belongs, and `9.12` is written `#### 9.12`, a fourth-level heading carrying a third-level number, so it reads as a subsection of `9.11`. Every citation still resolves, which is why nothing caught it; the harness records the same disorder in its own documents and the remedy for both is a check on the order |
-| Nothing can replay a claude judgement until a claude-judged rung 2 has recorded one | `consumer_ci.md` section 7.7.3. The store is keyed `judgements/<engine>/<judge>/` and its claude side is empty, so a claude-judged gate would skip every case for a missing judgement. **This is an ordering constraint rather than a defect**, and it is why the per-push gate was not given a claude-judged twin |
-
----
+| Gap | Closed | Recorded in |
+|---|---|---|
+| `model_evaluation_test_plan.md` read 9.10, 9.13, 9.11, 9.12, and `9.12` carried a third-level number at a fourth-level rank | 2026-10-22 | The harness `cmn.document_citations.disordered_sections` and `MQC_CAS_UNI_115778`, specified by `code-style.md` section 7.5. **Fifteen headings were out of order here**, in four documents rather than the one this row named, and sixteen moves put them in order. `9.12` is a third-level heading again |
 
 ## 4. Known-good state, for comparison after any change
 
