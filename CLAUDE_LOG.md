@@ -5255,3 +5255,45 @@ carrying the request that produced it.
 * **Code Quality & Compliance Audit:** 160 preconditions, all passing, exit 0;
   pylint 10.00/10, exit 0; 175 requirements. Replay not re-run: nothing a band
   reads changed.
+
+## 2026-10-22, third iteration: A flag this design named and the tool refuses
+
+* **One defect, found by a harness check on its first run.** `consumer_ci.md`
+  section 9.4.7 named the withdrawal flag under a name `tools/findings.py` has
+  never declared; its flag is `--hold-unreproduced`.
+* **The costlier half of the class.** A flag that never existed fails the
+  moment somebody types it and they look at the document. A renamed one fails
+  identically and sends them to look for their own mistake, because the
+  document describing the behaviour is what is wrong.
+* **`MQC_CAS_UNI_115779`** calls `cmn.flag_citations.undeclared_flags` with
+  this repository's root, the arrangement every shared standard here uses.
+  `MQC_REQ_CAS_GOV_0013`.
+* **A flag the harness declares and this repository names** resolves through
+  the registry of what is declared outside the root: `tools/refresh_file_dates.py
+  --root .` is quoted in `CLAUDE.md` and the wheel ships `cmn`, not `tools`.
+* **The README's harness figure was stale**, reading 959 where the harness
+  holds 965, and its own precondition count read 160 against 161.
+* **Code Quality & Compliance Audit:** 161 preconditions, all passing, exit 0
+  read from the command rather than a pipe; pylint 10.00/10, exit 0; 176
+  requirements. Replay not re-run: nothing a band reads changed.
+
+## 2026-10-22, fourth iteration: The selectors this runbook never named
+
+* **Eight selectors implemented here and named in no operator document**:
+  `--tests`, `--tests-file`, `--priority`, `--module`, `--family`,
+  `--requirement`, `--tag` and `--with-prerequisites`. The runbook gave
+  `pytest -k 115005` for a single case, which is the selector `--tests`
+  replaced.
+* **`--tag` is implemented and was unreachable in practice.** It resolves
+  through `docs/testing/case_index.csv`, refuses an unknown tag by name and
+  refuses the flag without an index; `MQC_CAS_UNI_115417` keeps the index
+  current. None of that helps somebody who has never been told the flag
+  exists.
+* **Two of the four commands I first wrote did not run.** `--tag control`
+  alone is refused with `QC_HARNESS_DEPENDENCY_UNMET`, and the band example
+  omitted `--mode replay` and would have spent quota from a local-run section.
+  Found by running each one. A documented command is not documentation until
+  it has been run.
+* **Section 8.1** carries the table, the four commands, why only `--priority`
+  keeps the verdict, why preconditions are never deselected, and why
+  `--family` wants the index rather than the matrix.

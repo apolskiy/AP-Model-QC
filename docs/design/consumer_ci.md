@@ -1004,6 +1004,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115734` | N | `an_unresolved_or_duplicated_citation_is_reported` |
 | `115735` | N | `a_readme_without_a_changelog_is_reported` |
 | `115778` | N | `a_section_sitting_out_of_numeric_order_is_reported` (code-style 7.5) |
+| `115779` | P | `this_repository_names_no_undeclared_flag` (harness CMN 7.1.0.4) |
 | `115736` | P | `the_finding_reader_carries_the_questions` |
 | `115737` | P | `a_finding_that_stopped_reproducing_is_withdrawn` |
 | `115738` | N | `a_run_that_collected_nothing_does_not_retire_findings` |
@@ -1053,7 +1054,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 115 cases, 86 negative, 23 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 116 cases, 86 negative, 24 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3159,7 +3160,9 @@ not distinguish them when it was written.
 **What was not caught, stated plainly:** nothing asked whether an open finding
 still reproduced. The inventory checks compare the register to the suite by
 name, the trace checks compare it to the matrix, and no check compared it to a
-result. `MQC_CAS_UNI_115737` does, and `--withdraw-unreproduced` performs it.
+result. `MQC_CAS_UNI_115737` does, and `--hold-unreproduced` performs it.
+
+**This paragraph named a withdrawal flag until 2026-10-22, under a name `tools/findings.py` has never declared.** Its flag has been `--hold-unreproduced` throughout, so a reader following the old wording would have typed something the tool refuses and looked for their own mistake. Found by the check harness `cmn_verdict_and_cli.md` section 7.1.0.4 specifies, on its first run. The dead name is described rather than written, because a document naming it would carry the defect it reports.
 
 
 #### 9.4.7.1 Only a case the run measured as passing has stopped reproducing

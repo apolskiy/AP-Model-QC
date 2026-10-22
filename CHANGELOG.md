@@ -40,6 +40,44 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The runbook names the selectors that were built for it, 2026-10-22
+
+**Eight selectors were implemented and covered here, and the runbook named
+none of them.** What it gave for running one case was `pytest -k 115005`, the
+selector `--tests` was built to replace: a name no case carries selects
+nothing and exits 0, and a pytest-owned selector makes the run `manual`, so it
+yields no verdict.
+
+Section 8.1 now carries the table, with what each selector resolves through
+and which of them keeps a verdict, and four worked commands that have been
+run rather than written back from the design.
+
+**`--tag` needed `--with-prerequisites` and nothing said so.** A selection
+resting on a foundation it excludes is refused with
+`QC_HARNESS_DEPENDENCY_UNMET`, which is correct and is better met in a runbook
+than in a terminal. Stated beside the command, with the reason preconditions
+are never deselected and why every line carries `--mode replay`.
+
+### The withdrawal flag is named as the tool declares it, 2026-10-22
+
+**Section 9.4.7 sent a reader to a flag `tools/findings.py` has never
+declared.** Its flag has been `--hold-unreproduced` throughout, so anybody
+following the design would have typed something the tool refuses and looked
+for their own mistake first. Found by the check harness
+`cmn_verdict_and_cli.md` section 7.1.0.4 specifies, on its first run.
+
+**The dead name is described rather than written**, here and in the harness
+design, because a document naming it would carry the defect it reports. That
+is the convention `code-style.md` section 7.3 already states for a document
+describing a dangling citation.
+
+`MQC_CAS_UNI_115779` runs the check against this repository's documents, from
+the harness implementation, so the two repositories cannot answer it
+differently (`MQC_REQ_CAS_GOV_0013`).
+
+161 preconditions, 176 requirements. The harness figure in the README had
+also fallen behind, reading 959 against 965.
+
 ### The digit check is imported from where it now lives, 2026-10-22
 
 `identifier_block_problems` moved from `cmn.code_standards` to

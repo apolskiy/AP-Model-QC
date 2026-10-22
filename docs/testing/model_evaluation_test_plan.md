@@ -215,6 +215,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_GOV_0009` | A workflow here that can run any rostered engine live assigns every rostered engine's credential variable, checked by the harness implementation | harness_ci_pipeline.md section 8.5.4 |
 | `MQC_REQ_CAS_GOV_0011` | This repository's collection hook calls the harness guard, so a run collecting one case identifier more than once is refused rather than executing several test cases under one name | harness cmn_verdict_and_cli.md section 7.8.5 |
 | `MQC_REQ_CAS_GOV_0012` | The section-order check runs against this repository's own documents, from the harness implementation | code-style.md section 7.5 |
+| `MQC_REQ_CAS_GOV_0013` | Every flag a live document of this repository names is declared by something, checked through the harness implementation so the two repositories cannot answer it differently | cmn_verdict_and_cli.md section 7.1.0.4 |
 | `MQC_REQ_CAS_GOV_0010` | Every requirement this repository's plan states reads the same in the plan and in rtm_model.csv, checked by the harness comparison called with this repository's pair | harness cmn_verdict_and_cli.md section 10.17.1 |
 
 

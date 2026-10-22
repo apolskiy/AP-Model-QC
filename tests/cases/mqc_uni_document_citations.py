@@ -5,10 +5,11 @@
 Created: 2026-10-12
 Last updated: 2026-10-22
 
-This file contains five cases, each calling a harness checker with this repository's
+This file contains six cases, each calling a harness checker with this repository's
 root. ``TestMQCDocumentCitations`` checks every section citation in the documents
-resolves to exactly one section, that the sections read in numeric order, and that a
-README has its changelog; ``TestMQCMarkerRegistry`` that the ``pytest.ini`` marker
+resolves to exactly one section, that the sections read in numeric order, that a
+README has its changelog and that every flag a document names is declared by
+something; ``TestMQCMarkerRegistry`` that the ``pytest.ini`` marker
 registry agrees with the harness's and that no production record is mutable.
 
 **These run in the ``unit`` precondition gate**, ahead of every graded band. A failure
@@ -36,6 +37,7 @@ Specified by ``docs/design/consumer_ci.md`` section 4 and the harness
 #   115734  an_unresolved_or_duplicated_citation_is_reported
 #   115735  a_readme_without_a_changelog_is_reported
 #   115778  a_section_sitting_out_of_numeric_order_is_reported
+#   115779  this_repository_names_no_undeclared_flag
 # TestMQCMarkerRegistry
 #   115741  a_marker_registry_disagreeing_with_the_harness_is_reported
 #   115742  a_mutable_production_record_is_reported
@@ -52,6 +54,7 @@ from cmn.document_citations import (
     unresolved_citations,
 )
 from cmn.environments import environment_marker, registered_markers
+from cmn.flag_citations import undeclared_flags
 from cmn.code_standards import unfrozen_records
 from cmn.document_standards import changelog_problems
 
@@ -132,6 +135,31 @@ class TestMQCDocumentCitations:
             f"{len(reported)} heading(s) sort at or before the heading above "
             f"them, so a reader scrolling for a number arrives somewhere "
             f"else: {reported}"
+        )
+
+    @allure.story("A flag a document names is a flag something declares")
+    def MQC_CAS_UNI_115779_this_repository_names_no_undeclared_flag(self) -> None:
+        """Every flag these documents name is declared by something.
+
+        **The first run of this found the defect it exists for.** Section
+        9.4.7 sent a reader to the withdrawal flag under a name
+        ``tools/findings.py`` has never declared, so the tool would have
+        refused what the design told them to type.
+
+        **The harness cases prove the reader non-vacuous.** This caller
+        asserts the state of this repository, which is the half the harness
+        cannot see.
+
+        Design: the harness ``cmn_verdict_and_cli.md`` section 7.1.0.4.
+
+        Returns:
+            None
+        """
+        reported = undeclared_flags(_ROOT)
+        assert not reported, (
+            f"{len(reported)} flag(s) named by a document and declared by "
+            f"nothing, so a reader following one would type what the tool "
+            f"refuses: {reported}"
         )
 
 
