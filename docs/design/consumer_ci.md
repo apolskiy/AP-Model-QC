@@ -563,6 +563,36 @@ that as well as for their findings. Harness `cmn_verdict_and_cli.md` section
 7.6.2 carries the correction, and `MQC_CAS_UNI_115757` runs two bands in
 sequence.
 
+##### 3.12.1.1 Why the bands are independent, and what that decides about the record
+
+Recorded 2026-10-21 at the project owner's statement: "the way the jobs were
+setup, each band would execute independently. p0 and p1 had to have 100% pass
+p2-p4 did not. the only affected tests would be is if they were dependent on
+tests higher up or in the same tier that failed, then those tests would skip.
+This was done so we could possibly separate band jobs into separate ci jobs for
+each set of tiers."
+
+**So a band is a unit that can move.** Section 3.12.7 records a band split as a
+caller change and ties it to corpus growth; the independence is what makes that
+split cheap, and it is why nothing is asked of a band except its own cases and
+the outcomes it was handed.
+
+**Which settles how a band learns that the preconditions held.** The record
+does not travel down the band chain beside the carried outcomes. A band that
+later moved to a job of its own would then take its gating from whichever band
+happened to precede it, and a band with no predecessor would have none.
+
+| What travels | From | Why |
+|---|---|---|
+| The carried outcomes | The band before it | **A data dependency.** A P1 case resting on a P0 foundation is resolvable from the record rather than dispatched again, so a failed foundation skips its dependents instead of failing them |
+| The precondition record | **The preconditions job** | Not a relation between bands at all. A band reading it from its neighbour would inherit that neighbour's gating, and the record is guarded by the commits and the platform rather than by anything a band did |
+
+**The chain that remains is data, not scheduling.** A band whose cases depend
+on a higher band's cases needs that band's outcomes, so the order is forced by
+the corpus; a band with no such dependents could already run beside the others.
+That is the boundary on "separate ci jobs for each set of tiers": the jobs may
+separate, and the outcome record is what has to reach each one.
+
 #### 3.12.3 A reporting job runs after every band, and a red run is the one worth reading
 
 Added 2026-10-06 at the project owner's instruction: **for a release decision
@@ -1004,6 +1034,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115772` | N | `a_withheld_judge_leaves_a_graded_case_unpassed` (6.4.2) |
 | `115773` | N | `a_file_date_line_missing_or_stale_is_reported` |
 | `115774` | N | `every_code_production_code_names_is_registered` |
+| `115775` | N | `a_band_not_reading_the_precondition_record_is_reported` (3.12.1.1) |
+| `115776` | N | `a_graded_invocation_leaving_out_a_layer_is_reported` (4.21) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -1019,7 +1051,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 111 cases, 82 negative, 23 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 113 cases, 84 negative, 23 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1826,6 +1858,41 @@ and this subsection is why — not an omission anybody needs to rediscover.
 **This does not relax the schedule condition in section 4.18.3.** A gate is read
 by somebody who just pushed, so a red with a known cause is informative. A cron
 firing weekly into nobody's attention is not, and it stays withheld.
+
+### 4.21 A graded invocation names every graded layer, or it measures part of a run
+
+Added 2026-10-21, from the harness's section 7.1.4 work rather than from a
+failure.
+
+**`-m` is the layer dimension and the harness does not read it as a subset.**
+Every job in both repositories chooses its layer that way and the bands
+partition by priority inside it, so a marker expression cannot be treated as a
+hand-typed selection at runtime without ungating every job there is. The
+harness records such a run as `selection_mode: full`.
+
+**Which leaves a step naming one layer of three unaccounted for.** It selects
+part of the graded cases and its rows claim a verdict over a complete run. The
+expression is a literal in the definition, so the completeness is checked
+there, where it can be compared, rather than at runtime where the harness would
+have to interpret a string that may have arrived through an input.
+
+**The harness held the instance.** `evaluate-live-weekly.yml` ran gates 4, 5
+and 6 as three steps selecting `evaluator`, `tool` and `sec` separately, each
+in a workflow whose context is `ci`. They are one step naming all three now.
+That workflow is retired at a later step of the probe and calibration plan, and
+a scheduled retirement is not a reason to leave a wrong selection in the
+repository meanwhile.
+
+| What is read | Why |
+|---|---|
+| Every workflow whose file name does not end `-on-demand` | A debug workflow's rows are `ci_debug` and yield no verdict whatever they selected, which is what a debug run is for |
+| Every composite action under `.github/actions` | It carries no cadence of its own and runs under whichever workflow calls it. **This repository's only graded invocation lives in one**, so a check reading workflows alone would read nothing here |
+| Nothing computed | A marker reaching a step through an input carries no literal to compare, which is how every other check over these files already behaves |
+
+**One implementation, a caller in each repository**, per section 5.1:
+`cmn.code_standards.partial_graded_selection_gaps`, called by
+`MQC_CAS_UNI_115776` here and `MQC_CMN_UNI_112188` there.
+`MQC_REQ_CAS_PRE_0013`.
 
 ## 5. Governance Parity With The Harness
 

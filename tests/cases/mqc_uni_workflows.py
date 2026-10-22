@@ -41,6 +41,7 @@ takes to its own.
 #   115705  a_spending_workflow_that_skips_the_green_gate_is_reported
 # TestMQCArtifactContract
 #   115708  a_workflow_emitting_one_mandated_artifact_is_reported
+#   115776  a_graded_invocation_leaving_out_a_layer_is_reported
 # TestMQCRefusalReachesTheRun
 #   115706  a_test_executing_job_that_outruns_a_refusal_is_reported
 #   115707  a_debug_workflow_blocked_by_a_red_harness_is_reported
@@ -52,7 +53,7 @@ from typing import Any
 
 import allure
 import pytest
-from cmn.code_standards import artifact_mandate_gaps
+from cmn.code_standards import artifact_mandate_gaps, partial_graded_selection_gaps
 from cmn.metadata import COLLECTED_PREFIX as _COLLECTOR_PREFIX
 
 from tests.cases.workflow_support import (
@@ -675,6 +676,39 @@ class TestMQCArtifactContract:
             "workflow invocations emit one of the two mandated artifacts, so "
             "the run produces no report to judge readiness from: "
             + "; ".join(gaps)
+        )
+
+    def MQC_CAS_UNI_115776_a_graded_invocation_leaving_out_a_layer_is_reported(
+        self,
+    ) -> None:
+        """A graded step selecting part of the layers would still yield a verdict.
+
+        **Every graded case here lives in one of three layers**, and a step
+        naming some of them selects part of a run while the harness records a
+        full selection, so its rows would carry a verdict over part of what the
+        bands cover. The harness does not read it as a subset at runtime,
+        because ``-m`` is how every job chooses its layer: harness
+        ``cmn_verdict_and_cli.md`` section 7.1.4.
+
+        **The band definition is read as well as the workflows**, because the
+        one graded invocation this repository's gate makes lives there, and a
+        composite action carries no cadence of its own.
+
+        **The scanner is the harness's and is called with this root**, and
+        ``MQC_CMN_UNI_112188`` calls it with the other one. The instance that
+        prompted it was over there.
+
+        Design: ``consumer_ci.md`` section 4.21.
+
+        Returns:
+            None
+        """
+        gaps = partial_graded_selection_gaps(Path(__file__).resolve().parents[2])
+
+        assert not gaps, (
+            "graded invocation(s) select part of the graded layers while the "
+            "harness records a full selection, so their rows would carry a "
+            "verdict over part of a run: " + "; ".join(gaps)
         )
 
 

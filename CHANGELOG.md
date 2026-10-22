@@ -40,6 +40,32 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Every band job learns that the preconditions held, 2026-10-21
+
+**The gate's band rows stayed ungated**, because a band job could not tell the
+preconditions job before it had passed. The preconditions job writes the record
+now and each band reads it from **that job**, never from the band before it: a
+band is a unit that can move to a job of its own, and one taking its gating
+from a neighbour would carry that neighbour's gating with it. The band chain
+carries outcomes and nothing else (section 3.12.1.1,
+`MQC_REQ_CAS_PRE_0012`, case `115775`, five injections).
+
+**Recorded with it, at the project owner's statement:** the bands execute
+independently, P0 and P1 answer for every case they selected while P2-P4
+answers to a floor, and the only cross-band effect is a dependent of a failed
+case skipping. That independence is what makes separating the bands into a job
+per tier set cheap, and the outcome record is the one thing that has to reach
+each one.
+
+**A graded invocation names every graded layer.** A step selecting one layer of
+three measures part of a run while the harness records a full selection, so its
+rows would carry a verdict over part of the graded cases. Checked where the
+expression is a literal, over the workflows and the band definition, since the
+one graded invocation this gate makes lives in a composite action (section
+4.21, `MQC_REQ_CAS_PRE_0013`, case `115776`). The instance was in the harness.
+
+158 preconditions, 173 requirements, 958 harness test cases.
+
 ### The findings tool's refusal carries a registered code, 2026-10-21
 
 **`tools/findings.py` refused to write a register under a code no registry

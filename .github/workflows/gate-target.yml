@@ -172,6 +172,12 @@ jobs:
       matrix:
         os: [ubuntu-24.04, windows-latest]
     runs-on: ${{ matrix.os }}
+    env:
+      # THE SAME TWO REFS EVERY BAND JOB SETS, because the record this job
+      # writes is guarded by both commits and the platform, and a record whose
+      # refs read empty would refuse every band that compared them.
+      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -183,8 +189,24 @@ jobs:
           python -m pip install --quiet \
             "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
           python -m pip install --quiet --no-deps --editable "."
+      # IT WRITES THE RECORD THE BANDS READ. Only a session whose preconditions
+      # all passed writes one, and a failure removes an older one, so a stale
+      # pass cannot outlive the failure. Harness `cmn_verdict_and_cli.md` 7.1.4.
       - name: Gate 2, unit preconditions
-        run: pytest -m unit --junitxml=reports/junit_mqc_unit.xml --alluredir=reports/allure-results
+        run: pytest -m unit --preconditions-record reports/preconditions.json --junitxml=reports/junit_mqc_unit.xml --alluredir=reports/allure-results
+
+      # NOT `always()`, AND NOT NAMED BY THE GATED CONDITION. A failed
+      # precondition writes no record and the bands do not run, so an upload on
+      # failure would look for a file that is correctly absent; and this
+      # carrier is read within the run rather than kept, so it is neither a
+      # mandated artifact nor scratch.
+      - name: Carry the precondition record to the bands
+        uses: actions/upload-artifact@v6
+        with:
+          name: preconditions-${{ matrix.os }}
+          path: reports/preconditions.json
+          if-no-files-found: error
+          retention-days: 1
 
       - uses: actions/upload-artifact@v6
         if: always()
@@ -246,6 +268,16 @@ jobs:
           python -m pip install --quiet --no-deps --editable "."
       # ONE DEFINITION, TAKING THE BAND AS A PARAMETER. Three copies of
       # this procedure drifted three ways; design section 3.12.7.
+      # WHAT THE PRECONDITIONS JOB ESTABLISHED, read from that job rather than
+      # from the band before this one: a band is a unit that can move to a job
+      # of its own, and taking its gating from a neighbour would move with it.
+      # Design section 3.12.1.1.
+      - name: Take the record the preconditions job wrote
+        uses: actions/download-artifact@v6
+        with:
+          name: preconditions-${{ matrix.os }}
+          path: reports/
+
       - name: Band P0
         uses: ./.github/actions/band
         with:
@@ -253,6 +285,7 @@ jobs:
           priority: "0"
           report: p0
           engine: ${{ inputs.engine }}
+          preconditions_record: reports/preconditions.json
           blocking: "true"
 
       - name: Carry the outcomes to P1
@@ -315,6 +348,16 @@ jobs:
 
       # ONE DEFINITION, TAKING THE BAND AS A PARAMETER. Three copies of
       # this procedure drifted three ways; design section 3.12.7.
+      # WHAT THE PRECONDITIONS JOB ESTABLISHED, read from that job rather than
+      # from the band before this one: a band is a unit that can move to a job
+      # of its own, and taking its gating from a neighbour would move with it.
+      # Design section 3.12.1.1.
+      - name: Take the record the preconditions job wrote
+        uses: actions/download-artifact@v6
+        with:
+          name: preconditions-${{ matrix.os }}
+          path: reports/
+
       - name: Band P1
         uses: ./.github/actions/band
         with:
@@ -322,6 +365,7 @@ jobs:
           priority: "1"
           report: p1
           engine: ${{ inputs.engine }}
+          preconditions_record: reports/preconditions.json
           blocking: "true"
 
       - name: Carry the outcomes to P2-P4
@@ -383,6 +427,16 @@ jobs:
       # decides. Design section 3.12.2.
       # ONE DEFINITION, TAKING THE BAND AS A PARAMETER. Three copies of
       # this procedure drifted three ways; design section 3.12.7.
+      # WHAT THE PRECONDITIONS JOB ESTABLISHED, read from that job rather than
+      # from the band before this one: a band is a unit that can move to a job
+      # of its own, and taking its gating from a neighbour would move with it.
+      # Design section 3.12.1.1.
+      - name: Take the record the preconditions job wrote
+        uses: actions/download-artifact@v6
+        with:
+          name: preconditions-${{ matrix.os }}
+          path: reports/
+
       - name: Band P2-P4
         uses: ./.github/actions/band
         with:
@@ -390,6 +444,7 @@ jobs:
           priority: "2,3,4"
           report: p2_p4
           engine: ${{ inputs.engine }}
+          preconditions_record: reports/preconditions.json
           blocking: "false"
 
       - uses: actions/upload-artifact@v6

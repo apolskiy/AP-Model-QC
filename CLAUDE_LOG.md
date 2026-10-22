@@ -5147,3 +5147,27 @@ carrying the request that produced it.
 * **Code Quality & Compliance Audit:** 156 preconditions, all passing, exit 0;
   pylint 10.00/10, exit 0; 171 requirements. Replay not re-run: nothing a band
   reads changed.
+
+## 2026-10-21, later: Every band job learns that the preconditions held
+
+* **The gate's band rows were ungated** because a band job could not tell the
+  preconditions job before it had passed. The preconditions job writes the
+  record and each band reads it **from that job**, with both refs set there too,
+  since the record is guarded by the commits and the platform and would have
+  refused every band had they read empty. `MQC_REQ_CAS_PRE_0012`, `115775`,
+  five injections, five caught.
+* **Recorded at the project owner's statement**, section 3.12.1.1: the bands
+  execute independently, P0 and P1 answer for every case they selected while
+  P2-P4 answers to a floor, and the only cross-band effect is a dependent of a
+  failed case skipping. **That is what rules out routing the record down the
+  band chain:** a band that later moved to a job of its own would take its
+  gating from whichever band happened to precede it. The chain carries
+  outcomes, which are a data dependency, and nothing else.
+* **A graded invocation names every graded layer**, checked over the workflows
+  and the band definition, because the one graded invocation this gate makes
+  lives in a composite action and a check reading workflows alone would read
+  nothing here. `MQC_REQ_CAS_PRE_0013`, `115776`. The instance was in the
+  harness.
+* **Code Quality & Compliance Audit:** 158 preconditions, all passing, exit 0;
+  pylint 10.00/10, exit 0; 173 requirements. Replay not re-run: nothing a band
+  reads changed.

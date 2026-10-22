@@ -50,6 +50,8 @@ go and read it.
 #   115725  a_band_job_above_its_case_ceiling_is_reported
 # TestMQCLocalUsesIsFollowed
 #   115726  a_command_behind_a_local_uses_is_read
+# TestMQCBandGatedByTheRecord
+#   115775  a_band_not_reading_the_precondition_record_is_reported
 # ------------------------------------------------------------ end of cases
 
 from typing import Any
@@ -75,6 +77,15 @@ from tests.cases.workflow_support import (
 )
 
 pytestmark = pytest.mark.unit
+
+# THE FLAG A PRECONDITIONS JOB NAMES, and the band definition's input that
+# passes its path on. Harness `cmn_verdict_and_cli.md` section 7.1.4.
+_RECORD_FLAG = "--preconditions-record"
+_RECORD_INPUT = "preconditions_record"
+
+# THE ARTIFACT PREFIX A BAND'S OUTCOMES TRAVEL UNDER. A carried outcome is a
+# data dependency between bands; gating is not. Design section 3.12.1.1.
+_CARRY_PREFIX = "carry-after-"
 
 
 class TestMQCBandGating:
@@ -662,3 +673,106 @@ class TestMQCLocalUsesIsFollowed:
         assert any(
             "pytest -m unit" in line for line in _run_lines(outer, tmp_path)
         )
+
+
+class TestMQCBandGatedByTheRecord:
+    """Every band learns from the preconditions job, not from its neighbour."""
+
+    @allure.story("A band whose preconditions held yields a verdict")
+    def MQC_CAS_UNI_115775_a_band_not_reading_the_precondition_record_is_reported(
+        self,
+    ) -> None:
+        """Each band takes the record the preconditions job wrote, from that job.
+
+        **No graded row this repository published was ever gated**, and one of
+        the three reasons was that a band job could not tell the preconditions
+        job before it had passed. A band reading the record from the band
+        before it would inherit that neighbour's gating and would carry none at
+        all once a band moved to a job of its own, which is what section
+        3.12.1.1 records the bands are independent for.
+
+        Design: ``consumer_ci.md`` section 3.12.1.1, harness
+        ``cmn_verdict_and_cli.md`` section 7.1.4.
+
+        Returns:
+            None
+        """
+        workflow = _load("gate-target.yml")
+        all_jobs = _jobs(workflow)
+
+        # 1. THE PRECONDITIONS JOB NAMES A RECORD TO WRITE.
+        written = [
+            line for line in _run_lines(
+                {"steps": all_jobs["preconditions"].get("steps") or []}
+            )
+            if _RECORD_FLAG in line
+        ]
+        assert len(written) == 1, (
+            f"the preconditions job names {_RECORD_FLAG} on {len(written)} "
+            f"invocation(s), so the bands after it have nothing to read"
+        )
+        record = written[0].split(_RECORD_FLAG, 1)[1].split()[0]
+
+        # 2. AND UPLOADS IT UNDER A NAME CARRYING THE PLATFORM, because the
+        # record is guarded by the platform and two legs run at once.
+        carried = [
+            step for step in all_jobs["preconditions"].get("steps") or []
+            if str(step.get("uses", "")).startswith("actions/upload-artifact")
+            and record in str((step.get("with") or {}).get("path", ""))
+        ]
+        assert len(carried) == 1, (
+            f"the record at {record} is uploaded by {len(carried)} step(s), so "
+            f"a band downloading it would find nothing or find two"
+        )
+        artifact = str((carried[0].get("with") or {}).get("name", ""))
+        assert "matrix.os" in artifact, (
+            f"the record travels as {artifact!r}, which does not name the "
+            f"platform, so one platform's record could gate the other's band"
+        )
+
+        # 3. EVERY BAND TAKES IT FROM THAT JOB AND PASSES IT ON.
+        graded = {
+            name: job for name, job in all_jobs.items()
+            if name.startswith("graded-")
+        }
+        assert graded, "no graded band job was found, so nothing was compared"
+        for name, job in sorted(graded.items()):
+            sources = [
+                str((step.get("with") or {}).get("name", ""))
+                for step in job.get("steps") or []
+                if str(step.get("uses", "")).startswith("actions/download-artifact")
+            ]
+            assert artifact in sources, (
+                f"{name} does not download {artifact}, so it cannot tell the "
+                f"preconditions held and its rows yield no verdict: {sources}"
+            )
+            supplied = [
+                (step.get("with") or {}).get(_RECORD_INPUT)
+                for step in job.get("steps") or []
+                if str(step.get("uses", "")) == _BAND_ACTION
+            ]
+            assert supplied == [record], (
+                f"{name} calls the band definition with {_RECORD_INPUT} as "
+                f"{supplied}, and the preconditions job wrote {record}"
+            )
+
+        # 4. AND THE BAND CHAIN CARRIES OUTCOMES AND NOTHING ELSE, so the
+        # record cannot travel down it and gate a band from its neighbour.
+        for name, job in sorted(graded.items()):
+            for step in job.get("steps") or []:
+                supplied_with = step.get("with") or {}
+                # THE UPLOAD SIDE ONLY. A download names the directory it
+                # unpacks into, which says nothing about what was sent.
+                if not str(step.get("uses", "")).startswith(
+                    "actions/upload-artifact"
+                ) or not str(
+                    supplied_with.get("name", "")
+                ).startswith(_CARRY_PREFIX):
+                    continue
+                path = str(supplied_with.get("path", ""))
+                assert path.endswith("carry.json"), (
+                    f"{name} sends {path} down the band chain under "
+                    f"{supplied_with.get('name')}, so a band could take its "
+                    f"gating from the band before it rather than from the "
+                    f"preconditions job"
+                )

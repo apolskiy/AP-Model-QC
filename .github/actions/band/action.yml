@@ -35,6 +35,14 @@ inputs:
       case it selected. Anything else is assessed against the pass floor.
     required: false
     default: "false"
+  preconditions_record:
+    description: >-
+      The precondition record the preconditions job wrote, which is what makes
+      this band's rows gated. Empty where there is none, and the band then
+      yields no verdict rather than refusing. Harness
+      `cmn_verdict_and_cli.md` section 7.1.4.
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -45,11 +53,16 @@ runs:
     # output under a step named for the wrapper.
     - name: Band ${{ inputs.band }}, both sides replayed
       shell: bash
+      env:
+        # THE RECORD THE PRECONDITIONS JOB WROTE, read from the environment so
+        # an empty input omits the flag rather than naming an empty path.
+        PRECONDITIONS_RECORD: ${{ inputs.preconditions_record }}
       run: |
         pytest -m "evaluator or tool or sec" \
           --engine ${{ inputs.engine }} \
           --mode replay \
           --priority ${{ inputs.priority }} \
+          ${PRECONDITIONS_RECORD:+--preconditions-record "${PRECONDITIONS_RECORD}"} \
           --carry-outcomes reports/carry.json \
           --junitxml=reports/junit_mqc_${{ inputs.report }}.xml \
           --alluredir=reports/allure-results
