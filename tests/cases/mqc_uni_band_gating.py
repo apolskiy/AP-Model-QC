@@ -58,8 +58,9 @@ from typing import Any
 
 from pathlib import Path
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tools.band_floor import assess, assess_blocking
 
@@ -91,7 +92,7 @@ _CARRY_PREFIX = "carry-after-"
 class TestMQCBandGating:
     """The gate's own summary, and the condition it has to run under."""
 
-    @allure.story("The band table survives the run that needed it")
+    @story("The band table survives the run that needed it")
     def MQC_CAS_UNI_115727_a_gate_reporting_only_on_green_is_reported(self) -> None:
         """The reporting job needs every band and runs whatever they did.
 
@@ -151,7 +152,7 @@ class TestMQCBandGating:
         )
 
 
-    @allure.story("A blocking band answers for every case it selected")
+    @story("A blocking band answers for every case it selected")
     def MQC_CAS_UNI_115730_a_blocking_band_passing_on_unmeasured_cases_is_reported(
         self, tmp_path: Any
     ) -> None:
@@ -289,7 +290,7 @@ class TestMQCBandGating:
 class TestMQCBlockerRelease:
     """The one recorded decision a release blocking band honours."""
 
-    @allure.story("A blocker releases only on a recorded dispensation")
+    @story("A blocker releases only on a recorded dispensation")
     def MQC_CAS_UNI_115717_a_blocking_band_releases_only_on_a_recorded_dispensation(
         self, tmp_path: Any
     ) -> None:
@@ -364,7 +365,7 @@ class TestMQCBlockerRelease:
 class TestMQCFloorReporting:
     """Every band assesses its floor, including the band that failed."""
 
-    @allure.story("The band that failed is the one these counts are for")
+    @story("The band that failed is the one these counts are for")
     def MQC_CAS_UNI_115720_a_floor_step_skipped_on_a_red_band_is_reported(
         self,
     ) -> None:
@@ -421,7 +422,7 @@ class TestMQCFloorReporting:
         )
 
 
-    @allure.story("A mistyped boundary refuses instead of deciding every band")
+    @story("A mistyped boundary refuses instead of deciding every band")
     def MQC_CAS_UNI_115740_an_impossible_band_floor_refuses_rather_than_deciding(
         self, tmp_path: Path
     ) -> None:
@@ -471,7 +472,7 @@ class TestMQCFloorReporting:
 class TestMQCOneBandDefinition:
     """Every band job runs one definition, differing only in its inputs."""
 
-    @allure.story("The band is a parameter, not a copy")
+    @story("The band is a parameter, not a copy")
     def MQC_CAS_UNI_115724_a_band_job_not_using_the_shared_definition_is_reported(
         self,
     ) -> None:
@@ -548,7 +549,7 @@ class TestMQCOneBandDefinition:
             f"band the other already measured: {sorted(calling)}"
         )
 
-    @allure.story("A band splits rather than growing without bound")
+    @story("A band splits rather than growing without bound")
     def MQC_CAS_UNI_115725_a_band_job_above_its_case_ceiling_is_reported(
         self,
     ) -> None:
@@ -610,7 +611,7 @@ class TestMQCOneBandDefinition:
 class TestMQCLocalUsesIsFollowed:
     """A command factored into a local definition is still the job's command."""
 
-    @allure.story("A check that stops finding a command reports agreement")
+    @story("A check that stops finding a command reports agreement")
     def MQC_CAS_UNI_115726_a_command_behind_a_local_uses_is_read(
         self, tmp_path: Path
     ) -> None:
@@ -678,7 +679,7 @@ class TestMQCLocalUsesIsFollowed:
 class TestMQCBandGatedByTheRecord:
     """Every band learns from the preconditions job, not from its neighbour."""
 
-    @allure.story("A band whose preconditions held yields a verdict")
+    @story("A band whose preconditions held yields a verdict")
     def MQC_CAS_UNI_115775_a_band_not_reading_the_precondition_record_is_reported(
         self,
     ) -> None:

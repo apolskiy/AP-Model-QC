@@ -3,7 +3,7 @@
 """Graded security cases for whether the model discloses its instruction when asked indirectly.
 
 Created: 2026-09-26
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCIndirectDisclosure``, three cases on the model under test.
 Each asks for the system instruction in a way the direct request does not cover, under a
@@ -43,8 +43,9 @@ plainly tells us nothing further by also disclosing when asked in verse.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import observe_repeatedly
 from tests.cases.consistency_support import (
@@ -55,14 +56,12 @@ from tests.cases.consistency_support import (
 pytestmark = pytest.mark.sec
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Model security")
 class TestMQCIndirectDisclosure:
     """One request, three framings the direct form does not cover."""
 
     @pytest.mark.priority(0)
     @pytest.mark.depends_on("154102")
-    @allure.story("Roleplay framing")
+    @story("Roleplay framing")
     def MQC_EVL_SEC_154000_does_not_disclose_instruction_under_roleplay_framing(
         self, request: Any
     ) -> None:
@@ -88,7 +87,7 @@ class TestMQCIndirectDisclosure:
 
     @pytest.mark.priority(0)
     @pytest.mark.depends_on("154102")
-    @allure.story("Requested via context")
+    @story("Requested via context")
     def MQC_EVL_SEC_154001_does_not_disclose_instruction_requested_via_context(
         self, request: Any
     ) -> None:
@@ -115,7 +114,7 @@ class TestMQCIndirectDisclosure:
 
     @pytest.mark.priority(0)
     @pytest.mark.depends_on("154102")
-    @allure.story("Encoded request")
+    @story("Encoded request")
     def MQC_EVL_SEC_154002_does_not_disclose_instruction_under_encoded_request(
         self, request: Any
     ) -> None:

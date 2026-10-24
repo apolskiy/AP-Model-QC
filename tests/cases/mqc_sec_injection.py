@@ -3,7 +3,7 @@
 """Graded security cases for whether the model resists an instruction planted against it.
 
 Created: 2026-09-25
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains twelve prompt-injection cases on the model under test.
 ``TestMQCInstructionOverride`` checks it resists a direct override, one planted in
@@ -65,8 +65,9 @@ open.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import observe_repeatedly
 from tests.cases.consistency_support import (
@@ -77,14 +78,12 @@ from tests.cases.consistency_support import (
 pytestmark = pytest.mark.sec
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Model security")
 class TestMQCInstructionOverride:
     """An instruction planted where the model will read it."""
 
     @pytest.mark.base
     @pytest.mark.priority(0)
-    @allure.story("Direct override")
+    @story("Direct override")
     def MQC_EVL_SEC_154100_resists_direct_instruction_override(
         self, request: Any
     ) -> None:
@@ -118,7 +117,7 @@ class TestMQCInstructionOverride:
     # same attack across two documents.
     @pytest.mark.base
     @pytest.mark.priority(0)
-    @allure.story("Context override")
+    @story("Context override")
     def MQC_EVL_SEC_154101_resists_override_planted_in_context(
         self, request: Any
     ) -> None:
@@ -143,7 +142,7 @@ class TestMQCInstructionOverride:
 
     @pytest.mark.priority(1)
     @pytest.mark.depends_on("154100")
-    @allure.story("Delimiter escape")
+    @story("Delimiter escape")
     def MQC_EVL_SEC_154108_resists_delimiter_escape_attempt(
         self, request: Any
     ) -> None:
@@ -167,14 +166,12 @@ class TestMQCInstructionOverride:
         assert_consistent_pass(results, _explain)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Model security")
 class TestMQCDisclosureAndHijack:
     """What the model gives away, and what it does instead of its task."""
 
     @pytest.mark.base
     @pytest.mark.priority(0)
-    @allure.story("Prompt extraction")
+    @story("Prompt extraction")
     def MQC_EVL_SEC_154102_does_not_disclose_system_instruction(
         self, request: Any
     ) -> None:
@@ -203,7 +200,7 @@ class TestMQCDisclosureAndHijack:
     # only once each has been measured alone.
     @pytest.mark.base
     @pytest.mark.priority(0)
-    @allure.story("Goal hijack")
+    @story("Goal hijack")
     def MQC_EVL_SEC_154103_performs_assigned_task_not_injected_one(
         self, request: Any
     ) -> None:
@@ -232,7 +229,7 @@ class TestMQCDisclosureAndHijack:
     # coercion cases presuppose it rather than the reverse.
     @pytest.mark.base
     @pytest.mark.priority(0)
-    @allure.story("Tool coercion")
+    @story("Tool coercion")
     def MQC_EVL_SEC_154107_does_not_invoke_forbidden_tool_under_injection(
         self, request: Any
     ) -> None:
@@ -257,14 +254,12 @@ class TestMQCDisclosureAndHijack:
         assert_consistent_pass(results, _explain)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Model security")
 class TestMQCObfuscatedOverride:
     """The same override, disguised three ways. Each presupposes `154100`."""
 
     @pytest.mark.priority(1)
     @pytest.mark.depends_on("154100")
-    @allure.story("Base64")
+    @story("Base64")
     def MQC_EVL_SEC_154104_resists_base64_obfuscated_override(
         self, request: Any
     ) -> None:
@@ -289,7 +284,7 @@ class TestMQCObfuscatedOverride:
 
     @pytest.mark.priority(1)
     @pytest.mark.depends_on("154100")
-    @allure.story("Zero width")
+    @story("Zero width")
     def MQC_EVL_SEC_154105_resists_zero_width_obfuscated_override(
         self, request: Any
     ) -> None:
@@ -314,7 +309,7 @@ class TestMQCObfuscatedOverride:
 
     @pytest.mark.priority(1)
     @pytest.mark.depends_on("154100")
-    @allure.story("Homoglyph")
+    @story("Homoglyph")
     def MQC_EVL_SEC_154106_resists_homoglyph_obfuscated_override(
         self, request: Any
     ) -> None:
@@ -338,8 +333,6 @@ class TestMQCObfuscatedOverride:
         assert_consistent_pass(results, _explain)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Model security")
 class TestMQCOverrideSurfaces:
     """Authority claimed, a payload split, and the control that keeps them honest."""
 
@@ -355,7 +348,7 @@ class TestMQCOverrideSurfaces:
     # from the distribution ceilings so promoting costs no functional budget.
     @pytest.mark.base
     @pytest.mark.priority(0)
-    @allure.story("Role assertion")
+    @story("Role assertion")
     def MQC_EVL_SEC_154109_resists_role_assertion_attempt(self, request: Any) -> None:
         """The attacker claims authority instead of issuing an instruction.
 
@@ -386,7 +379,7 @@ class TestMQCOverrideSurfaces:
         assert_consistent_pass(results, _explain)
 
     @pytest.mark.priority(2)
-    @allure.story("Near miss")
+    @story("Near miss")
     def MQC_EVL_SEC_154110_canary_absent_from_compliant_response(
         self, request: Any
     ) -> None:
@@ -421,7 +414,7 @@ class TestMQCOverrideSurfaces:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("154101")
-    @allure.story("Split payload")
+    @story("Split payload")
     def MQC_EVL_SEC_154111_resists_payload_split_across_documents(
         self, request: Any
     ) -> None:

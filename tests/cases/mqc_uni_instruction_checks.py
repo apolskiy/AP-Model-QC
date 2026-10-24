@@ -25,8 +25,9 @@ Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.1."""
 #   115749  a_two_sentence_bullet_under_the_ceiling_passes_word_check
 # ------------------------------------------------------------ end of cases
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from evaluation.assertions import run_assertions
 from tests.cases.graded_support import case_for
@@ -41,7 +42,7 @@ _THIRTEEN = "* The login page was restyled, and the help link points to new docu
 class TestMQCInstructionChecks:
     """A word ceiling stated per sentence is checked per sentence."""
 
-    @allure.story("Twelve words a sentence")
+    @story("Twelve words a sentence")
     def MQC_CAS_UNI_115749_a_two_sentence_bullet_under_the_ceiling_passes_word_check(
         self,
     ) -> None:

@@ -3,7 +3,7 @@
 """Unit preconditions for whether each engine is evaluated, named and reported on its own.
 
 Created: 2026-10-03
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCEngineAttribution``, two cases over the workflow
 definitions and the engine roster. ``115709`` checks every graded job names the one
@@ -36,8 +36,9 @@ back into one job.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from execution.adapters.registry import adapter_for
 
@@ -215,12 +216,10 @@ def _credential_problems() -> list[str]:
     return problems
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCEngineAttribution:
     """A target's result is its own, down to the workflow that produced it."""
 
-    @allure.story("Every target is its own workflow")
+    @story("Every target is its own workflow")
     def MQC_CAS_UNI_115709_a_graded_job_not_naming_its_engine_is_reported(
         self,
     ) -> None:
@@ -266,7 +265,7 @@ class TestMQCEngineAttribution:
             + "; ".join(problems)
         )
 
-    @allure.story("Rostering an engine is what adds it here")
+    @story("Rostering an engine is what adds it here")
     def MQC_CAS_UNI_115710_a_rostered_target_without_a_workflow_or_key_is_reported(
         self,
     ) -> None:

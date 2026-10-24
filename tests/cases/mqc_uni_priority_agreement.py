@@ -25,8 +25,9 @@ Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.1."""
 #   115747  a_priority_disagreeing_across_its_sources_is_reported
 # ------------------------------------------------------------ end of cases
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import case_for, repository_root
 from tests.cases.suite_support import case_rules_from_suite
@@ -38,7 +39,7 @@ pytestmark = pytest.mark.unit
 class TestMQCPriorityAgreement:
     """The band a case runs in is the band it is budgeted and filed under."""
 
-    @allure.story("One priority, stated three times")
+    @story("One priority, stated three times")
     def MQC_CAS_UNI_115747_a_priority_disagreeing_across_its_sources_is_reported(
         self,
     ) -> None:

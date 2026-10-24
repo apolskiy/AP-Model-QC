@@ -3,7 +3,7 @@
 """Graded cases for grounding in code, where the same defects look different.
 
 Created: 2026-09-25
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains twelve cases on the model under test, answering over code excerpts
 and tabular sources. ``TestMQCCodeFabrication`` checks it invents no API, behaviour or
@@ -63,8 +63,9 @@ exists for.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import observe_repeatedly
 from tests.cases.consistency_support import assert_consistent_pass
@@ -72,14 +73,12 @@ from tests.cases.consistency_support import assert_consistent_pass
 pytestmark = pytest.mark.evaluator
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Code comprehension")
 class TestMQCCodeFabrication:
     """Asserting what the excerpt does not contain. Formulates GND_0001."""
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134200")
-    @allure.story("Invented API")
+    @story("Invented API")
     def MQC_EVL_EVAL_134100_invents_no_api_absent_from_code_snippet(
         self, request: Any
     ) -> None:
@@ -103,7 +102,7 @@ class TestMQCCodeFabrication:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134200")
-    @allure.story("Name versus body")
+    @story("Name versus body")
     def MQC_EVL_EVAL_134101_describes_function_behaviour_not_its_apparent_intent(
         self, request: Any
     ) -> None:
@@ -133,7 +132,7 @@ class TestMQCCodeFabrication:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134200")
-    @allure.story("Tabular fabrication")
+    @story("Tabular fabrication")
     def MQC_EVL_EVAL_134102_adds_no_row_absent_from_tabular_source(
         self, request: Any
     ) -> None:
@@ -155,14 +154,12 @@ class TestMQCCodeFabrication:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Code comprehension")
 class TestMQCLiteralPreservation:
     """Changing what the excerpt states. Formulates GND_0002."""
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134201")
-    @allure.story("Literals")
+    @story("Literals")
     def MQC_EVL_EVAL_134103_preserves_literal_values_while_correcting_syntax(
         self, request: Any
     ) -> None:
@@ -187,7 +184,7 @@ class TestMQCLiteralPreservation:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134201")
-    @allure.story("Discount tiers")
+    @story("Discount tiers")
     def MQC_EVL_EVAL_134104_preserves_stated_discount_tiers_in_logic_excerpt(
         self, request: Any
     ) -> None:
@@ -213,7 +210,7 @@ class TestMQCLiteralPreservation:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134201")
-    @allure.story("Specification threshold")
+    @story("Specification threshold")
     def MQC_EVL_EVAL_134105_preserves_stated_threshold_in_specification(
         self, request: Any
     ) -> None:
@@ -236,14 +233,12 @@ class TestMQCLiteralPreservation:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Code comprehension")
 class TestMQCVerifiableClaims:
     """Claims the excerpt settles. Formulates GND_0004."""
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134203")
-    @allure.story("Error location")
+    @story("Error location")
     def MQC_EVL_EVAL_134106_identifies_syntax_error_at_its_actual_location(
         self, request: Any
     ) -> None:
@@ -268,7 +263,7 @@ class TestMQCVerifiableClaims:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134203")
-    @allure.story("Computed behaviour")
+    @story("Computed behaviour")
     def MQC_EVL_EVAL_134107_states_correctly_what_the_logic_excerpt_computes(
         self, request: Any
     ) -> None:
@@ -292,7 +287,7 @@ class TestMQCVerifiableClaims:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134203")
-    @allure.story("Aggregate")
+    @story("Aggregate")
     def MQC_EVL_EVAL_134108_does_not_misstate_an_aggregate_derivable_from_source(
         self, request: Any
     ) -> None:
@@ -316,8 +311,6 @@ class TestMQCVerifiableClaims:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Code comprehension")
 class TestMQCDefectAnalysis:
     """Why it is wrong, what to do instead, and what the design lacks.
 
@@ -333,7 +326,7 @@ class TestMQCDefectAnalysis:
     @pytest.mark.base
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134203")
-    @allure.story("Cause, not outcome")
+    @story("Cause, not outcome")
     def MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome(
         self, request: Any
     ) -> None:
@@ -374,7 +367,7 @@ class TestMQCDefectAnalysis:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134109")
-    @allure.story("The determinate remedy")
+    @story("The determinate remedy")
     def MQC_EVL_EVAL_134110_states_the_determinate_remedy_for_an_invalid_code(
         self, request: Any
     ) -> None:
@@ -406,7 +399,7 @@ class TestMQCDefectAnalysis:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(4)
-    @allure.story("Bounded lifetime")
+    @story("Bounded lifetime")
     def MQC_EVL_EVAL_134111_recommends_bounding_a_coupon_lifetime(
         self, request: Any
     ) -> None:

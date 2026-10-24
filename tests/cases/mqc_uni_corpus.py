@@ -3,7 +3,7 @@
 """Unit preconditions for the shipped corpus: it loads, and says what it was designed to say.
 
 Created: 2026-09-24
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCCorpus``, sixteen cases over the task and golden rule files
 in ``tests/fixtures``, run through the harness's own loaders and integrity checks. They
@@ -53,8 +53,9 @@ import base64
 import unicodedata
 from typing import Final
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from cmn.document_standards import (
     document_register_problems,
@@ -161,12 +162,10 @@ def fixture_corpus() -> tuple[list[TaskDataSet], list[GoldenRuleSet]]:
     return list(tasks), list(rules)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Corpus")
 class TestMQCCorpus:
     """What the shipped data must satisfy before any case runs against it."""
 
-    @allure.story("Ingestion")
+    @story("Ingestion")
     def MQC_CAS_UNI_115000_the_shipped_corpus_loads_and_passes_referential_integrity(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -194,7 +193,7 @@ class TestMQCCorpus:
         # the assertion is that it returns at all.
         check_referential_integrity(tasks, rules)
 
-    @allure.story("Vocabulary")
+    @story("Vocabulary")
     def MQC_CAS_UNI_115011_a_graded_case_naming_an_unbuilt_pair_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -289,7 +288,7 @@ class TestMQCCorpus:
         assert kinds, "the corpus states no constraints, so nothing is being measured"
         assert all(is_registered_constraint_kind(kind) for kind in kinds)
 
-    @allure.story("Ablation")
+    @story("Ablation")
     def MQC_CAS_UNI_115002_the_ablation_control_states_no_constraint_and_checks_none(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -337,7 +336,7 @@ class TestMQCCorpus:
                 # nothing rather than measuring the absence of the instruction.
                 assert control_rule.rubric is not None
 
-    @allure.story("Taxonomy")
+    @story("Taxonomy")
     def MQC_CAS_UNI_115003_a_corpus_taxonomy_code_outside_the_registry_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -375,7 +374,7 @@ class TestMQCCorpus:
             f"than extending it: {unregistered}"
         )
 
-    @allure.story("Taxonomy")
+    @story("Taxonomy")
     def MQC_CAS_UNI_115004_a_family_named_here_and_not_registered_is_reported(
         self,
     ) -> None:
@@ -413,7 +412,7 @@ class TestMQCCorpus:
         )
 
 
-    @allure.story("Governance")
+    @story("Governance")
     def MQC_CAS_UNI_115413_a_document_outside_the_register_is_reported(
         self,
     ) -> None:
@@ -466,7 +465,7 @@ class TestMQCCorpus:
             "to the rule it introduces"
         )
 
-    @allure.story("Traceability")
+    @story("Traceability")
     def MQC_CAS_UNI_115412_a_mislabelled_derivable_family_is_reported(
         self,
     ) -> None:
@@ -534,7 +533,7 @@ class TestMQCCorpus:
              "test_ids": "MQC_CAS_UNI_115004_a_family_named_here_and_not_registered_is_reported"}
         ]), "a precondition row is required to carry a family, which it must not"
 
-    @allure.story("Fixtures")
+    @story("Fixtures")
     def MQC_CAS_UNI_115005_an_inlined_excerpt_differing_from_its_fixture_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -582,7 +581,7 @@ class TestMQCCorpus:
             f"these fixtures are mapped and dispatched by no task: {unused}"
         )
 
-    @allure.story("Rubrics")
+    @story("Rubrics")
     def MQC_CAS_UNI_115010_a_graded_evaluation_rule_without_a_rubric_is_reported(
         self,
     ) -> None:
@@ -646,7 +645,7 @@ class TestMQCCorpus:
             f"a rubric, so the exemption is obsolete: {sorted(stale)}"
         )
 
-    @allure.story("Calibration")
+    @story("Calibration")
     def MQC_CAS_UNI_115006_an_authored_anchor_without_an_exemplar_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -684,7 +683,7 @@ class TestMQCCorpus:
             + ", ".join(missing[:6])
         )
 
-    @allure.story("Calibration")
+    @story("Calibration")
     def MQC_CAS_UNI_115007_a_top_exemplar_failing_its_own_assertions_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -733,7 +732,7 @@ class TestMQCCorpus:
             "failed gate: " + "; ".join(incoherent[:4])
         )
 
-    @allure.story("Calibration")
+    @story("Calibration")
     def MQC_CAS_UNI_115012_an_exemplar_at_the_pass_mark_failing_its_gates_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -777,7 +776,7 @@ class TestMQCCorpus:
             "the rubric passes an answer the case refuses: " + "; ".join(refused)
         )
 
-    @allure.story("Generation")
+    @story("Generation")
     def MQC_CAS_UNI_115008_the_shipped_task_file_differs_from_what_the_generator_builds(
         self,
     ) -> None:
@@ -807,7 +806,7 @@ class TestMQCCorpus:
         )
 
 
-    @allure.story("Payload integrity")
+    @story("Payload integrity")
     def MQC_CAS_UNI_115009_the_obfuscated_payloads_survive_a_load_as_code_points(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:

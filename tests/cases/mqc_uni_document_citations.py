@@ -45,8 +45,9 @@ Specified by ``docs/design/consumer_ci.md`` section 4 and the harness
 
 from pathlib import Path
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from cmn.document_citations import (
     disordered_sections,
@@ -66,7 +67,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 class TestMQCDocumentCitations:
     """The harness's citation checks, run against this repository."""
 
-    @allure.story("A citation resolves or it is not a citation")
+    @story("A citation resolves or it is not a citation")
     def MQC_CAS_UNI_115734_an_unresolved_or_duplicated_citation_is_reported(
         self,
     ) -> None:
@@ -93,7 +94,7 @@ class TestMQCDocumentCitations:
             f"citations of one number mean different things: {duplicated}"
         )
 
-    @allure.story("A README change carries a changelog entry")
+    @story("A README change carries a changelog entry")
     def MQC_CAS_UNI_115735_a_readme_without_a_changelog_is_reported(self) -> None:
         """This repository holds a changelog beside its README.
 
@@ -114,7 +115,7 @@ class TestMQCDocumentCitations:
             f"there leaves no record of when it moved or why: {reported}"
         )
 
-    @allure.story("A document's sections read in numeric order")
+    @story("A document's sections read in numeric order")
     def MQC_CAS_UNI_115778_a_section_sitting_out_of_numeric_order_is_reported(
         self,
     ) -> None:
@@ -137,7 +138,7 @@ class TestMQCDocumentCitations:
             f"else: {reported}"
         )
 
-    @allure.story("A flag a document names is a flag something declares")
+    @story("A flag a document names is a flag something declares")
     def MQC_CAS_UNI_115779_this_repository_names_no_undeclared_flag(self) -> None:
         """Every flag these documents name is declared by something.
 
@@ -169,7 +170,7 @@ class TestMQCMarkerRegistry:
     Specified in the harness ``harness_test_taxonomy.md`` section 7.5.1.
     """
 
-    @allure.story("The registry is declared whole, so a typo in it must fail")
+    @story("The registry is declared whole, so a typo in it must fail")
     def MQC_CAS_UNI_115741_a_marker_registry_disagreeing_with_the_harness_is_reported(
         self,
     ) -> None:
@@ -200,7 +201,7 @@ class TestMQCMarkerRegistry:
         bare = sorted(name for name, text in here.items() if not text)
         assert not bare, f"{len(bare)} marker(s) registered with no description: {bare}"
 
-    @allure.story("A validated value cannot be replaced after construction")
+    @story("A validated value cannot be replaced after construction")
     def MQC_CAS_UNI_115742_a_mutable_production_record_is_reported(self) -> None:
         """The harness's frozen-record reader, run against this repository.
 

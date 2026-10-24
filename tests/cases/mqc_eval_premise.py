@@ -3,7 +3,7 @@
 """Graded cases for whether the model reports how a resume and a position really match.
 
 Created: 2026-10-13
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCBoundedRequirementMatching``, four cases on the model under
 test, each matching a resume against a requirement that carries a bound. It must report
@@ -50,8 +50,9 @@ and one that does not.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.consistency_support import assert_consistent_pass
 from tests.cases.graded_support import observe_repeatedly
@@ -59,14 +60,12 @@ from tests.cases.graded_support import observe_repeatedly
 pytestmark = pytest.mark.evaluator
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Premise discrimination")
 class TestMQCBoundedRequirementMatching:
     """A bound that excludes the candidate, and one that does not."""
 
     @pytest.mark.base
     @pytest.mark.priority(2)
-    @allure.story("The cap is exceeded")
+    @story("The cap is exceeded")
     def MQC_EVL_EVAL_134500_cap_exceeded_is_reported_as_no_match(
         self, request: Any
     ) -> None:
@@ -96,7 +95,7 @@ class TestMQCBoundedRequirementMatching:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134500")
-    @allure.story("The cap is satisfied, the control")
+    @story("The cap is satisfied, the control")
     def MQC_EVL_EVAL_134501_cap_satisfied_is_reported_as_a_match(
         self, request: Any
     ) -> None:
@@ -122,7 +121,7 @@ class TestMQCBoundedRequirementMatching:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @allure.story("A floor claim cannot reach above itself")
+    @story("A floor claim cannot reach above itself")
     def MQC_EVL_EVAL_134502_stated_floor_does_not_establish_a_higher_requirement(
         self, request: Any
     ) -> None:
@@ -151,7 +150,7 @@ class TestMQCBoundedRequirementMatching:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(2)
-    @allure.story("A bound nothing can satisfy")
+    @story("A bound nothing can satisfy")
     def MQC_EVL_EVAL_134503_incoherent_bound_is_raised_before_the_assessment(
         self, request: Any
     ) -> None:

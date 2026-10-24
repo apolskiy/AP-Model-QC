@@ -3,7 +3,7 @@
 """Unit preconditions for which harness commit this case set runs against, and what it refuses.
 
 Created: 2026-09-23
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains nineteen cases on the resolver in ``tools/harness_pin.py`` and the
 branch mapping in ``config/harness_pin.yaml``, driven by the API shapes in
@@ -63,8 +63,9 @@ import ast
 import re
 from pathlib import Path
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from cmn.branch_policy import BRANCH_KINDS, referent_problems
 from tools.harness_pin import (
@@ -104,12 +105,10 @@ def fixture_mapping() -> dict[str, object]:
     return load_mapping(root / "config" / "harness_pin.yaml")
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCHarnessPairing:
     """Which harness ref a branch of this repository declares."""
 
-    @allure.story("Declared pairings")
+    @story("Declared pairings")
     def MQC_CAS_UNI_115300_a_named_case_branch_resolves_to_its_declared_harness_ref(
         self, mapping: dict[str, object]
     ) -> None:
@@ -130,7 +129,7 @@ class TestMQCHarnessPairing:
         assert stabilizing.matched == "stabilization-*"
         assert stabilizing.harness_ref == "main"
 
-    @allure.story("Declared pairings")
+    @story("Declared pairings")
     def MQC_CAS_UNI_115301_a_glob_entry_matches_an_expansion_branch(
         self, mapping: dict[str, object]
     ) -> None:
@@ -167,7 +166,7 @@ class TestMQCHarnessPairing:
         assert debugging.matched == "debug-*"
         assert debugging.require_green is False
 
-    @allure.story("Declared pairings")
+    @story("Declared pairings")
     def MQC_CAS_UNI_115302_an_unmatched_branch_takes_the_default_pairing(
         self, mapping: dict[str, object]
     ) -> None:
@@ -188,7 +187,7 @@ class TestMQCHarnessPairing:
         assert resolved.harness_ref == "main"
         assert resolved.require_green is False
 
-    @allure.story("Declared pairings")
+    @story("Declared pairings")
     def MQC_CAS_UNI_115303_an_explicit_entry_wins_over_a_glob_listed_after_it(
         self,
     ) -> None:
@@ -214,7 +213,7 @@ class TestMQCHarnessPairing:
         assert resolved.matched == "main"
         assert resolved.require_green is True
 
-    @allure.story("Strictness")
+    @story("Strictness")
     def MQC_CAS_UNI_115311_main_requires_green_and_a_stabilization_branch_does_not(
         self, mapping: dict[str, object]
     ) -> None:
@@ -250,12 +249,10 @@ class TestMQCHarnessPairing:
             assert pairing.require_green is False
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCGreenness:
     """What establishes a harness commit, and what does not."""
 
-    @allure.story("Green")
+    @story("Green")
     def MQC_CAS_UNI_115304_a_successful_required_run_on_the_commit_is_green(
         self,
     ) -> None:
@@ -269,7 +266,7 @@ class TestMQCGreenness:
         assert verdict.green is True
         assert verdict.conclusion == "success"
 
-    @allure.story("Not green")
+    @story("Not green")
     def MQC_CAS_UNI_115305_a_failed_required_run_is_not_green(self) -> None:
         """The obvious case, and the only one most implementations get right.
 
@@ -282,7 +279,7 @@ class TestMQCGreenness:
         assert verdict.conclusion == "failure"
         assert "QC_HARNESS_UPSTREAM_UNVERIFIED" in verdict.reason
 
-    @allure.story("Not green")
+    @story("Not green")
     def MQC_CAS_UNI_115306_no_run_at_all_for_the_commit_is_not_green(self) -> None:
         """A commit with no run is the normal state of a fresh push.
 
@@ -301,7 +298,7 @@ class TestMQCGreenness:
         assert verdict.conclusion is None
         assert "no gate-on-change.yml run exists" in verdict.reason
 
-    @allure.story("Not green")
+    @story("Not green")
     def MQC_CAS_UNI_115307_a_run_still_in_progress_is_not_green(self) -> None:
         """A run that has not concluded has established nothing yet.
 
@@ -316,7 +313,7 @@ class TestMQCGreenness:
         assert verdict.conclusion is None
         assert "in_progress" in verdict.reason
 
-    @allure.story("Not green")
+    @story("Not green")
     def MQC_CAS_UNI_115308_a_success_on_a_different_commit_does_not_make_this_one_green(
         self,
     ) -> None:
@@ -334,7 +331,7 @@ class TestMQCGreenness:
         assert verdict.green is False
         assert verdict.conclusion is None
 
-    @allure.story("Not green")
+    @story("Not green")
     def MQC_CAS_UNI_115309_a_success_from_an_unrequired_workflow_is_not_green(
         self,
     ) -> None:
@@ -353,7 +350,7 @@ class TestMQCGreenness:
         assert verdict.green is False
         assert verdict.conclusion is None
 
-    @allure.story("Green")
+    @story("Green")
     def MQC_CAS_UNI_115310_the_latest_attempt_decides_when_a_run_was_retried(
         self,
     ) -> None:
@@ -381,12 +378,10 @@ class TestMQCGreenness:
         assert regressed.green is False
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCUnresolvablePairing:
     """A harness branch that does not exist is not a finding about a model."""
 
-    @allure.story("Refusal")
+    @story("Refusal")
     def MQC_CAS_UNI_115313_an_unresolvable_paired_ref_refuses_rather_than_crashing(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
@@ -443,12 +438,10 @@ class TestMQCUnresolvablePairing:
         assert code == 4
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCResolverIndependence:
     """The check cannot come from the thing it checks."""
 
-    @allure.story("Independence")
+    @story("Independence")
     def MQC_CAS_UNI_115312_the_module_imports_nothing_from_the_harness(self) -> None:
         """A harness import here is circular twice over.
 
@@ -490,8 +483,6 @@ class TestMQCResolverIndependence:
         assert Pairing(harness_ref="main", require_green=True, matched="main")
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCBranchPolicyHere:
     """What the branch policy means on the side that owns the cases.
 
@@ -501,7 +492,7 @@ class TestMQCBranchPolicyHere:
     designed in ``docs/design/consumer_ci.md`` section 4.3.
     """
 
-    @allure.story("Referents resolve here")
+    @story("Referents resolve here")
     def MQC_CAS_UNI_115314_a_case_referent_naming_no_inventoried_case_is_reported(
         self,
     ) -> None:
@@ -534,7 +525,7 @@ class TestMQCBranchPolicyHere:
         # and a branch here names a case here.
         assert referent_problems("extend-112505-09-24-2026", known)
 
-    @allure.story("The pairing covers every kind")
+    @story("The pairing covers every kind")
     def MQC_CAS_UNI_115315_a_pairing_not_covering_a_dated_branch_is_reported(
         self,
     ) -> None:
@@ -574,17 +565,15 @@ class TestMQCBranchPolicyHere:
         assert resolve_pairing(mapping, "main").require_green is True
 
 
-@allure.epic("AP-Model-QC")
 
 
-@allure.feature("Consumer CI")
 class TestMQCTargetStrictness:
     """The destination sets the bar it will accept.
 
     Designed in ``docs/design/consumer_ci.md`` section 4.4.
     """
 
-    @allure.story("Strictness")
+    @story("Strictness")
     def MQC_CAS_UNI_115316_a_pull_request_taking_its_source_strictness_is_reported(
         self, mapping: dict[str, object]
     ) -> None:
@@ -663,7 +652,7 @@ class TestMQCTargetStrictness:
         assert relaxed.require_green is True
 
 
-    @allure.story("Plan and matrix agree")
+    @story("Plan and matrix agree")
 
     def MQC_CAS_UNI_115318_a_pending_harness_gate_is_waited_for_not_refused(
         self,

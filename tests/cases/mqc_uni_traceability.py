@@ -3,7 +3,7 @@
 """Unit preconditions checking the traceability matrix against the test plan and the suite.
 
 Created: 2026-10-01
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCMatrixIntegrity``, three cases on ``rtm_model.csv``, run
 through the harness's traceability checks. They report a requirement traced but stated
@@ -45,7 +45,6 @@ import csv
 import re
 from pathlib import Path
 
-import allure
 import pytest
 
 from cmn.traceability import MatrixRow, untraced_tests
@@ -62,8 +61,6 @@ def _root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCMatrixIntegrity:
     """Every requirement stated, every test traced, both ways round.
 

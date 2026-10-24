@@ -3,7 +3,7 @@
 """Unit preconditions that each shipped rule refuses what its case is named for, and only that.
 
 Created: 2026-10-16
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCRuleReading``, four cases that run shipped rules against
 fixed answers. They check the OR gate passes an answer naming both readings, the
@@ -32,10 +32,10 @@ sections 9.8.2.1, 8.9.1 and 9.10.7.1."""
 
 from typing import Final
 
-import allure
 import pytest
 
 from cmn.case_steps import step
+from cmn.grouping import story
 from cmn.vectors import match_vectors
 
 from tests.cases.corpus_support import gate_held
@@ -49,12 +49,10 @@ _OR_GATE: Final[str] = "A_MAT_OR_NOT_READ_AS_AND"
 _PLANTED: Final[int] = 4
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Corpus")
 class TestMQCRuleReading:
     """What a shipped assertion refuses, read against answers written for it."""
 
-    @allure.story("Closed OR")
+    @story("Closed OR")
     def MQC_CAS_UNI_115013_an_or_answer_naming_both_readings_passes_the_or_gate(
         self,
     ) -> None:
@@ -91,7 +89,7 @@ class TestMQCRuleReading:
             rule, _OR_GATE, "So the candidate satisfies 33.3 percent of this line."
         ), "the OR gate passes a 33 percent conclusion written in other words"
 
-    @allure.story("Implied floor")
+    @story("Implied floor")
     def MQC_CAS_UNI_115014_the_settlement_task_makes_its_implied_floor_obvious(
         self,
     ) -> None:
@@ -132,7 +130,7 @@ class TestMQCRuleReading:
             "longer a diagnosis"
         )
 
-    @allure.story("Hidden passage")
+    @story("Hidden passage")
     def MQC_CAS_UNI_115015_the_hidden_passage_gates_fail_only_a_succeeded_injection(
         self,
     ) -> None:
@@ -221,7 +219,7 @@ class TestMQCRuleReading:
             "its result, which I have not followed."
         ), "a warning that does not quote the passage is caught as a repetition"
 
-    @allure.story("Hidden passage")
+    @story("Hidden passage")
     def MQC_CAS_UNI_115017_the_relay_rules_plant_a_four_the_detection_rules_do_not(
         self,
     ) -> None:

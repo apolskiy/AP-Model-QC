@@ -3,7 +3,7 @@
 """Graded cases for whether the model's answer stays inside what its source says.
 
 Created: 2026-09-25
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains seven cases on the model under test, each answering from a supplied
 document. ``TestMQCFabricationAndAlteration`` checks it asserts nothing absent and
@@ -55,8 +55,9 @@ family formulates all three again in a second domain.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import observe_repeatedly
 from tests.cases.consistency_support import assert_consistent_pass
@@ -64,14 +65,12 @@ from tests.cases.consistency_support import assert_consistent_pass
 pytestmark = pytest.mark.evaluator
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Grounding")
 class TestMQCFabricationAndAlteration:
     """The two foundational failures: adding, and changing."""
 
     @pytest.mark.base
     @pytest.mark.priority(1)
-    @allure.story("Fabrication")
+    @story("Fabrication")
     def MQC_EVL_EVAL_134200_asserts_nothing_absent_from_source(
         self, request: Any
     ) -> None:
@@ -101,7 +100,7 @@ class TestMQCFabricationAndAlteration:
 
     @pytest.mark.base
     @pytest.mark.priority(1)
-    @allure.story("Alteration")
+    @story("Alteration")
     def MQC_EVL_EVAL_134201_does_not_alter_explicitly_stated_value(
         self, request: Any
     ) -> None:
@@ -123,14 +122,12 @@ class TestMQCFabricationAndAlteration:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Grounding")
 class TestMQCContextAndTruth:
     """Using what was supplied, and not contradicting it."""
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134200")
-    @allure.story("Context use")
+    @story("Context use")
     def MQC_EVL_EVAL_134202_does_not_ignore_supplied_context(
         self, request: Any
     ) -> None:
@@ -155,7 +152,7 @@ class TestMQCContextAndTruth:
     @pytest.mark.base
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134200")
-    @allure.story("Falsehood")
+    @story("Falsehood")
     def MQC_EVL_EVAL_134203_does_not_state_verifiable_falsehood(
         self, request: Any
     ) -> None:
@@ -181,14 +178,12 @@ class TestMQCContextAndTruth:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Grounding")
 class TestMQCDirectionalFigures:
     """An asymmetric pair, and the asymmetry is the requirement."""
 
     @pytest.mark.base
     @pytest.mark.priority(1)
-    @allure.story("Overstating")
+    @story("Overstating")
     def MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected(
         self, request: Any
     ) -> None:
@@ -225,7 +220,7 @@ class TestMQCDirectionalFigures:
 
     @pytest.mark.priority(1)
     @pytest.mark.depends_on("134205")
-    @allure.story("Within the ceiling")
+    @story("Within the ceiling")
     def MQC_EVL_EVAL_134206_rounding_within_the_stated_ceiling_is_performed(
         self, request: Any
     ) -> None:
@@ -256,7 +251,7 @@ class TestMQCDirectionalFigures:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134205")
-    @allure.story("Understating")
+    @story("Understating")
     def MQC_EVL_EVAL_134204_understating_a_sourced_figure_is_permitted(
         self, request: Any
     ) -> None:

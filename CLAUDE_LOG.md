@@ -5297,3 +5297,46 @@ carrying the request that produced it.
 * **Section 8.1** carries the table, the four commands, why only `--priority`
   keeps the verdict, why preconditions are never deselected, and why
   `--family` wants the index rather than the matrix.
+
+---
+
+## 2026-10-24: The capability tree this corpus always implied
+
+* **Written with the harness's seventh iteration of the day**, at the project
+  owner's instruction that the Allure output is what readiness is assessed
+  from while pytest output is for troubleshooting. The harness entry carries
+  the measurement and the three rulings; this records what differed on this
+  side.
+* **This repository was the better half and it still grouped two thirds.**
+  65 of 92 classes named an epic and 224 of 255 cases a story, against 13 of
+  239 and 37 of 970 in the harness. **The vocabulary was already right**: the
+  fifteen capability names the decorators used are the ones now declared, so
+  nothing here had to be renamed, only moved.
+* **The twelve modules that named nothing were the unit preconditions**, not
+  the graded cases: every graded module carried its capability. So the hole
+  was in the half that checks the corpus rather than the half that measures a
+  model, which is the less visible of the two and the one whose absence a
+  readiness report would not have made obvious.
+* **The publisher could not be a job in a gate.** Section 4.19 gives each
+  target its own gate workflow so that a red says which target failed, and
+  four of them fire on every push: a publishing job inside them is four
+  deploys of one site racing, and the site would hold whichever target
+  finished last rather than the suite. It is a workflow of its own, triggered
+  by their completion on the default branch.
+* **Which forced the harness's rule to be stated properly.** The first
+  wording required the literal `github.event_name == 'push'` guard, which is
+  right for a gate a pull request also triggers and wrong for a workflow a
+  pull request cannot reach at all. The rule is **reachability**: a job in a
+  workflow a pull request can trigger names the event, and one in a workflow
+  it cannot needs no condition. A sixth harness case guards it.
+* **A figure was stale by five before any of this.** The README said 965
+  harness cases where the harness's own README said 970, and nothing compares
+  the two repositories' figures: each checks its own. Recorded rather than
+  filed, because the number is prose about the other repository rather than a
+  claim this suite can enforce.
+* **The suite found both of my mistakes on the first full run.** Section 4.22
+  was written above section 5 and below `4A`, and a letter sorts after the
+  digit it follows, so `MQC_CAS_UNI_115778` reported it as out of order; the
+  section moved above `4A`, 54 lines carried whole. And `115317` reported two
+  README figures, which is the check that exists because this README's figures
+  had moved repeatedly with nothing comparing them.

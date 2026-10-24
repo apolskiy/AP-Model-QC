@@ -40,6 +40,43 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The report groups every case by capability, and it is published, 2026-10-24
+
+**This repository's grouping was the better of the two and still had holes.**
+Twenty-seven of its thirty-nine case modules named an Allure capability by
+hand, against 6 of 95 in the harness, and the vocabulary they used is the one
+the project now declares: `Grounding`, `Model security`, `Tool compliance` and
+thirteen more. **Twelve modules named none**, so their results grouped under
+nothing, and the eighteen naming `Consumer CI` carried it on every class rather
+than once.
+
+**So the declaration moved into a file and the decorators came off.**
+`config/allure_features.yaml` declares the epic, the sixteen capability names
+and one capability per collected module, and the harness hook labels every item
+from it, beside the severity it has always derived from the priority marker.
+The 130 class decorators are gone because a declared label wins over a derived
+one, so a class naming `Consumer CI` beside a map naming it would publish two
+branches of one tree. **The 224 case-level stories stay**, which is what the
+override exists for.
+
+**And the report is published, from a workflow of its own.** Four targets gate
+on every push in four workflows, so a publishing job inside them would be four
+deploys of one site racing and the site would hold whichever target finished
+last. `publish-report-on-merge.yml` runs on their completion on the default
+branch, renders one report from every result set this repository has produced,
+and carries the trend from the previously published site. Graded results are
+best effort: a ladder fires on dispatch rather than on a schedule, so an engine
+never evaluated has no graded result in the tree, which is what is true of it.
+**Pages must be enabled with GitHub Actions as its source**, once, which is a
+setting rather than a change here.
+
+Three cases, `MQC_CAS_UNI_430000` to `430002`, in the declared partition
+`430000`-`439999` the harness allocated for this subject. Two requirements,
+`MQC_REQ_CAS_GOV_0014` and `0015`. The README's figures move to 164
+preconditions and 178 requirements, and its harness figure to 976: **it read
+965 against the harness's own 970 before this change**, so it was stale by five
+and nothing compared the two.
+
 ### The runbook names the selectors that were built for it, 2026-10-22
 
 **Eight selectors were implemented and covered here, and the runbook named

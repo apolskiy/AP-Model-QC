@@ -3,7 +3,7 @@
 """Unit preconditions for following a harness gate cancelled by a newer push, and nothing else.
 
 Created: 2026-10-18
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCHarnessFollow``, three cases on ``follow_replaced`` in
 ``tools/harness_pin.py``, driven by the scripted ref heads and verdicts in
@@ -29,7 +29,6 @@ Specified by ``docs/design/consumer_ci.md`` section 4 and section 3.11.3."""
 #   115767  following_stops_after_three_replaced_commits
 # ------------------------------------------------------------ end of cases
 
-import allure
 import pytest
 
 from cmn.case_steps import step
@@ -48,8 +47,6 @@ from tools.harness_pin import Greenness
 pytestmark = pytest.mark.unit
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Harness pairing")
 class TestMQCHarnessFollow:
     """Only a gate a newer push cancelled is followed."""
 

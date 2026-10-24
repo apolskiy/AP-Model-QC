@@ -3,7 +3,7 @@
 """Unit preconditions for what this repository's CI workflows must and must not do.
 
 Created: 2026-09-26
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains nine cases over the workflow definitions, read through
 ``workflow_support``. ``TestMQCWorkflowProperties`` checks the debug workflow yields no
@@ -51,9 +51,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-import allure
 import pytest
 from cmn.code_standards import artifact_mandate_gaps, partial_graded_selection_gaps
+from cmn.grouping import story
 from cmn.metadata import COLLECTED_PREFIX as _COLLECTOR_PREFIX
 
 from tests.cases.workflow_support import (
@@ -221,12 +221,10 @@ def _graded_or_gated(job: dict[str, Any]) -> bool:
     return any("pytest" in line for line in _run_lines(job, _repository_root()))
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCWorkflowProperties:
     """The debug workflow's exclusions, and what only it may do."""
 
-    @allure.story("No verdict")
+    @story("No verdict")
     def MQC_CAS_UNI_115700_the_debug_workflow_yields_no_verdict_and_gates_nothing(
         self,
     ) -> None:
@@ -268,7 +266,7 @@ class TestMQCWorkflowProperties:
         source = (_WORKFLOWS / "debug-cases-on-demand.yml").read_text(encoding="utf-8")
         assert "no verdict" in source.lower()
 
-    @allure.story("Judging")
+    @story("Judging")
     def MQC_CAS_UNI_115701_only_the_debug_workflow_judges_a_failed_case(
         self,
     ) -> None:
@@ -307,8 +305,6 @@ class TestMQCWorkflowProperties:
             )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCAttributionLadder:
     """Each rung holds everything fixed except one thing.
 
@@ -317,7 +313,7 @@ class TestMQCAttributionLadder:
     only report that something changed.
     """
 
-    @allure.story("The gate stays credential-free")
+    @story("The gate stays credential-free")
     def MQC_CAS_UNI_115702_a_graded_gate_job_that_needs_a_credential_is_reported(
         self,
     ) -> None:
@@ -396,7 +392,7 @@ class TestMQCAttributionLadder:
                     f"which is what kept grading out of the gate: {line.strip()}"
                 )
 
-    @allure.story("The ladder")
+    @story("The ladder")
     def MQC_CAS_UNI_115703_a_live_job_that_does_not_follow_the_ladder_is_reported(
         self,
     ) -> None:
@@ -484,8 +480,6 @@ class TestMQCAttributionLadder:
                 )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCResolveObligation:
     """Who is obliged to call the resolver, as opposed to what it does.
 
@@ -494,7 +488,7 @@ class TestMQCResolveObligation:
     ``docs/design/consumer_ci.md`` sections 3.1 and 7.6.
     """
 
-    @allure.story("Install by resolved commit")
+    @story("Install by resolved commit")
     def MQC_CAS_UNI_115704_a_workflow_installing_an_unresolved_harness_is_reported(
         self,
     ) -> None:
@@ -552,7 +546,7 @@ class TestMQCResolveObligation:
         # absence rather than for a defect.
         assert calls >= 0
 
-    @allure.story("Spending waits for green")
+    @story("Spending waits for green")
     def MQC_CAS_UNI_115705_a_spending_workflow_that_skips_the_green_gate_is_reported(
         self,
     ) -> None:
@@ -644,12 +638,10 @@ class TestMQCResolveObligation:
             )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCArtifactContract:
     """The downstream artifact contract, against what the workflows run."""
 
-    @allure.story("Both mandated artifacts are emitted")
+    @story("Both mandated artifacts are emitted")
     def MQC_CAS_UNI_115708_a_workflow_emitting_one_mandated_artifact_is_reported(
         self,
     ) -> None:
@@ -712,8 +704,6 @@ class TestMQCArtifactContract:
         )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCRefusalReachesTheRun:
     """A refusal is worth what the workflows do with it.
 
@@ -722,7 +712,7 @@ class TestMQCRefusalReachesTheRun:
     run, designed in ``docs/design/consumer_ci.md`` section 3.9.
     """
 
-    @allure.story("A refusal stops the run")
+    @story("A refusal stops the run")
     def MQC_CAS_UNI_115706_a_test_executing_job_that_outruns_a_refusal_is_reported(
         self,
     ) -> None:
@@ -792,7 +782,7 @@ class TestMQCRefusalReachesTheRun:
             "check establishes nothing"
         )
 
-    @allure.story("Development is exempt")
+    @story("Development is exempt")
     def MQC_CAS_UNI_115707_a_debug_workflow_blocked_by_a_red_harness_is_reported(
         self,
     ) -> None:

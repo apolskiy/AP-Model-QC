@@ -16,10 +16,10 @@ written, and every one is recorded for all four engines.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 94 graded cases specified |
-| `docs/testing/rtm_model.csv` | 176 requirements, traced |
+| `docs/testing/rtm_model.csv` | 178 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 82 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **161 cases, all passing**, each recording its numbered steps |
+| Preconditions (`CAS`, `UNI`) | **164 cases, all passing**, each recording its numbered steps |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **94 written**: 45 evaluator, 41 security, 8 tool |
@@ -90,7 +90,7 @@ is the one thing not in question.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 965 harness test cases, each executed once per run, and 161 preconditions pass;
+separately from what it measures. 976 harness test cases, each executed once per run, and 164 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate
@@ -181,7 +181,15 @@ is never a pass. `docs/design/consumer_ci.md` holds the design.
 It is the whole operating procedure and it requires no design reading: which
 workflow, which inputs, what comes back, and what to do when something refuses.
 
-**To download a run's results and view them**, that document's section 4 has the artifact names, the `gh run download` line, the Allure commands and what the published parameters mean. A failing case carries a `vendor-report` attachment holding every call it made, credential-redacted, which is what a provider ticket is written from.
+**The report is published, and it is where readiness is read from.** Once a
+target's gate completes on the default branch, one workflow renders the Allure
+report from every result set this repository has produced and publishes it to
+this repository's GitHub Pages site, grouped by the capability each case
+measures: grounding, instruction following, model security, tool compliance and
+the rest. JUnit answers which case failed; the report answers what the models
+are worth.
+
+**To download a run's raw results and open them yourself**, that document's section 4 has the artifact names, the `gh run download` line, the Allure commands and what the published parameters mean. A failing case carries a `vendor-report` attachment holding every call it made, credential-redacted, which is what a provider ticket is written from.
 
 ## Pinning A Harness Version
 

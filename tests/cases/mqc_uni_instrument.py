@@ -3,7 +3,7 @@
 """Unit preconditions for whether the instrument measures the claim each case name makes.
 
 Created: 2026-10-01
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains thirteen cases. ``TestMQCCasesMeasureTheirOwnClaim`` checks no task
 and rule pair is bound by two graded cases, no assertion turns on trailing whitespace, a
@@ -65,10 +65,10 @@ from datetime import date
 from pathlib import Path
 from typing import Final
 
-import allure
 import pytest
 
 from cmn.case_steps import step
+from cmn.grouping import story
 from cmn.observations import further_observations
 from cmn.config import load_quarantine_for
 from cmn.vectors import is_registered_vector, match_vectors
@@ -135,8 +135,6 @@ def fixture_corpus() -> tuple[list[TaskDataSet], list[GoldenRuleSet]]:
     return list(tasks), list(rules)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Corpus")
 class TestMQCCasesMeasureTheirOwnClaim:
     """A red has to name the claim that failed.
 
@@ -147,7 +145,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
     the model complying.** Test plan sections 9.3.1 and 9.3.2.
     """
 
-    @allure.story("Distinct pairs")
+    @story("Distinct pairs")
     def MQC_CAS_UNI_115400_a_task_and_rule_pair_bound_by_two_graded_cases_is_reported(
         self,
     ) -> None:
@@ -192,7 +190,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"claim: {sorted(shared.items())[:3]}"
         )
 
-    @allure.story("Whitespace insensitivity")
+    @story("Whitespace insensitivity")
     def MQC_CAS_UNI_115401_an_assertion_sensitive_to_trailing_whitespace_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -249,7 +247,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"which is formatting and not a claim any requirement makes: "
             f"{moved[:4]}"
         )
-    @allure.story("Refusals")
+    @story("Refusals")
     def MQC_CAS_UNI_115402_a_recorded_refusal_without_a_stated_reason_is_reported(
         self,
     ) -> None:
@@ -291,7 +289,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"reason, so a provider refusal reads as a model failure: {mute[:4]}"
         )
 
-    @allure.story("Declared foundations")
+    @story("Declared foundations")
     def MQC_CAS_UNI_115403_a_declared_foundation_the_design_does_not_state_is_reported(
         self,
     ) -> None:
@@ -342,7 +340,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"declare, so a case runs without its premise: {unimplemented}"
         )
 
-    @allure.story("Declared foundations")
+    @story("Declared foundations")
     def MQC_CAS_UNI_115419_only_the_section_9_10_2_table_states_foundations(
         self, tmp_path: Path
     ) -> None:
@@ -402,7 +400,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
         with pytest.raises(ValueError, match="154101"):
             designed_foundations(plan)
 
-    @allure.story("Declared vectors")
+    @story("Declared vectors")
     def MQC_CAS_UNI_115404_an_undeclared_or_unregistered_vector_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
@@ -480,7 +478,7 @@ class TestMQCCasesMeasureTheirOwnClaim:
             f"{sorted(set(problems["undeclared"]))[:4]}"
         )
 
-    @allure.story("Inventory")
+    @story("Inventory")
     def MQC_CAS_UNI_115405_an_inventory_row_without_an_implementation_is_reported(
         self,
     ) -> None:
@@ -540,12 +538,10 @@ class TestMQCCasesMeasureTheirOwnClaim:
         )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCNamedInstrument:
     """A flag that names an instrument selects it, or the record is wrong."""
 
-    @allure.story("The named judge grades")
+    @story("The named judge grades")
     def MQC_CAS_UNI_115406_the_named_judge_engine_is_the_one_that_grades(
         self,
     ) -> None:
@@ -578,7 +574,7 @@ class TestMQCNamedInstrument:
                 f"did not produce its scores"
             )
 
-    @allure.story("The named count is dispatched")
+    @story("The named count is dispatched")
     def MQC_CAS_UNI_115407_the_named_observation_count_is_the_one_dispatched(
         self,
     ) -> None:
@@ -612,12 +608,10 @@ class TestMQCNamedInstrument:
         assert further_observations([True, True, True]) == 0
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCRunLevelSession:
     """The session is the run's state, so it has to be the run's session."""
 
-    @allure.story("One session serves the run")
+    @story("One session serves the run")
     def MQC_CAS_UNI_115409_one_dispatch_session_serves_a_whole_run(self) -> None:
         """Every observation in a run dispatches through one session.
 
@@ -660,7 +654,7 @@ class TestMQCRunLevelSession:
         # AND SO IS A DIFFERENT ENGINE, which paces on its own roster entry.
         assert dispatch_session(SimulatedDispatchConfig(engine="openai")) is not first
 
-    @allure.story("The session reports what it served")
+    @story("The session reports what it served")
     def MQC_CAS_UNI_115410_the_session_records_the_models_it_served(self) -> None:
         """The session records every model a response reported.
 
@@ -713,12 +707,10 @@ class TestMQCRunLevelSession:
         assert not skipped.served
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCQuarantineTool:
     """Re-observing the quarantined cases, and what gets written back."""
 
-    @allure.story("The tool writes what reconciling decided")
+    @story("The tool writes what reconciling decided")
     def MQC_CAS_UNI_115408_the_tool_writes_what_reconciling_decided(
         self, tmp_path: Path
     ) -> None:
@@ -789,7 +781,7 @@ class TestMQCQuarantineTool:
         # all: a file this tool cannot read back is a file nobody can.
         assert "SPDX-License-Identifier: MIT" in target.read_text(encoding="utf-8")
 
-    @allure.story("A stamped date is never guessed")
+    @story("A stamped date is never guessed")
     def MQC_CAS_UNI_115411_the_tool_refuses_a_date_it_cannot_parse(self) -> None:
         """A date that is not ISO is refused rather than defaulted to today.
 

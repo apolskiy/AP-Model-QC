@@ -3,7 +3,7 @@
 """Unit preconditions for whether a graded run says which judge graded it.
 
 Created: 2026-10-21
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains one case over the ladder and its callers: rungs 2 and 3 name
 the judge on every graded invocation and carry it in their job names, rung 1
@@ -32,7 +32,6 @@ Specified by ``docs/design/consumer_ci.md`` sections 7.7, 7.7.1 and 7.7.4.
 #   115777  a_rung_that_grades_without_naming_its_judge_is_reported
 # ------------------------------------------------------------ end of cases
 
-import allure
 import pytest
 
 from tests.cases.workflow_support import (
@@ -65,8 +64,6 @@ _ON_DEMAND = "-on-demand"
 # THE ENGINES BOTH JUDGES SCORE, read from the roster rather than listed.
 _ROSTERED_ENGINES = frozenset({"claude", "gemini", "grok", "openai"})
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCJudgeDimension:
     """A graded run names the judge that produced its scores."""
 

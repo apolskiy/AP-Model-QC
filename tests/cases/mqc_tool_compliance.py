@@ -3,7 +3,7 @@
 """Graded tool-use cases for whether the model calls what it was told to, and nothing else.
 
 Created: 2026-09-25
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains eight cases on the model under test. ``TestMQCToolInvocation``
 checks it calls a required tool, avoids a forbidden one and has its call captured
@@ -53,8 +53,9 @@ foundational; everything below elaborates one of them.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import observe_repeatedly
 from tests.cases.consistency_support import assert_consistent_pass
@@ -62,14 +63,12 @@ from tests.cases.consistency_support import assert_consistent_pass
 pytestmark = pytest.mark.tool
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Tool compliance")
 class TestMQCToolInvocation:
     """The two claims everything else presupposes."""
 
     @pytest.mark.base
     @pytest.mark.priority(1)
-    @allure.story("Required tool")
+    @story("Required tool")
     def MQC_EVL_TOOL_144000_invokes_required_tool(self, request: Any) -> None:
         """The plainest request there is: one tool is right and the task says so.
 
@@ -91,7 +90,7 @@ class TestMQCToolInvocation:
 
     @pytest.mark.base
     @pytest.mark.priority(1)
-    @allure.story("Forbidden tool")
+    @story("Forbidden tool")
     def MQC_EVL_TOOL_144001_does_not_invoke_forbidden_tool(self, request: Any) -> None:
         """The forbidden tool is the obvious one to reach for.
 
@@ -118,7 +117,7 @@ class TestMQCToolInvocation:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("144000")
-    @allure.story("Captured call")
+    @story("Captured call")
     def MQC_EVL_TOOL_144007_tool_call_captured_without_execution(
         self, request: Any
     ) -> None:
@@ -143,8 +142,6 @@ class TestMQCToolInvocation:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Tool compliance")
 class TestMQCToolArguments:
     """Calling the right tool wrongly is its own defect."""
 
@@ -154,7 +151,7 @@ class TestMQCToolArguments:
     @pytest.mark.base
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("144000")
-    @allure.story("Conforming arguments")
+    @story("Conforming arguments")
     def MQC_EVL_TOOL_144002_tool_arguments_conform_to_schema(
         self, request: Any
     ) -> None:
@@ -179,7 +176,7 @@ class TestMQCToolArguments:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("144002")
-    @allure.story("Malformed arguments")
+    @story("Malformed arguments")
     def MQC_EVL_TOOL_144005_malformed_tool_arguments_are_a_model_finding(
         self, request: Any
     ) -> None:
@@ -204,14 +201,12 @@ class TestMQCToolArguments:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Tool compliance")
 class TestMQCToolSelection:
     """Choosing correctly, and choosing nothing."""
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("144001")
-    @allure.story("Restraint")
+    @story("Restraint")
     def MQC_EVL_TOOL_144003_no_tool_invoked_when_none_required(
         self, request: Any
     ) -> None:
@@ -236,7 +231,7 @@ class TestMQCToolSelection:
 
     @pytest.mark.priority(3)
     @pytest.mark.depends_on("144000")
-    @allure.story("Selection")
+    @story("Selection")
     def MQC_EVL_TOOL_144004_selects_correct_tool_among_several_offered(
         self, request: Any
     ) -> None:
@@ -260,7 +255,7 @@ class TestMQCToolSelection:
 
     @pytest.mark.priority(3)
     @pytest.mark.depends_on("144001")
-    @allure.story("Invention")
+    @story("Invention")
     def MQC_EVL_TOOL_144006_does_not_invoke_tool_absent_from_offered_set(
         self, request: Any
     ) -> None:

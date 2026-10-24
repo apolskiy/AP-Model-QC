@@ -1,0 +1,110 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# The readiness view: one published report for this case set.
+#
+# WHY A WORKFLOW OF ITS OWN. Four targets gate on every push, each in its own
+# workflow, so a publishing job inside them would be four deploys racing and
+# the site would hold whichever finished last. This runs once their gate has
+# completed on the default branch and renders one report from all of them.
+# Harness `harness_ci_pipeline.md` section 7.4.
+#
+# NO PULL REQUEST CAN REACH IT, which is the rule rather than the guard: a
+# fork's run cannot hold the Pages credential, and a run that could would
+# overwrite the default branch's picture with a proposal's.
+#
+# THE GRADED RESULTS ARE BEST EFFORT. A ladder fires on dispatch rather than
+# on a schedule, so the newest graded artifacts are whatever the last
+# dispatched run left. Where an engine has never been evaluated, its
+# capability simply has no graded result in the tree, which is the honest
+# picture rather than an empty one.
+name: publish-report-on-merge
+
+on:
+  workflow_run:
+    workflows:
+      - gate-claude
+      - gate-gemini
+      - gate-grok
+      - gate-openai
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# ONE DEPLOY AT A TIME. Four gates complete within minutes of each other, and
+# two deploys of the same site race. The later one wins and the earlier is
+# cancelled, which is correct here: the loser would have published a report
+# the winner also holds.
+concurrency:
+  group: publish-report
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  publish:
+    name: publish the report
+    # A GATE THAT FAILED RENDERS NOTHING. A red target has no results worth
+    # publishing, and the site keeps the last report that passed.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    # ON THE JOB, so nothing else in this repository can reach the credential
+    # that writes the site. `actions: read` is what lets it fetch the
+    # artifacts of other runs.
+    permissions:
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Gather every result set this repository has produced
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p reports/allure-results downloaded
+          for workflow in gate-claude gate-gemini gate-grok gate-openai \
+            evaluate-claude-weekly evaluate-gemini-weekly \
+            evaluate-grok-weekly evaluate-openai-weekly; do
+            latest=$(gh run list --workflow "$workflow.yml" --status success \
+              --limit 1 --json databaseId --jq '.[0].databaseId' || true)
+            if [ -n "$latest" ]; then
+              gh run download "$latest" --dir "downloaded/$workflow" || true
+            else
+              echo "$workflow has no successful run to read"
+            fi
+          done
+          find downloaded -type d -name allure-results -print0 \
+            | xargs -0 -I {} cp -r {}/. reports/allure-results/ || true
+          echo "results: $(ls reports/allure-results | wc -l) files"
+      # THE TREND, READ FROM THE PUBLISHED SITE. A missing one generates a
+      # weaker report rather than failing the job: the first run has no site
+      # to read, and going red over an absent trend would be red about
+      # nothing.
+      - name: Carry the history forward from the published site
+        run: |
+          mkdir -p reports/allure-results/history
+          base="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+          for name in history.json duration-trend.json retry-trend.json categories-trend.json; do
+            curl --silent --fail --create-dirs --max-time 30 \
+              --output "reports/allure-results/history/$name" \
+              "$base/history/$name" || echo "no published $name yet"
+          done
+      - name: Install the Allure command line
+        run: npm install -g allure-commandline@2.41.0
+      - name: Generate the report
+        run: allure generate reports/allure-results -o allure-report --clean
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: allure-report
+      - name: Deploy it
+        id: deployment
+        uses: actions/deploy-pages@v4

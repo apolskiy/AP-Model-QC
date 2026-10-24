@@ -63,10 +63,10 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-import allure
 import pytest
 
 from cmn.case_steps import step
+from cmn.grouping import story
 
 from tests.cases.graded_support import case_for
 from tools.ticket_report import (
@@ -123,7 +123,7 @@ _REQUEST: dict[str, Any] = {
 class TestMQCTicketInput:
     """The ticket shows the call that was made, or says it cannot."""
 
-    @allure.story("Input is the recorded request")
+    @story("Input is the recorded request")
     def MQC_CAS_UNI_115733_a_ticket_input_is_the_recorded_request_not_the_corpus(
         self, tmp_path: Path
     ) -> None:
@@ -176,7 +176,7 @@ class TestMQCTicketInput:
         # than raising, because a pair with no recording is an ordinary state.
         assert recorded_request(tmp_path, "claude", "MQC_TASK_x", "MQC_RULE_x") is None
 
-    @allure.story("The questions are the tool")
+    @story("The questions are the tool")
     def MQC_CAS_UNI_115736_the_finding_reader_carries_the_questions(
         self,
     ) -> None:
@@ -215,7 +215,7 @@ class TestMQCTicketInput:
         # AND THE REGISTER READER ANSWERS FOR AN ENGINE THAT HAS NONE.
         assert register_rows("no-such-engine") == []
 
-    @allure.story("A run that measured nothing is refused")
+    @story("A run that measured nothing is refused")
     def MQC_CAS_UNI_115738_a_run_that_collected_nothing_does_not_retire_findings(
         self, tmp_path: Path
     ) -> None:
@@ -278,7 +278,7 @@ class TestMQCTicketInput:
         assert refuse_empty_run(report, {}, 0) is None
         assert refuse_empty_run(report, {}, 4) is None
 
-    @allure.story("A bug file holds only what reproduced")
+    @story("A bug file holds only what reproduced")
     def MQC_CAS_UNI_115739_the_bug_file_holds_only_what_reproduced(self) -> None:
         """What gets filed and what waits are different files.
 
@@ -300,7 +300,7 @@ class TestMQCTicketInput:
         assert holding_path("claude") != register_path("claude")
         assert holding_path("claude").parent.name == "unconfirmed"
 
-    @allure.story("The register is reconciled against the run")
+    @story("The register is reconciled against the run")
     def MQC_CAS_UNI_115737_a_finding_that_stopped_reproducing_is_withdrawn(
         self,
     ) -> None:
@@ -362,7 +362,7 @@ class TestMQCTicketInput:
 class TestMQCTicketFormat:
     """The ticket carries the format the project owner set on 2026-10-15."""
 
-    @allure.story("Every observation, with its checks and its judgement")
+    @story("Every observation, with its checks and its judgement")
     def MQC_CAS_UNI_115745_a_ticket_shows_every_observation_with_its_judgement(
         self,
     ) -> None:
@@ -411,7 +411,7 @@ class TestMQCTicketFormat:
         )
         assert "rationale for 3" in block, "a passing judgement is not shown"
 
-    @allure.story("What a correct answer is, and commands that run")
+    @story("What a correct answer is, and commands that run")
     def MQC_CAS_UNI_115746_a_ticket_states_a_correct_answer_and_a_command_that_runs(
         self,
     ) -> None:
@@ -460,7 +460,7 @@ class TestMQCTicketFormat:
 class TestMQCHoldNeedsAPass:
     """A finding leaves the bug file only when its case was measured passing."""
 
-    @allure.story("A skip is not a pass")
+    @story("A skip is not a pass")
     def MQC_CAS_UNI_115750_a_finding_whose_case_skipped_is_not_held(self, tmp_path: Path) -> None:
         """A skipped case keeps its finding; only a passing one is held.
 
@@ -502,7 +502,7 @@ class TestMQCHoldNeedsAPass:
             "no longer reproducing"
         )
 
-    @allure.story("A held finding is held once")
+    @story("A held finding is held once")
     def MQC_CAS_UNI_115763_a_held_finding_keeps_its_date_and_reason_on_a_later_run(
         self,
     ) -> None:
@@ -544,7 +544,7 @@ class TestMQCHoldNeedsAPass:
 class TestMQCTicketHygiene:
     """A ticket shows what was recorded intact and files only what was measured."""
 
-    @allure.story("A response carrying a fence")
+    @story("A response carrying a fence")
     def MQC_CAS_UNI_115751_a_response_carrying_a_fence_stays_inside_its_own(self) -> None:
         """A response holding a fenced block is fenced by a longer run of backticks.
 
@@ -565,7 +565,7 @@ class TestMQCTicketHygiene:
             f"the ticket's structure: {bare}"
         )
 
-    @allure.story("A stale population")
+    @story("A stale population")
     def MQC_CAS_UNI_115752_a_finding_failing_every_observation_drops_a_stale_population(
         self,
     ) -> None:
@@ -597,7 +597,7 @@ class TestMQCTicketHygiene:
         )
         assert any(change.startswith(f"POPULATION CHANGED {case}") for change in changes)
 
-    @allure.story("Labels are sentences")
+    @story("Labels are sentences")
     def MQC_CAS_UNI_115753_a_ticket_label_is_a_sentence_without_a_dash(self) -> None:
         """No label the generator writes carries an em or en dash.
 
@@ -615,7 +615,7 @@ class TestMQCTicketHygiene:
         dashed = [line for line in labels if "—" in line or "–" in line]
         assert not dashed, f"generated labels carry a dash: {dashed}"
 
-    @allure.story("Filed only when measured")
+    @story("Filed only when measured")
     def MQC_CAS_UNI_115754_a_finding_not_observed_on_the_latest_run_is_not_filed(
         self,
     ) -> None:
@@ -649,7 +649,7 @@ class TestMQCTicketHygiene:
             f"the diagnosis leaves a bracket open: {sentence!r}"
         )
 
-    @allure.story("One ticket per finding")
+    @story("One ticket per finding")
     def MQC_CAS_UNI_115755_each_filed_finding_has_a_ticket_of_its_own(
         self, tmp_path: Path
     ) -> None:
@@ -687,7 +687,7 @@ class TestMQCTicketHygiene:
         with pytest.raises(ValueError):
             ticket_name("not a case")
 
-    @allure.story("Where the planted instruction was")
+    @story("Where the planted instruction was")
     def MQC_CAS_UNI_115756_a_payload_in_the_user_turn_is_framed_as_precedence(self) -> None:
         """A canary in the user message is framed as overriding the system prompt.
 
@@ -723,7 +723,7 @@ class TestMQCTicketHygiene:
             f"an encoded payload in the user turn is described as planted: {encoded_sentence!r}"
         )
 
-    @allure.story("A tool call is a response")
+    @story("A tool call is a response")
     def MQC_CAS_UNI_115758_a_tool_call_without_text_is_shown_on_the_ticket(
         self, tmp_path: Path
     ) -> None:
@@ -778,7 +778,7 @@ class TestMQCTicketHygiene:
         assert [passed for _, passed, _ in verdicts] == [True, False, True], verdicts
         assert "QC_LLM_TOOL_VIOLATION" in verdicts[1][2], verdicts[1]
 
-    @allure.story("A page no assistant loads")
+    @story("A page no assistant loads")
     def MQC_CAS_UNI_115759_an_engine_page_is_never_named_as_an_instruction_file(
         self, tmp_path: Path
     ) -> None:

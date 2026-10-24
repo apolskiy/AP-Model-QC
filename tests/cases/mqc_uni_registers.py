@@ -39,8 +39,9 @@ a week, each while every per-row check passed.
 
 from pathlib import Path
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from cmn.document_standards import (
     _collisions,
@@ -56,7 +57,7 @@ pytestmark = pytest.mark.unit
 class TestMQCStatedInventory:
     """This repository's design states an inventory its own rows support."""
 
-    @allure.story("A stated total is derived data")
+    @story("A stated total is derived data")
     def MQC_CAS_UNI_115723_a_stated_inventory_disagreeing_with_rows_is_reported(
         self,
     ) -> None:
@@ -92,7 +93,7 @@ class TestMQCStatedInventory:
 class TestMQCIdentifierBinding:
     """An identifier is assigned once here, in the register and in the suite."""
 
-    @allure.story("A per-row check cannot see a relationship between two rows")
+    @story("A per-row check cannot see a relationship between two rows")
     def MQC_CAS_UNI_115732_an_identifier_bound_twice_is_reported(self) -> None:
         """Five identifiers were bound twice here for a week.
 

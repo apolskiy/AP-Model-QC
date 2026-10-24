@@ -1005,6 +1005,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115735` | N | `a_readme_without_a_changelog_is_reported` |
 | `115778` | N | `a_section_sitting_out_of_numeric_order_is_reported` (code-style 7.5) |
 | `115779` | P | `this_repository_names_no_undeclared_flag` (harness CMN 7.1.0.4) |
+| `430000` | P | `every_case_module_declares_its_capability` (harness CMN 16.3) |
+| `430001` | P | `the_declared_epic_is_this_repositorys_own` (harness CMN 16.5) |
+| `430002` | P | `the_report_publishes_where_no_proposal_reaches` (harness CI 7.4) |
 | `115736` | P | `the_finding_reader_carries_the_questions` |
 | `115737` | P | `a_finding_that_stopped_reproducing_is_withdrawn` |
 | `115738` | N | `a_run_that_collected_nothing_does_not_retire_findings` |
@@ -1054,7 +1057,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 116 cases, 86 negative, 24 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 119 cases, 86 negative, 27 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2035,6 +2038,60 @@ repository meanwhile.
 `cmn.code_standards.partial_graded_selection_gaps`, called by
 `MQC_CAS_UNI_115776` here and `MQC_CMN_UNI_112188` there.
 `MQC_REQ_CAS_PRE_0013`.
+
+### 4.22 The readiness view, and why its publisher is a workflow of its own
+
+Added 2026-10-24 with the harness's `harness_test_taxonomy.md` section 16, at
+the project owner's instruction that the Allure output is what product
+readiness is assessed from while pytest output is for troubleshooting.
+
+**This repository's grouping was the better of the two and still had holes.**
+Twenty-seven of its thirty-nine modules named a capability by hand, against 6
+of 95 in the harness, and the vocabulary they used is the one the project now
+declares: `Grounding`, `Model security`, `Tool compliance` and twelve more. The
+twelve modules that named none grouped under nothing, and the eighteen that
+named `Consumer CI` carried it on each class rather than once.
+
+**So the declaration moved into a file and the decorators came off.**
+`config/allure_features.yaml` declares the epic, the vocabulary and one
+capability per collected module; the harness hook labels every item from it.
+The 130 class decorators are gone because a declared label wins over a derived
+one, so a class naming `Consumer CI` beside a map naming it would publish two
+branches. **The 224 case-level stories stay**, which is what the override
+exists for: a scenario a person named reads better than one derived from a
+class name.
+
+| | Holds | Why it is ours and not shared |
+|---|---|---|
+| `epic` | `AP-Model-QC` | It is what tells a collector reading both suites which produced a result |
+| `features` | Sixteen capability names | They are what this corpus measures, which the harness has no view of |
+| `modules` | Each of the 40 collected modules | A module here is a case module, and the harness owns none of them |
+
+#### 4.22.1 The publisher is a workflow of its own, not a job in a gate
+
+**Four targets gate on every push**, one workflow each, which section 4.19
+decided so that a red says which target failed. A publishing job inside them
+would therefore be four deploys of one site racing on every push, and the site
+would hold whichever target finished last rather than the suite.
+
+`publish-report-on-merge.yml` runs on their completion on the default branch
+and renders one report from every result set this repository has produced: each
+target's gate and, where an engine has been evaluated, that engine's newest
+graded ladder.
+
+| | |
+|---|---|
+| Trigger | `workflow_run` on the four gates, on `main`, plus a manual dispatch |
+| Reachable from a pull request | **No**, which is the rule rather than a guard the job carries |
+| A failed gate | Publishes nothing, and the site keeps the last report that passed |
+| Graded results | **Best effort.** A ladder fires on dispatch rather than on a schedule (section 4.18.3), so an engine never evaluated simply has no graded result in the tree |
+
+**Honest rather than empty.** An engine with no graded run shows its
+preconditions and no graded cases, which is what is true of it, and the
+alternative considered was publishing nothing until all four had run: that
+would have left the site absent for as long as the ladders stay withheld.
+
+`MQC_CAS_UNI_430000` to `430002`, `MQC_REQ_CAS_GOV_0014` and `0015`.
 
 ## 4A. The harness is a dependency, not the directory next door
 

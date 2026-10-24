@@ -3,7 +3,7 @@
 """Graded cases for whether the model asks when something is unclear, and only then.
 
 Created: 2026-09-25
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCClarificationDiscrimination``, three cases on the model
 under test. It must ask for clarification when the input cannot be answered as asked
@@ -44,8 +44,9 @@ rather than one code for getting it wrong.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import observe_repeatedly
 from tests.cases.consistency_support import assert_consistent_pass
@@ -53,14 +54,12 @@ from tests.cases.consistency_support import assert_consistent_pass
 pytestmark = pytest.mark.evaluator
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Ambiguity handling")
 class TestMQCClarificationDiscrimination:
     """Asking, and not asking, measured against each other."""
 
     @pytest.mark.base
     @pytest.mark.priority(2)
-    @allure.story("Ambiguous input")
+    @story("Ambiguous input")
     def MQC_EVL_EVAL_134000_requests_clarification_on_ambiguous_input(
         self, request: Any
     ) -> None:
@@ -88,7 +87,7 @@ class TestMQCClarificationDiscrimination:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134000")
-    @allure.story("Unambiguous control")
+    @story("Unambiguous control")
     def MQC_EVL_EVAL_134001_does_not_request_clarification_when_unambiguous(
         self, request: Any
     ) -> None:
@@ -120,7 +119,7 @@ class TestMQCClarificationDiscrimination:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134000")
-    @allure.story("Threshold warning")
+    @story("Threshold warning")
     def MQC_EVL_EVAL_134002_warning_names_the_failing_gate(self, request: Any) -> None:
         """A stated threshold, data below it, and two ways to get it wrong.
 

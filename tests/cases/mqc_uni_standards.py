@@ -3,7 +3,7 @@
 """Unit preconditions enforcing on this tree the code-style rules pylint cannot express.
 
 Created: 2026-09-23
-Last updated: 2026-10-22
+Last updated: 2026-10-24
 
 This file contains seventeen cases, each calling a harness checker with this repository's
 root. They check annotations, the PEP 563 prohibition, MIT SPDX headers on code,
@@ -68,10 +68,10 @@ from datetime import date
 from pathlib import Path
 from typing import Final
 
-import allure
 import pytest
 
 from cmn.case_steps import step
+from cmn.grouping import story
 from cmn.identifier_capacity import (
     assigned_identifiers, capacity_warnings, identifier_block_problems,
     select_blocks,
@@ -127,12 +127,10 @@ def _root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Governance parity")
 class TestMQCCodeStandards:
     """The rules that stood in a document while nothing checked them."""
 
-    @allure.story("Annotations")
+    @story("Annotations")
     def MQC_CAS_UNI_115500_every_callable_carries_parameter_and_return_hints(
         self,
     ) -> None:
@@ -150,7 +148,7 @@ class TestMQCCodeStandards:
         gaps = annotation_gaps(_root())
         assert not gaps, f"{len(gaps)} annotation gaps: " + "; ".join(gaps[:10])
 
-    @allure.story("Annotations")
+    @story("Annotations")
     def MQC_CAS_UNI_115501_pep_563_future_annotations_import_is_rejected(self) -> None:
         """Laziness comes from the interpreter, not from stringizing.
 
@@ -168,7 +166,7 @@ class TestMQCCodeStandards:
             f"defers evaluation without them: {', '.join(offending)}"
         )
 
-    @allure.story("Authorship")
+    @story("Authorship")
     def MQC_CAS_UNI_115502_every_python_file_carries_its_mit_spdx_header(self) -> None:
         """This repository is MIT, and its files have to say so themselves.
 
@@ -186,7 +184,7 @@ class TestMQCCodeStandards:
             f"{len(problems)} header problems: " + "; ".join(problems[:8])
         )
 
-    @allure.story("Authorship")
+    @story("Authorship")
     def MQC_CAS_UNI_115503_a_document_or_data_file_without_its_mit_header_is_reported(
         self,
     ) -> None:
@@ -209,12 +207,10 @@ class TestMQCCodeStandards:
         )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Governance parity")
 class TestMQCRunbook:
     """The operating procedure, checked against the workflows it describes."""
 
-    @allure.story("The runbook works")
+    @story("The runbook works")
     def MQC_CAS_UNI_115504_a_runbook_command_naming_an_undeclared_input_is_reported(
         self,
     ) -> None:
@@ -299,7 +295,7 @@ class TestMQCEncodingDeclared:
         assert not any("binary" in entry or "declared" in entry for entry in reported)
 
 
-    @allure.story("Identifiers sit in their own block")
+    @story("Identifiers sit in their own block")
     def MQC_CAS_UNI_115506_an_identifier_outside_its_module_block_is_reported(
         self,
     ) -> None:
@@ -329,12 +325,10 @@ class TestMQCEncodingDeclared:
         )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Suite governance")
 class TestMQCCaseModuleContents:
     """What a collected case module is allowed to define."""
 
-    @allure.story("Cases here, apparatus next door")
+    @story("Cases here, apparatus next door")
     def MQC_CAS_UNI_115711_a_case_module_holding_support_code_is_reported(
         self,
     ) -> None:
@@ -376,12 +370,10 @@ class TestMQCCaseModuleContents:
         )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Suite governance")
 class TestMQCBoundedSubprocesses:
     """What this repository is allowed to wait for, and for how long."""
 
-    @allure.story("A bound turns a hang into a failure")
+    @story("A bound turns a hang into a failure")
     def MQC_CAS_UNI_115712_a_subprocess_without_a_timeout_is_reported(
         self,
     ) -> None:
@@ -421,12 +413,10 @@ class TestMQCBoundedSubprocesses:
         )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Suite governance")
 class TestMQCModuleRunway:
     """How close a module may get to the ceiling before it splits."""
 
-    @allure.story("A module at the runway ceiling is reported")
+    @story("A module at the runway ceiling is reported")
     def MQC_CAS_UNI_115715_a_module_at_the_runway_ceiling_is_reported(
         self,
     ) -> None:
@@ -456,7 +446,7 @@ class TestMQCModuleRunway:
             + "; ".join(problems)
         )
 
-    @allure.story("A document name says which repository it belongs to")
+    @story("A document name says which repository it belongs to")
     def MQC_CAS_UNI_115718_a_document_naming_no_repository_is_reported(self) -> None:
         """A filename carries this repository's token, or a stated exemption.
 
@@ -495,7 +485,7 @@ class TestMQCModuleRunway:
             f"not carry: {', '.join(stale)}"
         )
 
-    @allure.story("A test module lists the cases it holds")
+    @story("A test module lists the cases it holds")
     def MQC_CAS_UNI_115719_a_case_block_disagreeing_with_its_module_is_reported(
         self,
     ) -> None:
@@ -520,8 +510,6 @@ class TestMQCModuleRunway:
         )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Suite governance")
 class TestMQCExecutionIdentity:
     """One case identifier, one test case, one execution per run."""
 
@@ -579,8 +567,6 @@ class TestMQCIdentifierCapacity:
         assert all("holds" in entry for entry in reported), reported
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Governance parity")
 class TestMQCHarnessUnderMutation:
     """This suite refuses to measure a harness a mutation audit holds."""
 

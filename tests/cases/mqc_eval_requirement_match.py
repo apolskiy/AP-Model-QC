@@ -3,7 +3,7 @@
 """Graded cases for whether the model's requirement matching lands on the gate boundaries.
 
 Created: 2026-09-25
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ten cases on the model under test, matching resumes against one job
 posting. ``TestMQCConnectorArithmetic`` checks how it scores OR, AND and open
@@ -56,8 +56,9 @@ to either.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import observe_repeatedly
 from tests.cases.consistency_support import assert_consistent_pass
@@ -65,14 +66,12 @@ from tests.cases.consistency_support import assert_consistent_pass
 pytestmark = pytest.mark.evaluator
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Requirement matching")
 class TestMQCConnectorArithmetic:
     """How a requirement line is worded decides what a partial match is worth."""
 
     @pytest.mark.base
     @pytest.mark.priority(3)
-    @allure.story("Closed OR")
+    @story("Closed OR")
     def MQC_EVL_EVAL_134400_closed_or_list_satisfied_by_one_member(
         self, request: Any
     ) -> None:
@@ -98,7 +97,7 @@ class TestMQCConnectorArithmetic:
 
     @pytest.mark.priority(3)
     @pytest.mark.depends_on("134400")
-    @allure.story("Closed AND")
+    @story("Closed AND")
     def MQC_EVL_EVAL_134401_closed_and_list_scores_fractionally(
         self, request: Any
     ) -> None:
@@ -121,7 +120,7 @@ class TestMQCConnectorArithmetic:
 
     @pytest.mark.priority(3)
     @pytest.mark.depends_on("134400")
-    @allure.story("Open enumeration")
+    @story("Open enumeration")
     def MQC_EVL_EVAL_134402_open_enumeration_satisfied_by_category_equivalent(
         self, request: Any
     ) -> None:
@@ -145,14 +144,12 @@ class TestMQCConnectorArithmetic:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Requirement matching")
 class TestMQCGateBoundaries:
     """Three resumes against one posting, on the three rows of the table."""
 
     @pytest.mark.base
     @pytest.mark.priority(2)
-    @allure.story("Above ceiling")
+    @story("Above ceiling")
     def MQC_EVL_EVAL_134405_mandatory_at_ceiling_proceeds_regardless_of_optional(
         self, request: Any
     ) -> None:
@@ -175,7 +172,7 @@ class TestMQCGateBoundaries:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134405")
-    @allure.story("At floor")
+    @story("At floor")
     def MQC_EVL_EVAL_134404_mandatory_at_floor_with_sufficient_combined_proceeds(
         self, request: Any
     ) -> None:
@@ -198,7 +195,7 @@ class TestMQCGateBoundaries:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134405")
-    @allure.story("Below floor")
+    @story("Below floor")
     def MQC_EVL_EVAL_134403_mandatory_below_floor_warns_without_evaluating_optional(
         self, request: Any
     ) -> None:
@@ -221,14 +218,12 @@ class TestMQCGateBoundaries:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Requirement matching")
 class TestMQCExperienceDisclosure:
     """What a figure may say, which depends on where the figure came from."""
 
     @pytest.mark.base
     @pytest.mark.priority(2)
-    @allure.story("Stated figure")
+    @story("Stated figure")
     def MQC_EVL_EVAL_134406_stated_experience_figure_is_preserved(
         self, request: Any
     ) -> None:
@@ -253,7 +248,7 @@ class TestMQCExperienceDisclosure:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134406")
-    @allure.story("Derived figure")
+    @story("Derived figure")
     def MQC_EVL_EVAL_134407_derived_experience_figure_states_requirement_floor(
         self, request: Any
     ) -> None:
@@ -279,7 +274,7 @@ class TestMQCExperienceDisclosure:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134406")
-    @allure.story("Incalculable figure")
+    @story("Incalculable figure")
     def MQC_EVL_EVAL_134408_incalculable_experience_prompts_rather_than_assumes(
         self, request: Any
     ) -> None:
@@ -303,7 +298,7 @@ class TestMQCExperienceDisclosure:
         assert_consistent_pass(results)
 
     @pytest.mark.priority(3)
-    @allure.story("Unfamiliar header")
+    @story("Unfamiliar header")
     def MQC_EVL_EVAL_134409_classifies_unfamiliar_section_header_correctly(
         self, request: Any
     ) -> None:

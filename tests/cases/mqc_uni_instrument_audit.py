@@ -3,7 +3,7 @@
 """Unit preconditions for whether a graded result from this suite means what it says.
 
 Created: 2026-10-06
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains eight cases. ``TestMQCTheInstrumentDoesNotManufactureFindings``
 checks the injection screen raises nothing on an ordinary case and every failure message
@@ -56,10 +56,10 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Final
 
-import allure
 import pytest
 
 from cmn.case_steps import step
+from cmn.grouping import story
 from cmn.registries import is_registered_harness_code, registered_codes
 from cmn.replay_audit import divergent_recordings
 from evaluation.screening import screen_text
@@ -89,8 +89,6 @@ _TAXONOMY_CODE: Final[re.Pattern] = re.compile(
 )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Suite governance")
 class TestMQCTheInstrumentDoesNotManufactureFindings:
     """Two ways a defect of ours becomes a finding about somebody's model.
 
@@ -100,7 +98,7 @@ class TestMQCTheInstrumentDoesNotManufactureFindings:
     can produce, because it arrives looking exactly like the output.
     """
 
-    @allure.story("An ordinary case screens clean")
+    @story("An ordinary case screens clean")
     def MQC_CAS_UNI_115713_a_screening_hit_on_an_ordinary_case_is_reported(
         self,
     ) -> None:
@@ -160,7 +158,7 @@ class TestMQCTheInstrumentDoesNotManufactureFindings:
             f"model for our own pattern: " + "; ".join(offenders)
         )
 
-    @allure.story("Every failure message names its class")
+    @story("Every failure message names its class")
     def MQC_CAS_UNI_115714_a_failure_message_without_a_taxonomy_code_is_reported(
         self,
     ) -> None:
@@ -236,12 +234,10 @@ class TestMQCTheInstrumentDoesNotManufactureFindings:
         )
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Suite governance")
 class TestMQCAssertionsCanFail:
     """Whether a passing assertion is passing for a reason."""
 
-    @allure.story("Every assertion can be made to fail")
+    @story("Every assertion can be made to fail")
     def MQC_CAS_UNI_115716_an_assertion_that_cannot_fail_is_reported(
         self,
     ) -> None:
@@ -278,7 +274,7 @@ class TestMQCAssertionsCanFail:
         )
 
 
-    @allure.story("A recording gap is not a disagreement")
+    @story("A recording gap is not a disagreement")
     def MQC_CAS_UNI_115728_an_unmeasured_observation_is_not_counted_as_a_failure(
         self,
     ) -> None:
@@ -385,7 +381,7 @@ class TestMQCAssertionsCanFail:
         )
 
 
-    @allure.story("A store refreshed in part names the half left behind")
+    @story("A store refreshed in part names the half left behind")
     def MQC_CAS_UNI_115729_a_replay_store_refreshed_in_part_is_reported(
         self,
     ) -> None:
@@ -416,7 +412,7 @@ class TestMQCAssertionsCanFail:
         )
 
 
-    @allure.story("The observation loop still records its steps")
+    @story("The observation loop still records its steps")
     def MQC_CAS_UNI_115731_an_observation_that_records_no_steps_is_reported(
         self,
     ) -> None:
@@ -519,7 +515,7 @@ class TestMQCAssertionsCanFail:
             "case's last step never reaches the artifact"
         )
 
-    @allure.story("A case records the steps after its observations")
+    @story("A case records the steps after its observations")
     def MQC_CAS_UNI_115761_the_steps_after_the_observations_are_recorded(
         self, caplog: pytest.LogCaptureFixture
     ) -> None:
@@ -562,7 +558,7 @@ class TestMQCAssertionsCanFail:
             tail[0].verification
         )
 
-    @allure.story("A caught injection is a failure")
+    @story("A caught injection is a failure")
     def MQC_CAS_UNI_115016_a_caught_injection_is_recorded_as_a_failure_not_a_skip(
         self,
     ) -> None:

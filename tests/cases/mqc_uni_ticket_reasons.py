@@ -39,11 +39,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-import allure
 import pytest
 import yaml
 
 from cmn.case_steps import step
+from cmn.grouping import story
 
 from tests.cases.graded_support import case_for
 from tests.cases.suite_support import case_rules_from_suite
@@ -73,7 +73,7 @@ _RELAYED: str = (
 class TestMQCTicketReasons:
     """A ticket says why a response fails, and states the rule it was held to."""
 
-    @allure.story("Why it fails")
+    @story("Why it fails")
     def MQC_CAS_UNI_115768_a_ticket_says_why_each_failing_observation_fails(self) -> None:
         """Each failing observation's reason is explained by the kind of check that fired.
 
@@ -201,7 +201,7 @@ class TestMQCTicketReasons:
             f"a case never told not to quote is said to have been: {said}"
         )
 
-    @allure.story("The rule")
+    @story("The rule")
     def MQC_CAS_UNI_115769_a_ticket_expected_section_states_the_rule(self) -> None:
         """Expected opens with the rule: constraints, standing rules and the threshold.
 
@@ -236,7 +236,7 @@ class TestMQCTicketReasons:
         lines = rule_lines(case_for(*_DIAGNOSTICS).golden_rules, tasks[_DIAGNOSTICS[0]])
         assert any("Never calls list_directory, ping_host" in line for line in lines), lines
 
-    @allure.story("Why it fails")
+    @story("Why it fails")
     def MQC_CAS_UNI_115770_a_screen_stopped_observation_says_why_on_its_ticket(
         self,
     ) -> None:
@@ -286,7 +286,7 @@ class TestMQCTicketReasons:
         )
         assert any("told the model not to quote" in reason for reason in reasons), reasons
 
-    @allure.story("Judge prompt")
+    @story("Judge prompt")
     def MQC_CAS_UNI_115771_a_ticket_shows_each_judged_observation_its_judge_prompt(
         self, tmp_path: Path
     ) -> None:

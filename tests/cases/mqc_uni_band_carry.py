@@ -3,7 +3,7 @@
 """Unit precondition for carrying graded outcomes from one priority band to the next.
 
 Created: 2026-10-15
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCBandCarry``, one case. It runs the P0 band and then the P1
 band in replay against gemini, sharing one ``--carry-outcomes`` record as the
@@ -29,20 +29,19 @@ import subprocess
 import sys
 from pathlib import Path
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 pytestmark = pytest.mark.unit
 
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Consumer CI")
 class TestMQCBandCarry:
     """The bands run as the gate runs them, and the second adopts the first's outcomes."""
 
-    @allure.story("A band adopts what the band before carried")
+    @story("A band adopts what the band before carried")
     def MQC_CAS_UNI_115757_a_band_adopts_the_outcomes_the_band_before_carried(self) -> None:
         """The P0 band and then the P1 band, sharing one carry record, both run.
 

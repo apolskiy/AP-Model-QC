@@ -1,0 +1,103 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# The grouping tree this repository's results are read by: the epic it
+# publishes under, the capability vocabulary, and which capability each
+# collected case module measures.
+#
+# THE RULE IS THE HARNESS'S `harness_test_taxonomy.md` SECTION 16, and the
+# implementation is `cmn.grouping`, called with this root. This file is the
+# declaration, which is this repository's own: the epic is what tells a
+# collector reading both result sets which one produced a result, so a shared
+# file would make that distinction a runtime accident (section 16.5).
+#
+# THE VOCABULARY IS WHAT THE CASES ALREADY SAID. Twenty-seven of this
+# repository's thirty-nine modules carried a hand-written
+# `@allure.feature`, and those values are the fifteen capability names below;
+# the twelve that carried none are mapped here for the first time. The
+# decorators are gone, because a declared label wins over a derived one and
+# two sources would publish two branches for one module.
+#
+# A MODULE ABSENT FROM `modules` FAILS THE UNIT LAYER. `MQC_CAS_UNI_430000`
+# reports the absence, `430001` an epic that is not this distribution's name.
+
+# This repository, as every result's epic. Compared with the distribution name
+# in `pyproject.toml`, so the two cannot drift.
+epic: AP-Model-QC
+
+# The vocabulary. A value in `modules` outside this list is reported.
+features:
+  - Ambiguity handling
+  - Code comprehension
+  - Consumer CI
+  - Corpus
+  - Findings
+  - Governance parity
+  - Grounding
+  - Harness pairing
+  - Instruction following
+  - Model security
+  - Premise discrimination
+  - Recording coverage
+  - Requirement matching
+  - Suite governance
+  - The readiness view
+  - Tool compliance
+
+modules:
+  # The graded cases: what the model is actually measured on.
+  tests/cases/mqc_eval_ambiguity.py: Ambiguity handling
+  tests/cases/mqc_eval_code.py: Code comprehension
+  tests/cases/mqc_eval_grounding.py: Grounding
+  tests/cases/mqc_eval_instruction.py: Instruction following
+  tests/cases/mqc_eval_premise.py: Premise discrimination
+  tests/cases/mqc_eval_requirement_match.py: Requirement matching
+  tests/cases/mqc_tool_compliance.py: Tool compliance
+  tests/cases/mqc_sec_diagnostics.py: Model security
+  tests/cases/mqc_sec_disclosure.py: Model security
+  tests/cases/mqc_sec_hidden_passage.py: Model security
+  tests/cases/mqc_sec_injection.py: Model security
+  tests/cases/mqc_sec_substitution.py: Model security
+  tests/cases/mqc_sec_tool_coercion.py: Model security
+
+  # The corpus the graded cases read, and whether it is sound.
+  tests/cases/mqc_uni_corpus.py: Corpus
+  tests/cases/mqc_uni_excerpts.py: Corpus
+  tests/cases/mqc_uni_families.py: Corpus
+  tests/cases/mqc_uni_instrument.py: Corpus
+  tests/cases/mqc_uni_rule_reading.py: Corpus
+  tests/cases/mqc_uni_instruction_checks.py: Instruction following
+
+  # Whether a recorded run can be replayed and judged as it was.
+  tests/cases/mqc_uni_recording_coverage.py: Recording coverage
+  tests/cases/mqc_uni_withheld_judge.py: Recording coverage
+
+  # This repository's own pipeline: the bands, the jobs and the pin.
+  tests/cases/mqc_uni_band_carry.py: Consumer CI
+  tests/cases/mqc_uni_band_gating.py: Consumer CI
+  tests/cases/mqc_uni_engine_jobs.py: Consumer CI
+  tests/cases/mqc_uni_harness_pin.py: Consumer CI
+  tests/cases/mqc_uni_judge_dimension.py: Consumer CI
+  tests/cases/mqc_uni_traceability.py: Consumer CI
+  tests/cases/mqc_uni_workflows.py: Consumer CI
+
+  # Which harness this case set runs against, and whether it followed.
+  tests/cases/mqc_uni_harness_follow.py: Harness pairing
+  tests/cases/mqc_uni_harness_install.py: Harness pairing
+
+  # The rules both repositories keep, checked here with this root.
+  tests/cases/mqc_uni_document_citations.py: Governance parity
+  tests/cases/mqc_uni_file_dates.py: Governance parity
+  tests/cases/mqc_uni_requirement_statements.py: Governance parity
+  tests/cases/mqc_uni_standards.py: Governance parity
+
+  # Whether the suite says what it holds, and agrees with itself.
+  tests/cases/mqc_uni_instrument_audit.py: Suite governance
+  tests/cases/mqc_uni_priority_agreement.py: Suite governance
+  tests/cases/mqc_uni_registers.py: Suite governance
+
+  # What is filed with a vendor, and what has stopped reproducing.
+  tests/cases/mqc_uni_ticket_reasons.py: Findings
+  tests/cases/mqc_uni_ticket_report.py: Findings
+
+  # The tree this file declares, which is its own subject.
+  tests/cases/mqc_uni_grouping.py: The readiness view

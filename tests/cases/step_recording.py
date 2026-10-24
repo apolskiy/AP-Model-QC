@@ -23,8 +23,7 @@ Design: ``consumer_ci.md`` section 9.4.3.3, implementing harness
 import logging
 from typing import Any, Sequence
 
-import allure
-
+from cmn.reporter import reporter
 from cmn.steps import CaseStep, StepOutcome, case_steps, observation_step, step_lines
 
 logger = logging.getLogger(__name__)
@@ -85,7 +84,7 @@ def _record(case_id: str, steps: Sequence[CaseStep]) -> None:
             (step.action, step.action_phases),
             (step.verification, step.verification_phases),
         ):
-            with allure.step(f"{half.label} [{half.outcome}]"):
+            with reporter.step(f"{half.label} [{half.outcome}]"):
                 for phase in phases:
                     _record_phase(phase)
     for line in step_lines(case_id, steps):
@@ -101,10 +100,10 @@ def _record_phase(phase: StepOutcome) -> None:
     Returns:
         None
     """
-    with allure.step(f"{phase.label} [{phase.outcome}]"):
+    with reporter.step(f"{phase.label} [{phase.outcome}]"):
         if phase.detail:
-            allure.attach(
+            reporter.attach(
                 phase.detail,
                 name=f"{phase.label} detail",
-                attachment_type=allure.attachment_type.TEXT,
+                attachment_type=reporter.attachment_type.TEXT,
             )

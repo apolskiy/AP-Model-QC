@@ -3,7 +3,7 @@
 """Graded cases for whether the model does what the instruction said, in its shape.
 
 Created: 2026-09-25
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains nine instruction-following cases on the model under test.
 ``TestMQCDeclaredFormat`` checks it obeys a declared output format and that a violation
@@ -55,8 +55,9 @@ it was handed tells us nothing further by also mishandling a bullet ceiling.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import observe_repeatedly
 from tests.cases.consistency_support import assert_consistent_pass
@@ -64,14 +65,12 @@ from tests.cases.consistency_support import assert_consistent_pass
 pytestmark = pytest.mark.evaluator
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Instruction following")
 class TestMQCDeclaredFormat:
     """The stated shape, and the control that keeps it honest."""
 
     @pytest.mark.base
     @pytest.mark.priority(1)
-    @allure.story("Declared format")
+    @story("Declared format")
     def MQC_EVL_EVAL_134300_obeys_declared_output_format(self, request: Any) -> None:
         """Two named keys and nothing outside the object.
 
@@ -97,7 +96,7 @@ class TestMQCDeclaredFormat:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134300")
-    @allure.story("Ablation control")
+    @story("Ablation control")
     def MQC_EVL_EVAL_134301_format_violation_is_recorded(self, request: Any) -> None:
         """The same task with the format instruction removed.
 
@@ -120,8 +119,6 @@ class TestMQCDeclaredFormat:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Instruction following")
 class TestMQCQuantitativeCeilings:
     """One task, four ceilings, four separate findings.
 
@@ -132,7 +129,7 @@ class TestMQCQuantitativeCeilings:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134300")
-    @allure.story("Bullet ceiling")
+    @story("Bullet ceiling")
     def MQC_EVL_EVAL_134302_rejects_output_exceeding_bullet_ceiling(
         self, request: Any
     ) -> None:
@@ -151,7 +148,7 @@ class TestMQCQuantitativeCeilings:
 
     @pytest.mark.priority(3)
     @pytest.mark.depends_on("134300")
-    @allure.story("Word ceiling")
+    @story("Word ceiling")
     def MQC_EVL_EVAL_134303_rejects_sentence_exceeding_word_ceiling(
         self, request: Any
     ) -> None:
@@ -174,7 +171,7 @@ class TestMQCQuantitativeCeilings:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134300")
-    @allure.story("Capitalisation")
+    @story("Capitalisation")
     def MQC_EVL_EVAL_134304_sentence_begins_with_capital(self, request: Any) -> None:
         """A positive check, and the family needs one.
 
@@ -195,7 +192,7 @@ class TestMQCQuantitativeCeilings:
 
     @pytest.mark.priority(4)
     @pytest.mark.depends_on("134300")
-    @allure.story("Sentence completeness")
+    @story("Sentence completeness")
     def MQC_EVL_EVAL_134305_sentence_lacking_subject_or_verb_is_flagged(
         self, request: Any
     ) -> None:
@@ -217,14 +214,12 @@ class TestMQCQuantitativeCeilings:
         assert_consistent_pass(results)
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Instruction following")
 class TestMQCOrderingAndProhibition:
     """Instructions about arrangement and about what must not appear."""
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134300")
-    @allure.story("Ordering")
+    @story("Ordering")
     def MQC_EVL_EVAL_134306_measurables_ordered_above_remainder(
         self, request: Any
     ) -> None:
@@ -246,7 +241,7 @@ class TestMQCOrderingAndProhibition:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134300")
-    @allure.story("Prohibition")
+    @story("Prohibition")
     def MQC_EVL_EVAL_134307_prohibited_glyph_is_recorded(self, request: Any) -> None:
         """A prohibition, which is the inverse of every ceiling above.
 
@@ -267,7 +262,7 @@ class TestMQCOrderingAndProhibition:
 
     @pytest.mark.priority(2)
     @pytest.mark.depends_on("134300")
-    @allure.story("Combined constraints")
+    @story("Combined constraints")
     def MQC_EVL_EVAL_134308_combined_constraints_do_not_degrade_each_other(
         self, request: Any
     ) -> None:

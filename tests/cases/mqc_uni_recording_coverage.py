@@ -3,7 +3,7 @@
 """Unit preconditions for whether a blocking band has a recording to replay for every case.
 
 Created: 2026-10-09
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCRecordingCoverage``, two cases over the replay fixtures,
 read through the harness's ``missing_recordings``. ``115721`` checks every P0 and P1
@@ -38,8 +38,9 @@ check was first drafted with (`consumer_ci.md` section 3.12.6).
 
 from pathlib import Path
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from cmn.replay_audit import missing_recordings
 
@@ -52,12 +53,10 @@ from tests.cases.graded_support import (
 pytestmark = pytest.mark.unit
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Recording coverage")
 class TestMQCRecordingCoverage:
     """Every rostered engine can replay every case a blocking band selects."""
 
-    @allure.story("A blocking band never rests on an absence")
+    @story("A blocking band never rests on an absence")
     def MQC_CAS_UNI_115721_a_blocking_case_with_no_recording_is_reported(
         self,
     ) -> None:
@@ -104,7 +103,7 @@ class TestMQCRecordingCoverage:
             f"run: " + "; ".join(problems)
         )
 
-    @allure.story("The check compares something")
+    @story("The check compares something")
     def MQC_CAS_UNI_115722_a_recording_check_that_compares_nothing_is_reported(
         self, tmp_path: Path
     ) -> None:

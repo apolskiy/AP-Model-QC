@@ -3,7 +3,7 @@
 """Unit preconditions for evaluation families, live workflow steps and the findings register.
 
 Created: 2026-10-04
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains seven cases. ``TestMQCDeclaredFamilies`` checks every rule set
 declares a registered evaluation family and that the matrix and ``tools/case_index.py``
@@ -45,8 +45,9 @@ import csv
 from datetime import date
 from pathlib import Path
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from cmn.registries import registered_evaluation_families
 from cmn.traceability import MatrixRow, check_matrix_integrity
@@ -73,12 +74,10 @@ def _repository_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Corpus")
 class TestMQCDeclaredFamilies:
     """The declaration the matrix is checked against."""
 
-    @allure.story("Families")
+    @story("Families")
     def MQC_CAS_UNI_115414_a_rule_set_declaring_no_registered_family_is_reported(
         self,
     ) -> None:
@@ -139,7 +138,7 @@ class TestMQCDeclaredFamilies:
             f"only: {sorted(set(registered) - in_use)}"
         )
 
-    @allure.story("Traceability")
+    @story("Traceability")
     def MQC_CAS_UNI_115415_a_matrix_family_disagreeing_with_the_corpus_is_reported(
         self,
     ) -> None:
@@ -204,7 +203,7 @@ class TestMQCDeclaredFamilies:
 
 
 
-    @allure.story("Governance")
+    @story("Governance")
     def MQC_CAS_UNI_115417_a_case_index_disagreeing_with_the_corpus_is_reported(
         self,
     ) -> None:
@@ -245,7 +244,7 @@ class TestMQCDeclaredFamilies:
         )
 
 
-    @allure.story("Governance")
+    @story("Governance")
     def MQC_CAS_UNI_115418_a_live_step_without_a_spend_ceiling_is_reported(
         self,
     ) -> None:
@@ -269,7 +268,7 @@ class TestMQCDeclaredFamilies:
             "monthly limit of $20 per provider: " + "; ".join(uncapped)
         )
 
-    @allure.story("Governance")
+    @story("Governance")
     def MQC_CAS_UNI_115743_a_workflow_engine_list_off_the_roster_is_reported(
         self,
     ) -> None:
@@ -290,7 +289,7 @@ class TestMQCDeclaredFamilies:
             + "\n  ".join(problems)
         )
 
-    @allure.story("Governance")
+    @story("Governance")
     def MQC_CAS_UNI_115744_a_live_workflow_missing_an_engine_key_is_reported(
         self,
     ) -> None:
@@ -313,12 +312,10 @@ class TestMQCDeclaredFamilies:
             + "\n  ".join(problems)
         )
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Findings")
 class TestMQCFindingsRegister:
     """What a finding records, and what the tool refuses to record."""
 
-    @allure.story("Findings")
+    @story("Findings")
     def MQC_CAS_UNI_115416_the_register_records_a_finding_and_refuses_a_vacuous_run(
         self, tmp_path: Path
     ) -> None:

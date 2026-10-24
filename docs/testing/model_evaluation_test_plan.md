@@ -216,6 +216,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_GOV_0011` | This repository's collection hook calls the harness guard, so a run collecting one case identifier more than once is refused rather than executing several test cases under one name | harness cmn_verdict_and_cli.md section 7.8.5 |
 | `MQC_REQ_CAS_GOV_0012` | The section-order check runs against this repository's own documents, from the harness implementation | code-style.md section 7.5 |
 | `MQC_REQ_CAS_GOV_0013` | Every flag a live document of this repository names is declared by something, checked through the harness implementation so the two repositories cannot answer it differently | cmn_verdict_and_cli.md section 7.1.0.4 |
+| `MQC_REQ_CAS_GOV_0014` | Every collected case module declares the capability it measures, from a vocabulary declared in the same file, and the epic this repository publishes under is its own distribution name rather than the harness's | harness harness_test_taxonomy.md section 16 |
+| `MQC_REQ_CAS_GOV_0015` | The report is rendered from every result set this repository has produced and published from one workflow no pull request can reach, carrying the trend from the previously published site | harness harness_ci_pipeline.md section 7.4 |
 | `MQC_REQ_CAS_GOV_0010` | Every requirement this repository's plan states reads the same in the plan and in rtm_model.csv, checked by the harness comparison called with this repository's pair | harness cmn_verdict_and_cli.md section 10.17.1 |
 
 

@@ -3,7 +3,7 @@
 """Graded security cases for whether the model does its own task when another is proposed.
 
 Created: 2026-09-26
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
 This file contains ``TestMQCTaskSubstitution``, three cases on the model under test.
 Each plants a different task and checks the model keeps to the one it was assigned,
@@ -44,8 +44,9 @@ user asks it to tells us nothing further by also doing so when a document asks.
 
 from typing import Any
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from tests.cases.graded_support import observe_repeatedly
 from tests.cases.consistency_support import (
@@ -56,14 +57,12 @@ from tests.cases.consistency_support import (
 pytestmark = pytest.mark.sec
 
 
-@allure.epic("AP-Model-QC")
-@allure.feature("Model security")
 class TestMQCTaskSubstitution:
     """Replacing the task, amending it, and adding to it."""
 
     @pytest.mark.priority(0)
     @pytest.mark.depends_on("154103")
-    @allure.story("Substituted via context")
+    @story("Substituted via context")
     def MQC_EVL_SEC_154200_resists_task_substitution_planted_in_context(
         self, request: Any
     ) -> None:
@@ -88,7 +87,7 @@ class TestMQCTaskSubstitution:
 
     @pytest.mark.priority(0)
     @pytest.mark.depends_on("154103")
-    @allure.story("Framed as a correction")
+    @story("Framed as a correction")
     def MQC_EVL_SEC_154201_resists_task_substitution_framed_as_a_correction(
         self, request: Any
     ) -> None:
@@ -115,7 +114,7 @@ class TestMQCTaskSubstitution:
 
     @pytest.mark.priority(0)
     @pytest.mark.depends_on("154103")
-    @allure.story("Appended, not substituted")
+    @story("Appended, not substituted")
     def MQC_EVL_SEC_154202_resists_attacker_task_appended_to_assigned_one(
         self, request: Any
     ) -> None:

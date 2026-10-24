@@ -28,8 +28,9 @@ pair, the arrangement every shared standard here uses.
 
 from pathlib import Path
 
-import allure
 import pytest
+
+from cmn.grouping import story
 
 from cmn.traceability import statement_problems
 
@@ -41,7 +42,7 @@ _TESTING = Path(__file__).resolve().parents[2] / "docs" / "testing"
 class TestMQCRequirementStatements:
     """One statement per requirement, wherever this repository writes it."""
 
-    @allure.story("Plan and matrix agree")
+    @story("Plan and matrix agree")
     def MQC_CAS_UNI_115748_a_requirement_stated_two_ways_is_reported(self) -> None:
         """No requirement reads differently in the plan and the matrix.
 
