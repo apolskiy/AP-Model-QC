@@ -84,7 +84,7 @@ jobs:
           done
           find downloaded -type d -name allure-results -print0 \
             | xargs -0 -I {} cp -r {}/. reports/allure-results/ || true
-          echo "results: $(ls reports/allure-results | wc -l) files"
+          echo "results: $(find reports/allure-results -type f | wc -l) file(s)"
       # THE TREND, READ FROM THE PUBLISHED SITE. A missing one generates a
       # weaker report rather than failing the job: the first run has no site
       # to read, and going red over an absent trend would be red about
