@@ -3,7 +3,7 @@
 """The ticket report, which writes each engine's filed findings as pages ready to submit.
 
 Created: 2026-10-05
-Last updated: 2026-10-21
+Last updated: 2026-10-25
 
 This file contains ``page_for``, which builds one engine's findings page,
 ``finding_section``, which writes one finding's defect report with its problem,
@@ -53,6 +53,7 @@ Usage::
 import argparse
 import re
 import sys
+from datetime import date
 from pathlib import Path
 from typing import Any, Final, Optional
 
@@ -71,7 +72,7 @@ from tools.ticket_recordings import (
     recorded_request,
     recorded_responses,
 )
-from tools.ticket_files import page_name, write_tickets
+from tools.ticket_files import filing_sheet, page_name, write_tickets
 from tools.ticket_framing import framed_problem
 from tools.ticket_reasons import failure_reasons, rule_lines
 
@@ -265,7 +266,17 @@ def _message_texts(request: dict[str, Any]) -> list[tuple[str, str]]:
         list[tuple]: Each role paired with its text, in the order sent.
     """
     found: list[tuple[str, str]] = []
-    system = request.get("system") or request.get("system_instruction")
+    # AND INSIDE `config`, WHICH IS WHERE ONE PROVIDER PUTS IT. Gemini carries
+    # the system instruction in the request config rather than as a message,
+    # so every ticket against it showed the documents and omitted the
+    # instruction that defines the task: an incomplete reproduction, and the
+    # first thing a vendor engineer would reject (section 9.5.3).
+    config = request.get("config") if isinstance(request.get("config"), dict) else {}
+    system = (
+        request.get("system")
+        or request.get("system_instruction")
+        or config.get("system_instruction")
+    )
     if isinstance(system, str) and system.strip():
         found.append(("system", system))
     for key in ("messages", "contents"):
@@ -804,7 +815,7 @@ def page_for(root: Path, engine: str) -> tuple[str, list[tuple[dict[str, Any], l
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    """Write one page per engine.
+    """Write one page per engine, and the filing sheet across them.
 
     Args:
         argv (Optional[list]): Arguments, or None to read from the command line.
@@ -821,12 +832,26 @@ def main(argv: Optional[list[str]] = None) -> int:
     chosen = (parsed.engine,) if parsed.engine else _ENGINES
     parsed.out_dir.mkdir(parents=True, exist_ok=True)
 
+    filed: dict[str, list[dict[str, Any]]] = {}
     for engine in chosen:
         page, sections = page_for(root, engine)
         written = parsed.out_dir / page_name(engine)
         written.write_text(page, encoding="utf-8", newline="\n")
         tickets = write_tickets(parsed.out_dir / engine, engine, sections)
+        filed[engine] = [entry for entry, _ in sections]
         print(f"{written}: written, with {len(tickets)} ticket(s) in {engine}/")
+
+    # THE SHEET IS WRITTEN ONLY BY A RUN THAT SAW EVERY ENGINE, because its
+    # total is a claim about all of them and a single-engine run would restate
+    # that total from one (section 9.5.5.10).
+    if set(chosen) == set(_ENGINES):
+        sheet = parsed.out_dir / "FILING.md"
+        sheet.write_text(filing_sheet(date.today().isoformat(), filed),
+                         encoding="utf-8", newline="\n")
+        print(f"{sheet}: written, with {sum(len(rows) for rows in filed.values())} "
+              f"finding(s)")
+    else:
+        print("FILING.md not written: its total covers every engine")
     return 0
 
 

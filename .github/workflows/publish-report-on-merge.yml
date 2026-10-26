@@ -1,22 +1,23 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-# The readiness view: one published report for this case set.
+# The readiness view: one report per vendor, never a merged one.
+#
+# ONE REPORT PER ENGINE, at the project owner's ruling of 2026-10-24. A single
+# report built from four engines' results answers no question anybody asks: a
+# reviewer wants to know whether claude is sound, or gemini is, and a figure
+# averaged over four vendors is one nobody ships against. Section 4.18 refused
+# a combined weekly result for that reason, and this is the same decision
+# applied to the report.
+#
+# AND EVERY REPORT IS ONE COMMIT'S. The first version took the latest
+# successful run of each workflow, which merged 2026-10-09 to 2026-10-16 into
+# one site: 289 cases, and 49 of its 50 top-level nodes were orphan story
+# names from artifacts written before the grouping hook existed. A report is a
+# rendering of a run, so a run that is not of this commit is not in it.
 #
 # WHY A WORKFLOW OF ITS OWN. Four targets gate on every push, each in its own
-# workflow, so a publishing job inside them would be four deploys racing and
-# the site would hold whichever finished last. This runs once their gate has
-# completed on the default branch and renders one report from all of them.
-# Harness `harness_ci_pipeline.md` section 7.4.
-#
-# NO PULL REQUEST CAN REACH IT, which is the rule rather than the guard: a
-# fork's run cannot hold the Pages credential, and a run that could would
-# overwrite the default branch's picture with a proposal's.
-#
-# THE GRADED RESULTS ARE BEST EFFORT. A ladder fires on dispatch rather than
-# on a schedule, so the newest graded artifacts are whatever the last
-# dispatched run left. Where an engine has never been evaluated, its
-# capability simply has no graded result in the tree, which is the honest
-# picture rather than an empty one.
+# workflow, so a publishing job inside them would be four deploys of one site
+# racing. Harness `harness_ci_pipeline.md` section 7.4.
 name: publish-report-on-merge
 
 on:
@@ -30,10 +31,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# ONE DEPLOY AT A TIME. Four gates complete within minutes of each other, and
-# two deploys of the same site race. The later one wins and the earlier is
-# cancelled, which is correct here: the loser would have published a report
-# the winner also holds.
+# ONE DEPLOY AT A TIME. Four gates complete within minutes of each other and
+# two deploys of one site race. The later wins and the earlier is cancelled,
+# which is correct here: every engine's report is rebuilt on each run, so the
+# loser would have published a subset of what the winner holds.
 concurrency:
   group: publish-report
   cancel-in-progress: true
@@ -42,18 +43,18 @@ permissions:
   contents: read
 
 env:
-  PYTHON_VERSION: "3.14"
+  ENGINES: "claude gemini grok openai"
 
 jobs:
   publish:
-    name: publish the report
+    name: publish the reports
     # A GATE THAT FAILED RENDERS NOTHING. A red target has no results worth
-    # publishing, and the site keeps the last report that passed.
+    # publishing, and the site keeps the last reports that passed.
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     # ON THE JOB, so nothing else in this repository can reach the credential
-    # that writes the site. `actions: read` is what lets it fetch the
-    # artifacts of other runs.
+    # that writes the site. `actions: read` is what lets it read the artifacts
+    # of other runs.
     permissions:
       pages: write
       id-token: write
@@ -63,48 +64,85 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Gather every result set this repository has produced
+      - name: Build one report for each engine, from this commit alone
+        id: build
         env:
           GH_TOKEN: ${{ github.token }}
+          COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
+          SITE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
         run: |
-          mkdir -p reports/allure-results downloaded
-          for workflow in gate-claude gate-gemini gate-grok gate-openai \
-            evaluate-claude-weekly evaluate-gemini-weekly \
-            evaluate-grok-weekly evaluate-openai-weekly; do
-            latest=$(gh run list --workflow "$workflow.yml" --status success \
-              --limit 1 --json databaseId --jq '.[0].databaseId' || true)
-            if [ -n "$latest" ]; then
-              gh run download "$latest" --dir "downloaded/$workflow" || true
-            else
-              echo "$workflow has no successful run to read"
+          echo "rendering the results of $COMMIT, and of nothing else"
+          npm install -g allure-commandline@2.41.0
+          built=""
+          for engine in $ENGINES; do
+            results="results/$engine"
+            mkdir -p "$results"
+            for workflow in "gate-$engine" "evaluate-$engine-weekly"; do
+              run=$(gh run list --workflow "$workflow.yml" --branch main --limit 30 \
+                --json databaseId,headSha,conclusion \
+                --jq "[.[] | select(.headSha == \"$COMMIT\" and .conclusion == \"success\")][0].databaseId" \
+                2>/dev/null || true)
+              if [ -n "$run" ] && [ "$run" != "null" ]; then
+                gh run download "$run" --dir "downloaded/$engine" || true
+              else
+                echo "$workflow has no successful run at this commit"
+              fi
+            done
+            if [ ! -d "downloaded/$engine" ]; then
+              echo "$engine has nothing to render at this commit"
+              continue
             fi
+            find "downloaded/$engine" -type d -name allure-results -print0 \
+              | xargs -0 -I {} cp -r {}/. "$results/"
+            if [ -z "$(find "$results" -name '*-result.json' -print -quit)" ]; then
+              echo "$engine produced no case result at this commit"
+              continue
+            fi
+            # THE TREND, PER ENGINE, read from that engine's own published
+            # report. A missing one renders without history rather than
+            # failing: the first run has none, and going red over an absent
+            # trend would be red about nothing.
+            for name in history.json duration-trend.json retry-trend.json categories-trend.json; do
+              curl --silent --fail --create-dirs --max-time 30 \
+                --output "$results/history/$name" "$SITE/$engine/history/$name" \
+                || echo "$engine has no published $name yet"
+            done
+            allure generate "$results" -o "site/$engine" --clean
+            built="$built $engine"
           done
-          find downloaded -type d -name allure-results -print0 \
-            | xargs -0 -I {} cp -r {}/. reports/allure-results/ || true
-          echo "results: $(find reports/allure-results -type f | wc -l) file(s)"
-      # THE TREND, READ FROM THE PUBLISHED SITE. A missing one generates a
-      # weaker report rather than failing the job: the first run has no site
-      # to read, and going red over an absent trend would be red about
-      # nothing.
-      - name: Carry the history forward from the published site
+          echo "built=$built" >> "$GITHUB_OUTPUT"
+          if [ -z "$built" ]; then
+            echo "no engine has a result at this commit, so the site is left as it is"
+          fi
+      # NOTHING TO PUBLISH IS NOT A FAILURE. A commit whose gates all failed
+      # leaves the reports standing rather than replacing them with an empty
+      # site, which is why every step below is conditional.
+      - name: Write the index over the reports that were built
+        if: steps.build.outputs.built != ''
+        env:
+          BUILT: ${{ steps.build.outputs.built }}
+          COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
-          mkdir -p reports/allure-results/history
-          base="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
-          for name in history.json duration-trend.json retry-trend.json categories-trend.json; do
-            curl --silent --fail --create-dirs --max-time 30 \
-              --output "reports/allure-results/history/$name" \
-              "$base/history/$name" || echo "no published $name yet"
-          done
-      - name: Install the Allure command line
-        run: npm install -g allure-commandline@2.41.0
-      - name: Generate the report
-        run: allure generate reports/allure-results -o allure-report --clean
+          {
+            echo "<!doctype html>"
+            echo "<html lang=\"en\"><head><meta charset=\"utf-8\">"
+            echo "<title>AP-Model-QC readiness</title>"
+            echo "<style>body{font:16px system-ui;margin:3rem auto;max-width:40rem;"
+            echo "padding:0 1rem}li{margin:.4rem 0}code{color:#555}</style>"
+            echo "</head><body><h1>AP-Model-QC</h1>"
+            echo "<p>One report per engine, each rendered from that engine's own"
+            echo "run of <code>$COMMIT</code>. Nothing here is averaged across"
+            echo "vendors: a model is sound or it is not, one at a time.</p><ul>"
+            for engine in $BUILT; do
+              echo "<li><a href=\"$engine/\">$engine</a></li>"
+            done
+            echo "</ul></body></html>"
+          } > site/index.html
       - uses: actions/upload-pages-artifact@v4
+        if: steps.build.outputs.built != ''
         with:
-          path: allure-report
-      - name: Deploy it
+          path: site
+      - name: Deploy them
         id: deployment
+        if: steps.build.outputs.built != ''
         uses: actions/deploy-pages@v4

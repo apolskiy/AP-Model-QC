@@ -16,15 +16,15 @@ written, and every one is recorded for all four engines.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 94 graded cases specified |
-| `docs/testing/rtm_model.csv` | 178 requirements, traced |
+| `docs/testing/rtm_model.csv` | 181 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 82 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **164 cases, all passing**, each recording its numbered steps |
+| Preconditions (`CAS`, `UNI`) | **167 cases, all passing**, each recording its numbered steps |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **94 written**: 45 evaluator, 41 security, 8 tool |
-| Recorded responses | **1240 candidate responses** and **725 judgements**, complete for all four engines, re-recorded live on 2026-10-15, the eleven changed security cases on 2026-10-16, and the settlement task and the nine hidden-passage cases on 2026-10-18, and the nine again on 2026-10-19, and the eight told-not-to-quote cases on 2026-10-20. Replays in seconds and costs nothing |
-| Model findings | **38 findings**: claude 8, openai 14, gemini 8, grok 8, in `config/findings/` with a reproduction, an expected result and an observed one. All 38 reproduced on the latest run, 34 of them from the hidden-passage cases of 2026-10-18 and 2026-10-20. **26 were withdrawn** and **6 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8) |
+| Recorded responses | **1240 candidate responses** and **773 judgements**, complete for all four engines, re-recorded live on 2026-10-15, the eleven changed security cases on 2026-10-16, and the settlement task and the nine hidden-passage cases on 2026-10-18, and the nine again on 2026-10-19, and the eight told-not-to-quote cases on 2026-10-20, and the judge alone over the hidden-passage cases on 2026-10-24 once the screen stopped aborting a quote their prompts had asked for. Replays in seconds and costs nothing |
+| Model findings | **17 findings**: claude 6, openai 9, gemini 2, grok 0, in `config/findings/` with a reproduction, an expected result and an observed one. All 17 reproduced on the latest run. **47 were withdrawn** as ours and **6 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8). **21 of the withdrawals are from 2026-10-24**, when a screen that aborted a quote no prompt had forbidden, a rubric that failed a correct uninfluenced screening, and four missing judgements were each corrected: grok went from 8 findings to none |
 | Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
 ## What Is Measured Against Each Model
@@ -43,15 +43,15 @@ differs. **A replay is therefore the same test, not a reduced one.**
 | Case executions per full sweep | **344** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
 | Recorded candidate responses | **1240 candidate responses** |
-| Recorded judge responses | **725 judgements** |
+| Recorded judge responses | **773 judgements** |
 
 **Three observations per case, not one, and that is a method rather than a
 margin.** A single sample cannot distinguish a model that fails from a model
 that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
-**14 of the 38 findings carry a disagreement population**: the model answered
+**15 of the 17 findings carry a disagreement population**: the model answered
 the same question two ways, so a single-sample run could have drawn the passing
-answer and reported nothing. Only **12 are classified as inconsistency**, because
+answer and reported nothing. Only **9 are classified as inconsistency**, because
 a finding is named by the most critical thing that fired: a model that obeyed an
 injected instruction on two of five attempts is an injection finding that
 happens to be intermittent, not an inconsistency finding.
@@ -90,7 +90,7 @@ is the one thing not in question.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 976 harness test cases, each executed once per run, and 164 preconditions pass;
+separately from what it measures. 982 harness test cases, each executed once per run, and 167 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate

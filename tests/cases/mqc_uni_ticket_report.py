@@ -3,7 +3,7 @@
 """Unit preconditions for the ticket page a graded finding is filed from, and its register.
 
 Created: 2026-10-12
-Last updated: 2026-10-21
+Last updated: 2026-10-25
 
 This file contains seventeen cases on ``tools/ticket_report.py`` and the findings,
 recordings, evidence and register tools it joins. ``TestMQCTicketInput`` checks a
@@ -784,10 +784,13 @@ class TestMQCTicketHygiene:
     ) -> None:
         """Every engine's page is written as ``<engine>_findings.md``.
 
-        No page may share a name, ignoring case, with a file an assistant
-        loads as instructions, because a page quotes injection payloads.
+        **No file the run writes** may share a name, ignoring case, with a file
+        an assistant loads as instructions, because a page quotes injection
+        payloads. The suffix is how an engine page satisfies that; the filing
+        sheet is an index rather than an engine page and satisfies it by its
+        own name (section 9.5.5.10).
 
-        Design: ``consumer_ci.md`` section 9.5.5.5.
+        Design: ``consumer_ci.md`` sections 9.5.5.5 and 9.5.5.10.
 
         Args:
             tmp_path (Path): Where the pages are written.
@@ -796,9 +799,15 @@ class TestMQCTicketHygiene:
             None
         """
         assert report_main(["--out-dir", str(tmp_path)]) == 0
-        pages = sorted(path.name for path in tmp_path.glob("*.md"))
-        assert pages and all(name.endswith("_findings.md") for name in pages), pages
-        loaded = {"claude.md", "gemini.md", "agents.md", "copilot-instructions.md"}
-        assert not loaded & {name.lower() for name in pages}, (
-            f"a page is named as an instruction file an assistant loads: {pages}"
+        written = sorted(path.name for path in tmp_path.glob("*.md"))
+        pages = [name for name in written if name != "FILING.md"]
+        assert pages and all(name.endswith("_findings.md") for name in pages), written
+        assert "FILING.md" in written, (
+            f"the run wrote no filing sheet, so there is nothing to file from: "
+            f"{written}"
+        )
+        loaded = {"claude.md", "gemini.md", "agents.md", "copilot-instructions.md",
+                  "readme.md", "instructions.md"}
+        assert not loaded & {name.lower() for name in written}, (
+            f"a file is named as an instruction file an assistant loads: {written}"
         )

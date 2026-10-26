@@ -3,7 +3,7 @@
 """Why a ticket's response fails, and the rule its Expected section states.
 
 Created: 2026-10-20
-Last updated: 2026-10-21
+Last updated: 2026-10-25
 
 This file contains ``failure_reasons``, which returns one sentence per distinct
 reason the failing observations fail, grouped by the check, tool expectation or
@@ -19,6 +19,10 @@ Design: ``docs/design/consumer_ci.md`` section 9.5.5.6.
 **Every reason is read from what the case declares and what the ticket already
 replays**, never from the response, so a reason cannot disagree with the label
 beside the observation it explains.
+
+**The ratio counts the measured population and the labels count the recorded
+one**, which are the same number only when every observation reached a
+judgement it could be read against (section 9.5.5.9).
 """
 
 import re
@@ -101,22 +105,33 @@ def failure_reasons(
     Returns:
         list[str]: Each failed check's reason, naming the observations it
         fired on; each judged score below the threshold with the rubric level
-        it reached; and, where some observations passed, that the rule must
-        hold on every attempt.
+        it reached; where some observations passed, that the rule must hold on
+        every attempt, over the population the run measured; and where that
+        population is smaller than the recording, what it rests on.
     """
-    total, failing, fired, scored = _tally(outcomes, judged)
+    measured, recorded, failing, fired, scored = _tally(
+        outcomes, judged, judged_rule=getattr(rules, "rubric", None) is not None
+    )
     reasons = [
-        f"{_observations(indices, total)}: {_check_reason(rules, task, assertion_id, found)}"
+        f"{_observations(indices, recorded)}: "
+        f"{_check_reason(rules, task, assertion_id, found)}"
         for assertion_id, found, indices in fired.values()
     ]
     reasons.extend(
-        f"{_observations(indices, total)}: {_judged_reason(rules, score)}"
+        f"{_observations(indices, recorded)}: {_judged_reason(rules, score)}"
         for score, indices in sorted(scored.items())
     )
-    if 0 < failing < total:
+    if 0 < failing < measured:
         reasons.append(
-            f"The rule must hold on every attempt, and it held on {total - failing} of "
-            f"{total}, so a user cannot know in advance which answer they will get."
+            f"The rule must hold on every attempt, and it held on "
+            f"{measured - failing} of {measured}, so a user cannot know in "
+            f"advance which answer they will get."
+        )
+    if measured < recorded:
+        reasons.append(
+            f"This claim rests on the {measured} observation(s) the run measured. "
+            f"{recorded} were recorded, and the rest reached no judgement that "
+            f"could be read against the rubric, so nothing is claimed about them."
         )
     return reasons
 
@@ -124,28 +139,44 @@ def failure_reasons(
 def _tally(
     outcomes: list[tuple[int, bool, str]],
     judged: list[Optional[tuple[bool, float, str]]],
-) -> tuple[int, int, dict[str, tuple[str, str, list[int]]], dict[float, list[int]]]:
+    *,
+    judged_rule: bool,
+) -> tuple[int, int, int, dict[str, tuple[str, str, list[int]]], dict[float, list[int]]]:
     """Return which observations failed, grouped by the check or the score that failed them.
+
+    **An observation that reached no judgement was measured nowhere**, where
+    the rule authors a rubric, so it leaves the population rather than counting
+    as an attempt the rule held on (``consumer_ci.md`` section 9.5.5.9). A rule
+    authoring no rubric is decided by its assertions and every observation of
+    it counts.
 
     Args:
         outcomes (list): Per observation, its index, whether its checks passed,
             and what failed.
         judged (list): Per observation, its judged outcome, or None.
+        judged_rule (bool): Whether the rule authors a rubric, which is what
+            makes an absent judgement a gap rather than inapplicable.
 
     Returns:
-        tuple: The number of observations, how many failed, each failed check
-        with what it reported and the observations it fired on, and each
-        failing judged score with its observations. A check failure decides an
-        observation before its judgement, as the case itself does.
+        tuple: How many observations were measured, how many were recorded, how
+        many failed, each failed check with what it reported and the
+        observations it fired on, and each failing judged score with its
+        observations. A check failure decides an observation before its
+        judgement, as the case itself does, and the indices are the recorded
+        ones so a reason names the observation the Responses section shows.
     """
-    total = max(len(outcomes), len(judged))
+    recorded = max(len(outcomes), len(judged))
     checks = {index: (passed, detail) for index, passed, detail in outcomes}
     fired: dict[str, tuple[str, str, list[int]]] = {}
     scored: dict[float, list[int]] = {}
     failing = 0
-    for index in range(total):
+    measured = 0
+    for index in range(recorded):
         passed, detail = checks.get(index, (True, ""))
         judgement = judged[index] if index < len(judged) else None
+        if passed and judged_rule and judgement is None:
+            continue
+        measured += 1
         if not passed:
             failing += 1
             for assertion_id, _, found in _FIRED.findall(detail):
@@ -153,7 +184,7 @@ def _tally(
         elif judgement is not None and not judgement[0]:
             failing += 1
             scored.setdefault(judgement[1], []).append(index)
-    return total, failing, fired, scored
+    return measured, recorded, failing, fired, scored
 
 
 def rule_lines(rules: Any, task: Optional[dict[str, Any]]) -> list[str]:

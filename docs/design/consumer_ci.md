@@ -1036,12 +1036,15 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115769` | N | `a_ticket_expected_section_states_the_rule` (9.5.5.6) |
 | `115770` | N | `a_screen_stopped_observation_says_why_on_its_ticket` (9.5.5.7) |
 | `115771` | N | `a_ticket_shows_each_judged_observation_its_judge_prompt` (9.5.5.8) |
+| `115780` | B | `a_ticket_counts_the_population_it_measured` (9.5.5.9) |
+| `115781` | P | `the_filing_sheet_is_generated_and_groups_by_cause` (9.5.5.10) |
 | `115772` | N | `a_withheld_judge_leaves_a_graded_case_unpassed` (6.4.2) |
 | `115773` | N | `a_file_date_line_missing_or_stale_is_reported` |
 | `115774` | N | `every_code_production_code_names_is_registered` |
 | `115775` | N | `a_band_not_reading_the_precondition_record_is_reported` (3.12.1.1) |
 | `115776` | N | `a_graded_invocation_leaving_out_a_layer_is_reported` (4.21) |
 | `115777` | N | `a_rung_that_grades_without_naming_its_judge_is_reported` (7.7) |
+| `115782` | N | `a_graded_job_not_gated_on_the_preconditions_is_reported` (7.2.1) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -1057,7 +1060,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 119 cases, 86 negative, 27 positive, 6 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 122 cases, 87 negative, 28 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2074,22 +2077,47 @@ decided so that a red says which target failed. A publishing job inside them
 would therefore be four deploys of one site racing on every push, and the site
 would hold whichever target finished last rather than the suite.
 
-`publish-report-on-merge.yml` runs on their completion on the default branch
-and renders one report from every result set this repository has produced: each
-target's gate and, where an engine has been evaluated, that engine's newest
-graded ladder.
+`publish-report-on-merge.yml` runs on their completion on the default branch.
+
+#### 4.22.2 One report per engine, and every report one commit's
+
+Corrected 2026-10-24 at the project owner's ruling, on reading the first
+published site: "model repo single report just makes no sense. I'd rather keep
+a report per vendor job than this incoherent mumbo jumbo."
+
+**It was wrong twice over, and the second fault hid the first.**
+
+| Fault | What the site showed |
+|---|---|
+| **Four engines merged into one report** | A figure averaged over four vendors, which section 4.18 already refused for the weekly result and nobody ships against |
+| **The latest *successful* run of each workflow** | Runs from **2026-10-09 to 2026-10-16**, because the gates had been red for days, so the newest green ones were a week old |
+
+The second produced a site that could not be read at all: **289 cases, and 49
+of its 50 top-level nodes were orphan story names**, results carrying a story
+and no epic or capability because they were written before the grouping hook
+existed. One node was the epic, with 14 cases under it.
+
+**So the rule is one engine, one commit.** The publisher builds a report per
+engine into a directory of its own and deploys them together under an index,
+because a Pages site holds one deployment and four deployments would each wipe
+the other three.
 
 | | |
 |---|---|
-| Trigger | `workflow_run` on the four gates, on `main`, plus a manual dispatch |
-| Reachable from a pull request | **No**, which is the rule rather than a guard the job carries |
-| A failed gate | Publishes nothing, and the site keeps the last report that passed |
-| Graded results | **Best effort.** A ladder fires on dispatch rather than on a schedule (section 4.18.3), so an engine never evaluated simply has no graded result in the tree |
+| What each report holds | That engine's gate run at the published commit, and its ladder run at the same commit where one exists |
+| What decides inclusion | **The run's head commit**, compared against the commit being published. A run of another commit is not in it |
+| An engine with no run at that commit | Renders nothing and is absent from the index, which is what is true of it |
+| No engine with a run at that commit | **Nothing is deployed**, so the previous reports stand rather than being replaced by an empty site |
+| The trend | Per engine, read from that engine's own published report |
 
-**Honest rather than empty.** An engine with no graded run shows its
-preconditions and no graded cases, which is what is true of it, and the
-alternative considered was publishing nothing until all four had run: that
-would have left the site absent for as long as the ladders stay withheld.
+**A report is a rendering of a run**, which the harness design states as the
+reason a published report is not a history store. Merging runs is the same
+mistake one level up: it produces a document that describes no run, and the
+totals are the first thing to stop meaning anything.
+
+**Honest rather than empty, still.** An engine with no graded ladder shows its
+preconditions and no graded cases, because a ladder fires on dispatch rather
+than on a schedule (section 4.18.3).
 
 `MQC_CAS_UNI_430000` to `430002`, `MQC_REQ_CAS_GOV_0014` and `0015`.
 
@@ -2377,16 +2405,58 @@ over its own observations, so the same P0 and P1 rules and the same skip
 ceilings apply at every rung. What changes is only what a red verdict
 attributes to.
 
-### 7.3 Where each job runs, and why not all three in one place
+#### 7.2.1 The ladder opens with the preconditions, which are not rung 1
 
-`gate-on-change.yml` names no environment and references no provider secret,
-which is A1's guarantee made structural. Jobs 2 and 3 need credentials, so they
+Added 2026-10-25.
+
+**The paragraph above uses "precondition" in two senses, and the ladder
+implemented one of them.** Rung 1 is the precondition for *spending*: it
+decides whether a live run is worth starting. Gate 2 is the precondition for
+measuring anything at all, and no rung was ever it.
+
+| What it asks | Answered by |
+|---|---|
+| Does our code still produce the frozen outcome | Rung 1, the graded layers replayed on both sides |
+| Does the corpus load, join and pass referential integrity | **`pytest -m unit`, which the ladder did not run** |
+
+**So every rung was gated on `resolve` alone**, and the instrument was never
+asked whether it worked. `MQC_CAS_UNI_115000` reports a corpus that fails
+referential integrity and a graded run cannot: the graded suite builds one case
+at a time, so a dangling reference reaches only the cases that read it. Two
+assertions naming a constraint no task sends broke the join on 2026-10-24 and
+four engine sweeps measured the corpus in that state, each reporting ordinary
+findings.
+
+**A `preconditions` job now stands ahead of rung 1**, and rungs 2 and 3 reach
+it through the chain rather than naming it, which is the ordering the rungs
+already carry. The rule, the two shapes that satisfy it and what is read are
+`harness_ci_pipeline.md` section 8.6 and are not restated here;
+`MQC_CAS_UNI_115782` calls the check with this repository's root and
+`MQC_REQ_CAS_PRE_0015` traces it.
+
+**It is a job rather than a step inside rung 1**, for section 3.12's reason: a
+red that says nothing was measured and nothing was spent is a different remedy
+from a red rung 1, which says our code changed a frozen outcome.
+
+### 7.3 Where each rung runs, and why not all three in one place
+
+`gate-target.yml` names no environment and references no provider secret, which
+is A1's guarantee made structural. Rungs 2 and 3 need credentials, so they
 cannot live there.
 
-| Workflow | Jobs | Trigger |
+| Workflow | Rungs | Trigger |
 |---|---|---|
-| `gate-on-change.yml` | 1 | Every push and pull request |
-| `evaluate-live-weekly.yml` | 1, then 2, then 3 | Weekly, and on dispatch |
+| `gate-target.yml`, called by one `gate-<target>.yml` for each target | 1 | Every push and pull request |
+| `evaluate-engine.yml`, called by one weekly and one claude-judged dispatch caller for each engine | 1, then 2, then 3 | Weekly, and on dispatch |
+
+**The names moved and this table did not, until 2026-10-25.** It read
+`gate-on-change.yml` and `evaluate-live-weekly.yml`, which are the harness's
+workflows: this repository's gate became one workflow per target and its ladder one caller
+per engine on 2026-10-03, for one reason stated twice (sections 4.19 and 4.18),
+and section 7 was not revisited. **The vocabulary moved
+with it.** A step of the ladder is a rung and a CI job is a job
+(`code-style.md` section 7.1), and this section called its rungs jobs
+throughout.
 
 **Rung 1 runs in both, deliberately.** In the gate it is the gate; in the weekly
 run it is the precondition that decides whether spending quota is worth it. It
@@ -2434,9 +2504,9 @@ the only workflow at the time, and the wording carried that accident forward.
 
 | Workflow | Spends | Consequence of an unresolved harness |
 |---|---|---|
-| `gate-on-change.yml` | Nothing | A red instrument produces a red gate, and somebody looks |
+| `gate-target.yml` | Nothing | A red instrument produces a red gate, and somebody looks |
 | `debug-cases-on-demand.yml` | On request | A named subset, already outside the durable record |
-| `evaluate-live-weekly.yml` | **Every rung that is not rung 1** | **Quota spent to measure a model with an instrument nobody verified** |
+| `evaluate-engine.yml` | **Every rung that is not rung 1** | **Quota spent to measure a model with an instrument nobody verified** |
 
 **The argument is strongest exactly where it was missing.** A gate running
 against a red harness wastes a few seconds of runner time. The weekly run
@@ -3175,7 +3245,7 @@ rather than only afterwards.
 **It restales that pair on every engine**, which is the mechanism working: the
 question moved, so the recorded answers answer a different one.
 
-### 9.4.7 A finding a fresh run does not reproduce is withdrawn, and the miss is examined
+### 9.4.7 A finding a fresh run does not reproduce is held, and the miss is examined
 
 Decided 2026-10-12 by the project owner: "If failure no longer reproduces we
 withdraw, perhaps analyze why we have not caught it."
@@ -3186,13 +3256,25 @@ alone, so after the corpus was re-recorded four open entries described failures
 the recordings no longer contained, and two withdrawn entries described
 failures that had returned.
 
-| State | What it asserts |
-|---|---|
-| `open` | The current run reproduces this |
-| `withdrawn` | **Ours.** The assertion was wrong, or the finding did not survive a fresh sample |
-| `resolved_upstream` | **Theirs.** A live run shows the model no longer does it |
+| State | What it asserts | Written by |
+|---|---|---|
+| `open` | The current run reproduces this | The merge |
+| `not_reproduced` | **Neither.** The latest run measured the case as passing, and no cause has been established | `--hold-unreproduced` |
+| `withdrawn` | **Ours.** The instrument was wrong, with the defect named in `withdrawn_reason` | A person (section 9.4.1) |
+| `resolved_upstream` | **Theirs.** A live run shows the model no longer does it | `--resolve-from-live` |
 
-**Non-reproduction is ours, not theirs.** Crediting a vendor with a correction
+**This table said `withdrawn` for non-reproduction until 2026-10-24, and the
+tool has never written it there.** `hold_unreproduced` writes
+`not_reproduced` with a generic `held_reason`, and section 9.4.8 keeps the two
+apart deliberately: a held finding that reproduces again returns to the bug
+file carrying `intermittent`, and a withdrawn one does not, because withdrawal
+is a judgement about an assertion that may no longer exist. **The behaviour is
+right and the heading and the table described a status nobody writes**, so a
+reader deciding what a finding should become was sent to the wrong one. Found
+using this section for exactly that decision, the same shape as the dead flag
+name recorded below.
+
+**Non-reproduction is not the vendor's, whichever of the two it becomes.** Crediting a vendor with a correction
 they did not make is the error that most damages a published report
 (section 9.4.1), and a finding that evaporates on a fresh sample is a statement
 about our measurement rather than about their model. The recordings changed
@@ -3776,6 +3858,121 @@ observation's result to `record_observation`, so the `exchanges` attachment of
 every run carries the same prompts.
 
 `MQC_CAS_UNI_115771` asserts it.
+
+#### 9.5.5.9 A ticket counts one population, and names the observations it could not read
+
+Found 2026-10-24, regenerating the tickets after the screen and the unprompted
+rubric were corrected. **One page stated three different denominators.**
+
+| Part of claude `154504` | Said | Read from |
+|---|---|---|
+| Problem | "3 of 4 passed" | The register's `observations` |
+| Why it fails | "it held on **4 of 5**" | `_tally`, counting every recording |
+| Diagnosis | "1 of **4** observations" | The register's `actual` |
+
+**A vendor cannot be sent arithmetic that disagrees with itself.** Both figures
+were true about different populations and the page said so nowhere, which is
+worse than either figure alone: a reader checking the claim finds it does not
+add up and stops trusting the rest of the page.
+
+**The gap was counted as a pass.** `_tally` walks every recorded observation
+and increments `failing` where the checks failed or a recorded judgement is
+below the threshold. An observation whose checks passed and whose judgement is
+**absent** matches neither branch, so it raised the denominator and was
+reported as an attempt the rule held on. `consistency_support.measured` exists
+for exactly this and states the rule it keeps: a gap may cost a finding and may
+never manufacture one. Here it manufactured a pass.
+
+**Absent and not applicable are different, and `judged_outcome` returns `None`
+for both.** A rule authoring no rubric has nothing to judge and every
+observation of it is measured by its assertions alone, which is the whole
+security relay family. A rule that **does** author a rubric and has no
+judgement for an observation measured that observation nowhere. So the tally
+reads the rubric: without one, every observation counts; with one, an
+observation carrying no judgement leaves the population.
+
+**And the reduction is stated rather than implied**, in the same sentence as
+the ratio, because a reader deciding whether to file needs to know the claim
+rests on four samples and not five. This is section 9.5.5.1 applied to the
+reasons: the ticket states what the latest run measured.
+
+**Why nothing caught it.** `MQC_CAS_UNI_115768` passes a judgement for every
+observation it builds, so the tally never saw a hole. The holes arrived with
+the judge-only live run of 2026-10-24, which recorded a judgement for each
+observation that reached the judge and none for the one an assertion had
+already failed. `MQC_CAS_UNI_115780` builds both shapes.
+
+`MQC_REQ_CAS_COR_0054`.
+
+#### 9.5.5.10 The filing sheet is generated, and groups the findings by cause
+
+Added 2026-10-24. **The sheet said "38 findings to file" while seventeen
+remained**, having been written by hand on 2026-10-20 and not touched when the
+register was rewritten. It named `154501` as a withdrawal against openai, which
+is an engine that no longer carries that finding at all.
+
+**It is the one document the findings are actually filed from**, so a stale
+sheet does the one thing section 9.4 exists to prevent: it sends a vendor a
+claim this project has already retracted. Section 9.3 states the rule the
+register follows and the sheet did not: generated, never authored. Twenty
+reproductions written by hand drift from the first re-run, and a sheet
+summarising them drifts the same way.
+
+**It is an index and repeats no evidence.** Each engine's page and each
+finding's ticket already carry the problem, the prompt, every response and the
+rule; a sheet restating them is a third copy to keep in step. What it adds is
+what no page has: the count, where the engine's vendor takes a report, and
+which findings are one cause rather than several.
+
+| The sheet carries | Read from |
+|---|---|
+| The total, and the count per engine | The bug files |
+| Where to file, per engine | `_INTAKE` in `tools/ticket_files.py` |
+| One group per distinct cause, with the findings in it | The engine and the taxonomy code |
+| One line per finding, naming its ticket file | The register entry |
+
+**Distinct cause is the engine, the taxonomy code and the layer**, which is
+the project owner's rule of 2026-10-20 made mechanical: "we open only distinct
+tickets, not the ones that are result of a failed dependency." Five claude
+cases reporting `QC_LLM_INJECTION_SUSCEPTIBLE` in `SEC` are one defect
+observed five ways and one report; the same code against openai is a different
+vendor and a different report. **A dependent is already absent**, its case
+having skipped rather than failed, so nothing here has to exclude it.
+
+**The layer is in the key because one code is a symptom.**
+`QC_LLM_INCONSISTENT` says the answers disagreed and nothing about what they
+got wrong, and the register cannot say more: `consistency_support` appends the
+underlying codes only where a failing observation carried one, and a rubric
+failure carries none, so all seven of openai's inconsistency findings record
+"N of 5 observations passed" and no cause. Keying on the code alone filed
+openai's enumeration and floor reasoning together with its hidden-passage
+behaviour as one report.
+
+**And the key is deliberately coarser than a reader's judgement.** It cannot
+tell openai's two told cases from its three told-not-to-quote ones, which are
+the same code in the same layer against different prompts. So **the sheet names
+every case in a group** rather than only the group: a group whose prompts
+differ is split by the person filing it, and the sheet has given them the list
+to split. A key that guessed finer would merge nothing it should and split
+things it should not, which is the worse of the two errors here: a group filed
+as one report can be split, and two reports filed separately cannot be
+rejoined in a vendor's tracker.
+
+**The sheet is `FILING.md`, which is not an engine page and not a name an
+assistant loads.** Section 9.5.5.5 requires an engine page to be
+`<engine>_findings.md` so that nothing auto-reads a document quoting injection
+payloads; the sheet carries no payload, only case names and model names, and
+`MQC_CAS_UNI_115759` now reads the rule rather than the suffix: every file the
+run writes is checked against the instruction-file names, and the suffix is
+required of the engine pages alone.
+
+**An engine with no intake recorded says so rather than being left out.**
+Gemini's is not recorded, and a sheet that quietly omitted the row would read
+as an engine with no findings. `MQC_CAS_UNI_115781` compares the intake
+registry with the engine roster, so adding an engine cannot produce a sheet
+that cannot be filed from.
+
+`MQC_REQ_CAS_COR_0055`.
 
 ### 9.6 What the register does not try to be
 

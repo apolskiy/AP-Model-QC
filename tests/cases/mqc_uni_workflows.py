@@ -3,12 +3,13 @@
 """Unit preconditions for what this repository's CI workflows must and must not do.
 
 Created: 2026-09-26
-Last updated: 2026-10-24
+Last updated: 2026-10-25
 
-This file contains nine cases over the workflow definitions, read through
+This file contains ten cases over the workflow definitions, read through
 ``workflow_support``. ``TestMQCWorkflowProperties`` checks the debug workflow yields no
 verdict and is the only one to judge a failed case; ``TestMQCAttributionLadder`` that a
-graded gate job needs no credential and a live job follows the ladder;
+graded gate job needs no credential, a live job follows the ladder and a job
+running graded cases stands behind the preconditions;
 ``TestMQCResolveObligation`` that no workflow installs an unresolved harness or spends
 past the green gate; ``TestMQCArtifactContract`` that every mandated artifact is
 emitted; and ``TestMQCRefusalReachesTheRun`` that no test job outruns a refusal and a red
@@ -36,6 +37,7 @@ takes to its own.
 # TestMQCAttributionLadder
 #   115702  a_graded_gate_job_that_needs_a_credential_is_reported
 #   115703  a_live_job_that_does_not_follow_the_ladder_is_reported
+#   115782  a_graded_job_not_gated_on_the_preconditions_is_reported
 # TestMQCResolveObligation
 #   115704  a_workflow_installing_an_unresolved_harness_is_reported
 #   115705  a_spending_workflow_that_skips_the_green_gate_is_reported
@@ -55,6 +57,7 @@ import pytest
 from cmn.code_standards import artifact_mandate_gaps, partial_graded_selection_gaps
 from cmn.grouping import story
 from cmn.metadata import COLLECTED_PREFIX as _COLLECTOR_PREFIX
+from cmn.ci_gating import ungated_graded_jobs
 
 from tests.cases.workflow_support import (
     GRADED_MARKERS as _GRADED_MARKERS,
@@ -478,6 +481,45 @@ class TestMQCAttributionLadder:
                     f"{_ENVIRONMENT!r} environment, so the secret it spends has "
                     f"no approval boundary"
                 )
+
+    @story("The ladder stands behind the preconditions")
+    def MQC_CAS_UNI_115782_a_graded_job_not_gated_on_the_preconditions_is_reported(
+        self,
+    ) -> None:
+        """Every job running graded cases reaches a precondition invocation.
+
+        **The ladder is the workflow that spends**, and its rungs were gated on
+        the resolver alone. Rung 1 is the precondition for spending, which is a
+        different question from whether the corpus loads at all, and nothing in
+        the ladder asked the second one: ``consumer_ci.md`` section 7.2.1.
+
+        **What that cost is on the record.** Two assertions naming a constraint
+        no task sends broke the join on 2026-10-24, and four engine sweeps
+        measured the corpus in that state, because the graded suite builds one
+        case at a time and only a corpus-wide check sees a dangling reference.
+
+        **The gate was already right.** Its bands take the preconditions job on
+        ``needs:`` (section 3.12), so this reads the ladder and the gate with
+        one rule rather than asserting the ladder alone.
+
+        **The checker is the harness's and is called with this root.**
+        ``MQC_CMN_UNI_112189`` builds every shape it accepts and rejects under
+        a temporary root, including a precondition step written after the
+        graded one, which gates nothing.
+
+        Design: ``harness_ci_pipeline.md`` section 8.6, with this
+        repository's half in ``consumer_ci.md`` section 7.2.1.
+
+        Returns:
+            None
+        """
+        gaps = ungated_graded_jobs(_repository_root())
+
+        assert not gaps, (
+            "job(s) run graded cases and reach no precondition invocation, so "
+            "a run would measure a model with an instrument nothing checked, "
+            "and the ones that spend are reached the same way: " + "; ".join(gaps)
+        )
 
 
 class TestMQCResolveObligation:

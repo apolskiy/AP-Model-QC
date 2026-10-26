@@ -5340,3 +5340,173 @@ carrying the request that produced it.
   section moved above `4A`, 54 lines carried whole. And `115317` reported two
   README figures, which is the check that exists because this README's figures
   had moved repeatedly with nothing comparing them.
+
+---
+
+## 2026-10-24, later: The report that described no run
+
+* **The owner read the published site before I did**, and the verdict was
+  immediate: a single report over four vendors "makes no sense", and a report
+  per vendor job is worth more than the merged one. Reading the site's own
+  widgets confirmed something worse than incoherent grouping: the results were
+  **a week old**, spanning 2026-10-09 to 2026-10-16.
+* **The cause was a line I wrote to be generous.** The publisher took the
+  latest **successful** run of each workflow, so that an engine evaluated last
+  month still appeared. With the gates red for days, "latest successful" meant
+  "before the grouping hook existed", and 49 of the site's 50 top-level nodes
+  were orphan story names: results carrying a hand-written story and no epic
+  or capability, which is exactly what this repository looked like yesterday.
+* **A report is a rendering of a run**, which the harness design already says
+  about history stores. Merging runs is the same mistake one level up: the
+  document describes no run, and the totals are the first thing to stop
+  meaning anything. 289 was not the count of anything.
+* **Two rules now, and the second is the one with teeth.** One report per
+  engine, and every report built only from runs whose head commit is the
+  commit being published. An engine with no run at that commit is absent from
+  the index rather than filled in from an older one, and a commit no engine
+  gated deploys nothing at all, so the site is never replaced by a worse
+  version of itself.
+* **The check had to widen and says so.** It required the trend to land in
+  `allure-results/history`, which was one repository's layout rather than a
+  rule; it reads a path now and the comment states what it establishes, that
+  the trend is fetched rather than where it lands. **A check that encodes one
+  caller's directory name is a check that fails the second caller**, which is
+  the shape this project keeps finding in registries.
+
+---
+
+## 2026-10-24, third iteration: Twenty-one of thirty-eight findings were ours
+
+* **The register was rewritten from a run rather than edited.** Four replays of
+  the graded suite, one per engine, after the screen, the unprompted rubric and
+  the missing judgements were corrected. Twenty-one findings stopped
+  reproducing; seventeen remain.
+* **grok went from eight findings to none, and that is the control.** A
+  correction that turned everything green would be suspect. One engine is clean
+  and three still vary, which is what makes the remaining seventeen worth
+  filing.
+* **Held is not the right status when the cause is known.**
+  `--hold-unreproduced` writes `not_reproduced`, which asserts only that a
+  fresh run did not see it, and a held finding returns to the bug file as
+  intermittent if it reproduces again. These were ours, with a named cause
+  each, so they are `withdrawn`: 7 to the screen aborting a quote no prompt had
+  forbidden, 12 to a rubric that scored a correct uninfluenced screening at the
+  level reserved for adopting the instruction, and 2 to four of five
+  observations carrying no judgement.
+* **An incongruity in the design, recorded rather than fixed here.** Section
+  9.4.7 is titled "A finding a fresh run does not reproduce is withdrawn" and
+  its table maps non-reproduction to `withdrawn`; the implementation writes
+  `not_reproduced`, and section 9.4.8 treats the two as different states, which
+  is the behaviour and the right one. **The heading and the table are stale
+  against the code they specify**, and a reader following them would expect a
+  withdrawal the tool never writes.
+* **Regenerating the tickets found a page stating three denominators.** claude
+  `154504` read "3 of 4 passed" in its Problem, "it held on 4 of 5" in its
+  reasons and "1 of 4 observations" in its Diagnosis. `_tally` counted every
+  recording and could only count a failure, so an observation that reached no
+  judgement was reported as an attempt the rule held on.
+* **That is `consistency_support.measured` inverted.** Its comment states the
+  rule it keeps, a gap may cost a finding and may never manufacture one, and
+  here a gap manufactured a pass. The distinction the tally lacked is whether
+  the rule authors a rubric at all: without one its assertions decide every
+  observation, and `judged_outcome` returns `None` for both cases.
+* **The labels keep the recorded numbering and the ratio takes the measured
+  one**, because a reason naming "Observation 1 of 4" would not match the
+  Responses section the reader is looking at.
+* **Thirty-eight ticket pages are now seventeen**, the twenty-one removed by
+  regeneration rather than by hand: `write_tickets` deletes a generated file no
+  longer filed and leaves a hand-written one alone.
+* **The corpus had not loaded since the rule change, and the graded suite
+  could not tell me.** `MQC_CAS_UNI_115000` reported
+  `QC_DATA_INVARIANT_VIOLATION`: the two assertions added to the
+  principle-stated relay rules referenced `SEC_HIDDEN_PASSAGE_*_TOLD_RELAY`,
+  a constraint shaped like the rule's own name that no task sends. The graded
+  replays I rewrote the register from build one case at a time and never run
+  R2 across the whole set, so four engine sweeps passed over a corpus that
+  fails its own integrity check. **The register is still valid**, the
+  assertions having run, but the sequence was wrong: Gate 2 belongs before the
+  register, not after it.
+* **And the test plan still described the gates the change removed.** It said
+  every relay and detection rule carries `A_SEC_HIDDEN_NO_GRADING_*`, which
+  four of sixteen no longer do, and that a quote fails at the screen, which is
+  now true only where the prompt forbade it. `115015` and `115017` asserted
+  the old state and reported **broken** rather than failed, `gate_held`
+  raising `StopIteration` on an assertion the rule no longer declares.
+* **This is the authoring rule's fourth step, arriving late.** The corpus was
+  changed first and the documentation and cases followed a day behind, which
+  is the order the rule exists to prevent; the hole was found by running the
+  gate rather than by reading. Section 9.10.7.1.1 now carries the three gate
+  families and why each has what it has, and the grading-instruction coverage
+  moved to the family whose prompt states nothing, where it still belongs.
+* **The filing sheet was the last thing still written by hand, and it was
+  wrong.** `FILING.md` said "38 findings to file" and named openai's `154501`
+  as a withdrawal against an engine whose register no longer carries the case.
+  It is the one document a finding is actually filed from, so a stale one files
+  a retracted claim: the register's own rule, generated and never authored,
+  had never been applied to the sheet that summarises it.
+* **My first grouping key was wrong and the output showed it.** Engine plus
+  taxonomy code put openai's seven inconsistency findings in one report, two of
+  them about an evaluator's enumeration and floor reasoning and five about a
+  hidden passage. `QC_LLM_INCONSISTENT` names a symptom, and the register
+  cannot say more: `consistency_support` appends the underlying codes only
+  where a failing observation carried one, and a rubric failure carries none,
+  so all seven read "N of 5 observations passed" and no cause.
+* **The key stays coarser than a reader's judgement, deliberately.** It cannot
+  tell openai's two told cases from its three told-not-to-quote ones, so the
+  sheet lists every case in a group and the person filing splits it. A group
+  filed as one report can be split; two reports filed separately cannot be
+  rejoined in a vendor's tracker, so the asymmetry decides which error to
+  prefer.
+* **Pylint exited 8 at 10.00/10**, R0914 on `filing_sheet` at 16 locals
+  against 15, which is the reason this project gates on the exit status rather
+  than the score line. The sheet is a preamble plus one section per engine and
+  the section was its own subject, so the split was the fix rather than a
+  suppression.
+* **Seventeen findings, six reports, three vendors.** claude two, gemini one,
+  openai four, grok none.
+
+## 2026-10-25: The Ladder Was Gated On The Resolver, Not On The Instrument
+
+**The workflow that spends asked whether the harness was the right one and
+never whether the corpus loads.** Rungs 1, 2 and 3 took `resolve` and nothing
+else. Rung 2 pays for a live judge and rung 3 for a live candidate, so the
+quota was reachable with the corpus in the state it was in on 2026-10-24.
+
+### One word doing two jobs, in the design
+
+Section 7.2 called rung 1 "the precondition for spending" and meant it: a
+replay that disagrees with a frozen outcome makes a live run pointless. **Gate
+2 is the precondition for measuring anything at all**, and no rung was ever
+that. The sentence was true, the ladder implemented it, and the absence read as
+a design rather than as a hole. That is the shape `code-style.md` section 7.1
+warns about when it says a concept gets one word: the second sense made the
+missing one unaskable.
+
+### What the check found, and what it spared
+
+Three jobs in `evaluate-engine.yml` and one in the harness's
+`evaluate-live-weekly.yml`. It reported nothing about the per-target gate,
+whose bands take the preconditions job on `needs:`, and nothing about the
+harness's consumer regression, where the graded replay runs in a checkout the
+job fetched and follows the consumer's own precondition command.
+
+### Digressions the user spotted, and the fix
+
+None this iteration: the work followed the standing instruction to close gaps
+between design, documentation, RTM and implementation rather than a correction.
+
+### Two stale tables found by reading the section I was amending
+
+Sections 7.3 and 7.6 named `gate-on-change.yml` and `evaluate-live-weekly.yml`
+for this repository's gate and ladder. **Both are the harness's workflows.**
+The gate here became one workflow per target and the ladder one caller per
+engine on 2026-10-03, and section 7 was not revisited either time, so a reader
+of the ladder's own specification was sent to two files this repository does
+not contain. The same section called its rungs jobs throughout, which is the
+vocabulary rule again.
+
+### State
+
+`MQC_CAS_UNI_115782` here and `MQC_CMN_UNI_112189` in the harness, with
+`MQC_REQ_CAS_PRE_0015` and `MQC_REQ_HAR_CMN_0226`. Preconditions 166 to 167,
+requirements 180 to 181, the `consumer_ci.md` inventory 121 to 122.
