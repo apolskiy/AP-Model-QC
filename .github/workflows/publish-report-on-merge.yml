@@ -48,10 +48,22 @@ env:
 jobs:
   publish:
     name: publish the reports
-    # A GATE THAT FAILED RENDERS NOTHING. A red target has no results worth
-    # publishing, and the site keeps the last reports that passed.
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-24.04
+    # A RED GATE PUBLISHES, and that is the point of the site rather than an
+    # oversight. This job once refused to start unless the triggering gate had
+    # concluded `success`, on the reasoning that a red target has no results
+    # worth publishing. It inverted what the report is for: section 7.4 of the
+    # harness `harness_ci_pipeline.md` makes it a readiness view, and the
+    # engines carrying findings are the ones a reader needs rendered.
+    #
+    # It also read the conclusion of whichever gate happened to trigger it, so
+    # three engines' results went unpublished because a fourth was red. On
+    # 2026-10-28 only grok published, grok being the one engine with no filed
+    # finding, and the site therefore said everything passed.
+    #
+    # No condition is needed for reachability: `workflow_run` with
+    # `branches: [main]` cannot be reached by a pull request at all.
+    # `consumer_ci.md` section 4.22.2.1, checked by `MQC_CAS_UNI_430002`.
+    runs-on: ubuntu-26.04
     # ON THE JOB, so nothing else in this repository can reach the credential
     # that writes the site. `actions: read` is what lets it read the artifacts
     # of other runs.
@@ -79,13 +91,13 @@ jobs:
             mkdir -p "$results"
             for workflow in "gate-$engine" "evaluate-$engine-weekly"; do
               run=$(gh run list --workflow "$workflow.yml" --branch main --limit 30 \
-                --json databaseId,headSha,conclusion \
-                --jq "[.[] | select(.headSha == \"$COMMIT\" and .conclusion == \"success\")][0].databaseId" \
+                --json databaseId,headSha,status \
+                --jq "[.[] | select(.headSha == \"$COMMIT\" and .status == \"completed\")][0].databaseId" \
                 2>/dev/null || true)
               if [ -n "$run" ] && [ "$run" != "null" ]; then
                 gh run download "$run" --dir "downloaded/$engine" || true
               else
-                echo "$workflow has no successful run at this commit"
+                echo "$workflow has no completed run at this commit"
               fi
             done
             if [ ! -d "downloaded/$engine" ]; then

@@ -2109,6 +2109,7 @@ the other three.
 |---|---|
 | What each report holds | That engine's gate run at the published commit, and its ladder run at the same commit where one exists |
 | What decides inclusion | **The run's head commit**, compared against the commit being published. A run of another commit is not in it |
+| **What does not decide inclusion** | **The run's conclusion.** A red gate is rendered exactly like a green one |
 | An engine with no run at that commit | Renders nothing and is absent from the index, which is what is true of it |
 | No engine with a run at that commit | **Nothing is deployed**, so the previous reports stand rather than being replaced by an empty site |
 | The trend | Per engine, read from that engine's own published report |
@@ -2121,6 +2122,46 @@ totals are the first thing to stop meaning anything.
 **Honest rather than empty, still.** An engine with no graded ladder shows its
 preconditions and no graded cases, because a ladder fires on dispatch rather
 than on a schedule (section 4.18.3).
+
+#### 4.22.2.1 A red gate publishes, and the implementation had decided otherwise
+
+Corrected 2026-10-28, after a round in which **only grok published** and grok
+is the one engine with no filed finding.
+
+**The workflow filtered on the run's conclusion, in two places**: the job
+refused to start unless the gate that triggered it had concluded `success`,
+and the per-engine artifact lookup selected only runs whose conclusion was
+`success`. The reason was written in a comment above the guard, that a red
+target has no results worth publishing and the site keeps the last reports
+that passed.
+
+**That inverts what the report is for.** The harness
+`harness_ci_pipeline.md` section 7.4 states the report answers whether the
+thing is ready, by feature and by severity. An engine carrying nine open
+findings is the one a reader most needs rendered, and the table above already
+decided inclusion by head commit and said nothing about conclusion.
+
+| | With the filter | Without it |
+|---|---|---|
+| An engine with findings | **Publishes nothing. Its page is absent or stale** | Publishes, showing what failed and at what severity |
+| The site as a whole | Only engines with no findings, so it reads as "everything passes" | What each engine actually did at one commit |
+| A round where no gate is green | **Nothing publishes at all**, however many engines produced results | Every engine with a run at that commit |
+
+**The last row is the one that makes it a defect rather than a preference.**
+The job-level guard reads the conclusion of whichever gate happened to trigger
+it, so three engines' results went unpublished because a fourth, unrelated
+engine was red. On this round grok passed and carried the others; had it not,
+the site would have stood still with nothing said.
+
+**It is also the option section 4.22.2 already rejected, in a weaker form.**
+Selecting the latest *successful* run produced a site built from week-old runs
+and was refused for it. The commit filter stops that recurring, so what the
+conclusion filter adds is not staleness but silence, and silence about a red
+engine is the one thing a readiness view must not do.
+
+`MQC_CAS_UNI_430002` now reports a publisher that conditions on a conclusion,
+through `cmn.workflow_standards.report_publication_gaps`, so the two
+repositories are held to it from one implementation.
 
 `MQC_CAS_UNI_430000` to `430002`, `MQC_REQ_CAS_GOV_0014` and `0015`.
 

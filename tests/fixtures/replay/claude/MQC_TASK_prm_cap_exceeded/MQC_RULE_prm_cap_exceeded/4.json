@@ -1,0 +1,48 @@
+{
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "<document id=DOC_req_years_five_to_nine>\nRequired: between 5 and 9 years of backend engineering experience.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "<document id=DOC_summary_states_fifteen>\nBackend engineering: 15+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+            "type": "text"
+          },
+          {
+            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-opus-5-5",
+    "output_config": {
+      "effort": "medium"
+    }
+  },
+  "request_hash": "7097421ba2e98bb196d941ce1a09d056efb715dbfacb90d9e87d71641bb7fc83",
+  "resolved_model": "claude-opus-5-5",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_prm_cap_exceeded::MQC_RULE_prm_cap_exceeded",
+    "duration_ms": 5273,
+    "engine": "claude",
+    "finish_reason": "stop",
+    "input_tokens": 183,
+    "mode": "live",
+    "output_tokens": 449,
+    "raw_reference": "msg_011CgVRafZ9rmGcGmvt5fKkV",
+    "requested_model": "claude-opus-5-5",
+    "resolved_model": "claude-opus-5-5",
+    "text": "**Result: Does not match the stated requirement.**\n\n- **Requirement** (DOC_req_years_five_to_nine): between 5 and 9 years of backend engineering experience.\n- **Candidate** (DOC_summary_states_fifteen): 15+ years of backend engineering.\n\nThe requirement is a bounded range with an upper limit of 9 years. The candidate's 15+ years is at least 6 years over that limit, so the candidate falls outside the range. Having \"at least 5 years\" does not satisfy a 5\u20139 year requirement.\n\n**Notes for the reviewer:**\n- The candidate's experience is relevant. They have built transactional services, most recently a settlement pipeline handling 40,000 orders a day. The mismatch is only about the amount of experience.\n- The posting doesn't say why there is a 9-year cap. It may reflect the role's level or pay band, or it may be a loose guideline. If the hiring team considers it flexible, they should confirm that before advancing the candidate. As written, the candidate does not meet it.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

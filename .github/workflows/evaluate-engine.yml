@@ -62,7 +62,7 @@ jobs:
   # nothing. An ungated live run has nothing to offer for the quota.
   resolve:
     name: resolve the paired harness
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       harness_repository: ${{ steps.pin.outputs.harness_repository }}
       harness_sha: ${{ steps.pin.outputs.harness_sha }}
@@ -133,7 +133,7 @@ jobs:
     name: preconditions, not a model finding (${{ inputs.engine }})
     needs: resolve
     if: needs.resolve.outputs.green == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -166,7 +166,7 @@ jobs:
     # against an unverified instrument produces a green nobody can
     # rely on, and rungs 2 and 3 would then spend on that basis.
     if: needs.resolve.outputs.green == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -225,7 +225,7 @@ jobs:
     concurrency:
       group: evaluate-live-${{ inputs.engine }}-${{ github.ref }}
       cancel-in-progress: false
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     environment: live
     steps:
       - uses: actions/checkout@v5
@@ -334,7 +334,7 @@ jobs:
     concurrency:
       group: evaluate-live-${{ inputs.engine }}-${{ github.ref }}
       cancel-in-progress: false
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     environment: live
     steps:
       - uses: actions/checkout@v5
@@ -401,7 +401,7 @@ jobs:
     name: report
     needs: [resolve, deterministic, judge, model]
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Summarise which rung stopped
         shell: bash

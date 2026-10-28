@@ -40,6 +40,33 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The Ubuntu runner moves to 26.04, 2026-10-28
+
+Fifteen workflow lines here follow the harness pin to `ubuntu-26.04`, which has
+been generally available since September 2026. Nothing in either repository
+still names `ubuntu-latest`, and the reasoning for pinning at all is in the
+harness `DESIGN.md` section 5.0.2 rather than restated here.
+
+### A red gate publishes its report, 2026-10-28
+
+**Only grok's report reached the site, and grok is the one engine carrying no
+filed finding**, so the public readiness view read as though everything passed
+on a day three gates were red. `publish-report-on-merge.yml` refused to start
+unless the gate that triggered it had concluded `success`, and its artifact
+lookup filtered on conclusion as well. Because a `workflow_run` trigger fires
+once per completing workflow, three engines' results were being discarded on
+the strength of a fourth engine's outcome.
+
+Both filters are gone and inclusion is by head commit, which is what
+`consumer_ci.md` section 4.22.2.1 decided and what section 7.4 of the harness
+`harness_ci_pipeline.md` makes the point of the site. A job-level condition was
+never needed for reachability either, since `workflow_run` with
+`branches: [main]` cannot be reached by a pull request.
+
+`MQC_CAS_UNI_430002` reads the shipped workflows and failed against them before
+the fix. The shared implementation in `cmn.workflow_standards` gained the check,
+so the harness reports the shape too.
+
 ### Requirements files, and the pytest nothing declared, 2026-10-28
 
 **This repository had no requirements files**, so the harness arrangement of one

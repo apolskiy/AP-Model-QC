@@ -72,7 +72,7 @@ env:
 jobs:
   debug:
     name: debug
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     # Named because a live run needs a credential. Gating derives from
     # selection mode and run context, neither of which a credential touches,
     # so this stays ungated.

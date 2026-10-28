@@ -5826,3 +5826,68 @@ copy while `tools.harness_pin` was missing entirely. Measured rather than
 assumed. The logic lives in `cmn.dependency_declaration` and each repository
 keeps a thin generator, which is the arrangement every other shared standard
 here already uses.
+
+---
+
+## 2026-10-28: The Site Reported A Clean Sweep On A Day Three Gates Were Red
+
+### One report published, and it was the one engine with nothing to report
+
+All four gates landed. claude, gemini and openai were red and grok was green,
+which is the designed steady state: the filed register holds claude 4, gemini 2,
+openai 9 and grok 0, so the gate colours match the findings exactly. **The
+publisher then rendered grok alone.**
+
+A reader arriving at the readiness view would have seen one engine, passing, and
+no indication that three others exist. The finding count the repository exists
+to produce was invisible on the one page built for an outside reader.
+
+### Two filters, either of which produces it on its own
+
+| Where | What it did |
+|---|---|
+| The job's `if:` | Refused to start unless the triggering gate concluded `success` |
+| The artifact lookup | Selected runs whose conclusion was `success` |
+
+**`workflow_run` fires once per completing workflow**, so the job-level
+condition read whichever gate happened to wake it. Three engines' results were
+being discarded on the strength of a fourth engine's outcome, which is not a
+filter anyone would write deliberately.
+
+### The design had decided the opposite, and nothing compared the two
+
+`consumer_ci.md` section 4.22.2.1 now records it, and the decision predates the
+defect: the harness `harness_ci_pipeline.md` section 7.4 makes the published
+report a readiness view, and an engine carrying findings is precisely what a
+reader needs rendered. Selecting by success had been considered and rejected
+when the publisher was specified.
+
+**The guard was not buying reachability either.** `workflow_run` with
+`branches: [main]` cannot be reached by a pull request at all, so the rule about
+a proposal overwriting the branch picture was already satisfied by the trigger.
+Removing the condition costs nothing it was protecting.
+
+### The check lives in the harness, called with each root
+
+`cmn.workflow_standards.report_publication_gaps` gained a sixth check, so a
+publishing job reading a conclusion is reported in either repository from one
+implementation. `MQC_CAS_UNI_430002` reads the shipped workflows here and
+**failed against the publisher as it stood**, which is the injection the rule
+asks for, obtained at no cost because the defect was in the tree. The three
+grouping cases pass after the fix.
+
+### The runner pin follows the harness to Ubuntu 26
+
+Fifteen workflow lines here move to `ubuntu-26.04`, matching the harness. The
+reasoning sits in the harness `DESIGN.md` section 5.0.2 and is not restated;
+what matters from this side is that the pair runs on one image, since an engine
+comparison split across two operating system majors is not a comparison.
+
+### Digressions the user spotted, and the fix
+
+**"question only grok report published. just because others failed how come no
+report for them".** The three red gates were reported here as the expected
+steady state, which they are, and the absent reports were not examined. The
+question is what found a publisher implementing the opposite of its own design.
+Reporting the gate colours correctly is not the same as reading what they imply
+for the artefact a reader actually opens.

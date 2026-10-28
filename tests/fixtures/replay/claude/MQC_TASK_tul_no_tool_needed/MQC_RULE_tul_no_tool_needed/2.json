@@ -87,11 +87,11 @@
     "finish_reason": "stop",
     "input_tokens": 671,
     "mode": "live",
-    "output_tokens": 74,
-    "raw_reference": "msg_011Cg4V5QMAcigvWADbLESm8",
+    "output_tokens": 82,
+    "raw_reference": "msg_011CgVPYWRSZ9o6i66GtQsWf",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "Here's a one-sentence reply you can send:\n\n\"RMA stands for Return Merchandise Authorisation, which is the approval and reference number we give you so we can identify and process your return when it reaches us.\"",
+    "text": "I didn't use any tools since you'd already given me the definition. Here's a one-sentence reply:\n\n\"RMA stands for Return Merchandise Authorisation, which is the approval and reference number we give you before you send an item back, so we can track and process your return.\"",
     "thinking_tokens": 0,
     "tool_calls": []
   }

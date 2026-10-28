@@ -37,7 +37,7 @@ jobs:
   # name: every job takes the SHA this job resolved.
   resolve:
     name: resolve the paired harness
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       harness_repository: ${{ steps.pin.outputs.harness_repository }}
       harness_ref: ${{ steps.pin.outputs.harness_ref }}
@@ -119,7 +119,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest]
+        os: [ubuntu-26.04, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
@@ -170,7 +170,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest]
+        os: [ubuntu-26.04, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
       # THE SAME TWO REFS EVERY BAND JOB SETS, because the record this job
@@ -247,7 +247,7 @@ jobs:
       # Design `consumer_ci.md` section 4.17.
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest]
+        os: [ubuntu-26.04, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
       # THE PROVENANCE GUARD COMPARES BOTH REFS, because a commit is a property
@@ -320,7 +320,7 @@ jobs:
       # Design `consumer_ci.md` section 4.17.
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest]
+        os: [ubuntu-26.04, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
       MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
@@ -400,7 +400,7 @@ jobs:
       # Design `consumer_ci.md` section 4.17.
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest]
+        os: [ubuntu-26.04, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
       MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
@@ -473,7 +473,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest]
+        os: [ubuntu-26.04, windows-latest]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
