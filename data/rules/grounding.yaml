@@ -21,8 +21,8 @@
 # set operation. `DESIGN.md` section 7.6.
 - rule_id: MQC_RULE_gnd_no_fabrication
   families: [source_fidelity]
-  priority: 1
-  priority_conditions: [P1_TIER_GUARANTEE]
+  priority: 2
+  priority_conditions: [P1_TIER_GUARANTEE, P2_RUBRIC_THRESHOLD]
   requirement_ids: [MQC_REQ_MDL_GND_0001]
   assertions:
     # NAMED REGIONS THE SOURCE DOES NOT CARRY. A model listing one has asserted
@@ -80,8 +80,8 @@
 # MQC_REQ_MDL_GND_0002, case 30011. Every stated figure, exactly.
 - rule_id: MQC_RULE_gnd_exact_values
   families: [source_fidelity]
-  priority: 1
-  priority_conditions: [P1_TIER_GUARANTEE]
+  priority: 2
+  priority_conditions: [P1_TIER_GUARANTEE, P2_RUBRIC_THRESHOLD]
   requirement_ids: [MQC_REQ_MDL_GND_0002]
   assertions:
     # ALL FIVE FIGURES, INCLUDING THE TOTAL. Checked individually rather than
@@ -320,8 +320,8 @@
 # the cost of the source, which is why this is P1 and its twin is P2.
 - rule_id: MQC_RULE_gnd_overstate_rejected
   families: [source_fidelity]
-  priority: 1
-  priority_conditions: [P1_TIER_GUARANTEE]
+  priority: 2
+  priority_conditions: [P1_TIER_GUARANTEE, P2_RUBRIC_THRESHOLD]
   requirement_ids: [MQC_REQ_MDL_GND_0006]
   # THE CEILING MAKES THIS ARITHMETIC, per `consumer_ci.md` section 9.4.6.
   # 28.7 to 30 overstates by 1.3/28.7 = 4.53%, against a stated 3% ceiling, so
@@ -388,8 +388,8 @@
 
 - rule_id: MQC_RULE_gnd_tolerance_permitted
   families: [source_fidelity]
-  priority: 1
-  priority_conditions: [P1_TIER_GUARANTEE]
+  priority: 2
+  priority_conditions: [P1_TIER_GUARANTEE, P2_RUBRIC_THRESHOLD]
   requirement_ids: [MQC_REQ_MDL_GND_0006]
   # THE PERMITTED SIDE. Without it `134205` passes against a model that never
   # rounds anything, which measures a habit rather than the comparison.

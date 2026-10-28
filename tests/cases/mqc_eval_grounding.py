@@ -3,7 +3,7 @@
 """Graded cases for whether the model's answer stays inside what its source says.
 
 Created: 2026-09-25
-Last updated: 2026-10-24
+Last updated: 2026-10-28
 
 This file contains seven cases on the model under test, each answering from a supplied
 document. ``TestMQCFabricationAndAlteration`` checks it asserts nothing absent and
@@ -69,7 +69,7 @@ class TestMQCFabricationAndAlteration:
     """The two foundational failures: adding, and changing."""
 
     @pytest.mark.base
-    @pytest.mark.priority(1)
+    @pytest.mark.priority(2)
     @story("Fabrication")
     def MQC_EVL_EVAL_134200_asserts_nothing_absent_from_source(
         self, request: Any
@@ -99,7 +99,7 @@ class TestMQCFabricationAndAlteration:
         assert_consistent_pass(results)
 
     @pytest.mark.base
-    @pytest.mark.priority(1)
+    @pytest.mark.priority(2)
     @story("Alteration")
     def MQC_EVL_EVAL_134201_does_not_alter_explicitly_stated_value(
         self, request: Any
@@ -182,7 +182,7 @@ class TestMQCDirectionalFigures:
     """An asymmetric pair, and the asymmetry is the requirement."""
 
     @pytest.mark.base
-    @pytest.mark.priority(1)
+    @pytest.mark.priority(2)
     @story("Overstating")
     def MQC_EVL_EVAL_134205_overstating_a_sourced_figure_is_rejected(
         self, request: Any
@@ -218,7 +218,7 @@ class TestMQCDirectionalFigures:
         )
         assert_consistent_pass(results)
 
-    @pytest.mark.priority(1)
+    @pytest.mark.priority(2)
     @pytest.mark.depends_on("134205")
     @story("Within the ceiling")
     def MQC_EVL_EVAL_134206_rounding_within_the_stated_ceiling_is_performed(

@@ -3,7 +3,7 @@
 """Unit preconditions for the ticket page a graded finding is filed from, and its register.
 
 Created: 2026-10-12
-Last updated: 2026-10-25
+Last updated: 2026-10-28
 
 This file contains seventeen cases on ``tools/ticket_report.py`` and the findings,
 recordings, evidence and register tools it joins. ``TestMQCTicketInput`` checks a
@@ -53,6 +53,7 @@ asked about is their model.
 #   115753  a_ticket_label_is_a_sentence_without_a_dash
 #   115754  a_finding_not_observed_on_the_latest_run_is_not_filed
 #   115755  each_filed_finding_has_a_ticket_of_its_own
+#   115783  an_engine_with_no_filed_finding_leaves_no_page_or_directory
 #   115756  a_payload_in_the_user_turn_is_framed_as_precedence
 #   115758  a_tool_call_without_text_is_shown_on_the_ticket
 #   115759  an_engine_page_is_never_named_as_an_instruction_file
@@ -93,7 +94,13 @@ from tools.findings import (
     merge,
     parse_passed,
 )
-from tools.ticket_files import ticket_name, write_tickets
+from tools.ticket_files import (
+    GENERATED_MARK,
+    drop_engine_output,
+    page_name,
+    ticket_name,
+    write_tickets,
+)
 from tools.register_files import (
     holding_path,
     partition,
@@ -686,6 +693,41 @@ class TestMQCTicketHygiene:
         assert hand.exists(), "regenerating removed a hand-written ticket"
         with pytest.raises(ValueError):
             ticket_name("not a case")
+
+    @story("No engine output without a finding")
+    def MQC_CAS_UNI_115783_an_engine_with_no_filed_finding_leaves_no_page_or_directory(
+        self, tmp_path: Path
+    ) -> None:
+        """An engine with nothing filed loses its page and its directory, and nothing else does.
+
+        Design: ``consumer_ci.md`` section 9.5.5.11.
+
+        Args:
+            tmp_path (Path): The tickets directory.
+
+        Returns:
+            None
+        """
+        page = tmp_path / page_name("grok")
+        page.write_text(f"{GENERATED_MARK}\n\n# Findings against `grok`\n", encoding="utf-8")
+        (tmp_path / "grok").mkdir()
+
+        removed = drop_engine_output(tmp_path, "grok")
+        assert not page.exists(), "a generated page for an engine with no finding was left"
+        assert not (tmp_path / "grok").exists(), "an empty engine directory was left behind"
+        assert sorted(path.name for path in removed) == ["grok", page_name("grok")], removed
+
+        # NEITHER GUARD IS REMOVED. A page nobody generated is somebody's work,
+        # and a directory still holding a ticket is still the list it was.
+        authored = tmp_path / page_name("gemini")
+        authored.write_text("# Written by hand\n", encoding="utf-8")
+        kept = tmp_path / "gemini"
+        kept.mkdir()
+        (kept / "154501_held_by_hand.md").write_text("# Mine\n", encoding="utf-8")
+
+        assert not drop_engine_output(tmp_path, "gemini"), "a guarded file was removed"
+        assert authored.exists(), "a page written by hand was removed"
+        assert kept.is_dir(), "a directory still holding a ticket was removed"
 
     @story("Where the planted instruction was")
     def MQC_CAS_UNI_115756_a_payload_in_the_user_turn_is_framed_as_precedence(self) -> None:

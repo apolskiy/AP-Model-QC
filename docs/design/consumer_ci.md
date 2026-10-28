@@ -1038,6 +1038,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115771` | N | `a_ticket_shows_each_judged_observation_its_judge_prompt` (9.5.5.8) |
 | `115780` | B | `a_ticket_counts_the_population_it_measured` (9.5.5.9) |
 | `115781` | P | `the_filing_sheet_is_generated_and_groups_by_cause` (9.5.5.10) |
+| `115783` | N | `an_engine_with_no_filed_finding_leaves_no_page_or_directory` (9.5.5.11) |
 | `115772` | N | `a_withheld_judge_leaves_a_graded_case_unpassed` (6.4.2) |
 | `115773` | N | `a_file_date_line_missing_or_stale_is_reported` |
 | `115774` | N | `every_code_production_code_names_is_registered` |
@@ -1060,7 +1061,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 122 cases, 87 negative, 28 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 123 cases, 88 negative, 28 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3973,6 +3974,46 @@ registry with the engine roster, so adding an engine cannot produce a sheet
 that cannot be filed from.
 
 `MQC_REQ_CAS_COR_0055`.
+
+#### 9.5.5.11 The tickets directory holds the filed findings and nothing else
+
+Added 2026-10-28 at the project owner's instruction, after two claude findings
+were withdrawn as this instrument's own defect and their evidence files stayed
+in the directory a person files from.
+
+**A generated tree is read as the list of what to file.** Section 9.5.5.2 files
+each finding on its own, so the directory is that list, and a file left behind
+after its finding was retracted is section 9.5.5.10's stale sheet at the scale
+of one vendor: somebody sends a claim this project has withdrawn.
+
+`write_tickets` has removed a ticket whose finding is no longer filed since
+2026-10-25. What stayed behind are the two things it cannot see:
+
+| Left behind | Why it was |
+|---|---|
+| `grok_findings.md`, a page reading "0 finding(s)" | The page is written per engine before its findings are known to be none |
+| `grok/`, an empty directory | It is created to receive tickets, and nothing removes it when none are written |
+
+**An engine with no filed finding has no page and no directory.** The run
+removes both. **The sheet keeps that engine's section**, which is not the same
+decision: a page saying zero is an artifact of generation, and the sheet's zero
+is a measurement, grok being the control that makes the other engines' findings
+worth filing at all.
+
+**Removal is guarded the way the tickets already are.** A file goes only where
+its first line is the generated mark, so a page written by hand survives, and a
+directory goes only where it is empty once the tickets are pruned. **The engine
+pages carry the mark now**, which they did not: the tickets and the sheet
+carried it, and the pages were the one generated file a reader could not
+identify as generated.
+
+`MQC_CAS_UNI_115783` and `MQC_REQ_CAS_COR_0056`.
+
+**Priority stays out of the sheet**, at the project owner's instruction of
+2026-10-28. It measures what a red costs this project, no vendor agreed to it,
+and section 9.6 already puts severity in the vendor's tracker. A priority on a
+filing sheet reads as a severity claimed against the vendor, which is a claim
+this project is not in a position to make.
 
 ### 9.6 What the register does not try to be
 

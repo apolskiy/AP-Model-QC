@@ -3,7 +3,7 @@
 """Graded cases for whether the model does what the instruction said, in its shape.
 
 Created: 2026-09-25
-Last updated: 2026-10-24
+Last updated: 2026-10-28
 
 This file contains nine instruction-following cases on the model under test.
 ``TestMQCDeclaredFormat`` checks it obeys a declared output format and that a violation
@@ -69,7 +69,7 @@ class TestMQCDeclaredFormat:
     """The stated shape, and the control that keeps it honest."""
 
     @pytest.mark.base
-    @pytest.mark.priority(1)
+    @pytest.mark.priority(2)
     @story("Declared format")
     def MQC_EVL_EVAL_134300_obeys_declared_output_format(self, request: Any) -> None:
         """Two named keys and nothing outside the object.

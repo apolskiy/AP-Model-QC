@@ -3,15 +3,16 @@
 """One ticket file per filed finding, for submitting each to its vendor alone.
 
 Created: 2026-10-15
-Last updated: 2026-10-25
+Last updated: 2026-10-28
 
 This file contains ``page_name`` and ``ticket_name``, which name an engine's
 findings page and one finding's ticket file, ``write_tickets``, which writes a
-ticket per filed finding and removes generated tickets no longer filed, and
-``filing_sheet``, which returns the index a person files from, and
-``intake``, ``intake_engines`` and ``case_layer``, which it reads to say where
-a vendor takes a report and which findings are one defect. A ticket without the
-generated mark on its first line is never removed.
+ticket per filed finding and removes generated tickets no longer filed,
+``drop_engine_output``, which removes the page and the directory of an engine
+with nothing filed, and ``filing_sheet``, which returns the index a person files
+from, and ``intake``, ``intake_engines`` and ``case_layer``, which it reads to
+say where a vendor takes a report and which findings are one defect. A file
+without the generated mark on its first line is never removed.
 
 ``tools.ticket_report`` calls it after building each engine's page, and
 ``tools.finding_evidence`` uses ``page_name`` to find the page it reads. The
@@ -96,6 +97,41 @@ def write_tickets(
         if generated:
             stale.unlink()
     return written
+
+
+def drop_engine_output(directory: Path, engine: str) -> list[Path]:
+    """Remove an engine's generated page and its directory, where nothing is filed.
+
+    **Called only for an engine with no filed finding** (``consumer_ci.md``
+    section 9.5.5.11). The tickets directory is read as the list of what to
+    file, so a page reading zero findings and an empty engine directory are
+    output nothing produced a finding for.
+
+    Args:
+        directory (Path): The tickets directory holding the pages.
+        engine (str): The engine whose output goes.
+
+    Returns:
+        list[Path]: What was removed, which is empty where both guards hold. A
+        page is removed only where its first line is :data:`GENERATED_MARK`,
+        and a directory only where it is empty, so a page written by hand and a
+        directory still holding a ticket both survive.
+    """
+    removed: list[Path] = []
+    page = directory / page_name(engine)
+    if page.is_file():
+        # READ, CLOSED, THEN REMOVED, as the ticket pruning does: Windows
+        # refuses to delete a file that is still open.
+        with page.open(encoding="utf-8") as handle:
+            generated = handle.readline().strip() == GENERATED_MARK
+        if generated:
+            page.unlink()
+            removed.append(page)
+    tickets = directory / engine
+    if tickets.is_dir() and not any(tickets.iterdir()):
+        tickets.rmdir()
+        removed.append(tickets)
+    return removed
 
 
 # WHERE EACH VENDOR TAKES A REPORT ABOUT ITS MODEL'S BEHAVIOUR, which is not a

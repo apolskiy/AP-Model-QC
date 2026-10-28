@@ -3,11 +3,14 @@
 """Support code reading a graded case's priority from each place that states it.
 
 Created: 2026-10-15
-Last updated: 2026-10-21
+Last updated: 2026-10-28
 
 This file contains ``inventoried_priorities``, which reads each graded case's level and
-qualifying condition from its inventory row in the test plan, and ``marked_priorities``,
-which reads the level each graded case's ``priority`` marker applies.
+qualifying condition from its inventory row in the test plan; ``marked_priorities``,
+which reads the level each graded case's ``priority`` marker applies;
+``vector_table_priorities``, which reads the level the section 9.10.2 vector table
+states; and ``vector_table_disagreements``, which names every case those two price
+differently.
 
 **Only ``mqc_uni_priority_agreement.py`` imports it**, in the ``unit`` precondition
 gate, which compares both with the priority in the case's rule. It is not collected
@@ -32,6 +35,14 @@ _ROW: Final[re.Pattern[str]] = re.compile(
 )
 _CASE: Final[re.Pattern[str]] = re.compile(r"^MQC_[A-Z]+_(?:EVAL|TOOL|SEC)_(\d{6})_")
 
+# THE FOURTH PLACE A PRIORITY IS STATED. Section 9.10.2's table carries a
+# Priority column beside its vector, and until 2026-10-28 nothing read it: the
+# re-pricing of that section's sixteen cases would have left it stale, which is
+# the defect section 8.1.2 was written for one case at a time.
+_VECTOR_ROW: Final[re.Pattern[str]] = re.compile(
+    r"^\| `(\d{6})` \| P(\d) \| (?!`P\d_)", re.MULTILINE
+)
+
 
 def inventoried_priorities() -> dict[str, tuple[int, str]]:
     """Return each graded case's inventoried priority and condition.
@@ -42,6 +53,39 @@ def inventoried_priorities() -> dict[str, tuple[int, str]]:
     """
     text = PLAN.read_text(encoding="utf-8")
     return {match.group(1): (int(match.group(2)), match.group(3)) for match in _ROW.finditer(text)}
+
+
+def vector_table_disagreements() -> list[str]:
+    """Return every case the section 9.10.2 table prices unlike its marker.
+
+    **A case absent from that table is not reported.** It covers one family by
+    design, so its silence about every other case says nothing.
+
+    Returns:
+        list[str]: One line per disagreement, naming both levels.
+    """
+    marked = marked_priorities()
+    problems: list[str] = []
+    for number, stated in sorted(vector_table_priorities().items()):
+        found = marked.get(number)
+        if found is not None and found[1] != stated:
+            problems.append(
+                f"{number}: marker P{found[1]}, section 9.10.2 table P{stated}"
+            )
+    return problems
+
+
+def vector_table_priorities() -> dict[str, int]:
+    """Return the level the section 9.10.2 vector table states for each case.
+
+    Returns:
+        dict: Six-digit identifier to its level. The rows are told from
+        inventory rows by their third column, which is a vector rather than a
+        condition identifier, the same distinction ``_ROW`` relies on in
+        reverse.
+    """
+    text = PLAN.read_text(encoding="utf-8")
+    return {match.group(1): int(match.group(2)) for match in _VECTOR_ROW.finditer(text)}
 
 
 def _marker(decorators: list[ast.expr]) -> Optional[int]:

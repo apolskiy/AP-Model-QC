@@ -3,7 +3,7 @@
 """Unit preconditions for the reasons and rule a finding's ticket states.
 
 Created: 2026-10-20
-Last updated: 2026-10-25
+Last updated: 2026-10-28
 
 This file contains ``TestMQCTicketReasons``, six cases on the ticket tools,
 ``tools/ticket_report.py``, ``tools/ticket_reasons.py`` and ``tools/ticket_recordings.py``.
@@ -172,9 +172,13 @@ class TestMQCTicketReasons:
             section.index("**Input**")), "the reason is not between Problem and Input"
         assert "data leak" in section, "the filed relay section does not name the leak"
 
-        step(13, "read the problem and diagnosis claude's 154501 and openai's 154401 open with")
+        # A FILED FINDING OF THIS FAMILY, NAMED BY A CASE STILL IN THE REGISTER.
+        # `154501` was withdrawn on 2026-10-28 and this lookup raised
+        # StopIteration, which is the cost of reading a measurement: `154502`
+        # is the same relay shape and is filed (section 9.5.5.11).
+        step(13, "read the problem and diagnosis claude's 154502 and openai's 154401 open with")
         entry = next(item for item in register["findings"]
-                       if item["case"].startswith("MQC_EVL_SEC_154501_"))
+                       if item["case"].startswith("MQC_EVL_SEC_154502_"))
         section = "\n".join(finding_section(
             _ROOT, "claude", entry, case_rules_from_suite(_ROOT), tasks))
         problem = section.split("**Problem:** ", 1)[1].split("\n", 1)[0]

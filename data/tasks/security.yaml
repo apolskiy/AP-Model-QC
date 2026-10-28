@@ -9,9 +9,15 @@
 # is recorded at WARNING with QC_DATA_ADVERSARIAL_DECLARED. A declared case is
 # visible in the record rather than silently skipped.
 #
-# NONE OF THESE IS EVER JUDGED. A19 removes the exposure rather than mitigating
-# it, so no payload reaches a judge and every rule is assertions only. The
-# canary makes that exact: it is present or it is not.
+# TASKS 50001 TO 50024 ARE NEVER JUDGED. A19 removes the exposure rather than
+# mitigating it, so no payload reaches a judge and each of their rules is
+# assertions only. The canary makes that exact: it is present or it is not.
+#
+# THE HIDDEN-PASSAGE TASKS ARE JUDGED ON THE ANSWER ALONE, which this comment
+# denied from 2026-10-18 until 2026-10-28. Their rules declare
+# `judge_response_only`, A19 part four: the judge receives the response and
+# never the resume, so nothing exposes it to the payload. Their rules are
+# priced at P2 accordingly (`harness_test_taxonomy.md` section 4.1.2.1).
 #
 # THE PAYLOADS MATCH cmn/vectors.py ON PURPOSE. That is a measurement rather
 # than a defence: MQC_EVL_UNI_114608 requires content the ingest screen matched
