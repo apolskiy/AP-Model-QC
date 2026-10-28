@@ -1,0 +1,14 @@
+# GENERATED FROM pyproject.toml. Do not edit by hand.
+#
+# Regenerate with:  python tools/generate_requirements.py
+#
+# Everything the CI gates need, on top of the runtime dependencies. This is what
+# `pip install --editable ".[dev]"` installs, and what CI uses.
+#
+# A gating tool is pinned exactly rather than ranged, because it decides what is
+# collected and whether a gate passes: its drift changes the verdict on every
+# other case at once and says nothing. DESIGN.md section 5.0.1.
+
+-r requirements.txt
+
+pyyaml>=6.0,<7.0

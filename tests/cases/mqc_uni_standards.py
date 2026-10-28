@@ -3,16 +3,17 @@
 """Unit preconditions enforcing on this tree the code-style rules pylint cannot express.
 
 Created: 2026-09-23
-Last updated: 2026-10-24
+Last updated: 2026-10-28
 
-This file contains seventeen cases, each calling a harness checker with this repository's
+This file contains nineteen cases, each calling a harness checker with this repository's
 root. They check annotations, the PEP 563 prohibition, MIT SPDX headers on code,
 documents and data, declared runbook inputs, declared file encodings, identifiers
 inside their module's block, case modules holding only cases, subprocess timeouts, the
 module runway, a repository named in each document's filename, the generated case
-blocks, and that this repository refuses a case collected twice, warns of crowded
-identifier blocks, refuses a harness under mutation and names no unregistered
-failure code.
+blocks, the two derived requirements files against the declaration, every imported
+package being declared, and that this repository refuses a case collected twice, warns
+of crowded identifier blocks, refuses a harness under mutation and names no
+unregistered failure code.
 
 **These run in the ``unit`` precondition gate**, after pylint's Gate 1 and ahead of
 every graded band. A failure is an instrument defect, **not a model finding**: the run
@@ -60,6 +61,9 @@ less often.
 #   115764  this_repository_refuses_a_harness_under_mutation
 # TestMQCCodeRegistration
 #   115774  every_code_production_code_names_is_registered
+# TestMQCDependencyDeclaration
+#   115785  a_requirements_file_disagreeing_with_pyproject_is_reported
+#   115786  an_imported_package_nothing_here_declares_is_reported
 # ------------------------------------------------------------ end of cases
 
 import ast
@@ -76,6 +80,7 @@ from cmn.identifier_capacity import (
     assigned_identifiers, capacity_warnings, identifier_block_problems,
     select_blocks,
 )
+from cmn.dependency_declaration import generated_files, undeclared_imports
 from cmn.module_size import runway_problems
 from cmn.mutation_guard import imported_harness_root
 from cmn.case_module_standards import (
@@ -612,3 +617,77 @@ class TestMQCCodeRegistration:
         """
         found = unregistered_code_literals(_root())
         assert not found, "code here names unregistered codes: " + "; ".join(found)
+
+
+class TestMQCDependencyDeclaration:
+    """One declaration here too, with the copies derived and the imports checked."""
+
+    @story("The derived requirements files agree with the declaration")
+    def MQC_CAS_UNI_115785_a_requirements_file_disagreeing_with_pyproject_is_reported(
+        self,
+    ) -> None:
+        """The two generated files are a convenience, never a second source of truth.
+
+        The case regenerates from ``pyproject.toml`` and compares, rather than
+        comparing the two files to each other: comparing copies would pass
+        while both were stale.
+
+        Design: ``consumer_ci.md`` section 5.5.
+
+        Returns:
+            None
+        """
+        root = _root()
+        for path, expected in generated_files(root).items():
+            assert path.is_file(), (
+                f"{path.name} has not been generated; run "
+                f"python tools/generate_requirements.py"
+            )
+            assert path.read_text(encoding="utf-8") == expected, (
+                f"{path.name} disagrees with pyproject.toml; regenerate it with "
+                f"python tools/generate_requirements.py"
+            )
+
+    @story("Every imported package is declared")
+    def MQC_CAS_UNI_115786_an_imported_package_nothing_here_declares_is_reported(
+        self,
+    ) -> None:
+        """A dependency the code imports and nothing declares breaks a clean install.
+
+        It passes on the machine that happens to have it and fails on every
+        other, which makes the failure a property of the environment rather
+        than of the change that introduced it. **This repository had no such
+        check until 2026-10-28**, and pytest was imported by 43 modules here
+        and declared by nothing: the gate workflows named ``[dev]`` in their
+        install lines while the declaration did not.
+
+        Design: ``consumer_ci.md`` section 5.5.
+
+        Returns:
+            None
+        """
+        undeclared = undeclared_imports(
+            _root(),
+            # THE HARNESS PACKAGES ARE FIRST PARTY TO THE PROJECT AND A
+            # DEPENDENCY TO THIS REPOSITORY, so naming them here would hide the
+            # defect this case exists for. They are mapped to the distribution
+            # that ships them instead, which is the declaration a clean install
+            # actually needs.
+            first_party=frozenset({"tests", "tools", "conftest"}),
+            # EVERY ONE OF THESE NAMES THE EXTRA, because every one of them
+            # arrives only with it: pytest and allure sit in the harness's own
+            # `dev` extra, and the harness packages come with the distribution
+            # that extra belongs to. Dropping `[dev]` from the declaration
+            # therefore fails this case on all six rather than on none, which is
+            # the whole point of keeping the extra in the declared name.
+            aliases={
+                "yaml": "pyyaml",
+                "cmn": "ap_harness_qc[dev]",
+                "ingestion": "ap_harness_qc[dev]",
+                "execution": "ap_harness_qc[dev]",
+                "evaluation": "ap_harness_qc[dev]",
+                "pytest": "ap_harness_qc[dev]",
+                "allure": "ap_harness_qc[dev]",
+            },
+        )
+        assert not undeclared, f"imported and undeclared: {sorted(undeclared)}"

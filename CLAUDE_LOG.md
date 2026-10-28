@@ -5763,3 +5763,66 @@ harness for `main`, so the resolver installed the last green harness commit,
 which predates the predicate. **Nothing here is wrong and nothing here needs a
 change**: the gates pass once the harness commit carrying the predicate is
 green and the gates are re-run.
+
+---
+
+## 2026-10-28: Forty Three Modules Imported pytest And Nothing Declared It
+
+The owner asked whether there should be a requirements file for all libraries.
+**This repository had none**, and the gap was hiding a defect rather than being
+a cosmetic difference from the harness.
+
+### What the missing check was hiding
+
+`pyproject.toml` declared `ap-harness-qc` **without its `dev` extra**. pytest
+lives in that extra, not in the harness's runtime dependencies, so:
+
+| | |
+|---|---|
+| What a fresh `pip install --editable ".[dev]"` installed | **No pytest. The suite could not be collected** |
+| Why CI was green anyway | Four gate workflows hand-write `ap-harness-qc[dev]` in their install lines |
+
+**It is the `pytest-randomly` finding with the two environments swapped.**
+There, local runs held a guarantee CI did not. Here **CI held a guarantee the
+declaration did not**, because the extra was stated in four workflow files
+rather than in the one place that is supposed to state it.
+
+The fix is the declaration: `ap-harness-qc[dev]` is the dependency. That also
+collapses a second statement of the pins, since pytest and pylint are pinned
+exactly in the harness and inheriting the extra inherits them; the separate
+`pylint` line this repository declared is removed for that reason.
+
+### Two cases, and the one that was absent is why the first defect survived
+
+| Case | Asserts |
+|---|---|
+| `115785` | The two derived files agree with `pyproject.toml`, by regenerating rather than comparing the files to each other |
+| `115786` | Every package the code imports is declared |
+
+The harness has had the second since 2026-10-08. This repository never did, so
+an undeclared dependency here was reported by nothing.
+
+### The first draft of the check was vacuous, and the injection is what says it is not
+
+Aliasing `pytest` to the bare distribution would have gone on passing with
+`[dev]` removed, which is the defect the case exists for. `declared_names` now
+keeps the extra as part of the name, and every harness-provided import is
+mapped to `ap_harness_qc[dev]`, so dropping the extra fails the case on all six
+rather than on none.
+
+Verified by injection, restoring byte-identically afterwards:
+
+| Declaration | `115785` | `115786` |
+|---|---|---|
+| As it stands | passes | passes |
+| With `[dev]` removed, the form that shipped | **fails on requirements.txt** | **fails, reporting `ap_harness_qc[dev]`** |
+
+### Why the shared code is in `cmn/` and not `tools/`
+
+Both repositories ship a top-level `tools` package and both are regular
+packages, so the name resolves to whichever directory wins `sys.path` and never
+merges: from this root, `tools.generate_requirements` resolved to the harness
+copy while `tools.harness_pin` was missing entirely. Measured rather than
+assumed. The logic lives in `cmn.dependency_declaration` and each repository
+keeps a thin generator, which is the arrangement every other shared standard
+here already uses.

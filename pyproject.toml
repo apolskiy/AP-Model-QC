@@ -26,14 +26,26 @@ dependencies = [
     # COMMIT that mapping resolves to. This line is what a clone installs when
     # nothing resolves a pin, and main is the right default precisely because
     # main is the branch required to be green (consumer_ci.md section 2.1).
-    "ap-harness-qc @ git+https://github.com/apolskiy/AP-Harness-QC@main",
+    #
+    # THE `dev` EXTRA IS PART OF THE NAME, NOT AN OPTION. Every case module
+    # imports pytest and the suite needs its plugins, and the harness carries
+    # both in its own `dev` extra rather than in its runtime dependencies. The
+    # extra was omitted here and the gate workflows hand-wrote
+    # `ap-harness-qc[dev]` in their install lines, so CI held a guarantee the
+    # declaration did not: `pip install --editable ".[dev]"` in a fresh clone
+    # installed no pytest at all and the suite could not be collected.
+    #
+    # Declaring it here is also what keeps the pins in one place. pytest and
+    # pylint are pinned exactly in the harness (DESIGN.md section 5.0.1), and
+    # inheriting the extra inherits those pins rather than restating them,
+    # which framework-rules.md section 4.1 forbids.
+    "ap-harness-qc[dev] @ git+https://github.com/apolskiy/AP-Harness-QC@main",
 ]
 
 [project.optional-dependencies]
-# The harness brings pytest and its plugins, so this extra carries only what is
-# specific to authoring cases here.
+# The harness brings pytest and its plugins through the `dev` extra named above,
+# so this carries only what is specific to authoring cases here.
 dev = [
-    "pylint>=3.3,<4.0",
     # tools/harness_pin.py reads config/harness_pin.yaml. Declared here as well
     # as installed on its own line in CI, because the gate installs it BEFORE
     # this package exists in the environment: the resolver runs before the

@@ -1,0 +1,14 @@
+# GENERATED FROM pyproject.toml. Do not edit by hand.
+#
+# Regenerate with:  python tools/generate_requirements.py
+#
+# pyproject.toml is the single declaration. This file exists because tooling
+# expects it, not because it is a second source of truth: PyCharm offers to
+# install from a requirements file and does not read an optional-dependency
+# extra, and a contributor should not have to know which convention was chosen.
+#
+# A runtime dependency takes part in a measurement, so it takes a range and a
+# patch fix arrives without a commit. The gating tools are pinned exactly in
+# requirements-dev.txt instead. DESIGN.md section 5.0.1 carries the distinction.
+
+ap-harness-qc[dev] @ git+https://github.com/apolskiy/AP-Harness-QC@main

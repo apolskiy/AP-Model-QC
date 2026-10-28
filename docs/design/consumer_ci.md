@@ -1053,6 +1053,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115713` | N | `a_screening_hit_on_an_ordinary_case_is_reported` |
 | `115714` | N | `a_failure_message_without_a_taxonomy_code_is_reported` |
 | `115715` | N | `a_module_at_the_runway_ceiling_is_reported` |
+| `115785` | N | `a_requirements_file_disagreeing_with_pyproject_is_reported` (5.5) |
+| `115786` | N | `an_imported_package_nothing_here_declares_is_reported` (5.5) |
 | `115716` | N | `an_assertion_that_cannot_fail_is_reported` |
 | `115408` | P | `the_tool_writes_what_reconciling_decided` |
 | `115409` | P | `one_dispatch_session_serves_a_whole_run` |
@@ -1061,7 +1063,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 123 cases, 88 negative, 28 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 125 cases, 90 negative, 28 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2167,6 +2169,8 @@ what it has to satisfy.
 | SPDX header, position and identifier | `cmn.code_standards.header_problems` | As above, called with each repository's licence |
 | Execution flags and their accepted values | `cmn.pytest_support.add_mqc_options` | One registry, called from both conftests |
 | Priority to Allure severity | `cmn.pytest_support.label_priority_severity` | As above |
+| One dependency declaration, two derived requirements files | `cmn.dependency_declaration.generated_files` | One implementation, called with each root |
+| Every imported package declared | `cmn.dependency_declaration.undeclared_imports` | As above, with each repository's own packages named |
 
 ### 5.1 The checkers are parameterised, not copied
 
@@ -2220,6 +2224,66 @@ nothing, since a wheel carries no backup and no lock.
 
 `MQC_CAS_UNI_115764` asserts the call is made with the imported harness's root,
 the one-implementation-two-callers arrangement of section 5.1.
+
+### 5.5 This repository derives requirements files too, and the gap hid a defect
+
+Added 2026-10-28, at the project owner's question: whether there should be a
+requirements file for all libraries.
+
+**There should, and this repository had none.** It declared its dependencies in
+`pyproject.toml` alone, so the harness's arrangement (one declaration, two
+derived files, a check that regenerates and compares) stopped at the boundary.
+The files exist here now, written by `tools/generate_requirements.py` from
+`cmn.dependency_declaration`, which is the harness implementation called with
+this root.
+
+#### What the missing check was hiding
+
+**`pytest` was imported by 43 files here and declared by nothing.**
+
+| | |
+|---|---|
+| What `pyproject.toml` declared | `ap-harness-qc`, without an extra |
+| Where pytest actually lives | The harness's own `dev` extra, not its runtime dependencies |
+| What the gate workflows install | `ap-harness-qc[dev]`, hand-written in the install line |
+| What a fresh clone got from `pip install --editable ".[dev]"` | **No pytest. The suite could not be collected** |
+
+**It is the inverse of the `pytest-randomly` finding and the same defect.**
+There, local runs held a guarantee CI did not. Here **CI held a guarantee the
+declaration did not**, because the extra was named in four workflow files
+rather than in the one place that is supposed to state it. Either way the
+working environment and the declared one differ, and the one that is checked is
+not the one a newcomer installs from.
+
+The fix is the declaration, not the workflows: `ap-harness-qc[dev]` is the
+dependency. That also keeps the pins in one place, since pytest and pylint are
+pinned exactly in the harness (`DESIGN.md` section 5.0.1) and inheriting the
+extra inherits those pins rather than restating them. The `pylint` line this
+repository declared separately is removed for that reason.
+
+#### Why the logic moved to `cmn/`, which is where the pattern already pointed
+
+**Both repositories ship a top-level `tools` package and both are regular
+packages**, so `tools` resolves to whichever directory wins `sys.path` and the
+two never merge. Measured rather than assumed: from this root,
+`tools.generate_requirements` resolved to the harness copy and
+`tools.harness_pin` was missing entirely, and under pytest the local root wins
+and the reverse holds.
+
+So a generator in `tools/` cannot be shared, and the shareable part moves to
+`cmn.dependency_declaration`, which is exactly where `cmn.file_dates` and
+`cmn.module_size` already sit for the same reason. Each repository keeps a thin
+generator of its own, and each repository's case calls the one implementation
+with its own root.
+
+| Case | Asserts |
+|---|---|
+| `MQC_CAS_UNI_115785` | The two derived files agree with `pyproject.toml`, by regenerating rather than by comparing the files to each other |
+| `MQC_CAS_UNI_115786` | Every package the code imports is declared, which is `MQC_CMN_UNI_112223` called with this root |
+
+**The second one is what was absent, and its absence is why the first defect
+survived.** The harness has had that check since 2026-10-08; this repository
+never did, so an undeclared dependency here was reported by nothing.
 
 ---
 

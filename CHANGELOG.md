@@ -40,6 +40,27 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Requirements files, and the pytest nothing declared, 2026-10-28
+
+**This repository had no requirements files**, so the harness arrangement of one
+declaration with two derived copies and a check stopped at the boundary. It has
+both now, written by `tools/generate_requirements.py` from the harness
+implementation called with this root.
+
+The gap was hiding a defect. `pyproject.toml` declared `ap-harness-qc` without
+its `dev` extra, which is where pytest lives, so `pip install --editable ".[dev]"`
+in a fresh clone installed no pytest and the suite could not be collected; CI
+was green only because four gate workflows hand-write `ap-harness-qc[dev]` in
+their install lines. The declaration now names the extra, which also removes the
+separately declared `pylint` line, since the extra carries the harness's exact
+pins and restating a pin is how pins drift.
+
+Two cases were added with it: `MQC_CAS_UNI_115785` regenerates the derived files
+and compares, and `MQC_CAS_UNI_115786` reports a package the code imports and
+nothing declares. The harness has had the second since 2026-10-08 and this
+repository never did, which is why an undeclared dependency here was reported by
+nothing. Figures moved: 183 to 185 requirements, 169 to 171 preconditions.
+
 ### The filing sheet check no longer reads an untracked file, 2026-10-28
 
 **`MQC_CAS_UNI_115781` asserted the total written in
