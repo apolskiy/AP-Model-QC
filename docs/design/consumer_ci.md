@@ -3925,6 +3925,18 @@ rule; a sheet restating them is a third copy to keep in step. What it adds is
 what no page has: the count, where the engine's vendor takes a report, and
 which findings are one cause rather than several.
 
+**The check builds a sheet rather than reading the written one.** Corrected
+2026-10-28. `115781` read `reports/tickets/FILING.md` and asserted its total,
+which `.gitignore` excludes along with the whole of `reports/`: the assertion
+passed on a disk where somebody had run the tool and failed on every clean
+checkout, which is what it did on the consumer regression of 2026-10-26. It
+now calls `page_for` for each engine and `filing_sheet` over the result, and
+asserts that total against the registers. **That is the stronger claim and the
+only one available**: whether the generator agrees with the bug files is a
+property of this repository, while whether an untracked file on one machine is
+current is not. It is the same defect class as harness `code-style.md` section
+8.0, a case asserting something about a path the project does not own.
+
 | The sheet carries | Read from |
 |---|---|
 | The total, and the count per engine | The bug files |

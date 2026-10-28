@@ -5713,3 +5713,53 @@ above is the argument for deciding it deliberately: a priority change moves no
 measurement, so a live sweep would re-derive the same findings at four engines'
 quota. The `claim` guard is still unwidened, so the two withdrawn claude cases
 fail again and are reported as returned.
+
+---
+
+## 2026-10-28: A Case Asserted Something About An Untracked File
+
+**The harness consumer regression had been red since 2026-10-26** at
+`MQC_CAS_UNI_115781_the_filing_sheet_is_generated_and_groups_by_cause`, step 9,
+on "no filing sheet has been generated". It passes here and fails on every
+clean checkout.
+
+### What it was
+
+Step 9 read `reports/tickets/FILING.md` and asserted its stated total against
+the registers. **`.gitignore` excludes the whole of `reports/`**, and nothing
+under it is tracked, so the file exists only on a machine where somebody has
+run `tools/ticket_report.py`. On a fresh checkout `is_file()` is false.
+
+**It is the defect class harness `code-style.md` section 8.0 names**: a case
+asserting something about a path the project does not own, which passes on a
+developer's disk and fails on a runner. The other eight steps are pure, calling
+`filing_sheet` with synthetic findings, so this was the one step that reached
+outside.
+
+### The fix, and the claim that replaces it
+
+Step 9 now calls `page_for` for each engine in the roster and `filing_sheet`
+over the result, then asserts that total against the bug files. **It is the
+stronger claim and the only available one.** Whether the generator agrees with
+the registers is a property of this repository; whether an untracked file on one
+machine is current is not, and a check that reads it is reporting on a local
+side effect.
+
+**Verified non-vacuous by injection.** The registers hold 15 findings and the
+generated sheet states "15 finding(s) to file, each reproduced on the latest
+replay: claude 4, gemini 2, grok 0, openai 9". Dropping one claude finding from
+the input makes the sheet state 14 and the assertion fail, so it is comparing
+two figures that both depend on the registers.
+
+Recorded in `consumer_ci.md` section 9.5.5.10, where the generated-not-authored
+rule already lived.
+
+### The engine gates, and the push order
+
+The four engine gates failed Gate 1 with `E0611: No name
+'exceeds_measurement_ceiling' in module 'cmn.demotion'`. This repository was
+pushed before the harness, and `config/harness_pin.yaml` requires a green
+harness for `main`, so the resolver installed the last green harness commit,
+which predates the predicate. **Nothing here is wrong and nothing here needs a
+change**: the gates pass once the harness commit carrying the predicate is
+green and the gates are re-run.

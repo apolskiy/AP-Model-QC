@@ -50,7 +50,13 @@ from cmn.grouping import story
 
 from tests.cases.graded_support import case_for
 from tests.cases.suite_support import case_rules_from_suite
-from tools.ticket_report import _issue_sentence, expected_block, finding_section, load_tasks
+from tools.ticket_report import (
+    _issue_sentence,
+    expected_block,
+    finding_section,
+    load_tasks,
+    page_for,
+)
 from tools.ticket_files import filing_sheet, intake_engines, ticket_name
 from tools.ticket_reasons import failure_reasons, rule_lines
 from tools.ticket_recordings import judge_prompts, observation_outcomes
@@ -520,15 +526,24 @@ class TestMQCTicketReasons:
             f"a finding on the sheet does not name its evidence file: {sheet}"
         )
 
-        step(9, "and the sheet the repository holds counts what the registers hold")
-        written = _ROOT / "reports" / "tickets" / "FILING.md"
-        assert written.is_file(), "no filing sheet has been generated"
+        step(9, "and a sheet built from the shipped registers counts what they hold")
+        # GENERATED HERE RATHER THAN READ FROM reports/, which `.gitignore`
+        # excludes entirely. Reading the written sheet asserted something about
+        # an untracked file: it passed on a disk where somebody had run the
+        # tool and failed on every clean checkout, which is what it did on the
+        # consumer regression of 2026-10-26.
+        filed = {
+            engine: [entry for entry, _ in page_for(_ROOT, engine)[1]]
+            for engine in roster
+        }
+        generated = filing_sheet("2026-10-28", filed)
         held = sum(
             len((yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get(
                 "findings", []) or [])
             for path in sorted((_ROOT / "config" / "findings").glob("*.yaml"))
         )
-        assert f"**{held} finding(s) to file**" in written.read_text(encoding="utf-8"), (
-            f"the sheet does not state the {held} finding(s) the bug files hold, so "
-            f"it was written by hand or is stale"
+        assert f"**{held} finding(s) to file**" in generated, (
+            f"a sheet built from the registers does not state the {held} finding(s) "
+            f"the bug files hold, so the generator and the registers disagree: "
+            f"{generated}"
         )

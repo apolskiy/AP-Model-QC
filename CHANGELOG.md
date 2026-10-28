@@ -40,6 +40,21 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The filing sheet check no longer reads an untracked file, 2026-10-28
+
+**`MQC_CAS_UNI_115781` asserted the total written in
+`reports/tickets/FILING.md`**, which `.gitignore` excludes entirely. The file
+exists only where somebody has run the ticket tool, so the step passed on a
+developer's disk and failed on every clean checkout, which is what it did on
+the harness consumer regression from 2026-10-26.
+
+The step now builds a sheet from the shipped registers through `page_for` and
+`filing_sheet` and asserts that total against the bug files. That is the
+property this repository has to hold, where the currency of an untracked file
+on one machine is not, and it is verified by injection: the registers hold 15,
+the generated sheet states 15, and removing one finding from the input makes it
+state 14 and the assertion fail. Recorded in `consumer_ci.md` section 9.5.5.10.
+
 ### Twenty-one judge-decided rules priced at P2, 2026-10-28
 
 **A finding that blocks a release should not rest on a score one reasonable
