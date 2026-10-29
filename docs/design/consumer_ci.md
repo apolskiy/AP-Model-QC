@@ -1042,6 +1042,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `430000` | P | `every_case_module_declares_its_capability` (harness CMN 16.3) |
 | `430001` | P | `the_declared_epic_is_this_repositorys_own` (harness CMN 16.5) |
 | `430002` | P | `the_report_publishes_where_no_proposal_reaches` (harness CI 7.4) |
+| `430003` | P | `a_graded_result_carries_its_band_as_its_suite_root` (harness CMN 16.8) |
+| `430004` | P | `a_run_here_writes_the_shared_failure_categories` (harness CMN 16.9) |
 | `115736` | P | `the_finding_reader_carries_the_questions` |
 | `115737` | P | `a_finding_that_stopped_reproducing_is_withdrawn` |
 | `115738` | N | `a_run_that_collected_nothing_does_not_retire_findings` |
@@ -1099,7 +1101,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 127 cases, 92 negative, 28 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 129 cases, 92 negative, 30 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2201,6 +2203,50 @@ repositories are held to it from one implementation.
 
 `MQC_CAS_UNI_430000` to `430002`, `MQC_REQ_CAS_GOV_0014` and `0015`.
 
+#### 4.22.3 The band is the root the Suites tab is navigated by
+
+Added 2026-10-28 with the harness `harness_test_taxonomy.md` sections 16.8 and
+16.9, at the project owner's instruction after the published reports were read.
+
+**What was wrong.** A published report separated results by nothing a reader
+wanted. Its Suites tab held one root, named for the directory every case module
+here shares, and its Categories tab classified failures by status, so a model
+finding and an instrument defect arrived under one heading.
+
+**Why it happened.** Section 4.22 and the harness section 16 specified the
+capability tree and left the other two trees alone, so the suite labels arrived
+from `allure-pytest` as the package, the module and the class, and nothing
+wrote the file a Categories tab is built from. The band reached a report only
+as an Allure severity, whose five level names are not the ones a gate uses, and
+the taxonomy code reached it as a label no tab can read.
+
+| Tree | Was built from | Is built from |
+|---|---|---|
+| Behaviors | Capability, then scenario, from `config/allure_features.yaml` | Unchanged |
+| Suites | The package, the module and the class | **The band, then the module, then the class** |
+| Categories | Allure's own two defaults | The four taxonomy families, three named skips, and one for a result naming no code |
+
+**This repository is where the band means something.** The harness runs
+preconditions and nothing else, having no corpus, so the one root it can show
+is `Preconditions`. Here a result carries `P0` through `P4`, and P0 and P1 are
+release blocking while P2 to P4 are a pass floor, which is the split a reader
+of a red gate is trying to make.
+
+**Measured on a merged report rather than asserted.** Generating one from this
+repository's preconditions and its P0 and P1 bands gives three suite roots,
+`Preconditions` at 173, `P0` at 19 and `P1` at 6, against the single
+`tests.cases` the same results produced before.
+
+**And one measurement is worth recording as a gap.** The precondition failure
+in that report landed under `Carrying no registered code`, because a
+precondition's assertion message names no `QC_*` code. That category is doing
+exactly what it exists for, and what it surfaces is that an instrument defect
+here is classified by nothing. Whether a precondition should carry a harness
+code is a question for the taxonomy rather than for this change, so it is
+recorded here and not answered.
+
+`MQC_CAS_UNI_430003` and `430004`, `MQC_REQ_CAS_GOV_0016` and `0017`.
+
 ## 4A. The harness is a dependency, not the directory next door
 
 Added 2026-09-28, from the first CI run in which a judged case was replayable.
@@ -2246,6 +2292,8 @@ what it has to satisfy.
 | SPDX header, position and identifier | `cmn.code_standards.header_problems` | As above, called with each repository's licence |
 | Execution flags and their accepted values | `cmn.pytest_support.add_mqc_options` | One registry, called from both conftests |
 | Priority to Allure severity | `cmn.pytest_support.label_priority_severity` | As above |
+| Priority to the suite root and tag a report is navigated by | `cmn.pytest_support.label_band_suite` | As above |
+| The failure classification a report's Categories tab is built from | `cmn.report_categories.report_categories` | One implementation, written by each repository's own run |
 | One dependency declaration, two derived requirements files | `cmn.dependency_declaration.generated_files` | One implementation, called with each root |
 | Every imported package declared | `cmn.dependency_declaration.undeclared_imports` | As above, with each repository's own packages named |
 

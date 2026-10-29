@@ -5986,3 +5986,103 @@ assert.
 A) describe what is wrong B) describe why it happens". Both requirements here
 are restated to lead with what must hold, and both notes say what is wrong
 before why it happens, as does this entry.
+
+---
+
+## 2026-10-28: The Published Reports Could Not Be Filtered By Band
+
+### What was wrong
+
+The reports published for the four engines separated results by nothing a
+reader of a red gate needs. Every result sat under one Suites root, named for
+the directory every case module here shares, and the Categories tab classified
+failures by status, so a model quality finding and an instrument defect arrived
+under one heading.
+
+**The band is the grouping that matters here.** P0 and P1 are release blocking
+and P2 to P4 are a pass floor, so which band failed decides whether a red stops
+a release, and it was the one question the report could not be asked.
+
+### Why it happened
+
+`consumer_ci.md` section 4.22 and the harness `harness_test_taxonomy.md`
+section 16 specified the capability tree, epic to feature to story, and left
+the other two trees alone. So the three suite labels arrived from
+`allure-pytest` as the package, the module and the class, which name where a
+case's file sits, and nothing wrote the `categories.json` a Categories tab is
+built from. The band reached a report only as an Allure severity, whose five
+level names are not the ones a gate uses.
+
+### This repository is where the band means something
+
+| | Suite roots it can show |
+|---|---|
+| The harness | `Preconditions` alone. It owns no corpus, so it has no graded case |
+| Here | `Preconditions`, and `P0` through `P4` |
+
+**So the graded half is measurable only here**, and that is what
+`MQC_CAS_UNI_430003` asserts. The harness asserts the precondition root against
+a real reporter and the band mapping against planted items, which is all it can
+see.
+
+### Read through a run rather than through a call
+
+Both cases run pytest in a subprocess from this root, so the `conftest.py` in
+force is the one shipped here. **A direct call to the shared hook would assert
+only that the shared hook works**, which the harness already does, and would
+say nothing about whether this repository wires it. The graded probe replays
+`154103` in replay mode, so it contacts nothing and costs nothing, which is
+what makes it runnable in a gate with no credential.
+
+### What was measured
+
+A merged report built from these preconditions and the P0 and P1 bands into one
+directory, which is the shape `publish-report-on-merge.yml` assembles:
+
+| Suite root | Total | Passed | Failed | Skipped |
+|---|---|---|---|---|
+| `Preconditions` | 173 | 172 | 1 | 0 |
+| `P0` | 19 | 15 | 1 | 3 |
+| `P1` | 6 | 6 | 0 | 0 |
+
+Against one root, `tests.cases`, from the same results before the change. The
+Categories tab separated a model quality finding from three skips behind a
+foundation that did not hold.
+
+### What was verified
+
+| Layer | Result |
+|---|---|
+| Gate 1, pylint | 10.00/10, **exit 0** |
+| Preconditions | 175 total, 175 executed, 174 passed, 1 failed, 0 skipped, **exit 1** |
+| `actionlint` | **exit 0** |
+| Graded bands | Not run beyond the P0 and P1 replay the probe needed. No prompt, rule or rubric changed |
+| Audits | Not run. Dispatch only |
+
+**The one failure is not this change's.** `MQC_CAS_UNI_115317` reports two
+README figures against the working tree: 1242 candidate recordings against 1244
+on disk, and 773 judgements against 786. The live sweep left 15 untracked
+recordings here, and CI reads a clean checkout where all five figures agree.
+Whether those recordings stay is the same open decision as grok's partial
+re-recording, so writing 1244 into the README would bake in a fixture set
+nobody has accepted.
+
+### A measurement worth recording as a gap
+
+The precondition failure in that merged report landed under **Carrying no
+registered code**, because its assertion message names no `QC_*` code. That
+category is doing what it exists for, and what it surfaces is that an
+instrument defect here is classified by nothing. Recorded in the harness
+`harness_open_questions.md` section 2B rather than answered, the remedy being a
+decision about which codes a precondition carries and touching every
+precondition assertion in both repositories.
+
+### Digressions the user spotted, and the fix
+
+**The reports were read and found wanting**, which is what opened this: "allure
+reports for models do not include categories or suites. Ideally there would be
+sepearation/filtration of results by suite P0,P1,P2,P3,P4". The arrangement
+then came from the project owner's own `AP_IMAP_EmailClient`, pointed at
+directly, which already publishes the priority as `parentSuite` with a tag
+beside it and writes its own categories file. Following it rather than
+inventing a second arrangement is the whole of the design decision here.

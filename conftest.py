@@ -3,7 +3,7 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-10-24
+Last updated: 2026-10-28
 
 This file contains the pytest hooks for the case suite. They declare the
 execution flags, record what the run was invoked with, label severity, select
@@ -68,6 +68,7 @@ from cmn.pytest_support import (
     announce_test,
     add_mqc_options,
     configure_invocation,
+    label_band_suite,
     label_grouping,
     label_priority_severity,
 )
@@ -152,6 +153,10 @@ def pytest_collection_modifyitems(
     # AND THE GROUPING A REPORT IS READ BY, from this repository's own
     # declaration (harness `harness_test_taxonomy.md` section 16).
     label_grouping(items, config.rootpath)
+    # AND THE BAND A REPORT'S SUITES TAB IS NAVIGATED BY, which is what the
+    # published reports here separated nothing by (harness
+    # `harness_test_taxonomy.md` section 16.8).
+    label_band_suite(items)
     # BEFORE THE ORDERING, because `arrange_dependencies` refuses a suite whose
     # dependencies name no collected base, and a band that had dropped its
     # foundations would be exactly that suite.

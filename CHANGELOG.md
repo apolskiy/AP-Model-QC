@@ -40,6 +40,53 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The published reports separated results by nothing a reader wanted, 2026-10-28
+
+**What was wrong.** A report's Suites tab held one root for every result, named
+for the directory every case module here shares, and its Categories tab
+classified failures by status, so a model finding and an instrument defect
+arrived under one heading. The band a reader of a red gate needs first could
+not be selected at all.
+
+**Why it happened.** `consumer_ci.md` section 4.22 and the harness section 16
+specified the capability tree and left the other two trees alone, so the suite
+labels arrived from `allure-pytest` as the package, the module and the class,
+and nothing wrote the file a Categories tab is built from. The band reached a
+report only as an Allure severity, whose five level names are not the ones a
+gate uses.
+
+**This repository is where the band means something**, the harness having no
+corpus and so no graded case. A graded result here now carries `P0` through
+`P4` as its suite root and as a tag, and a precondition carries
+`Preconditions`. Section 4.22.3 carries it with `MQC_REQ_CAS_GOV_0016` and
+`0017`, and `MQC_CAS_UNI_430003` and `430004` read it through a real run rather
+than a call, so what they assert is that this repository's `conftest.py` wires
+the hook.
+
+Measured on a merged report of these preconditions and the P0 and P1 bands:
+three suite roots, `Preconditions` at 173, `P0` at 19 and `P1` at 6, against
+the single `tests.cases` the same results gave before. Figures moved: 187 to
+189 requirements, 173 to 175 preconditions.
+
+### Three README figures lagged the repository they describe, 2026-10-28
+
+**What was wrong.** `MQC_CAS_UNI_115317` reported three figures in `README.md`
+as disagreeing with what the repository holds: 171 preconditions against 173,
+185 requirements against 187, and 1240 candidate recordings against 1242. The
+harness consumer regression went red on them, which is the first gate to read
+this repository after a harness merge.
+
+**Why it happened.** Two of the three moved when the preconditions below were
+added, and only the harness README was updated in that change; the recording
+count had moved earlier still, when two gemini candidate responses were
+re-recorded. The README states the current figures and nothing else, so no
+single document said what any of the three had been, and the check was the only
+thing that noticed.
+
+Figures moved: 185 to 187 requirements, 171 to 173 preconditions, 1240 to 1242
+candidate recordings, and the harness case count from 984 to 986. The 773
+judgements are unchanged and stay as they are.
+
 ### The lint job refused all four workflows the Ubuntu pin had moved, 2026-10-28
 
 **What was wrong.** Fifteen labels in these four workflows were reported as

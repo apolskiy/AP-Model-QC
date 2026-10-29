@@ -3,15 +3,18 @@
 """Unit preconditions for the grouping tree this repository's results are read by.
 
 Created: 2026-10-24
-Last updated: 2026-10-24
+Last updated: 2026-10-28
 
-This file contains three cases, each calling a harness implementation over
+This file contains five cases, each calling a harness implementation over
 this repository. ``TestMQCGroupingDeclaration`` checks that every collected
 case module declares the capability it measures and that the declaration names
 no module this repository does not hold; ``TestMQCGroupingEpic`` that the epic
-is this repository's own rather than the harness's; and
+is this repository's own rather than the harness's;
 ``TestMQCGroupingPublication`` that the report is rendered and published from a
-workflow no proposal can reach.
+workflow no proposal can reach; and ``TestMQCGroupingBandsAndCategories`` that
+a graded result carries the band it was graded in as the root a report's Suites
+tab is navigated by, that a precondition carries a root of its own, and that a
+run here writes the failure classification the Categories tab is built from.
 
 **These run in the ``unit`` precondition gate**, ahead of every graded band. A
 failure is an instrument defect, **not a model finding**: the run exits 3 and
@@ -42,15 +45,34 @@ Specified by the harness ``harness_test_taxonomy.md`` section 16 and
 #   430001  the_declared_epic_is_this_repositorys_own
 # TestMQCGroupingPublication
 #   430002  the_report_publishes_where_no_proposal_reaches
+# TestMQCGroupingBandsAndCategories
+#   430003  a_graded_result_carries_its_band_as_its_suite_root
+#   430004  a_run_here_writes_the_shared_failure_categories
 # ------------------------------------------------------------ end of cases
 
+import json
 from pathlib import Path
 from typing import Final
 
 import pytest
 
-from cmn.grouping import DECLARATION, grouping_problems, load_grouping
+from cmn.case_steps import step
+from cmn.grouping import (
+    DECLARATION,
+    grouping_problems,
+    label_values,
+    load_grouping,
+    sole_label,
+)
+from cmn.pytest_support import PRECONDITION_SUITE
+from cmn.report_categories import (
+    CATEGORIES_FILE,
+    category_problems,
+    report_categories,
+)
 from cmn.workflow_standards import report_publication_gaps
+
+from tests.cases.grouping_support import published_results
 
 pytestmark = pytest.mark.unit
 
@@ -59,6 +81,17 @@ _ROOT: Final[Path] = Path(__file__).resolve().parents[2]
 # THE EPIC THIS REPOSITORY PUBLISHES UNDER, which is the one thing about the
 # grouping that must differ from the harness's.
 _EPIC: Final[str] = "AP-Model-QC"
+
+# THE GRADED CASE THE BAND PROBE REPLAYS, and the band its rule set declares.
+# A security case, so the run needs no judge quota at all, and one already
+# recorded for every engine, so the probe replays rather than dispatching.
+_PROBE_CASE: Final[str] = "154103"
+_PROBE_BAND: Final[str] = "P0"
+
+# AND A PRECONDITION MODULE, for the root a case carrying no priority takes.
+# One holding few cases and not this one, so the probe measures the labelling
+# rather than whatever else a heavier module does, and does not run itself.
+_PRECONDITION_PROBE: Final[str] = "tests/cases/mqc_uni_requirement_statements.py"
 
 
 class TestMQCGroupingDeclaration:
@@ -129,4 +162,114 @@ class TestMQCGroupingPublication:
             f"{len(gaps)} gap(s) between this repository's workflows and what "
             f"section 7.4 states, so the readiness view is stale, absent, or a "
             f"proposal's: {gaps}"
+        )
+
+
+class TestMQCGroupingBandsAndCategories:
+    """A published result carries the band it was graded in, and its cause."""
+
+    def MQC_CAS_UNI_430003_a_graded_result_carries_its_band_as_its_suite_root(
+        self, tmp_path: Path
+    ) -> None:
+        """A graded case's suite root is its band, and a precondition's is its own.
+
+        **This is the half the harness cannot assert.** It owns no corpus and
+        so has no graded case, so the band a graded result carries is
+        measurable only here. The published reports separated nothing before
+        this: every result sat under one root named for the directory the case
+        modules share.
+
+        **A real run rather than a call**, because what has to hold is that
+        this repository's ``conftest.py`` wires the hook. A direct call would
+        assert only that the shared function works, which the harness does
+        against planted items.
+
+        Design: the harness ``harness_test_taxonomy.md`` sections 16.8 and
+        16.8.2, and ``consumer_ci.md`` section 4.22.3.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+
+        Returns:
+            None
+        """
+        step(1, "replay one P0 graded case under a real reporter")
+        graded = published_results(
+            _ROOT,
+            ["-m", "sec", "--engine", "claude", "--mode", "replay",
+             "--tests", _PROBE_CASE, "--with-prerequisites"],
+            tmp_path / "graded",
+        )
+        assert graded, "the replayed graded case published no result at all"
+
+        step(2, "its suite root is the band its rule set declares")
+        roots = {sole_label(result, "parentSuite") for result in graded}
+        assert roots == {_PROBE_BAND}, (
+            f"the published suite roots were {roots} against {_PROBE_BAND!r}, so a "
+            f"graded result carries none, two, or the module path the plugin "
+            f"derives, and the Suites tab cannot be filtered by band"
+        )
+
+        step(3, "and the band is a tag as well, so a reader can filter by it")
+        untagged = [
+            result["name"] for result in graded
+            if _PROBE_BAND not in label_values(result, "tag")
+        ]
+        assert not untagged, (
+            f"{len(untagged)} graded result(s) carry the band as a root and not as "
+            f"a tag, so the root navigates and nothing filters: {untagged[:3]}"
+        )
+
+        step(4, "a precondition of this repository carries the preconditions root")
+        preconditions = published_results(
+            _ROOT, [str(_ROOT / _PRECONDITION_PROBE)], tmp_path / "preconditions"
+        )
+        roots = {sole_label(result, "parentSuite") for result in preconditions}
+        assert roots == {PRECONDITION_SUITE}, (
+            f"the published suite roots were {roots} against "
+            f"{PRECONDITION_SUITE!r}: a precondition carries no priority and "
+            f"cannot take a band, so it takes a root of its own"
+        )
+
+    def MQC_CAS_UNI_430004_a_run_here_writes_the_shared_failure_categories(
+        self, tmp_path: Path
+    ) -> None:
+        """A run of this repository writes the classification a report groups by.
+
+        A report's Categories tab classified failures by status rather than by
+        cause, so a model finding and an instrument defect arrived under one
+        heading. It is built from a file in the results directory, and nothing
+        wrote one.
+
+        **The same classification as the harness**, because the failure
+        taxonomy is one registry and a report of either repository's results
+        groups causes the same way.
+
+        Design: the harness ``harness_test_taxonomy.md`` section 16.9.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+
+        Returns:
+            None
+        """
+        step(1, "the categories agree with the code registry")
+        assert not category_problems(), (
+            "the report categories disagree with the code registry: "
+            + "; ".join(category_problems())
+        )
+
+        step(2, "a run of this repository leaves the classification beside them")
+        results = tmp_path / "written"
+        published_results(_ROOT, [str(_ROOT / _PRECONDITION_PROBE)], results)
+        written = results / CATEGORIES_FILE
+        assert written.is_file(), (
+            f"a run of this repository wrote no {CATEGORIES_FILE}, so its report "
+            f"classifies failures by status rather than by cause"
+        )
+
+        step(3, "and it is the classification the harness builds, not a copy")
+        assert json.loads(written.read_text(encoding="utf-8")) == report_categories(), (
+            f"the {CATEGORIES_FILE} a run here wrote is not the shared "
+            f"classification, so the two repositories' reports group differently"
         )
