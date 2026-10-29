@@ -744,6 +744,40 @@ renaming an artifact cannot silently relabel a band's result.
 with one P0 failure does not ship**, and the table states that verdict in its
 own line rather than leaving it to be inferred from a healthy total.
 
+#### 3.12.4 Where a band runs, and what a run concludes when it did none of its work
+
+Added 2026-10-28, after the Ubuntu pin moved and the lint job refused all four
+of these workflows.
+
+**Two properties of a definition that nothing here read.** Both checks are the
+harness's, called with this root, which is the arrangement section 5 states for
+every shared standard.
+
+| Property | Checked by | Was |
+|---|---|---|
+| Every Ubuntu label carries a version, names the pinned one, and is declared to `actionlint` | `MQC_CAS_UNI_115787` | Unheld. The pin moved on 2026-10-28 and 15 labels went unknown |
+| A workflow gated on its trigger's conclusion does not report success having skipped its work | `MQC_CAS_UNI_115788` | Unheld. The class is section 4.22.2.1 |
+
+**The pin is the harness's decision and the reason is not restated here.** An
+engine comparison split across two operating system majors is not a comparison,
+so the image is a property of the pair rather than of this repository; the
+harness `DESIGN.md` section 5.0.2 carries what pinning costs and
+`harness_ci_pipeline.md` section 3.1.2.2 carries why the label has to be
+declared to the linter at all.
+
+**The declaration is `.github/actionlint.yaml`, and this repository carries its
+own.** It is not inherited: `actionlint` reads the configuration from the
+repository it runs in, so this is one of the forced duplicates
+`framework-rules.md` section 4.2 describes, compared by a case rather than
+trusted.
+
+**Section 3.12.3's `report` job is not what the second check reports, and the
+difference is the point.** That job calls `always()` deliberately, because a
+band that failed still established what it established. What the check reports
+is `always()` on a job standing behind one gated on *another run's* conclusion,
+which `gate-target.yml` has none of: its bands are gated on this run's own
+preconditions job, so a skipped band leaves a conclusion that is still true.
+
 ### 3.12.5 The one release, and how a skip names its cause
 
 Added 2026-10-08. Section 3.12.2 holds that a blocking band answers for every
@@ -1046,6 +1080,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115776` | N | `a_graded_invocation_leaving_out_a_layer_is_reported` (4.21) |
 | `115777` | N | `a_rung_that_grades_without_naming_its_judge_is_reported` (7.7) |
 | `115782` | N | `a_graded_job_not_gated_on_the_preconditions_is_reported` (7.2.1) |
+| `115787` | N | `a_runner_label_disagreeing_with_the_pin_is_reported` (3.12.4) |
+| `115788` | N | `a_job_concluding_a_run_it_did_not_earn_is_reported` (3.12.4) |
 | `115731` | N | `an_observation_that_records_no_steps_is_reported` |
 | `115710` | N | `a_rostered_target_without_a_workflow_or_key_is_reported` |
 | `115711` | N | `a_case_module_holding_support_code_is_reported` |
@@ -1063,7 +1099,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 
-**Inventory: 125 cases, 90 negative, 28 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 127 cases, 92 negative, 28 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,

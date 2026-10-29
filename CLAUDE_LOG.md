@@ -5891,3 +5891,98 @@ steady state, which they are, and the absent reports were not examined. The
 question is what found a publisher implementing the opposite of its own design.
 Reporting the gate colours correctly is not the same as reading what they imply
 for the artefact a reader actually opens.
+
+---
+
+## 2026-10-28: The Pin Reached CI As Fifteen Unknown Labels, And Two Properties Nothing Here Read
+
+### What was wrong
+
+The move to `ubuntu-26.04` was swept through 15 lines in these four workflows
+and `actionlint` reported every one of them as an unknown label. The lint job
+refused the file, and every band behind it would have skipped.
+
+### Why it happened
+
+`actionlint` validates `runs-on` against a label list compiled into its own
+binary, so an image newer than the binary is an error rather than a label it
+passes over. Release 1.7.12 is from March 2026 and Ubuntu 26.04 reached general
+availability in September.
+
+**And it reads its configuration from the repository it runs in**, which is the
+part specific to this side: a declaration in the harness does nothing here. So
+this is one of the forced duplicates `framework-rules.md` section 4.2
+describes, and the rule there applies: where duplication is forced, the copies
+are compared by a case rather than reviewed.
+
+`.github/actionlint.yaml` now declares the pinned label. Reproduced locally
+first, exit 1 with 15 findings, exit 0 after.
+
+### Two properties of these definitions that nothing read
+
+| Property | Case | Was |
+|---|---|---|
+| Every Ubuntu label carries a version, names the pinned one, and is declared | `MQC_CAS_UNI_115787` | Unheld. The pin moved and 15 labels went unknown |
+| A workflow gated on its trigger's conclusion does not report success having skipped its work | `MQC_CAS_UNI_115788` | Unheld. This repository held the class in its costliest form |
+
+**Both checkers are the harness's, called with this root**, which is the
+arrangement `consumer_ci.md` section 5 states for every shared standard. The
+shapes each one accepts and rejects are planted under a temporary root on the
+harness side, by `MQC_CMN_UNI_112190` and `112191`, so this side asserts its own
+definitions rather than rebuilding the vocabulary.
+
+**The second case is yesterday's publishing defect stated as a rule.** The
+publisher refused to start unless the gate that woke it had concluded success,
+so on a day three of four gates were red the site reported a clean sweep
+(`consumer_ci.md` section 4.22.2.1). That guard is gone. What the case stops is
+a guard of the same shape arriving again with a summary job standing behind it,
+which is what happened in the harness the same night.
+
+**Section 3.12.3's `report` job is not what it reports, and the difference is
+the point.** That job calls `always()` deliberately, because a band that failed
+still established what it established. What the check reports is `always()` on a
+job standing behind one gated on *another run's* conclusion, and `gate-target.yml`
+has none: its bands are gated on this run's own preconditions job, so a skipped
+band leaves a conclusion that is still true.
+
+### Two new modules rather than two cases in `mqc_uni_workflows.py`
+
+That module sits at 870 lines against a nine-hundred-line runway, and two thin
+callers would have taken it past. The subjects divide anyway: that module is
+about what a workflow must and must not do, `mqc_uni_runner_images.py` about
+where its jobs run, and `mqc_uni_run_conclusions.py` about what a run concludes
+when it did none of its work.
+
+### What was verified
+
+| Layer | Result |
+|---|---|
+| Preconditions | 173 total, 173 executed, 172 passed, 1 failed, 0 skipped, exit 1 |
+| `actionlint` | **exit 0**, from 15 findings |
+| Graded bands | Not run. No prompt, rule or rubric changed |
+
+**The one failure is not this change's and is left alone deliberately.**
+`MQC_CAS_UNI_115317` reports the README's fixture figures as stale: 1240
+candidate recordings against 1244 on disk, and 773 judgements against 786. The
+live sweep left 15 untracked recordings in the tree, 2 gemini candidate
+responses and 13 judgements. Whether they stay is the same open decision as
+grok's partial re-recording, so updating the figures now would bake in a
+fixture set nobody has accepted.
+
+### A sequencing constraint
+
+`config/harness_pin.yaml` resolves `main` with `require_green: true`, so CI here
+installs the latest **green** harness commit. The two new cases import
+`cmn.runner_images`, which no green commit carries yet, and `main` is currently
+red. **The harness lands first and goes green, then this repository.** The other
+way round, the resolver either finds no green harness or installs one without
+the module, and both cases fail on the import rather than on anything they
+assert.
+
+### Digressions the user spotted, and the fix
+
+**The requirement text was not English.** The owner quoted
+`MQC_REQ_HAR_CMN_0229` back and asked for "logical flow to problem description.
+A) describe what is wrong B) describe why it happens". Both requirements here
+are restated to lead with what must hold, and both notes say what is wrong
+before why it happens, as does this entry.

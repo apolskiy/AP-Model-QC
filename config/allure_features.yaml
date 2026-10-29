@@ -79,6 +79,8 @@ modules:
   tests/cases/mqc_uni_judge_dimension.py: Consumer CI
   tests/cases/mqc_uni_traceability.py: Consumer CI
   tests/cases/mqc_uni_workflows.py: Consumer CI
+  tests/cases/mqc_uni_runner_images.py: Consumer CI
+  tests/cases/mqc_uni_run_conclusions.py: Consumer CI
 
   # Which harness this case set runs against, and whether it followed.
   tests/cases/mqc_uni_harness_follow.py: Harness pairing

@@ -40,6 +40,30 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The lint job refused all four workflows the Ubuntu pin had moved, 2026-10-28
+
+**What was wrong.** Fifteen labels in these four workflows were reported as
+unknown and the lint job refused the file, so every band behind it would have
+skipped.
+
+**Why it happened.** `actionlint` validates `runs-on` against a label list
+compiled into its own binary, and it reads its configuration from the
+repository it runs in. Release 1.7.12 predates Ubuntu 26.04's general
+availability, and this repository had no declaration of its own to tell it
+otherwise.
+
+`.github/actionlint.yaml` now declares the pinned label. It is one of the
+forced duplicates `framework-rules.md` section 4.2 describes, since the harness
+needs its own copy for the same reason, and `MQC_CAS_UNI_115787` compares the
+declaration with the labels the workflows name rather than trusting either.
+
+**Two properties of these definitions that nothing here read.** The runner image
+is one; the other is that a workflow gated on its trigger's conclusion must not
+report success having skipped its work, which is this repository's publishing
+defect stated as a rule. `MQC_CAS_UNI_115788` reports it, both checkers are the
+harness's called with this root, and `consumer_ci.md` section 3.12.4 carries
+them with `MQC_REQ_CAS_PRE_0016` and `0017`.
+
 ### The Ubuntu runner moves to 26.04, 2026-10-28
 
 Fifteen workflow lines here follow the harness pin to `ubuntu-26.04`, which has
