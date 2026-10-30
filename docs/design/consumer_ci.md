@@ -1091,6 +1091,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115713` | N | `a_screening_hit_on_an_ordinary_case_is_reported` |
 | `115714` | N | `a_failure_message_without_a_taxonomy_code_is_reported` |
 | `115715` | N | `a_module_at_the_runway_ceiling_is_reported` |
+| `115795` | N | `a_collected_module_no_gate_selects_is_reported` (`harness_test_taxonomy.md` 13.6) |
 | `115785` | N | `a_requirements_file_disagreeing_with_pyproject_is_reported` (5.5) |
 | `115786` | N | `an_imported_package_nothing_here_declares_is_reported` (5.5) |
 | `115716` | N | `an_assertion_that_cannot_fail_is_reported` |
@@ -1100,8 +1101,13 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115411` | N | `the_tool_refuses_a_date_it_cannot_parse` |
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
+| `115789` | P | `the_probe_resolves_a_green_harness_before_it_dispatches` (4.23.5) |
+| `115790` | N | `a_dispatching_job_reading_no_green_pairing_is_reported` (4.23.5) |
+| `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
+| `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
+| `115794` | N | `a_withdrawn_finding_is_not_resolved_upstream` (9.4.9) |
 
-**Inventory: 129 cases, 92 negative, 30 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 135 cases, 96 negative, 32 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2246,6 +2252,142 @@ code is a question for the taxonomy rather than for this change, so it is
 recorded here and not answered.
 
 `MQC_CAS_UNI_430003` and `430004`, `MQC_REQ_CAS_GOV_0016` and `0017`.
+
+### 4.23 The model version probe lives here, because what a change invalidates is this corpus
+
+Added 2026-10-29 at the project owner's ruling, which moved the probe out of
+the harness: "Probe needs to live with the model and use green harness, but it
+belongs in model repository not harness repository."
+
+**A probe detects a reason to re-measure, and the thing re-measured is the
+corpus.** The harness owns no corpus, so a version change tells it nothing and
+gives it nothing to run. The harness `harness_ci_pipeline.md` sections 4 and
+4.2 carry the full reversal and what the earlier decision conflated.
+
+**The probe is a harness call and this repository is one of its callers.** It
+is specified in the harness `tier2_execution.md` section 5.2.1, which also
+records that detection is the lesser of its two uses: every run that measures a
+model calls the same operation to record what it measured against, and that
+provenance is what makes two runs comparable after the older one's results have
+aged out of GitHub's retention. Section 5.6 of the harness
+`cmn_verdict_and_cli.md` specifies where it lands in each artifact.
+
+**What this section specifies is a demonstration of using the harness**, which
+is what this repository is for. The operation, the comparison and the emission
+are the harness's; the jobs below are an example of calling them, and a
+consumer with its own corpus would write its own.
+
+#### 4.23.1 What this repository supplies, and what it calls
+
+| Piece | Owned by | Read how |
+|---|---|---|
+| `served_metadata` per adapter, `execution.preflight`, and the roster in `config/engines.yaml` | The harness | Through the installed wheel, which ships `execution`, `cmn`, `tools` and `config` |
+| `config/model_baseline.json` | **Here** | What each engine declared when this corpus was last measured against it, which is a fact about a measurement rather than about a provider |
+| `probe-model-version.yml` | **Here** | The comparison, and the dispatch it decides on |
+
+**The filename carries no cadence.** The harness file was
+`probe-model-version-nightly.yml` while being dispatch-only, which the harness
+section 2.0.1 recorded as a name describing a trigger it did not have. A name
+stating the subject survives a schedule arriving or being withdrawn.
+
+#### 4.23.2 It resolves a green harness first, like every other workflow here
+
+**The probe dispatches spend, so it is gated on the instrument exactly as the
+ladder is.** `tools.harness_pin` runs ahead of everything, the resolved commit
+is installed by sha rather than by branch, and `config/harness_pin.yaml` sets
+`require_green: true` on `main` against `gate-on-change.yml`.
+
+| Without the resolve | With it |
+|---|---|
+| A detector reading an unverified harness dispatches a live ladder on that basis | A red pairing stops at rung 0, which is what section 7.6 already decided for the ladder |
+
+**This is the one thing the harness-side probe could not have done**, and it is
+the second half of the owner's ruling. The pin lives here, the resolver imports
+no harness module by design, and neither was reachable from the other
+repository.
+
+#### 4.23.3 What it dispatches, which is this repository's own caller
+
+A changed engine dispatches that engine's weekly caller,
+`evaluate-<engine>-weekly.yml`, whose headers have named "the `workflow_run`
+dispatch from the probe" since they were written. **One engine only**: a
+version move at one provider says nothing about the others, and dispatching
+four would spend quota to re-measure three unchanged models.
+
+**Section 4.18.3 already stated the condition this completes.** A weekly run
+and an update-triggered run are the same measurement, so a weekly caller
+declines when the engine has already been evaluated since its model last
+changed. The baseline here is what makes that comparison possible.
+
+**`grok` is in scope and was not before.** The engine was rostered 2026-10-04
+and has had callers here since 2026-10-05; the harness dispatch enumerated
+three engines, so a quarter of the roster was unwatched.
+
+#### 4.23.4 A probe failure dispatches nothing
+
+**It means the detector is broken, which is an instrument defect**, and
+`framework-rules.md` section 3.1 keeps that apart from a model finding. A
+failed probe leaves its baseline untouched: overwriting it with nothing would
+make the next run report a change that never happened, which
+`execution.preflight.probe_all` already implements and which the harness
+section 4.4 states.
+
+#### 4.23.5 The green condition is checked, not reviewed
+
+**Two cases, because they ask different questions.** `MQC_CAS_UNI_115789`
+reads this repository's probe and asserts it resolves before it decides and
+dispatches the changed engine's own caller. `MQC_CAS_UNI_115790` calls the
+shared `cmn.ci_gating.ungated_dispatches` with this root, which reports **any**
+job here that dispatches a spending workflow without reading a green pairing
+from a job it needs, including one written later.
+
+| Asks | Case |
+|---|---|
+| Is the probe this repository has the one that was wanted | `115789` |
+| Is any dispatching job here ungated | `115790` |
+
+**A checker reporting nothing against a correct file says nothing about whether
+the file is correct**, which is why the first case exists beside the second.
+The harness `harness_ci_pipeline.md` section 8.9 specifies the checker and
+records that the retired probe's own dispatch job would have been reported by
+it.
+
+`MQC_CAS_UNI_115789` and `115790`, `MQC_REQ_CAS_CI_0064` and
+`MQC_REQ_CAS_PRE_0018`.
+
+### 4.24 The failure lister is the harness's, called from here
+
+Added 2026-10-29. `model_running_jobs.md` section 4.5 tells an operator how to
+read which cases went red, and the lister it gave was an inline program nothing
+linted and no case could reach, reading only `failure` elements so that a leg
+whose cases broke printed nothing and read as clean.
+
+**The replacement is `python -m cmn.junit_outcomes`**, specified in the harness
+at `cmn_verdict_and_cli.md` section 7.12. The harness runbook documented the
+same command, so a copy under `tools/` here would be the second copy of a
+convenience that nothing compares.
+
+| | |
+|---|---|
+| Where the implementation lives | The harness, in `cmn/`, which it ships |
+| What this repository owns | The runbook section naming the command |
+| What owning more would have cost | A tool here, drifting from the harness one |
+
+**This is the rule section 5 already states**, applied to an operator command
+rather than to a standard: one implementation, called with each root. A tool
+written here would have been another place in the two repositories where the
+same JUnit report is read, and the only one no case compares.
+
+#### 4.24.1 A case asserts it from here, and that is not duplication
+
+`MQC_CAS_UNI_115791` calls the harness entry point from this repository and
+asserts it reads a planted report. **It overlaps the harness case
+deliberately**: `MQC_CMN_UNI_112432` asserts what the tool does, and this one
+asserts that a consumer can reach it at all. The second is what a wheel that
+stopped shipping `cmn/` would break, and the first would go on passing in the
+harness checkout while every runbook here named a command that no longer ran.
+
+`MQC_CAS_UNI_115791` and `MQC_REQ_CAS_CI_0065`.
 
 ## 4A. The harness is a dependency, not the directory next door
 
@@ -3576,6 +3718,46 @@ retracted and now fails again, which is exactly the flip this marker names.
 It is not quarantine and it is not a verdict exemption. Nothing here changes a
 gate: a P0 or P1 failure fails the run whether its finding is filed, held or
 withdrawn (section 9.2).
+
+### 9.4.9 Resolution is held to the rules the hold is held to, and was not
+
+Added 2026-10-29 at the project owner's instruction, who asked that
+`resolve_upstream` be made correct before a live rerun fed it.
+
+**Two rules were written for the hold and neither was applied to resolution.**
+Section 9.4.1 calls crediting a vendor with a correction they did not make the
+error that most damages a published report, and resolution is the only path
+that does the crediting, so it is the path that needed them most.
+
+| Rule | `hold_unreproduced` | `resolve_upstream`, until now |
+|---|---|---|
+| A case the run did not measure as passing keeps its finding (9.4.7.1) | Holds it | **Resolved it** |
+| A finding already withdrawn as ours is left alone (9.4.1) | Leaves it | **Flipped it to the vendor's fix** |
+
+**The first is the worse one and it scales with the dependency graph.** A case
+absent from the failures was not necessarily measured: it may have skipped
+behind a failed foundation, behind a missing recording, or been deselected.
+With one P0 foundation red, every dependent's open finding was absent from the
+failures, so a live run asked to resolve would have retired all of them as
+fixed upstream on a run that measured none of them. That is the openai
+`134401` and `134402` case of section 9.4.7.1, with the consequence pointed at
+a vendor instead of at our own record.
+
+**The second inverts an answer somebody already gave.** A withdrawn finding is
+one this project examined and retracted as its own defect. Rewriting it as
+"resolved upstream" claims the vendor fixed something we had already said was
+never theirs, and it overwrites the withdrawal's recorded reason.
+
+**A held finding is deliberately still resolvable.** It is an absence of a
+measurement rather than a conclusion, so a later live run that measures the
+case as passing is exactly the evidence the hold was waiting for. Resolution
+keeps `held_on` and `held_reason` where it finds them, because how a finding
+reached resolution is part of its history.
+
+**`MQC_CAS_UNI_115793` and `115794` assert the two**, with
+`MQC_REQ_CAS_COR_0058`. Each was written to fail against the shipped function
+before it was corrected, which is what section 9.4.7.1's own case did for the
+hold.
 
 ### 9.5 Filing needs three sources joined, and nothing joined them
 

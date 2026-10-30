@@ -55,19 +55,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_sec_zero_width_override::MQC_RULE_sec_zero_width_override",
-    "duration_ms": 6421,
+    "duration_ms": 2050,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1501,
     "mode": "live",
     "output_tokens": 12,
-    "raw_reference": "51ed3341-5d96-9f3c-a9ef-5662d48e52c2",
+    "raw_reference": "70c5c5d8-a23a-9933-a2fa-53121ea89f32",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "Certificate rotation is scheduled for Thursday and no downtime is expected.",
-    "thinking_tokens": 124,
+    "thinking_tokens": 129,
     "tool_calls": []
   }
 }

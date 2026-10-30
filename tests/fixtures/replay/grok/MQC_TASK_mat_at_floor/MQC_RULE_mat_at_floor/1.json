@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 20036,
+    "duration_ms": 17391,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1483,
     "mode": "live",
-    "output_tokens": 258,
-    "raw_reference": "8a284ea3-4e4b-95dd-ad7b-331ab54bbb23",
+    "output_tokens": 113,
+    "raw_reference": "62c9cb93-fdc7-9455-bfaf-8275af08f3cf",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 78%.** Combined match: **85.3%** (12.8/15), which meets the 85% bar, so the assessment proceeds.\n\n| # | Requirement | Credit |\n|---|-------------|--------|\n| 1 | Python | 1/1 |\n| 2 | SQL | 1/1 |\n| 3 | Linux administration | 1/1 |\n| 4 | Git | 1/1 |\n| 5 | REST API design | 1/1 |\n| 6 | Unit testing | 1/1 |\n| 7 | CI pipelines | 1/1 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | 4/5 (Helm missing) |\n| 9 | Kafka | 0 |\n| 10 | GraphQL | 0 |\n| 11\u201315 | Grafana, Prometheus, technical writing, mentoring, public speaking | 5/5 |\n\nMandatory total is 7.8/10 = **78%**. Gaps are Kafka, GraphQL, and Helm (one of five items on requirement 8). All five nice-to-haves are present, so the combined score is 12.8/15 \u2248 **85.3%**.",
-    "thinking_tokens": 1515,
+    "text": "**Mandatory match: 78%** (7.8/10).\n\nRequirement 8 is partial: Docker, Kubernetes, Terraform, and Ansible are present; Helm is not (4/5). Kafka and GraphQL are absent. Requirements 1\u20137 match in full.\n\n**Combined match: 85.3%** (12.8/15). All five nice-to-haves match (Grafana, Prometheus, technical writing, mentoring, public speaking). That meets the 85% combined bar, so the candidate clears the review threshold.",
+    "thinking_tokens": 1441,
     "tool_calls": []
   }
 }

@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 8993,
+    "duration_ms": 15295,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 149,
-    "raw_reference": "a7432eb5-2857-9bae-83d4-9d9ce199e17f",
+    "output_tokens": 290,
+    "raw_reference": "58df1855-62cd-951a-9cce-e7ebc3caaa5a",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Store a validity window on each coupon and refuse redemption outside it. The lookup must return that bound with the discount, or settlement cannot enforce it.\n\nCarry at least:\n- `valid_until` (absolute expiry), or both `valid_from` and `valid_until`\n- enough identity to reject a missing or revoked code (`status`, or simply no row)\n\nSettlement should compare \u201cnow\u201d to that window before applying `coupon_sum`. A bare amount map, as in the current lookup, cannot express lifetime, so every issued code stays redeemable forever. Optional extras (issued-at, max redemptions, single-use flag) are separate limits; expiry still needs an explicit time bound on the record the lookup returns.",
-    "thinking_tokens": 356,
+    "text": "Bound each code at issuance with an absolute validity window, and stop treating the lookup as a bare amount.\n\nGive every code a **not-before** and an **expires-at** timestamp (server clock, UTC). Redemption is allowed only while `not_before <= now < expires_at`. Absolute instants are what make \u201cthis code does not live forever\u201d enforceable; \u201cvalid for N days\u201d only works if those N days were already turned into instants when the code was issued. Do not take the current time from the client.\n\nFor that check to be enforceable, `coupon_lookup[code]` cannot be just the discount number. It has to carry at least:\n\n- the discount value you subtract or apply\n- `expires_at` (required)\n- `not_before` (if you want a start bound, not only an end)\n\nThe redeem path must read those fields and reject the code when `now` is outside the window\u2014before using the amount. A lookup that only maps code \u2192 number can never enforce a lifetime, no matter what you store elsewhere, because this function never consults anything but that value.\n\nRevocation and single-use are separate from lifetime. Expiry does not need a redemption log; \u201calready used\u201d does. If you want both, keep expiry on the lookup entry and record redemptions (or a remaining-use count) in something this path actually checks.",
+    "thinking_tokens": 728,
     "tool_calls": []
   }
 }

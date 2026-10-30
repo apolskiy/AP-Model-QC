@@ -3,7 +3,7 @@
 """Unit preconditions enforcing on this tree the code-style rules pylint cannot express.
 
 Created: 2026-09-23
-Last updated: 2026-10-28
+Last updated: 2026-10-29
 
 This file contains nineteen cases, each calling a harness checker with this repository's
 root. They check annotations, the PEP 563 prohibition, MIT SPDX headers on code,
@@ -47,6 +47,7 @@ less often.
 #   115506  an_identifier_outside_its_module_block_is_reported
 # TestMQCCaseModuleContents
 #   115711  a_case_module_holding_support_code_is_reported
+#   115795  a_collected_module_no_gate_selects_is_reported
 # TestMQCBoundedSubprocesses
 #   115712  a_subprocess_without_a_timeout_is_reported
 # TestMQCModuleRunway
@@ -86,6 +87,7 @@ from cmn.mutation_guard import imported_harness_root
 from cmn.case_module_standards import (
     extraction_problems,
     unbounded_subprocess_calls,
+    ungated_modules,
 )
 from cmn.document_standards import runbook_problems
 from cmn.case_summary import summary_problems
@@ -372,6 +374,35 @@ class TestMQCCaseModuleContents:
             f"{len(problems)} case module(s) hold support code that belongs in "
             f"a sibling module, or carry a lapsed declaration: "
             + "; ".join(problems)
+        )
+
+    @story("Collected is not the same as run")
+    def MQC_CAS_UNI_115795_a_collected_module_no_gate_selects_is_reported(
+        self,
+    ) -> None:
+        """Every collected module here names a gate marker, or its cases do.
+
+        **Collected is not the same as run.** Every gate runs ``-m <marker>``,
+        so a module assigning no ``pytestmark`` and holding no marked case is
+        collected, deselected and reported as nothing: the run is green and its
+        cases never executed. `mqc_uni_finding_retirement.py` arrived that way
+        on 2026-10-29 and the gate's total fell by four with nothing failing.
+
+        **The constructed legs are in the harness**, where
+        `MQC_CMN_UNI_112527` builds an ungated module and an unmarked one and
+        reads both. This asserts the state of this repository, which is the
+        half the harness cannot see.
+
+        Design: ``harness_test_taxonomy.md`` section 13.6.
+
+        Returns:
+            None
+        """
+        root = Path(__file__).resolve().parents[2]
+        problems = ungated_modules(root)
+        assert not problems, (
+            f"{len(problems)} collected module(s) carry no gate marker, so "
+            f"every gate deselects their cases: " + "; ".join(problems)
         )
 
 

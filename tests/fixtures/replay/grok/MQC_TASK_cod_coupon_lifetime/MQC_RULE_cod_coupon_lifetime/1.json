@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 9416,
+    "duration_ms": 11386,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 139,
-    "raw_reference": "d0755216-db16-9275-a28a-81c7ae4efa93",
+    "output_tokens": 294,
+    "raw_reference": "8b975875-afef-99f6-b19c-057e03682fa4",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Give every code a validity window and store that window with the code, then reject redemption outside it.\n\nThe lookup should stop being a bare amount and become a record that includes at least:\n\n- the discount value\n- `valid_from` (or issued-at)\n- `expires_at`\n\nSettlement must compare those timestamps to the redemption time and refuse the code if `now` is before `valid_from` or after `expires_at`. Without the timestamps on the lookup entry, the redeem path has nothing to enforce, so a code stays valid forever. A fixed TTL only works if issuance time is also stored (or the expiry is computed and stored when the code is issued).",
-    "thinking_tokens": 536,
+    "text": "Bound each code with an absolute expiry instant, and make the lookup return that instant so settlement can reject the code before applying its value.\n\nThe current lookup only yields a number (`coupon_lookup[code]` is subtracted directly). A lifetime rule that lives only in issuance policy is not enforceable there: once the code is in the map, every later call treats it as valid. The lookup entry itself has to carry the bound.\n\nPrefer an absolute `expires_at` (UTC timestamp or equivalent) over a bare TTL. A TTL alone cannot be checked unless the entry also stores `issued_at` (or `not_before`), because \u201cvalid for N days\u201d has no anchor at redemption time. Absolute expiry is the value the check actually compares.\n\nMinimum entry the lookup must carry:\n\n- `value` \u2014 the amount currently used as `coupon_sum`\n- `expires_at` \u2014 the last instant the code may be applied\n\nSettlement then has to read both and refuse the code when `now >= expires_at` (and when the code is missing). Returning only the value, or checking expiry in a side table the settlement path does not consult, leaves the bound unenforceable.\n\nOptional fields that make the same check stricter, not a substitute for `expires_at`: `not_before`, a revoked/active flag, and a redemption limit if codes are single-use. Clock source should be the server\u2019s, not the client\u2019s.",
+    "thinking_tokens": 408,
     "tool_calls": []
   }
 }

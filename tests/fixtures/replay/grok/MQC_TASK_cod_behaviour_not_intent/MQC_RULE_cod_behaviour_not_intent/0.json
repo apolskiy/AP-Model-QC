@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
-    "duration_ms": 4071,
+    "duration_ms": 4673,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1337,
     "mode": "live",
-    "output_tokens": 55,
-    "raw_reference": "841510d7-645f-9cd3-a0a8-f629eb45822f",
+    "output_tokens": 54,
+    "raw_reference": "ec1463e1-e343-93f0-bf53-e2fd8a830654",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "It returns the first two rows in their original order, with scores 10 and 90.\n\n`sorted` builds a new list and that result is discarded, so the function never reorders `entries`. It then slices the original list and returns `entries[:limit]`.",
-    "thinking_tokens": 264,
+    "text": "It returns the first two rows in the original order, scoring 10 and 90.\n\n`sorted` builds a new list and that result is discarded, so the input is never reordered. The function then slices `entries` and returns `entries[:limit]`.",
+    "thinking_tokens": 325,
     "tool_calls": []
   }
 }

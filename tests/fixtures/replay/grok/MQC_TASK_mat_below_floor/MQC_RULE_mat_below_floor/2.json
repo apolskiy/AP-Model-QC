@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 6094,
+    "duration_ms": 9003,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1444,
     "mode": "live",
     "output_tokens": 54,
-    "raw_reference": "25e133db-7835-90e0-a3fd-a27004d0616d",
+    "raw_reference": "f308c1a3-2b3b-9ff3-8402-bbf831cbb8fc",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "**Mandatory match: 70% (7 of 10).**\n\nThat is below the **78 percent** cutoff. The candidate is missing Docker, Kubernetes, Terraform, Ansible, Helm, Kafka, and GraphQL.\n\nNice-to-have requirements were not evaluated.",
-    "thinking_tokens": 437,
+    "thinking_tokens": 805,
     "tool_calls": []
   }
 }

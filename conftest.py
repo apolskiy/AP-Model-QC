@@ -3,7 +3,7 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-10-28
+Last updated: 2026-10-29
 
 This file contains the pytest hooks for the case suite. They declare the
 execution flags, record what the run was invoked with, label severity, select
@@ -65,12 +65,14 @@ from cmn.selection import (
     select_traced_cases,
 )
 from cmn.pytest_support import (
+    adopt_provenance,
     announce_test,
     add_mqc_options,
     configure_invocation,
     label_band_suite,
     label_grouping,
     label_priority_severity,
+    publish_run_provenance,
 )
 from cmn.dependencies import (
     adopt_prerequisites,
@@ -82,12 +84,42 @@ from cmn.dependencies import (
 from cmn.prerequisites import record_rule_set_hash
 from cmn.case_steps import begin_case_steps, record_assertion, record_call
 from execution.adapters.registry import credential_variables
+from execution.preflight import served_facts
 
 # EVERY ASSERTION A PRECONDITION REACHES IS A RECORDED STEP, including those in
 # the support modules (harness harness_test_taxonomy.md section 8.2.4). So
 # nothing under `tests` is imported before this line: a module pytest has
 # already loaded cannot be rewritten, and its assertions would go unrecorded.
 pytest.register_assert_rewrite("tests")
+
+# WHAT THIS RUN MEASURED AGAINST, BUILT ONCE. Two artifacts carry it and two
+# hooks write them, `pytest_configure` for the Allure properties file and a
+# session fixture for the JUnit properties, so the mapping is held between
+# them rather than built twice: building it twice would ask a live provider
+# twice (harness `cmn_verdict_and_cli.md` section 5.6).
+_RUN_PROVENANCE: dict[str, str] = {}
+
+
+@pytest.fixture(name="mqc_run_provenance", scope="session", autouse=True)
+def fixture_mqc_run_provenance(record_testsuite_property: Any) -> None:
+    """Carry the run's provenance into the JUnit report's root element.
+
+    **A fixture rather than a hook, because pytest offers no other route.**
+    ``record_testsuite_property`` is a session-scoped fixture, so the only way
+    to reach it is to depend on it, and autouse is what makes that happen on a
+    run that requested nothing.
+
+    The mapping comes from :data:`_RUN_PROVENANCE` rather than being rebuilt,
+    for the reason stated where it is declared.
+
+    Args:
+        record_testsuite_property (Any): pytest's recorder, which writes a
+            property under the report's root element.
+
+    Returns:
+        None
+    """
+    publish_run_provenance(record_testsuite_property, _RUN_PROVENANCE)
 
 
 def pytest_addoption(parser: Any) -> None:
@@ -128,6 +160,17 @@ def pytest_configure(config: Any) -> None:
     warn_orphan_credentials(root, credential_variables())
     warn_orphan_credentials(root.parent / "AP-Harness-QC", credential_variables())
     configure_invocation(config)
+    # WHICH MODEL THIS RUN MEASURED AGAINST, in both artifacts. This is the
+    # repository whose runs are graded, so it is the one whose reports are
+    # worthless without it: comparing two runs means knowing whether the model
+    # moved between them, and an Actions run's results age out of retention
+    # while the collected artifact does not. Harness `cmn_verdict_and_cli.md`
+    # section 5.6.
+    #
+    # THE READER IS HANDED OVER RATHER THAN CALLED HERE. `cmn` does not import
+    # `execution`, and this file is where the two already meet; when to ask is
+    # the shared decision and is made there.
+    _RUN_PROVENANCE.update(adopt_provenance(config, served_facts))
 
 
 def pytest_collection_modifyitems(

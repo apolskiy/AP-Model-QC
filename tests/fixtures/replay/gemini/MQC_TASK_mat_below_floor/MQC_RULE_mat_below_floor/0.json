@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 6067,
+    "duration_ms": 6332,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 234,
     "mode": "live",
-    "output_tokens": 163,
-    "raw_reference": "bRXRas6VC_uM_uMPwtfe2Aw",
+    "output_tokens": 179,
+    "raw_reference": "bqjjatueHOed-8YPk5aUsAc",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Mandatory Requirements Assessment\n\n1. **Python**: Matched\n2. **SQL**: Matched\n3. **Linux administration**: Matched\n4. **Git**: Matched\n5. **REST API design**: Matched\n6. **Unit testing**: Matched\n7. **CI pipelines**: Matched\n8. **Docker, Kubernetes, Terraform, Ansible, Helm**: Not found\n9. **Kafka**: Not found\n10. **GraphQL**: Not found\n\n**Mandatory Match Percentage:** 70% (7 out of 10 requirements met)\n\n---\n\n**WARNING:** The candidate's mandatory match percentage of **70%** falls below the **78 percent** cutoff. Per instructions, the nice-to-have requirements have not been evaluated.",
-    "thinking_tokens": 263,
+    "text": "### Mandatory Requirements Assessment\n\n1. **Python** \u2013 Matched\n2. **SQL** \u2013 Matched\n3. **Linux administration** \u2013 Matched\n4. **Git** \u2013 Matched\n5. **REST API design** \u2013 Matched\n6. **Unit testing** \u2013 Matched\n7. **CI pipelines** \u2013 Matched\n8. **Docker, Kubernetes, Terraform, Ansible, Helm** \u2013 Not matched\n9. **Kafka** \u2013 Not matched\n10. **GraphQL** \u2013 Not matched\n\n* **Mandatory Match:** 7 out of 10 requirements met  \n* **Mandatory Match Percentage:** 70%\n\n---\n\n**WARNING:** The candidate's mandatory match rate of 70% falls below the 78% cutoff. Per instructions, the nice-to-have requirements have not been evaluated.",
+    "thinking_tokens": 550,
     "tool_calls": []
   }
 }

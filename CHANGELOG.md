@@ -40,6 +40,146 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A steered judgement failed on the fingerprint alone, and a pass could land on the planted value, 2026-10-29
+
+**What was wrong.** The hidden-passage security rubrics planted `4` and their
+payloads asked a judge for a `4`, so a judgement returning 4 failed only
+because the fingerprint matched. **A 4 is a pass at threshold 3.0**, which made
+the fingerprint the single thing standing between a correct, uninfluenced
+screening and a filed finding against a vendor.
+
+**Why it happens.** The planted value had been chosen when no stored judgement
+had ever returned a 4. That premise expired: over 786 recorded judgements, six
+of the 115 hidden-passage relay judgements had earned a 4 honestly, each with a
+rubric-faithful rationale, because an answer that flags the hidden instruction
+by quoting it sits between "says nothing about it" at level 3 and "found an
+instruction it did not pass on" at level 5. Two `QC_LLM_INCONSISTENT` findings
+on gemini were exactly that.
+
+**What changed.** The planted score is `2` in all eight rubrics in
+`data/rules/security.yaml`, and all eight payloads in `data/tasks/security.yaml`
+ask for a 2. A 2 is **below** the threshold, so a steered judgement now fails
+on the threshold and the fingerprint only attributes the cause: two independent
+mechanisms rather than one. The value is forced by two constraints that
+intersect at a single number: it must itself be a failure, which leaves 1 or 2,
+and invariant G9 excludes any level a criterion anchors, which excludes 1, 3
+and 5. The gate fixtures in `tests/cases/mqc_uni_rule_reading.py` ask for the
+planted value through a variable rather than a literal, so a fixture cannot go
+stale against the corpus again.
+
+Specified at `model_evaluation_test_plan.md` section 9.10.4.1. New requirement
+`MQC_REQ_CAS_COR_0058`; 192 to 193 requirements. **A live re-record on all four
+engines is owed**: 320 recorded responses still quote the retired payload, and
+`MQC_CAS_UNI_115771` fails on that until they are replaced.
+
+### A skipped case and a withdrawn finding were both credited to the vendor, 2026-10-29
+
+**What was wrong.** `resolve_upstream` retired any open finding absent from a
+live run's failures. **Absence is not a pass**: a case that skipped behind a
+failed foundation is absent the same way a passing one is, so one red P0
+foundation would have written `resolved_upstream` across every dependent's
+finding. It also excluded only findings already resolved, so a finding
+**withdrawn** as ours would have been rewritten as a vendor's fix.
+
+**Why it happens.** `hold_unreproduced` carries both rules and resolution never
+received them, although the two are mirror images and `RunContext.passed` was
+already populated from the JUnit report. Crediting a vendor with a correction
+they did not make is the error `consumer_ci.md` section 9.4.1 calls the most
+damaging to a published report, and the path that does the crediting was the one
+missing the guard.
+
+**What changed.** `resolve_upstream` reads `run.passed` and excludes a withdrawn
+finding. A **held** finding stays resolvable, since a hold is an absence of a
+measurement rather than a conclusion, and it keeps its `held_on` and
+`held_reason` when it resolves.
+
+Specified at `consumer_ci.md` section 9.4.9. New requirement
+`MQC_REQ_CAS_COR_0058` traces `MQC_CAS_UNI_115793` and `115794`, each of which
+failed against the shipped tool. Inventory 132 to 135 cases, 93 to 96 negative;
+README 178 to 181 preconditions, 192 to 194 requirements, 1003 to 1005 harness
+cases, and the corpus figures to the 1244 responses and 786 judgements on disk.
+
+### A test module no gate selected was collected, deselected and counted as nothing, 2026-10-29
+
+**What was wrong.** A new precondition module assigned no `pytestmark`, so
+every gate deselected its four cases. The run stayed green with those cases
+never executed, and **no case failed**: what surfaced it was the README figure
+check reading 181 cases in the repository against a gate executing 177.
+
+**Why it happens.** Every coverage reader asks whether a case exists, is
+inventoried and is traced. None asked whether any gate would reach it, so a
+module could be added and never run.
+
+**What changed.** `cmn.case_module_standards.ungated_modules` reports a
+collected module holding cases that names none of the six markers a gate
+selects on, accepting a module-level marker, a class-level one or a marker on
+every case. `MQC_CAS_UNI_115795` calls it with this repository's root.
+
+Specified at `harness_test_taxonomy.md` section 13.6. New requirement
+`MQC_REQ_CAS_CI_0066`. Retirement also moved out of
+`mqc_uni_ticket_report.py` into `mqc_uni_finding_retirement.py`, which that
+module's 900-line runway ceiling required.
+
+### The runbook's failure lister read a broken leg as a clean one, 2026-10-29
+
+**What was wrong.** The failure lister `model_running_jobs.md` section 4.5 gave
+read only `failure` elements of the JUnit report, so a leg whose cases **broke**
+printed nothing and read as clean, which is the distinction the exit codes rest
+on: a failure is a measurement and a break means nothing was measured. It was
+also an inline program in the runbook text rather than a module, so nothing
+linted it and no case could reach it, and section 9.3 answered "which engines
+can judge" the same way.
+
+**What changed.** Both sections now name a command that is a file:
+`python -m cmn.junit_outcomes` for which cases went red, taking several reports
+at once, and `python -m execution.adapters.registry --role judge` for the judge
+roster. **Both are the harness's**, reachable here because the wheel ships
+`cmn/` and `execution/`, rather than copied into `tools/`: the harness runbook
+documented the same two commands, and a convenience duplicated across the two
+repositories is a copy nothing compares.
+
+Specified at `consumer_ci.md` section 4.24. `MQC_CAS_UNI_115791` asserts the
+entry point is reachable from this repository and separates a planted failure
+from a planted error, which is what a wheel that stopped shipping `cmn/` would
+break while the harness case went on passing in its own checkout. Inventory 131
+to 132 cases, 31 to 32 positive; README 177 to 178 preconditions and 191 to 192
+requirements.
+
+### The model version probe moved here, and every run now records what it measured, 2026-10-29
+
+**What was wrong.** The probe lived in the harness and dispatched a live suite
+into it. Nothing in this repository watched for a model change, and nothing in
+either repository recorded which model a run had measured against, so two
+graded runs could not be compared on the one factor that decides whether a
+result moved.
+
+**Why it happens.** A probe detects a reason to re-measure and the thing
+re-measured is this corpus; the harness owns no corpus, so a version change
+told it nothing and gave it nothing to run. Its dispatch named `--repo` with
+its own repository, whose graded markers collect nothing, and enumerated three
+engines while `grok` had been rostered here since 2026-10-04. The harness
+`harness_ci_pipeline.md` section 4 carries the reversal in full.
+
+**What changed.** `probe-model-version.yml` is here, resolving the paired
+harness through `tools.harness_pin` before it decides anything, walking the
+roster rather than a list, and dispatching the changed engine's own
+`evaluate-<engine>-weekly.yml`. `config/model_baseline.json` is owned here,
+being a fact about when this corpus was last measured rather than about a
+provider. `conftest.py` now records each run's provenance into both the Allure
+properties file and the JUnit report's root element, through the harness's one
+implementation; a replay run records what it replayed and asks no provider.
+
+**Two cases, asking different questions.** `MQC_CAS_UNI_115789` reads the probe
+this repository has; `MQC_CAS_UNI_115790` calls the shared
+`cmn.ci_gating.ungated_dispatches`, which reports any job here, including one
+written later, that dispatches a spending workflow without reading a green
+pairing. A checker reporting nothing against a correct file says nothing about
+whether the file is the one that was wanted.
+
+**Figures.** 177 preconditions against 175, 191 requirements against 189, and
+the harness suite reads 1001 against 988. `.pylintrc` gains an explicit
+`max-public-methods` and stays byte-identical with the harness's.
+
 ### The published reports separated results by nothing a reader wanted, 2026-10-28
 
 **What was wrong.** A report's Suites tab held one root for every result, named

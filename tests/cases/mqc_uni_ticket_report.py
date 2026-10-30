@@ -3,16 +3,19 @@
 """Unit preconditions for the ticket page a graded finding is filed from, and its register.
 
 Created: 2026-10-12
-Last updated: 2026-10-28
+Last updated: 2026-10-29
 
-This file contains seventeen cases on ``tools/ticket_report.py`` and the findings,
+This file contains fifteen cases on ``tools/ticket_report.py`` and the findings,
 recordings, evidence and register tools it joins. ``TestMQCTicketInput`` checks a
 ticket's input is the recorded request, and that findings are retired, withdrawn or
 filed only on what reproduced. ``TestMQCTicketFormat`` checks a ticket shows every
-observation with its judgement, a correct answer and a command that runs;
-``TestMQCHoldNeedsAPass`` that a held finding needs a pass and keeps its date and
-reason; and ``TestMQCTicketHygiene`` covers fences, stale populations, labels, one
-ticket per finding, payload framing, tool calls and engine page names.
+observation with its judgement, a correct answer and a command that runs; and
+``TestMQCTicketHygiene`` covers fences, stale populations, labels, one ticket per
+finding, payload framing, tool calls and engine page names.
+
+**Retirement left for ``mqc_uni_finding_retirement.py``** on 2026-10-29, when this
+module reached the 900-line runway ceiling and holding and resolving had become a
+subject of their own (``code-style.md`` section 5.1).
 
 **These run in the ``unit`` precondition gate.** A ticket is the last artefact a person
 reads before filing with a vendor, so these keep its evidence honest before any graded
@@ -44,9 +47,6 @@ asked about is their model.
 # TestMQCTicketFormat
 #   115745  a_ticket_shows_every_observation_with_its_judgement
 #   115746  a_ticket_states_a_correct_answer_and_a_command_that_runs
-# TestMQCHoldNeedsAPass
-#   115750  a_finding_whose_case_skipped_is_not_held
-#   115763  a_held_finding_keeps_its_date_and_reason_on_a_later_run
 # TestMQCTicketHygiene
 #   115751  a_response_carrying_a_fence_stays_inside_its_own
 #   115752  a_finding_failing_every_observation_drops_a_stale_population
@@ -66,7 +66,6 @@ from typing import Any
 
 import pytest
 
-from cmn.case_steps import step
 from cmn.grouping import story
 
 from tests.cases.graded_support import case_for
@@ -92,7 +91,6 @@ from tools.findings import (
     _first_sentence,
     hold_unreproduced,
     merge,
-    parse_passed,
 )
 from tools.ticket_files import (
     GENERATED_MARK,
@@ -462,90 +460,6 @@ class TestMQCTicketFormat:
         assert "curl https://api.openai.com/v1/chat/completions" in block, (
             "an engine whose recording is the wire body offers no curl"
         )
-
-
-class TestMQCHoldNeedsAPass:
-    """A finding leaves the bug file only when its case was measured passing."""
-
-    @story("A skip is not a pass")
-    def MQC_CAS_UNI_115750_a_finding_whose_case_skipped_is_not_held(self, tmp_path: Path) -> None:
-        """A skipped case keeps its finding; only a passing one is held.
-
-        Design: ``consumer_ci.md`` section 9.4.7.1.
-
-        Args:
-            tmp_path (Path): Where the constructed report is written.
-
-        Returns:
-            None
-        """
-        report = tmp_path / "junit.xml"
-        report.write_text(
-            '<testsuites><testsuite>'
-            '<testcase name="MQC_EVL_EVAL_134401_passed"/>'
-            '<testcase name="MQC_EVL_EVAL_134402_skipped">'
-            '<skipped message="QC_HARNESS_DEPENDENCY_UNMET"/></testcase>'
-            '<testcase name="MQC_EVL_EVAL_134400_failed">'
-            '<failure message="QC_LLM_MATCH_MISCOMPUTED"/></testcase>'
-            '</testsuite></testsuites>',
-            encoding="utf-8",
-        )
-        passed = parse_passed(report)
-        assert passed == frozenset({"MQC_EVL_EVAL_134401_passed"}), passed
-
-        run = RunContext(
-            engine="openai", mode="replay", models={}, expected={},
-            today=date(2026, 10, 15), resolve=False, hold_unreproduced=True, passed=passed,
-        )
-        register = {
-            name: {"case": name, "status": "open", "observations": "1 of 5 passed"}
-            for name in ("MQC_EVL_EVAL_134401_passed", "MQC_EVL_EVAL_134402_skipped")
-        }
-        hold_unreproduced(register, {}, run)
-
-        assert register["MQC_EVL_EVAL_134401_passed"]["status"] == "not_reproduced"
-        assert register["MQC_EVL_EVAL_134402_skipped"]["status"] == "open", (
-            "a finding whose case was skipped, and so never measured, was held as "
-            "no longer reproducing"
-        )
-
-    @story("A held finding is held once")
-    def MQC_CAS_UNI_115763_a_held_finding_keeps_its_date_and_reason_on_a_later_run(
-        self,
-    ) -> None:
-        """Holding an entry already held changes nothing, so a written reason survives.
-
-        Design: ``consumer_ci.md`` section 9.4.8.
-
-        Returns:
-            None
-        """
-        case = "MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome"
-        reason = "Did not reproduce after the case changed; written by hand."
-        register = {
-            case: {
-                "case": case, "status": "not_reproduced", "observations": "1 of 5 passed",
-                "held_on": "2026-10-15", "held_reason": reason,
-            }
-        }
-        run = RunContext(
-            engine="openai", mode="replay", models={}, expected={},
-            today=date(2026, 10, 18), resolve=False, hold_unreproduced=True,
-            passed=frozenset({case}),
-        )
-        step(1, "re-run the hold on an entry already held with a reason written by hand")
-        lines = hold_unreproduced(register, {}, run)
-        assert register[case]["held_reason"] == reason, (
-            f"a later run wrote over the held reason: {register[case]['held_reason']!r}"
-        )
-
-        step(2, "read the date the entry was first held")
-        assert register[case]["held_on"] == "2026-10-15", (
-            f"a later run moved the date it was first held: {register[case]['held_on']!r}"
-        )
-
-        step(3, "read what the run reported about the entry")
-        assert not lines, f"an entry already held was reported as newly held: {lines}"
 
 
 class TestMQCTicketHygiene:

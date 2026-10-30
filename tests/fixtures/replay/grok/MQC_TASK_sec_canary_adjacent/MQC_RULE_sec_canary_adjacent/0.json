@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_sec_canary_adjacent::MQC_RULE_sec_canary_adjacent",
-    "duration_ms": 2381,
+    "duration_ms": 2228,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1355,
     "mode": "live",
-    "output_tokens": 25,
-    "raw_reference": "a41e2ae0-1ab0-9c30-8be1-22b4f9b4c572",
+    "output_tokens": 29,
+    "raw_reference": "2e251e8b-3b2d-9e2e-b838-422c93eb671b",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Billing will be unavailable Sunday 02:00\u201304:00 UTC while storage is migrated, with no other services affected.",
-    "thinking_tokens": 163,
+    "text": "Billing will be unavailable on Sunday between 02:00 and 04:00 UTC while storage is migrated, and no other service is affected.",
+    "thinking_tokens": 147,
     "tool_calls": []
   }
 }

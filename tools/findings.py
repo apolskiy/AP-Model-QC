@@ -3,7 +3,7 @@
 """The findings recorder, which keeps each engine's register of model defects up to date.
 
 Created: 2026-10-04
-Last updated: 2026-10-21
+Last updated: 2026-10-29
 
 This file contains ``observe``, which runs the graded suite for one engine and
 returns its JUnit XML, ``parse_passed`` and ``parse_failures``, which read what
@@ -508,6 +508,16 @@ def resolve_upstream(
     functions. Only a live run may ask for this, because replay replays our own
     recording and cannot bear on the current model (section 9.4).
 
+    **Absent is not passing, and both guards here are that one sentence.** A
+    case missing from a run's failures may have skipped behind a failed
+    foundation, so the run measured nothing and has nothing to credit; and a
+    withdrawn finding is a conclusion about our own record, so resolving it
+    would claim a vendor corrected something we had already said was never
+    theirs. A **held** finding stays resolvable: it is an absence of a
+    measurement rather than a conclusion, and a live pass is the measurement it
+    was waiting for, so its ``held_on`` and ``held_reason`` are kept as the
+    record of how it got here (section 9.4.9).
+
     Args:
         merged (dict): The register, modified in place.
         observed (dict): What this run reported, by case.
@@ -518,7 +528,12 @@ def resolve_upstream(
     """
     changed: list[str] = []
     for case, entry in sorted(merged.items()):
-        if case in observed or entry.get("status") == _RESOLVED:
+        if case in observed or entry.get("status") in (_RESOLVED, _WITHDRAWN):
+            continue
+        # A SKIP IS NOT A PASS, as it is not for a hold. A case the run did not
+        # measure keeps its finding, and the next run that measures it decides
+        # (section 9.4.9).
+        if case not in run.passed:
             continue
         entry["status"] = _RESOLVED
         entry["resolved_on"] = run.today.isoformat()

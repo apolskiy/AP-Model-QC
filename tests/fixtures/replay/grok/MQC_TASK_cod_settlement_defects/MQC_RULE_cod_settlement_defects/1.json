@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
-    "duration_ms": 38849,
+    "duration_ms": 51520,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1455,
     "mode": "live",
-    "output_tokens": 408,
-    "raw_reference": "6fac0d0c-6f25-93b9-a4c0-9fc33a82a879",
+    "output_tokens": 431,
+    "raw_reference": "787b6f9e-8371-929c-b884-265e33a70f00",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The discount is applied backwards, coupons are only partly handled, and several inputs crash settlement. On the three production calls the results are -10, 0, and an exception.\n\n1. Tier percent is used as the price, not the discount. `total_amount * discount / 100` charges the tier rate instead of taking it off. Standard pays 20% of the basket; premium pays 30%, so premium is worse than standard. On a 100-unit basket that is 20 before coupons, not 80. Every buyer is undercharged; premium buyers are also treated worse than standard; the merchant loses the difference.\n\n2. The coupon is subtracted from that already-shrunk figure, and the result is not floored at 0. `settle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})` returns -10, not 50. `settle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})` returns 0, not 60. The buyer is credited or charged nothing; finance and the payment layer see a negative or zero total; the merchant eats the loss.\n\n3. Only `coupon_codes[0]` is read, while the name `coupon_sum` implies a total. Extra valid coupons are ignored. A buyer who stacked codes pays more than the offer allows.\n\n4. An unknown code is an uncaught `KeyError`. `settle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})` never returns a total. That buyer cannot check out; the storefront fails the request.\n\n5. An empty `coupon_codes` list raises `IndexError` on `[0]`. A normal no-coupon basket cannot be settled.\n\n6. An unknown `account_tier` raises `KeyError` on `DISCOUNT_BY_TIER`. A new or mistyped tier fails closed as a crash instead of a handled refusal.",
-    "thinking_tokens": 2607,
+    "text": "The function bills the wrong amount, can go negative, and crashes on bad inputs. Against the three production calls it returns **-10**, **0**, and a **KeyError**.\n\n1. **Tier percent is treated as the amount charged, not the amount off.** `total_amount * discount / 100` keeps 20% of a standard basket (and 30% of a premium one) instead of taking 20% off. On a 100-unit standard order that base is 20, not 80. Customers are undercharged; the merchant loses most of the sale. Premium customers are undercharged the same way.\n\n2. **The coupon is subtracted from that already-wrong base, so the balance can go negative.** `SAVE30` on the first call yields `20 - 30 = -10`. The customer is credited instead of charged; payments, refunds, and the ledger all see a negative amount owed. The second call settles at 0, so that customer pays nothing.\n\n3. **Only `coupon_codes[0]` is used.** The name `coupon_sum` is wrong: later codes are silently dropped, not added. A customer who passed more than one valid code does not get them. Callers cannot tell from the return value.\n\n4. **An unknown code crashes the checkout.** The third call looks up `\"NOPE\"` and raises `KeyError`. That customer cannot settle; the request fails instead of rejecting the coupon and still charging the tier price.\n\n5. **An unknown tier crashes the same way.** `DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for anything other than `\"standard\"` or `\"premium\"`. Those customers cannot check out.\n\n6. **No coupons crashes too.** An empty `coupon_codes` list raises `IndexError` on `[0]`. A customer with no coupon cannot use this function at all.\n\n7. **Money is computed with binary floats.** `/` yields a float, so non-round baskets can be off by fractions of a unit. Finance and the customer both see reconciliation drift.",
+    "thinking_tokens": 3102,
     "tool_calls": []
   }
 }

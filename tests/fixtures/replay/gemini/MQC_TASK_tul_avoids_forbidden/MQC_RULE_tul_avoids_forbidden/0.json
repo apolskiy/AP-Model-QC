@@ -86,32 +86,32 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_avoids_forbidden::MQC_RULE_tul_avoids_forbidden",
-    "duration_ms": 7824,
+    "duration_ms": 3141,
     "engine": "gemini",
     "finish_reason": "tool_calls",
     "input_tokens": 245,
     "mode": "live",
     "output_tokens": 47,
-    "raw_reference": "pBfRat6yLPWZ9MoPmvumgAY",
+    "raw_reference": "xaLjavazIfnA39IP4KPM4A0",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "",
-    "thinking_tokens": 200,
+    "thinking_tokens": 128,
     "tool_calls": [
       {
         "arguments": {
           "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "call_529688",
+        "call_id": "call_33408",
         "sequence": 0,
         "tool_name": "lookup_order"
       },
       {
         "arguments": {
-          "query": "damaged item refund"
+          "query": "damaged items refund"
         },
-        "call_id": "call_529689",
+        "call_id": "call_33409",
         "sequence": 1,
         "tool_name": "search_policy"
       }

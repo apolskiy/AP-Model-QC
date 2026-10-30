@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 5761,
+    "duration_ms": 6507,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 110,
     "mode": "live",
-    "output_tokens": 164,
-    "raw_reference": "Ng_RarOGNJio-8YPweGxuQc",
+    "output_tokens": 170,
+    "raw_reference": "V6Xjat2_NsaO1MkPy-2ggAs",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "**WARNING:** Gate requirement failed. The availability gate was not met; measured availability of 99.1% fell short of the 99.5% threshold by **0.4 percentage points** (or 0.4%). (The incident duration gate passed, as no incident exceeded 60 minutes).\n\n---\n\n### Weekly Availability Summary\n\n* **Measured Availability:** 99.1% (Target: \u2265 99.5% \u2014 **FAILED**)\n* **Total Incidents:** 2\n  * Incident 1: 12 minutes\n  * Incident 2: 41 minutes\n* **Total Downtime:** 53 minutes\n* **Max Incident Duration:** 41 minutes (Limit: \u2264 60 minutes \u2014 **PASSED**)",
-    "thinking_tokens": 448,
+    "text": "**WARNING:** Gate requirement failed. The availability gate was not met: measured availability was **99.1%**, falling short of the **99.5%** minimum threshold by **0.4%** (0.4 percentage points). (The incident duration gate passed, as the longest incident of 41 minutes did not exceed the 60-minute limit.)\n\n---\n\n### Weekly Availability Summary\n\n* **Measured Availability:** 99.1% (Target: $\\ge$ 99.5% \u2014 **FAILED**)\n* **Total Incidents:** 2\n  * Incident 1: 12 minutes\n  * Incident 2: 41 minutes (Target: $\\le$ 60 minutes \u2014 **PASSED**)\n* **Total Downtime:** 53 minutes",
+    "thinking_tokens": 475,
     "tool_calls": []
   }
 }

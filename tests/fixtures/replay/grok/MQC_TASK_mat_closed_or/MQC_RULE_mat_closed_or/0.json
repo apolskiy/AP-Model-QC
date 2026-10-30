@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
-    "duration_ms": 37770,
+    "duration_ms": 4169,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1309,
     "mode": "live",
-    "output_tokens": 63,
-    "raw_reference": "ceee37f4-983c-90b6-949a-df4a90bf44ca",
+    "output_tokens": 53,
+    "raw_reference": "0a52a2b6-598b-9f5c-9168-748c51b20dd7",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**100%**\n\nThe requirement is disjunctive: Python **or** Go **or** Rust. Any one of those languages satisfies it. The candidate lists Python, which is an exact match for an accepted option, so the requirement is fully met. SQL and Bash are additional and do not reduce that match.",
-    "thinking_tokens": 303,
+    "text": "**100%**\n\nThe requirement is an OR: any one of Python, Go, or Rust is enough. The candidate lists Python, which is in that set, so the requirement is fully met. SQL and Bash are extra and do not change the result.",
+    "thinking_tokens": 202,
     "tool_calls": []
   }
 }

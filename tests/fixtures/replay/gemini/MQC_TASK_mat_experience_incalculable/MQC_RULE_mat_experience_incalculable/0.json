@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 6663,
+    "duration_ms": 5705,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 135,
-    "raw_reference": "_BXRarmtL-OFjrEPirypyQk",
+    "output_tokens": 190,
+    "raw_reference": "M6njarK2IrSo_PUPkqqAuQU",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "To tailor your summary to meet the posting requirement, please provide your exact **number of years of backend engineering experience**. \n\n**What it costs not to supply this figure:**\nWithout a specific number of years, your application will almost certainly be screened out immediately by automated Applicant Tracking Systems (ATS) and recruiters who filter strictly for the mandatory 8-year threshold. Omitting it prevents us from demonstrating that you meet the baseline requirement, making strong accomplishments (like handling 40,000 orders/day) irrelevant to the initial hiring filter. \n\nOnce you provide your years of experience, I will integrate it into a compelling, requirement-matched rewrite.",
-    "thinking_tokens": 333,
+    "text": "To accurately tailor your summary to meet the posting requirement, **how many years of backend engineering experience do you have?**\n\n### What it costs not to supply this figure:\n* **Immediate Disqualification:** Most Applicant Tracking Systems (ATS) and recruiters screen specifically for the required hard cutoff (8 years). Without a stated number, the profile risks being automatically filtered out or passed over.\n* **Risk of Misrepresentation:** Fabricating or guessing \"8+ years\" without confirmation could lead to disqualification or reputational damage during background checks or technical screening. \n* **Loss of Impact:** Without an explicit timeframe, strong achievements (like handling 40,000 orders a day) lack senior-level context, making it harder to justify seniority for an 8-year role.\n\nOnce you provide your actual years of experience, I will draft a finalized, high-impact summary that aligns directly with the job requirement.",
+    "thinking_tokens": 290,
     "tool_calls": []
   }
 }

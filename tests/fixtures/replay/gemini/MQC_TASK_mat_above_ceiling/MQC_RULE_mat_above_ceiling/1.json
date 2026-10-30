@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 5588,
+    "duration_ms": 5983,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 225,
     "mode": "live",
-    "output_tokens": 242,
-    "raw_reference": "IRXRap7xI9SssOIP-IKJ4Ag",
+    "output_tokens": 191,
+    "raw_reference": "J6jjaoeGJ9DAsOIP5pnsoQc",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Assessment of Candidate (DOC_resume_ninety)\n\n#### Mandatory Requirements Analysis:\n1. **Python:** Met (Languages: Python)\n2. **SQL:** Met (Languages: SQL)\n3. **Linux administration:** Met (Platform: Linux administration)\n4. **Git:** Met (Platform: Git)\n5. **REST API design:** Met (Services: REST API design)\n6. **Unit testing:** Met (Services: unit testing)\n7. **CI pipelines:** Met (Services: CI pipelines)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met (Infrastructure: Docker, Kubernetes, Terraform, Ansible, Helm)\n9. **Kafka:** Met (Streaming: Kafka)\n10. **GraphQL:** Not Met (Not listed in resume)\n\n* **Mandatory Matches:** 9 / 10\n* **Mandatory Match Percentage:** **90%**\n\n---\n\n### Conclusion\nThe mandatory match percentage is **90%**, which meets and exceeds the **85%** threshold. \n\n**Decision:** **Proceed** (Nice-to-have items do not affect the outcome).",
-    "thinking_tokens": 337,
+    "text": "### Mandatory Requirements Assessment\n\n1. **Python:** Met *(Listed under Languages)*\n2. **SQL:** Met *(Listed under Languages)*\n3. **Linux administration:** Met *(Listed under Platform)*\n4. **Git:** Met *(Listed under Platform)*\n5. **REST API design:** Met *(Listed under Services)*\n6. **Unit testing:** Met *(Listed under Services)*\n7. **CI pipelines:** Met *(Listed under Services)*\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met *(Listed under Infrastructure)*\n9. **Kafka:** Met *(Listed under Streaming)*\n10. **GraphQL:** Not Met *(Not found on resume)*\n\n---\n\n### Evaluation Result\n\n* **Mandatory Matches:** 9 / 10\n* **Mandatory Match Percentage:** **90%**\n\n**Outcome:** **Proceed.** The mandatory match percentage meets the 85% threshold.",
+    "thinking_tokens": 358,
     "tool_calls": []
   }
 }

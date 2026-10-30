@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
-    "duration_ms": 10206,
+    "duration_ms": 6528,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1343,
     "mode": "live",
-    "output_tokens": 59,
-    "raw_reference": "787dfc73-956f-91fd-b831-617247689c51",
+    "output_tokens": 56,
+    "raw_reference": "c4a610bd-af1c-9233-ba71-04390118cee4",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**North America, about 47.1%.**\n\nNorth America (41.2 million) is the largest of the four regions. Its share of the stated total (87.4 million) is \\(41.2 / 87.4 \\approx 47.1\\%\\).",
-    "thinking_tokens": 389,
+    "text": "**North America, about 47.1%.**\n\nNorth America had the highest revenue at 41.2 million of the 87.4 million total. That is \\(41.2 / 87.4 \\approx 47.14\\%\\) of total revenue.",
+    "thinking_tokens": 546,
     "tool_calls": []
   }
 }

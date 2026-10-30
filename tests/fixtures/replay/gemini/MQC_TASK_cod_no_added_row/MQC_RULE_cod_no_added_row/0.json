@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
-    "duration_ms": 3297,
+    "duration_ms": 4079,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 86,
     "mode": "live",
     "output_tokens": 48,
-    "raw_reference": "rw_RasWkHOn3jrEP5rWQ0Qk",
+    "raw_reference": "zqPjaofcA-7v_uMP0YHM-Q4",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the provided table, here are the regions and their order counts:\n\n* **North:** 120\n* **East:** 80\n* **South:** 35\n* **West:** 20",
-    "thinking_tokens": 205,
+    "text": "Based on the table provided, here are the regions and their order counts:\n\n* **North:** 120\n* **East:** 80\n* **South:** 35\n* **West:** 20",
+    "thinking_tokens": 232,
     "tool_calls": []
   }
 }

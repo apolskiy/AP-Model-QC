@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
-    "duration_ms": 6076,
+    "duration_ms": 5943,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 156,
     "mode": "live",
-    "output_tokens": 120,
-    "raw_reference": "EhLRatanN8yU_uMP2cTcqAI",
+    "output_tokens": 143,
+    "raw_reference": "b6LjaoSxFbfX_uMPvY3IuAg",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the quarterly report, EMEA revenue was **28.7 million**.\n\n* **Rounded figure:** 30 million (rounded up to the nearest ten million).\n* **Calculated overstatement:** \n  $$\\frac{30.0 - 28.7}{28.7} \\times 100\\% \\approx 4.53\\%$$\n* **Comparison with limit:** The overstatement of approximately **4.53%** is below the 5% limit, so the figure can be rounded to **30 million**.",
-    "thinking_tokens": 447,
+    "text": "Based on the report, EMEA revenue was **28.7 million**.\n\n* **Rounded figure:** 30 million (rounded up to the nearest ten million)\n* **Calculated overstatement:** \n  $$\\frac{30 - 28.7}{28.7} \\times 100\\% \\approx 4.53\\%$$\n* **Comparison to limit:** The overstatement of **4.53%** is within the allowable **5% limit** (a 5% increase would be up to 30.135 million). \n\nTherefore, EMEA revenue can be reported as **30 million** for the headline.",
+    "thinking_tokens": 436,
     "tool_calls": []
   }
 }

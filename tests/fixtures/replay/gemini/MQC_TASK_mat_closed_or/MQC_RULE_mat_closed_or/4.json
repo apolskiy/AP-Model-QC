@@ -1,0 +1,46 @@
+{
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_req_closed_or>\nRequired: Python, Go, or Rust.\n</document>"
+          },
+          {
+            "text": "<document id=DOC_candidate_python>\nLanguages: Python, SQL, Bash.\n</document>"
+          },
+          {
+            "text": "State what percentage of the requirement below the candidate meets, and\nshow how you arrived at it."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-3.8-flash"
+  },
+  "request_hash": "cc4b90b09e6f19dac5f3f2c25144704a83b8ac74460cc742389770d59696d722",
+  "resolved_model": "gemini-3.8-flash",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
+    "duration_ms": 10762,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 70,
+    "mode": "live",
+    "output_tokens": 260,
+    "raw_reference": "xH3iauuJNeGV39IPnMP70AQ",
+    "requested_model": "gemini-3.8-flash",
+    "resolved_model": "gemini-3.8-flash",
+    "text": "The candidate meets **100%** of the requirement (or **33.3%** under a strictly fractional skill-count interpretation). \n\nHere is how both numbers are derived:\n\n---\n\n### 1. Logical / Standard Interpretation: **100%**\n* **The Requirement:** `\"Python, Go, or Rust\"` uses the disjunctive conjunction **\"or\"**. This indicates that possessing any single language from the list fulfills the condition.\n* **The Candidate:** The candidate possesses **Python**.\n* **Calculation:** Since having Python fully satisfies the disjunctive requirement, the candidate meets **1 out of 1** condition:\n  $$\\frac{1}{1} \\times 100\\% = \\mathbf{100\\%}$$\n\n---\n\n### 2. Fractional Skill-Count Interpretation: **33.3%**\n* If the prompt is evaluated strictly by counting how many of the listed options the candidate possesses:\n  * **Options listed:** 3 (Python, Go, Rust)\n  * **Options matched:** 1 (Python)\n* **Calculation:**\n  $$\\frac{1}{3} \\times 100\\% \\approx \\mathbf{33.3\\%}$$",
+    "thinking_tokens": 676,
+    "tool_calls": []
+  }
+}

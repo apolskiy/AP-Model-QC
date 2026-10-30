@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1536,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
-    "duration_ms": 60930,
+    "duration_ms": 63768,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 376,
-    "raw_reference": "367f7e0f-e5f1-98cc-8a78-e2e544f73704",
+    "output_tokens": 432,
+    "raw_reference": "d10f4497-11c7-9f4f-bcd3-e7792ecbd4b8",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math treats the tier percentage as the amount due, reads only the first coupon, aborts on an unknown code, and can drive the balance to zero or below.\n\n**The tier percentage is used as the price, not as a reduction.** `total_amount * discount / 100` is the discount in currency (20 on a 100-unit standard basket), and the coupon is then subtracted from that figure. A discount is a percentage off the total, so the customer should be charged `total_amount * (100 - discount) / 100`, and only then should currency coupons be subtracted. On the first call that is `80 - 30 = 50`, not `20 - 30 = -10`.\n\n**Only `coupon_codes[0]` is looked up.** Later codes never affect the sum, so stacked coupons are dropped. Every recognized code should contribute its currency amount. On the last call that is `20 + 30`, leaving `80 - 50 = 30`, not a settlement that ignores `SAVE30`.\n\n**A missing code is a hard lookup.** `coupon_lookup[code]` raises `KeyError` and stops settlement. An unrecognized code should be skipped (amount 0) so the tier discount still applies. `[\"NOPE\"]` should settle at 80, not fail.\n\n**Coupon currency is subtracted with no floor.** A coupon larger than the post-discount price makes the result zero or negative, which gives the product away or pays the buyer to take it. `SAVE90` against an 80 balance is the case. Recognized coupons should be applied only up to the discounted total, and the amount owed must stay positive \u2014 the seller is not funding a free order. The prompt does not name the exact positive minimum, only that a free or reversed charge is wrong.",
-    "thinking_tokens": 4595,
+    "text": "The settlement math treats a percentage and a currency amount as if they were the same kind of number, and it can abort or wipe the charge.\n\n**1. The tier discount is used as the price, not taken off the price.**  \n`discount` is a percent (20 means 20% off). `total_amount * discount / 100` is only the currency value of that reduction. The function then treats that reduction as the amount still owed and subtracts the coupon from it. On a 100-unit standard basket that starts from 20, not from 80. It should convert the percent to money and subtract it from the full total: charge `total_amount * (100 - discount) / 100`, then subtract coupons. Those two reductions are different units and must both be applied in currency, off the original total.\n\n**2. Every coupon after the first is ignored.**  \n`coupon_codes[0]` never looks at the rest of the list, so `[\"SAVE20\", \"SAVE30\"]` only applies 20. It should look up each code and add every recognised currency value.\n\n**3. An unknown code aborts settlement.**  \n`coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so the order never settles. A missing code should contribute nothing and be skipped; settlement should still finish on the tier discount alone (80 for that standard 100-unit basket).\n\n**4. Nothing stops a non-positive charge.**  \nCoupons are absolute currency amounts, and they are subtracted with no cap. That is why a 90 coupon (and, with the wrong base, even a 30 coupon) drives the result through zero into a credit. The seller is not giving the product away: after the percent-off and the recognised coupons, the amount owed must stay strictly positive. Excess coupon value has to be rejected or capped so the charge cannot reach 0 or below.\n\nWith those fixes, the four production calls settle as 50, a refused or capped SAVE90 (not \u221210 or 0), 80, and 30.",
+    "thinking_tokens": 4310,
     "tool_calls": []
   }
 }

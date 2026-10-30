@@ -392,8 +392,28 @@ are large.
 Skip Allure. The JUnit XML answers that and every CI tool and IDE reads it:
 
 ```
-python -c "import xml.etree.ElementTree as ET; [print(c.get('classname'), c.get('name')) for c in ET.parse('results/junit_replay_replay.xml').getroot().iter('testcase') if c.find('failure') is not None]"
+python -m cmn.junit_outcomes results/junit_replay_replay.xml
 ```
+
+It takes several reports, so a whole run's legs read in one command:
+
+```
+python -m cmn.junit_outcomes results/junit_replay_replay.xml results/junit_live_live.xml
+```
+
+**It is the harness's, called from here**, rather than a copy in `tools/`: both
+runbooks documented this command, and a convenience copied into two
+repositories is a copy that drifts.
+
+**A failure and an error are listed apart**, because they implicate different
+code: a failing graded case is a finding about the model, and a case that
+errored measured nothing and implicates the harness or the corpus. An absent
+report is refused with exit 4 rather than printed as no failures, since a leg
+that wrote nothing is not a clean leg.
+
+**The lister used to be an inline program in this section**, which nothing
+linted and no case could reach, and it read only `failure` elements, so a run
+whose cases broke printed nothing and read as clean.
 
 **Use Allure when the question is why**, and JUnit when the question is which.
 
@@ -750,11 +770,13 @@ the way `openai_protocol.py` was lifted, rather than copying the module.
 ### 9.3 Which engines can judge
 
 ```
-python -c "from execution.adapters.registry import engines_for_role, JUDGE_ROLE; print(engines_for_role(JUDGE_ROLE))"
+python -m execution.adapters.registry --role judge
 ```
 
 Derived from the registry and the declared capability, never from a list. An
-engine you add arrives in both roles or in neither.
+engine you add arrives in both roles or in neither. Without `--role` it lists
+the candidates, and an unregistered role refuses with exit 4 rather than
+printing an empty list, which would read as no engine being able to judge.
 
 ### 9.4 There is one judge
 

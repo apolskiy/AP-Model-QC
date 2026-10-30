@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_literals::MQC_RULE_cod_preserves_literals",
-    "duration_ms": 3361,
+    "duration_ms": 3847,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 92,
     "mode": "live",
     "output_tokens": 43,
-    "raw_reference": "-w_RavTJJNWk1MkPlvTd4Aw",
+    "raw_reference": "MqPjau2WNOausOIP4bilkQw",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",
-    "thinking_tokens": 157,
+    "thinking_tokens": 144,
     "tool_calls": []
   }
 }

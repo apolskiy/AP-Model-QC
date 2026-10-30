@@ -3,7 +3,7 @@
 """Unit preconditions for evaluation families, live workflow steps and the findings register.
 
 Created: 2026-10-04
-Last updated: 2026-10-24
+Last updated: 2026-10-29
 
 This file contains seven cases. ``TestMQCDeclaredFamilies`` checks every rule set
 declares a registered evaluation family and that the matrix and ``tools/case_index.py``
@@ -384,9 +384,13 @@ class TestMQCFindingsRegister:
             "asked, which replay must never do"
         )
 
+        # THE RUN NAMES THE PASS IT IS CREDITING, as of 2026-10-29. This leg used
+        # to leave `passed` empty and still resolve, because resolution read only
+        # the absence of a failure; a case that skipped behind a failed foundation
+        # is absent the same way (`115793`, consumer_ci.md section 9.4.9).
         retired, changes = findings_tool.merge(merged, {}, findings_tool.RunContext(
             engine="claude", mode="live", models={"other": "claude-opus-5-6"},
-            expected={}, today=today, resolve=True,
+            expected={}, today=today, resolve=True, passed=frozenset(observed),
         ))
         kept = retired[next(iter(observed))]
         assert kept["status"] == "resolved_upstream"

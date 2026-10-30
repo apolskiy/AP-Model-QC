@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
-    "duration_ms": 7784,
+    "duration_ms": 5135,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1337,
     "mode": "live",
-    "output_tokens": 58,
-    "raw_reference": "d2a038a8-e41d-9304-8040-53797a4ceea1",
+    "output_tokens": 39,
+    "raw_reference": "c19d5ca0-0371-9cae-821f-27495a2ec9f4",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "It returns the first two rows in the original order: the ones scoring 10 and 90.\n\n`sorted(...)` builds a new list and throws it away, so the input is never reordered. The function then returns `entries[:limit]`, a prefix of that unchanged list.",
-    "thinking_tokens": 430,
+    "text": "It returns the first two rows in the original order, with scores 10 and 90. `sorted` builds a new list and throws it away, so the scores are never reordered.",
+    "thinking_tokens": 370,
     "tool_calls": []
   }
 }

@@ -1,13 +1,3 @@
-# DELIBERATELY IDENTICAL TO THE HARNESS .pylintrc, and that is the requirement
-# rather than a convenience. One project spans two repositories: the same
-# authors write cases here and harness code there, and a naming rule enforced
-# on one side and not the other is a rule that holds until somebody moves a
-# file. The MQC_ patterns below are normative in the harness
-# docs/design/test_taxonomy.md section 2.1 and are not restated there twice.
-#
-# The rules pylint cannot express (annotation presence, PEP 563 selection, SPDX
-# headers) are enforced by cmn/code_standards.py, which both repositories call
-# with their own root and licence. See docs/design/consumer_ci.md section 5.
 [MAIN]
 # Gate 1 of the CI pipeline fails the build below a perfect score.
 fail-under=10.0
@@ -124,6 +114,20 @@ good-names=_
 # So the number moved by one because the design gained one fact, which is the
 # only reason it should ever move.
 max-attributes=22
+
+# THIRTY SINCE 2026-10-29, where the default twenty had been implicit. One
+# class in this project is a registry rather than an object: each
+# `mqc_uni_conformance_<engine>.py` carries one method per adapter conformance
+# check, so its method count is the size of the adapter contract and not a
+# measure of how much the class does. The contract reached twenty-one with
+# `served_metadata`.
+#
+# THE LIMIT STILL MEANS SOMETHING AT THIRTY. An ordinary class that sprawled
+# is still reported, and the headroom is nine more checks rather than
+# unbounded; the identifier partition the subject was given on the same day
+# records that it is expected to grow (`harness_test_taxonomy.md` section
+# 3.2.1.5).
+max-public-methods=30
 
 # SIX BECAUSE PYLINT COUNTS `self`, so the default of 5 means a method may take
 # four arguments and a plain function five. That is not the standard this project

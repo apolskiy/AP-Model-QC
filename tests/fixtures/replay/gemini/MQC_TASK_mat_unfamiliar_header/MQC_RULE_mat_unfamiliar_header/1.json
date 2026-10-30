@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 5294,
+    "duration_ms": 5860,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 90,
     "mode": "live",
-    "output_tokens": 142,
-    "raw_reference": "KhbRaqvGMb2zjrEPjqOlgAo",
+    "output_tokens": 162,
+    "raw_reference": "uqjjatXRN-W5sOIPosyDoQY",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the headers in the posting:\n\n1. **\"What you will need on day one.\"**\n   * **Status:** Mandatory\n   * **Why:** The phrase **\"will need\"** expresses a strict necessity or requirement rather than a preference, and **\"on day one\"** indicates that these skills are an immediate prerequisite from the start.\n\n2. **\"What would make you stand out.\"**\n   * **Status:** Optional (preferred / nice-to-have)\n   * **Why:** The conditional phrasing **\"would make you stand out\"** indicates that these skills are differentiators or bonuses that give an applicant an edge, rather than baseline requirements.",
-    "thinking_tokens": 298,
+    "text": "Based on the document, here is the breakdown for each header:\n\n### 1. **\"What you will need on day one.\"**\n* **Status:** Mandatory\n* **Reasoning from the header:** The word **\"need\"** indicates a strict requirement/necessity, and the phrase **\"on day one\"** implies it is a prerequisite skill you must possess immediately upon starting the role.\n\n---\n\n### 2. **\"What would make you stand out.\"**\n* **Status:** Optional (preferred / \"nice-to-have\")\n* **Reasoning from the header:** The phrase **\"make you stand out\"** and the conditional modal verb **\"would\"** indicate that these are bonus or differentiating qualities rather than baseline requirements for the job.",
+    "thinking_tokens": 361,
     "tool_calls": []
   }
 }

@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 6508,
+    "duration_ms": 5494,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 225,
     "mode": "live",
-    "output_tokens": 211,
-    "raw_reference": "KhXRaojaJr2zjrEPjqOlgAo",
+    "output_tokens": 175,
+    "raw_reference": "Nqjjap_QOsjV_uMP69uPyA4",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Assessment against Mandatory Requirements\n\n1. **Python:** Met (listed under Languages)\n2. **SQL:** Met (listed under Languages)\n3. **Linux administration:** Met (listed under Platform)\n4. **Git:** Met (listed under Platform)\n5. **REST API design:** Met (listed under Services)\n6. **Unit testing:** Met (listed under Services)\n7. **CI pipelines:** Met (listed under Services)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met (listed under Infrastructure)\n9. **Kafka:** Met (listed under Streaming)\n10. **GraphQL:** Not found\n\n---\n\n### Mandatory Match Percentage\n* **Requirements met:** 9 / 10  \n* **Mandatory match percentage:** **90%**\n\n---\n\n### Outcome\nSince the match rate of **90%** exceeds the 85% threshold, the candidate **proceeds** (nice-to-have qualifications do not affect this outcome).",
-    "thinking_tokens": 339,
+    "text": "### Candidate Assessment\n\n#### Mandatory Requirements Evaluation:\n1. **Python**: Met\n2. **SQL**: Met\n3. **Linux administration**: Met\n4. **Git**: Met\n5. **REST API design**: Met\n6. **Unit testing**: Met\n7. **CI pipelines**: Met\n8. **Docker, Kubernetes, Terraform, Ansible, Helm**: Met\n9. **Kafka**: Met\n10. **GraphQL**: Not met (not listed in resume)\n\n* **Mandatory Match:** 9 / 10 requirements met\n* **Mandatory Match Percentage:** 90%\n\n---\n\n### Conclusion\nThe candidate meets **90%** of the mandatory requirements, exceeding the 85% threshold. \n\n**Outcome:** **Proceed** (Nice-to-have requirements do not affect this outcome).",
+    "thinking_tokens": 331,
     "tool_calls": []
   }
 }

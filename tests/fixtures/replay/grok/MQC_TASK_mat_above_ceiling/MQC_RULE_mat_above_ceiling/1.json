@@ -21,19 +21,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 12137,
+    "duration_ms": 8645,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1436,
     "mode": "live",
-    "output_tokens": 101,
-    "raw_reference": "ee0ee5ab-6045-9eff-9f0b-fa133cc40745",
+    "output_tokens": 83,
+    "raw_reference": "f44de3b7-984b-93ae-a335-8355d16441f0",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 90% (9 of 10).** That is at or above 85%, so the nice-to-have set does not change the result.\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker / Kubernetes / Terraform / Ansible / Helm, Kafka.\n\nGap: GraphQL.\n\nNice-to-haves (Grafana, Prometheus, technical writing, mentoring, public speaking) are absent and do not affect the outcome.",
-    "thinking_tokens": 1121,
+    "text": "**Mandatory match: 90% (9 of 10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nMissing: GraphQL.\n\n90% is at or above 85%, so the candidate clears the mandatory bar. Nice-to-have items do not change that outcome.",
+    "thinking_tokens": 689,
     "tool_calls": []
   }
 }

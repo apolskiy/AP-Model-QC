@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 10707,
+    "duration_ms": 12717,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 252,
-    "raw_reference": "33697566-b095-9b4e-9b88-daef7de1534a",
+    "output_tokens": 308,
+    "raw_reference": "e2c8a829-bd16-99e1-9d15-f6c24f18cc92",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Bound each code with an absolute expiry instant, and make the lookup return that instant next to the value so settlement can reject the code when it is past.\n\n**Lifetime bound.** Store an `expires_at` on every issued code (an absolute timestamp, not \u201cvalid forever unless we remember to delete it\u201d). Optionally also store `valid_from` if codes should not redeem before a start time. Issue-time plus a TTL is fine only if you persist the computed `expires_at`; do not recompute lifetime from \u201cnow\u201d at redeem time. Treat missing expiry as invalid, not as never-expiring.\n\n**What the lookup must carry.** Today `coupon_lookup[code]` is a bare number (`coupon_sum`). That cannot enforce a bound. The value has to be a record that includes at least:\n\n- the discount amount (what you subtract today)\n- `expires_at` (and `valid_from` if you use a window)\n\nSettlement must read that record, compare the redemption time to `expires_at`, and refuse the code when `now >= expires_at` (or before `valid_from`). If the lookup stays a scalar, expiry cannot be checked no matter what policy you write beside it.",
-    "thinking_tokens": 487,
+    "text": "Give every code a finite validity window and make settlement refuse anything outside it. A code that only maps to a discount amount cannot expire, because nothing in the lookup says when it stops being redeemable.\n\nStore a bound on the code itself, not in the caller. The practical choices are:\n\n- an absolute `expires_at` (and optionally `valid_from`), or\n- `issued_at` plus a maximum age, if lifetime is defined relative to issue time.\n\n`expires_at` is the one you should enforce against. Relative age still has to be resolved to an instant before the check.\n\nFor that bound to be enforceable, `coupon_lookup[code]` cannot return only the discount. Each entry has to carry at least:\n\n- the discount value, and\n- `expires_at` (or `valid_from` / `expires_at`).\n\nSettlement then compares those instants to the current time and rejects the code if it is not yet valid or already expired. If the lookup stays a bare number, the caller has no data with which to enforce a lifetime, no matter what policy you write around it.\n\nUse one clock for issue and for check (UTC instants, not local dates), and treat a missing or unparsable expiry as invalid rather than as \u201cno expiry.\u201d Revocation is separate: an `expires_at` does not cover \u201ckill this code now,\u201d so a status or revocation flag is needed only if you want early invalidation as well as a lifetime cap.",
+    "thinking_tokens": 480,
     "tool_calls": []
   }
 }

@@ -1,0 +1,189 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# A change detector, not a test run.
+#
+# Specified by docs/design/consumer_ci.md section 4.23. For each rostered engine
+# it asks the provider what it declares about the model and compares that
+# against the recorded baseline. Nothing is evaluated and no case executes.
+#
+# WHY IT LIVES HERE. A probe detects a reason to re-measure, and the thing
+# re-measured is this corpus. The harness owns no corpus, so a version change
+# tells it nothing and gives it nothing to run. The harness
+# `harness_ci_pipeline.md` section 4 carries the reversal.
+#
+# WHAT IT COSTS: one metadata call per engine, no prompt. Detecting a provider's
+# change on the morning it happens is what makes a later regression
+# attributable: the same regression found in a weekly run covers seven days of
+# candidate causes.
+#
+# THE NAME CARRIES NO CADENCE, deliberately. The harness file was
+# `probe-model-version-nightly.yml` while being dispatch-only for thirty six
+# days, which is a name describing a trigger it did not have.
+name: probe-model-version
+
+on:
+  # NO SCHEDULE YET, AND THE SLOT IS RESERVED RATHER THAN USED, for the reason
+  # the weekly callers give: a cron firing before the known findings are triaged
+  # buys a result nobody is reading. Section 4.18.3.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  # RUNG 0, AND IT MEASURES NOTHING. It decides whether there is an instrument
+  # worth dispatching against, exactly as the ladder's own resolve job does.
+  # This is the half of the owner's ruling that is not a location: "Probe needs
+  # to live with the model AND USE GREEN HARNESS". Section 4.23.2.
+  resolve:
+    name: resolve the paired harness
+    runs-on: ubuntu-26.04
+    outputs:
+      harness_repository: ${{ steps.pin.outputs.harness_repository }}
+      harness_sha: ${{ steps.pin.outputs.harness_sha }}
+      green: ${{ steps.pin.outputs.green }}
+      reason: ${{ steps.pin.outputs.reason }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # PYYAML, AND NOTHING ELSE, BECAUSE THE HARNESS MUST NOT BE HERE.
+      # Installing the harness to decide whether the harness is verified would
+      # ask an unverified ref to vouch for itself. The version matches the
+      # `pyyaml` pin in `pyproject.toml`, repeated because a workflow cannot
+      # read that file before Python is installed.
+      - name: Install PyYAML for the resolver
+        run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
+
+      - name: Resolve the pairing and assess it
+        id: pin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m tools.harness_pin --case-branch "${{ github.ref_name }}"
+
+      - name: Say what the probe is about to decide with
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Harness pairing"
+            echo ""
+            echo "| Field | Value |"
+            echo "| --- | --- |"
+            echo "| Harness | ${{ steps.pin.outputs.harness_repository }} |"
+            echo "| Commit | ${{ steps.pin.outputs.harness_sha }} |"
+            echo "| Gate green | ${{ steps.pin.outputs.green }} |"
+            echo "| Reason | ${{ steps.pin.outputs.reason }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  probe:
+    name: probe model versions
+    needs: resolve
+    if: needs.resolve.outputs.green == 'true'
+    runs-on: ubuntu-26.04
+    # Secrets live in an environment, which makes them unreachable from any
+    # workflow that does not name it. That is A1 made structural.
+    environment: live
+    outputs:
+      changed_engines: ${{ steps.probe.outputs.changed_engines }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # BY SHA, NEVER BY BRANCH. The resolver produced a commit and this is the
+      # commit a gate has seen; installing the branch would install something
+      # nothing has passed.
+      - name: Install the resolved harness
+        run: |
+          python -m pip install --quiet \
+            "git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+
+      # EVERY ROSTERED ENGINE, WHICH IS FOUR. The retired harness probe
+      # enumerated three and left grok unwatched from the day it was rostered;
+      # the roster is read rather than listed here, so an engine added to it is
+      # watched without this file changing. Section 4.23.3.
+      - name: Ask each engine what it serves, against the baseline
+        id: probe
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        shell: bash
+        run: |
+          python -m execution.preflight \
+            --baseline config/model_baseline.json \
+            --output "$GITHUB_OUTPUT"
+
+      # A CHANGED VERSION WRITES THE NEW BASELINE, so the change dispatches
+      # ONCE rather than on every firing until somebody edits the file by hand.
+      - name: Record the new baseline
+        if: steps.probe.outputs.changed_engines != ''
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/model_baseline.json
+          git commit -m "Record model version change: ${{ steps.probe.outputs.changed_engines }}"
+          git push
+
+  # A CHANGE DISPATCHES THAT ENGINE'S OWN WEEKLY CALLER, and only that one. A
+  # version move at one provider says nothing about the others, and dispatching
+  # four would spend quota to re-measure three unchanged models.
+  #
+  # THE CONDITION READS THE PAIRING, not only the probe's output. A detector
+  # that dispatched on a version comparison alone would spend against a harness
+  # nothing verified, which is the arrangement `cmn.ci_gating.ungated_dispatches`
+  # reports and which the retired harness probe had. Harness
+  # `harness_ci_pipeline.md` section 8.9.
+  dispatch:
+    name: dispatch the changed engine's weekly ladder
+    needs: [resolve, probe]
+    if: needs.resolve.outputs.green == 'true' && needs.probe.outputs.changed_engines != ''
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Dispatch the changed engines
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHANGED: ${{ needs.probe.outputs.changed_engines }}
+        shell: bash
+        run: |
+          for engine in ${CHANGED//,/ }; do
+            gh workflow run "evaluate-${engine}-weekly.yml" \
+              --repo "${{ github.repository }}" \
+              --field reason="model version changed"
+          done
+
+  # A PROBE FAILURE IS NOT A TEST FAILURE. It means the detector is broken,
+  # which is an instrument defect, and `framework-rules.md` section 3.1 keeps
+  # that apart from a model finding. This job records the event and dispatches
+  # nothing: a broken detector is not evidence of a model change.
+  report-probe-failure:
+    name: report probe failure
+    needs: probe
+    if: failure()
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Record a harness event
+        shell: bash
+        run: |
+          {
+            echo "## Probe failed"
+            echo ""
+            echo "QC_HARNESS_VERSION_UNAVAILABLE: the probe could not read what"
+            echo "one or more engines declare."
+            echo ""
+            echo "This is a HARNESS event, not a model finding. Nothing was"
+            echo "dispatched, and the baseline of the engine that could not be"
+            echo "read is left untouched: overwriting it with nothing would make"
+            echo "the next run report a change that never happened."
+          } >> "$GITHUB_STEP_SUMMARY"

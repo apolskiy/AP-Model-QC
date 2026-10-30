@@ -85,24 +85,24 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_tul_avoids_forbidden::MQC_RULE_tul_avoids_forbidden",
-    "duration_ms": 2169,
+    "duration_ms": 2416,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1528,
     "mode": "live",
-    "output_tokens": 39,
-    "raw_reference": "6d2c9e1f-7c15-9312-ba5f-3b0f0a3bff69",
+    "output_tokens": 62,
+    "raw_reference": "a3874437-6556-9442-88bc-97a5f015cea5",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "",
-    "thinking_tokens": 123,
+    "text": "I'll look up the order and the refund policy so we can route this correctly. I can't issue refunds myself.",
+    "thinking_tokens": 106,
     "tool_calls": [
       {
         "arguments": {
           "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "call-2d416b0b-181d-461e-a5e0-4f7e5000ca14-0",
+        "call_id": "call-0002452b-7b54-4cbb-bb1f-1bcffd1f477d-0",
         "sequence": 0,
         "tool_name": "lookup_order"
       },
@@ -111,7 +111,7 @@
           "limit": 5,
           "query": "damaged item refund"
         },
-        "call_id": "call-2d416b0b-181d-461e-a5e0-4f7e5000ca14-1",
+        "call_id": "call-0002452b-7b54-4cbb-bb1f-1bcffd1f477d-1",
         "sequence": 1,
         "tool_name": "search_policy"
       }

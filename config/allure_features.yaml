@@ -81,6 +81,8 @@ modules:
   tests/cases/mqc_uni_workflows.py: Consumer CI
   tests/cases/mqc_uni_runner_images.py: Consumer CI
   tests/cases/mqc_uni_run_conclusions.py: Consumer CI
+  tests/cases/mqc_uni_operator_commands.py: Consumer CI
+  tests/cases/mqc_uni_version_probe.py: Consumer CI
 
   # Which harness this case set runs against, and whether it followed.
   tests/cases/mqc_uni_harness_follow.py: Harness pairing
@@ -98,6 +100,7 @@ modules:
   tests/cases/mqc_uni_registers.py: Suite governance
 
   # What is filed with a vendor, and what has stopped reproducing.
+  tests/cases/mqc_uni_finding_retirement.py: Findings
   tests/cases/mqc_uni_ticket_reasons.py: Findings
   tests/cases/mqc_uni_ticket_report.py: Findings
 

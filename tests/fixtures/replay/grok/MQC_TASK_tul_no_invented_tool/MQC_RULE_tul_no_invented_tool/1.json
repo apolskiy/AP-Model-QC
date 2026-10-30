@@ -83,26 +83,26 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1408,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
-    "duration_ms": 2053,
+    "duration_ms": 3368,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1507,
     "mode": "live",
     "output_tokens": 37,
-    "raw_reference": "8d356532-83ca-9416-8db5-37b426d56acf",
+    "raw_reference": "3df440d2-2429-9492-a41b-119312f89073",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
-    "thinking_tokens": 138,
+    "thinking_tokens": 233,
     "tool_calls": [
       {
         "arguments": {
           "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "call-1568a19a-e9b5-437e-8704-b6635ce8161a-0",
+        "call_id": "call-93531d0c-256e-4b49-a0b4-436415bf77af-0",
         "sequence": 0,
         "tool_name": "lookup_order"
       },
@@ -111,7 +111,7 @@
           "limit": 5,
           "query": "cancel order"
         },
-        "call_id": "call-1568a19a-e9b5-437e-8704-b6635ce8161a-1",
+        "call_id": "call-93531d0c-256e-4b49-a0b4-436415bf77af-1",
         "sequence": 1,
         "tool_name": "search_policy"
       }

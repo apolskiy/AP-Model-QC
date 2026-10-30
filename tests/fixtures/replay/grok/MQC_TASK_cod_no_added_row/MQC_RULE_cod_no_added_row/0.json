@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
-    "duration_ms": 2218,
+    "duration_ms": 1644,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1311,
     "mode": "live",
-    "output_tokens": 23,
-    "raw_reference": "91f79e3b-d5c1-9680-8449-b1148acebfba",
+    "output_tokens": 19,
+    "raw_reference": "9f4dfee6-878a-93a2-9272-65f3ac4d8253",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "North: 120 orders  \nEast: 80 orders  \nSouth: 35 orders  \nWest: 20 orders",
-    "thinking_tokens": 104,
+    "text": "North: 120  \nEast: 80  \nSouth: 35  \nWest: 20",
+    "thinking_tokens": 100,
     "tool_calls": []
   }
 }
