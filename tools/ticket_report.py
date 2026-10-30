@@ -3,7 +3,7 @@
 """The ticket report, which writes each engine's filed findings as pages ready to submit.
 
 Created: 2026-10-05
-Last updated: 2026-10-28
+Last updated: 2026-10-30
 
 This file contains ``page_for``, which builds one engine's findings page,
 ``finding_section``, which writes one finding's defect report with its problem,
@@ -53,12 +53,12 @@ Usage::
 import argparse
 import re
 import sys
-from datetime import date
 from pathlib import Path
 from typing import Any, Final, Optional
 
 import yaml
 
+from cmn.project_clock import project_today
 from evaluation.aggregation import CriterionScore, aggregate
 from execution.adapters.registry import reproduction_curl, reproduction_snippet
 from tests.cases.graded_support import case_for
@@ -867,7 +867,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     # that total from one (section 9.5.5.10).
     if set(chosen) == set(_ENGINES):
         sheet = parsed.out_dir / "FILING.md"
-        sheet.write_text(filing_sheet(date.today().isoformat(), filed),
+        sheet.write_text(filing_sheet(project_today().isoformat(), filed),
                          encoding="utf-8", newline="\n")
         print(f"{sheet}: written, with {sum(len(rows) for rows in filed.values())} "
               f"finding(s)")

@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_COD_MINIMAL_CORRECTION": {
-        "rationale": "The candidate strictly added the missing closing parenthesis to line 2, leaving all literals, names, indentation, and structure entirely untouched.",
+        "rationale": "The candidate correctly identified the missing closing parenthesis in the call to sorted and added only that single character without altering formatting, variables, or literals.",
         "score": 5
       }
     }

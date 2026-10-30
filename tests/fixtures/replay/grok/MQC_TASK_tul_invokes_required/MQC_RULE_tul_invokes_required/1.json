@@ -83,25 +83,25 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1408,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_tul_invokes_required::MQC_RULE_tul_invokes_required",
-    "duration_ms": 1425,
+    "duration_ms": 1375,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1502,
     "mode": "live",
     "output_tokens": 16,
-    "raw_reference": "354dcd42-6106-990e-9054-e9a44b432b6c",
+    "raw_reference": "261dc3fe-9cce-92d3-a852-141074399a8f",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
-    "thinking_tokens": 33,
+    "thinking_tokens": 26,
     "tool_calls": [
       {
         "arguments": {
           "order_id": "A-4471"
         },
-        "call_id": "call-b7a25aef-97fc-4f79-b57a-028af17ee11e-0",
+        "call_id": "call-c1f94bae-9fa1-4f01-bc13-33870fbdff74-0",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

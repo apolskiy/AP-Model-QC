@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
-    "duration_ms": 5619,
+    "duration_ms": 6585,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 73,
     "mode": "live",
-    "output_tokens": 49,
-    "raw_reference": "oaPjaseNBKeU1MkP-uq0qQw",
+    "output_tokens": 48,
+    "raw_reference": "7vjjauqdCvn4-sAPmq3Y0QQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The `fetch_profile` function takes `client` and `user_id`, calls `client.get(f\"/users/{user_id}\")` to obtain a `response`, and then calls and returns `response.json()`.",
-    "thinking_tokens": 457,
+    "text": "The `fetch_profile` function takes `client` and `user_id`, calls `client.get(f\"/users/{user_id}\")` to obtain `response`, and then calls and returns `response.json()`.",
+    "thinking_tokens": 398,
     "tool_calls": []
   }
 }

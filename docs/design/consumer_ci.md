@@ -996,6 +996,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115316` | N | `a_pull_request_taking_its_source_strictness_is_reported` |
 | `115505` | N | `a_file_open_declaring_no_encoding_is_reported` |
 | `115506` | N | `an_identifier_outside_its_module_block_is_reported` |
+| `115507` | N | `a_module_reading_a_local_clock_is_reported` |
 | `115709` | N | `a_graded_job_not_naming_its_engine_is_reported` |
 | `115009` | P | `the_obfuscated_payloads_survive_a_load_as_code_points` |
 | `115010` | N | `a_graded_evaluation_rule_without_a_rubric_is_reported` |
@@ -1107,7 +1108,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | `115794` | N | `a_withdrawn_finding_is_not_resolved_upstream` (9.4.9) |
 
-**Inventory: 135 cases, 96 negative, 32 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 136 cases, 97 negative, 32 positive, 7 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -4310,7 +4311,7 @@ current is not. It is the same defect class as harness `code-style.md` section
 
 | The sheet carries | Read from |
 |---|---|
-| The total, and the count per engine | The bug files |
+| The total, and the count per engine | The open findings the latest run measured |
 | Where to file, per engine | `_INTAKE` in `tools/ticket_files.py` |
 | One group per distinct cause, with the findings in it | The engine and the taxonomy code |
 | One line per finding, naming its ticket file | The register entry |
@@ -4322,6 +4323,24 @@ cases reporting `QC_LLM_INJECTION_SUSCEPTIBLE` in `SEC` are one defect
 observed five ways and one report; the same code against openai is a different
 vendor and a different report. **A dependent is already absent**, its case
 having skipped rather than failed, so nothing here has to exclude it.
+
+**The total is therefore what the sheet can file, and the rest of the register
+is accounted for on the engine's page.** An open finding whose case the latest
+run skipped behind a failed foundation was neither reproduced nor retracted: it
+is on that page under "Awaiting measurement" with the date it was last observed,
+and counting it in the total would state a claim no recent run supports.
+
+| An open finding the latest run | Appears |
+|---|---|
+| Measured and reproduced | In the total, and as a group entry |
+| Did not measure | On the engine's page, under "Awaiting measurement" |
+
+**The invariant across the two artifacts is that filed plus awaiting equals
+open**, which is what `115781` asserts. Asserting the total against the bug
+files alone held only while every open finding happened to have been measured,
+and openai's `134402` broke it on 2026-10-30: `134400` failed and took its three
+dependents with it, so the sheet counted 14 where the registers held 15 and the
+case read the difference as the generator disagreeing with them.
 
 **The layer is in the key because one code is a symptom.**
 `QC_LLM_INCONSISTENT` says the answers disagreed and nothing about what they

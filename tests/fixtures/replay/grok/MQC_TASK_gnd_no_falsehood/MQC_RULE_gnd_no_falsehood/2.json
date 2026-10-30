@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
-    "duration_ms": 8383,
+    "duration_ms": 5267,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1343,
     "mode": "live",
-    "output_tokens": 54,
-    "raw_reference": "b6b22c7d-deaa-9b6b-913c-8db1a59c5fe1",
+    "output_tokens": 59,
+    "raw_reference": "8caefa05-6fde-917a-bbf7-1955e0c62f1f",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**North America, about 47.1%.**\n\nNorth America had the highest revenue at 41.2 million. Its share of the 87.4 million total is \\(41.2 / 87.4 \\approx 47.1\\%\\).",
-    "thinking_tokens": 760,
+    "text": "**North America, about 47.1%.**\n\nNorth America (41.2 million) is the largest of the four regions. Its share of the stated total (87.4 million) is \\(41.2 / 87.4 \\approx 47.1\\%\\).",
+    "thinking_tokens": 428,
     "tool_calls": []
   }
 }

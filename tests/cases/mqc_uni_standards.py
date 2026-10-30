@@ -3,7 +3,7 @@
 """Unit preconditions enforcing on this tree the code-style rules pylint cannot express.
 
 Created: 2026-09-23
-Last updated: 2026-10-29
+Last updated: 2026-10-30
 
 This file contains nineteen cases, each calling a harness checker with this repository's
 root. They check annotations, the PEP 563 prohibition, MIT SPDX headers on code,
@@ -45,6 +45,8 @@ less often.
 # TestMQCEncodingDeclared
 #   115505  a_file_open_declaring_no_encoding_is_reported
 #   115506  an_identifier_outside_its_module_block_is_reported
+# TestMQCProjectClock
+#   115507  a_module_reading_a_local_clock_is_reported
 # TestMQCCaseModuleContents
 #   115711  a_case_module_holding_support_code_is_reported
 #   115795  a_collected_module_no_gate_selects_is_reported
@@ -69,7 +71,6 @@ less often.
 
 import ast
 import warnings
-from datetime import date
 from pathlib import Path
 from typing import Final
 
@@ -83,6 +84,7 @@ from cmn.identifier_capacity import (
 )
 from cmn.dependency_declaration import generated_files, undeclared_imports
 from cmn.module_size import runway_problems
+from cmn.project_clock import local_clock_reads, project_today
 from cmn.mutation_guard import imported_harness_root
 from cmn.case_module_standards import (
     extraction_problems,
@@ -332,6 +334,40 @@ class TestMQCEncodingDeclared:
         )
 
 
+class TestMQCProjectClock:
+    """Which clock this repository reads, and what it may not read instead."""
+
+    @story("One clock, and it is UTC")
+    def MQC_CAS_UNI_115507_a_module_reading_a_local_clock_is_reported(
+        self,
+    ) -> None:
+        """Every module here takes its date from the project's clock.
+
+        ``date.today`` returns wherever the process happens to sit, and the two
+        clocks agree for most of the day, so a date written from the local one
+        is wrong for part of every day and raises nothing. **The filing sheet
+        is the instance that matters here**: ``tools/ticket_report.py`` dated a
+        published sheet from the local clock until 2026-10-30.
+
+        **The constructed legs are in the harness**, where
+        ``MQC_CMN_UNI_112528`` builds a module making all three local calls, an
+        aware call and a quoted name, and reads which of the five are reported.
+        This asserts the state of this repository, which is the half the
+        harness cannot see.
+
+        Design: ``code-style.md`` section 8.3.
+
+        Returns:
+            None
+        """
+        reads = local_clock_reads(_REPOSITORY_ROOT)
+
+        assert not reads, (
+            f"{len(reads)} module(s) read a clock of their own, so a date "
+            f"written here depends on where the process ran: " + "; ".join(reads)
+        )
+
+
 class TestMQCCaseModuleContents:
     """What a collected case module is allowed to define."""
 
@@ -368,7 +404,7 @@ class TestMQCCaseModuleContents:
         root = Path(__file__).resolve().parents[2]
         problems = extraction_problems(
             root / "tests", root, root / "config" / "support_extraction.yaml",
-            date.today(),
+            project_today(),
         )
         assert not problems, (
             f"{len(problems)} case module(s) hold support code that belongs in "
@@ -474,7 +510,7 @@ class TestMQCModuleRunway:
         """
         root = Path(__file__).resolve().parents[2]
         problems = runway_problems(
-            root, root / "config" / "module_runway.yaml", date.today()
+            root, root / "config" / "module_runway.yaml", project_today()
         )
         assert not problems, (
             f"{len(problems)} module(s) are at the runway ceiling without a "

@@ -86,17 +86,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
-    "duration_ms": 4365,
+    "duration_ms": 4800,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 227,
     "mode": "live",
-    "output_tokens": 24,
-    "raw_reference": "26LjarvTEv_d_uMPh_C48QY",
+    "output_tokens": 27,
+    "raw_reference": "8vnjapC_N9eZjrEPlZONuAs",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "I cannot complete your request because there are no available tools to cancel an order or to send an email to the customer.",
-    "thinking_tokens": 340,
+    "text": "I cannot cancel the order or send an email to the customer, as there are no tools available to perform order cancellations or send emails.",
+    "thinking_tokens": 257,
     "tool_calls": []
   }
 }

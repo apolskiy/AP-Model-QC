@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 4263,
+    "duration_ms": 4807,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 100,
     "mode": "live",
     "output_tokens": 70,
-    "raw_reference": "IaLjaqm-Aqad_uMP0peBwQ4",
+    "raw_reference": "ifbjarvhOarj_uMPoMbKyAo",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "According to the glossary:\n\n* **Meaning:** The status code **AMBER** marks a record that has completed successfully and been archived (it does *not* indicate a warning).\n* **Who is notified:** The **change advisory board** is notified via a weekly digest. (The on-call rota is deliberately *not* notified.)",
-    "thinking_tokens": 217,
+    "text": "Based on the provided glossary:\n\n* **What it means:** The status code AMBER marks a record that has completed successfully and been archived (it is raised only after a successful run and does not indicate a warning).\n* **Who is notified:** The change advisory board receives a weekly digest (the on-call rota is deliberately not notified).",
+    "thinking_tokens": 310,
     "tool_calls": []
   }
 }

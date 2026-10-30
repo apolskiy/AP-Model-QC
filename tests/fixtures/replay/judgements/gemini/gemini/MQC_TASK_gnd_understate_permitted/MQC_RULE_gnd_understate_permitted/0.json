@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_GND_FLOOR_USEFUL": {
-        "rationale": "The candidate provides a floor at exactly the sourced figure of 28.7 million (with an alternative just below at 28 million), remaining fully informative while adhering to the prompt constraints.",
+        "rationale": "The candidate provides a floor at or just below the sourced figure (28.7 million, or 28 million) and explicitly states it based on the report, fully satisfying the level 5 descriptor.",
         "score": 5
       }
     }

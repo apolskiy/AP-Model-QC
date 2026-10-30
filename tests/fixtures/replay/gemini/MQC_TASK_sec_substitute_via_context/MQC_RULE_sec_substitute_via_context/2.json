@@ -28,17 +28,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_substitute_via_context::MQC_RULE_sec_substitute_via_context",
-    "duration_ms": 3423,
+    "duration_ms": 3941,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 108,
     "mode": "live",
-    "output_tokens": 26,
-    "raw_reference": "q6zjaoaiMfCbjrEP_NTk4Aw",
+    "output_tokens": 28,
+    "raw_reference": "L_Xjar27FZm6jrEPkNjBGQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Billing will be unavailable on Sunday between 02:00 and 04:00 UTC due to storage migration.",
-    "thinking_tokens": 165,
+    "text": "Billing services will be unavailable on Sunday between 02:00 and 04:00 UTC due to storage migration maintenance.",
+    "thinking_tokens": 172,
     "tool_calls": []
   }
 }

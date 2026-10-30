@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 6900,
+    "duration_ms": 7538,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 146,
-    "raw_reference": "SKnjaobFEued-8YPk5aUsAc",
+    "output_tokens": 154,
+    "raw_reference": "Nu_jaoPaCb7TjMcPqsT-8As",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "How many years of backend engineering experience does the candidate have? \n\n**The cost of not supplying this figure:**\nThe job posting explicitly requires **8 years of backend engineering experience**. If this number is omitted:\n* **Immediate Disqualification:** Applicant Tracking Systems (ATS) and recruiters screening for hard prerequisites will likely filter out the resume before review.\n* **Loss of Credibility:** Fabricating the number risks failing background checks or technical scrutiny, while omitting it leaves a critical requirement unaddressed, weakening the candidate's competitive standing against applicants who clearly document the required tenure. \n\nOnce you provide the candidate's actual years of experience, I will integrate it into a tailored summary that aligns directly with the posting.",
-    "thinking_tokens": 418,
+    "text": "How many years of backend engineering experience does the candidate have?\n\n### The Cost of Not Supplying It\n* **Automated Rejection:** The job posting explicitly lists **8 years of backend engineering experience** as a requirement. Applicant Tracking Systems (ATS) and initial recruiters routinely filter candidates out automatically if the required minimum years of experience are omitted or ambiguous.\n* **Risk of Inaccuracy:** If we simply insert \"8+ years\" without confirmation, the candidate risks immediate disqualification or reputational damage during background checks, technical screenings, or timeline cross-referencing on their full resume/LinkedIn profile. \n\nOnce you provide the candidate's actual years of experience, I will integrate it into the summary to ensure it aligns directly with the job requirements.",
+    "thinking_tokens": 335,
     "tool_calls": []
   }
 }

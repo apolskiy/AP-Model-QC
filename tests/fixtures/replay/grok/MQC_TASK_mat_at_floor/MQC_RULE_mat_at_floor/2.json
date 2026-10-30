@@ -21,19 +21,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1408,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 16537,
+    "duration_ms": 14167,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1483,
     "mode": "live",
-    "output_tokens": 126,
-    "raw_reference": "c105d5e9-ebaa-970f-853e-45927dc8febd",
+    "output_tokens": 242,
+    "raw_reference": "ac9ea616-1138-907f-8d8f-45b7cb831377",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 78%** (7.8/10).\n\nRequirement 8 is partial: Docker, Kubernetes, Terraform, and Ansible are shown; Helm is not (4/5). Kafka and GraphQL are absent. Requirements 1\u20137 are full matches.\n\n**Combined match: 85.33%** (12.8/15). That reaches 85%, so the assessment proceeds.\n\nNice-to-haves 11\u201315 are all shown (Grafana, Prometheus, technical writing, mentoring, public speaking). Gaps that hold the mandatory score down are Helm, Kafka, and GraphQL.",
-    "thinking_tokens": 1550,
+    "text": "**Mandatory match: 78%.** Combined match over all 15 requirements: **85.33%** (12.8/15), which meets the 85% bar.\n\n| # | Requirement | Credit |\n|---|-------------|--------|\n| 1 | Python | 1/1 |\n| 2 | SQL | 1/1 |\n| 3 | Linux administration | 1/1 |\n| 4 | Git | 1/1 |\n| 5 | REST API design | 1/1 |\n| 6 | Unit testing | 1/1 |\n| 7 | CI pipelines | 1/1 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | 4/5 (Helm missing) |\n| 9 | Kafka | 0/1 |\n| 10 | GraphQL | 0/1 |\n| 11\u201315 | Grafana, Prometheus, technical writing, mentoring, public speaking | 5/5 |\n\nMandatory total is 7.8/10 = 78%. Gaps are Kafka, GraphQL, and Helm. All five nice-to-haves are present, so the combined score clears 85%.",
+    "thinking_tokens": 1147,
     "tool_calls": []
   }
 }

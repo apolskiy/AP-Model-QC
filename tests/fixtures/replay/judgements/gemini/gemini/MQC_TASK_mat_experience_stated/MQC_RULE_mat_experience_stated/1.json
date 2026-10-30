@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The figure '15+ years' is preserved verbatim without alteration, and the summary is smoothly rewritten to adopt the exact phrasing from the posting requirement ('backend engineering experience').",
+        "rationale": "The figure '15+ years' is preserved verbatim, and the summary is effectively rephrased to align directly with the posting's requirement ('backend engineering experience').",
         "score": 5
       }
     }

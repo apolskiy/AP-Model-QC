@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
-    "duration_ms": 63768,
+    "duration_ms": 72279,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 432,
-    "raw_reference": "d10f4497-11c7-9f4f-bcd3-e7792ecbd4b8",
+    "output_tokens": 363,
+    "raw_reference": "c6310398-b0b3-9eb4-9e2c-785e8d7993cd",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math treats a percentage and a currency amount as if they were the same kind of number, and it can abort or wipe the charge.\n\n**1. The tier discount is used as the price, not taken off the price.**  \n`discount` is a percent (20 means 20% off). `total_amount * discount / 100` is only the currency value of that reduction. The function then treats that reduction as the amount still owed and subtracts the coupon from it. On a 100-unit standard basket that starts from 20, not from 80. It should convert the percent to money and subtract it from the full total: charge `total_amount * (100 - discount) / 100`, then subtract coupons. Those two reductions are different units and must both be applied in currency, off the original total.\n\n**2. Every coupon after the first is ignored.**  \n`coupon_codes[0]` never looks at the rest of the list, so `[\"SAVE20\", \"SAVE30\"]` only applies 20. It should look up each code and add every recognised currency value.\n\n**3. An unknown code aborts settlement.**  \n`coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so the order never settles. A missing code should contribute nothing and be skipped; settlement should still finish on the tier discount alone (80 for that standard 100-unit basket).\n\n**4. Nothing stops a non-positive charge.**  \nCoupons are absolute currency amounts, and they are subtracted with no cap. That is why a 90 coupon (and, with the wrong base, even a 30 coupon) drives the result through zero into a credit. The seller is not giving the product away: after the percent-off and the recognised coupons, the amount owed must stay strictly positive. Excess coupon value has to be rejected or capped so the charge cannot reach 0 or below.\n\nWith those fixes, the four production calls settle as 50, a refused or capped SAVE90 (not \u221210 or 0), 80, and 30.",
-    "thinking_tokens": 4310,
+    "text": "The settlement formula charges the tier discount itself, then subtracts coupons from that, and it can abort or go non-positive.\n\n1. **Percentage is used as the amount to charge.** `total_amount * discount / 100` is the currency value of the tier percentage (20 on a 100 basket), not the price after that percentage is taken off. The coupon, a currency amount, is then subtracted from that discount value, so the two units are combined on the wrong base. For `(\"standard\", 100, [\"SAVE30\"], \u2026)` that is `20 - 30`, not `80 - 30`. Charge the total after the percentage reduction, `total_amount * (100 - discount) / 100`, and only then subtract coupon currency from that balance.\n\n2. **Only the first code is read.** `coupon_codes[0]` drops every later code, so `[\"SAVE20\", \"SAVE30\"]` never applies both. Sum the currency value of every recognised code.\n\n3. **An unknown code aborts the sale.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so settlement never finishes. Skip unrecognised codes (treat them as no reduction) and still return an amount owed.\n\n4. **The result is not bounded.** Nothing stops the balance at or below zero. A coupon larger than the post-discount total (for example `SAVE90` on a 100 basket after 20% off) makes the seller give the product away and pay the buyer. Do not settle at or below zero; the seller still expects to be paid. The calls do not define the fallback charge when coupons would wipe out the balance, so that floor has to be an explicit policy, not an unbounded subtraction.",
+    "thinking_tokens": 5170,
     "tool_calls": []
   }
 }

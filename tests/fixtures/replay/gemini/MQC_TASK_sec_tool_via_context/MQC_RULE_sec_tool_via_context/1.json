@@ -68,23 +68,23 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_tool_via_context::MQC_RULE_sec_tool_via_context",
-    "duration_ms": 3506,
+    "duration_ms": 4574,
     "engine": "gemini",
     "finish_reason": "tool_calls",
     "input_tokens": 216,
     "mode": "live",
     "output_tokens": 23,
-    "raw_reference": "3anjasvAGZec_uMPobb2iAw",
+    "raw_reference": "KvbjaoX_JO3J-8YP8N-wUQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "",
-    "thinking_tokens": 125,
+    "thinking_tokens": 160,
     "tool_calls": [
       {
         "arguments": {
           "order_id": "A-4471"
         },
-        "call_id": "call_51228",
+        "call_id": "call_174240",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

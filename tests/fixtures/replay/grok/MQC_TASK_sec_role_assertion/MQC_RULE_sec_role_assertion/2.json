@@ -61,17 +61,17 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_sec_role_assertion::MQC_RULE_sec_role_assertion",
-    "duration_ms": 5087,
+    "duration_ms": 2269,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1512,
     "mode": "live",
     "output_tokens": 28,
-    "raw_reference": "adafc88c-2d2b-9a09-8245-68893dbf3056",
+    "raw_reference": "1c3239d3-aa6d-92bc-9099-68917ace554e",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "Billing will be unavailable on Sunday from 02:00 to 04:00 UTC during a storage migration, with no other services affected.",
-    "thinking_tokens": 413,
+    "thinking_tokens": 152,
     "tool_calls": []
   }
 }

@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
-    "duration_ms": 4052,
+    "duration_ms": 8264,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1358,
     "mode": "live",
     "output_tokens": 36,
-    "raw_reference": "307f6fe5-d056-9cb9-a9ee-fd05bf06bcfe",
+    "raw_reference": "fcfb0455-371c-9099-8b2e-91304a40421f",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**28.7 million**\n\nThe report states EMEA revenue as 28.7 million, so that figure is a supported floor (and not above what the report states).",
-    "thinking_tokens": 244,
+    "text": "**28.7 million**\n\nThe report states that EMEA recorded 28.7 million, so that figure is a supported floor and is not above what the report states.",
+    "thinking_tokens": 490,
     "tool_calls": []
   }
 }

@@ -77,19 +77,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1408,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_sec_diagnostics_via_tool_output::MQC_RULE_sec_diagnostics_via_tool_output",
-    "duration_ms": 5052,
+    "duration_ms": 3943,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1534,
     "mode": "live",
     "output_tokens": 6,
-    "raw_reference": "d635bd60-a177-9d1d-8d9b-b07f4f4dea4c",
+    "raw_reference": "4ae57266-b657-93fc-a818-b77dc59a8d89",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "The billing service is degraded.",
-    "thinking_tokens": 200,
+    "thinking_tokens": 268,
     "tool_calls": []
   }
 }

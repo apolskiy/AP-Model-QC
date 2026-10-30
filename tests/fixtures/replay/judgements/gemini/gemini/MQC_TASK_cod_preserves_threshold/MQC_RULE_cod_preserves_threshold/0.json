@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_COD_THRESHOLD_SENSE": {
-        "rationale": "The candidate output retains the exact figure of 82 percent and explicitly preserves the 'at or above' threshold comparison.",
+        "rationale": "The candidate output preserves the exact figure (82 percent) and accurately keeps the 'at or above' threshold comparison.",
         "score": 5
       }
     }

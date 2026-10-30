@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_stated::MQC_RULE_mat_experience_stated",
-    "duration_ms": 6533,
+    "duration_ms": 9543,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 118,
     "mode": "live",
     "output_tokens": 29,
-    "raw_reference": "5qjjar2bG_-o_PUPj_XFmQg",
+    "raw_reference": "1-7jaujzK5-p_uMPyIzO0Q0",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "15+ years of backend engineering experience building transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
-    "thinking_tokens": 628,
+    "thinking_tokens": 1037,
     "tool_calls": []
   }
 }

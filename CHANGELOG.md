@@ -40,6 +40,102 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The whole graded suite was re-recorded live on all four engines, 2026-10-30
+
+**Why it was needed.** The recordings dated from 2026-10-15 and had been patched
+per subject since: the eleven changed security cases, the settlement task, the
+nine hidden-passage cases twice, the eight told-not-to-quote cases, and the judge
+alone over the hidden-passage cases. A corpus assembled from six partial
+re-records cannot answer what an engine does now, and the planted score the
+rubric would have passed was corrected after most of it was taken, so a status
+read off it would have been read off a retired payload. `MQC_CAS_UNI_115771` was
+red for exactly that reason and the harness merge regression failed behind it.
+
+**What changed.** Every graded case was dispatched live against each engine with
+gemini judging, 94 cases and 3 observations each escalating to 5 on a
+disagreement. Recordings 1244 to 1200 candidate responses and 786 to 801
+judgements; the drop is retired observations replaced rather than measurements
+lost, and the rise is the judge now reached where a screen abort had stopped it.
+Every engine replays with no stale or missing fixture.
+
+| Engine | Total | Executed | Passed | Failed | Skipped |
+|---|---|---|---|---|---|
+| gemini | 94 | 94 | 93 | 1 | 0 |
+| openai | 94 | 91 | 83 | 8 | 3 |
+| claude | 94 | 91 | 82 | 9 | 3 |
+| grok | 94 | 94 | 92 | 2 | 0 |
+
+Each skip is a dependent of a failed foundation, carrying
+`QC_HARNESS_DEPENDENCY_UNMET`. **grok needed a second dispatch**: one case's
+response could not be parsed on the first pass, so nothing was recorded for it
+and the replay reported a stale fixture until a gap-filling run took it again.
+
+**What it moved in the findings.** 15 open findings, as before, redistributed:
+claude 4 to 5, openai 9 to 8, gemini 2 to 1, grok 0 to 1. Held findings 6 to 11,
+each having stopped reproducing. Findings classified as inconsistency 9 to 5.
+**Six withdrawn findings reproduce again** and are awaiting review, each being
+either an assertion repaired since the withdrawal or the same false positive
+returning.
+
+### The filing sheet counted what it files and the registers were read as disagreeing, 2026-10-30
+
+**What was wrong.** `MQC_CAS_UNI_115781` asserted the sheet's total against the
+count of open findings in the bug files. The sheet files a finding the latest run
+measured and leaves an open finding the run did not measure on its engine's page
+under "Awaiting measurement", so the two numbers differ whenever a finding's case
+skips. `consumer_ci.md` section 9.5.5.10 stated both readings: its table said the
+total came from the bug files while its prose said a dependent is already absent.
+
+**Why it happens.** The equality held while every open finding happened to have
+been measured. openai's `134402` broke it: `134400` failed, took its three
+dependents with it, and the sheet counted 14 where the registers held 15.
+
+**What changed.** The design states which open findings the total counts and
+where the rest are accounted for, and the case asserts the invariant across both
+artifacts instead: filed plus awaiting equals open. That is the stronger claim,
+and it catches a finding dropped from both, which the total alone could not. The
+generator is unchanged, having been right.
+
+### A finding lookup broke twice because the measurement moved, 2026-10-30
+
+**What was wrong.** `MQC_CAS_UNI_115768` read one named finding out of claude's
+register to check the diagnosis a ticket opens with. `154501` was withdrawn on
+2026-10-28 and the lookup raised `StopIteration`; it was re-pointed at `154502`,
+which was held on 2026-10-30 for no longer reproducing, and it raised again. A
+precondition broke because a measurement moved, which is the state the run exits
+3 on, and nothing was wrong with the code under test either time.
+
+**What changed.** The step selects any filed finding whose observations failed an
+assertion, which is the property it needs, and fails with that sentence when the
+register holds none. A precondition that names a case from a living register
+dates the moment it is written.
+
+### The filing sheet was dated by whichever clock the process sat on, 2026-10-30
+
+**What was wrong.** `tools/ticket_report.py` dated the filing sheet from the
+local clock, and that sheet is published. Four more modules here read a clock of
+their own, against a changelog that declares its dates UTC at its head, so one
+change could carry two dates.
+
+**Why it happens.** `date.today` returns wherever the process happens to sit and
+raises nothing. The local date and the UTC date agree for most of the day, so
+the disagreement appears for part of every day and never as a failure. It is the
+missing-encoding defect one level up, a platform difference that changes a value
+rather than raising.
+
+**What changed.** Every date here comes from `cmn.project_clock.project_today`,
+which is the UTC date, and `local_clock_reads` reports a module reading a clock
+of its own. The five call sites converted are the filing sheet's date, the
+pricing date a graded observation carries, and three cases comparing a check's
+output against today.
+
+Specified at `code-style.md` section 8.3. New requirement
+`MQC_REQ_CAS_CI_0067`, asserted by `MQC_CAS_UNI_115507` with this repository's
+root; the constructed legs are in the harness, where `MQC_CMN_UNI_112528` reads
+which of five calls are reported. Inventory 135 to 136 cases, 96 to 97 negative;
+README 181 to 182 preconditions, 194 to 195 requirements, and 1005 to 1006
+harness cases.
+
 ### A steered judgement failed on the fingerprint alone, and a pass could land on the planted value, 2026-10-29
 
 **What was wrong.** The hidden-passage security rubrics planted `4` and their

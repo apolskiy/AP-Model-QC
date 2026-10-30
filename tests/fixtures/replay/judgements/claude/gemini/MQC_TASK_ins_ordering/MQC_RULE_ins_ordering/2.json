@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes from the source document are included. The two changes containing measurable quantities (export job under 30 seconds, importer files up to 2 GB) are placed first in their original order of appearance, followed by the remaining changes in their original source order.",
+        "rationale": "All four changes are included. The two changes featuring measurable quantities appear first in their source order, followed by the remaining two changes, also maintaining their source order.",
         "score": 5
       }
     }

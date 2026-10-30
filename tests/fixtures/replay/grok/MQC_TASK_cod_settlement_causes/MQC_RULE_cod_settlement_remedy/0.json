@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1536,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 68676,
+    "duration_ms": 48043,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 474,
-    "raw_reference": "c8357285-e807-9393-b2de-e4a2386ecc52",
+    "output_tokens": 415,
+    "raw_reference": "d32666c1-5ae5-914e-835d-a3e0aa97c954",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement is wrong for four separate reasons. On a 100-unit standard basket the calls should come out to 50, 0, 80, and 30, not \u221210, \u221270, an exception, and 0.\n\n1. The percentage is used as the amount to charge, not as a reduction. `discount` is 20, meaning 20 percent off, but `total_amount * discount / 100` is only the currency value of that discount (20). Coupons are then subtracted from that slice. A percent and a coupon are different units: the percent must shrink the total first, and only then should currency coupons be subtracted. It should charge `total_amount * (100 - discount) / 100 - coupon_sum`. As written, the seller collects the discount itself (or less), which is why a normal coupon can wipe the balance or push it negative.\n\n2. Only the first coupon is redeemed. `coupon_codes[0]` drops every later code, so `[\"SAVE20\", \"SAVE30\"]` applies 20 and ignores 30. It should sum the currency value of every code in the list.\n\n3. An unknown code aborts the sale. `coupon_lookup[code]` raises `KeyError` on `\"NOPE\"`, so nothing is settled. An unrecognised code should contribute 0 and settlement should continue. The same `[0]` access also fails if the list is empty; an empty list should just mean no coupon.\n\n4. The balance is allowed to go negative. After a correct 20 percent reduction, `SAVE90` is still 80 \u2212 90 = \u221210, so the seller pays the buyer and gives the product away. Coupon currency should not be allowed to drive the result below zero; the amount owed should be floored at 0.\n\n```python\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = sum(coupon_lookup.get(code, 0) for code in coupon_codes)\n    amount_owed = total_amount * (100 - discount) / 100 - coupon_sum\n    return max(0, amount_owed)\n```",
-    "thinking_tokens": 4759,
+    "text": "The settlement formula treats a percentage and a currency amount as if they were the same kind of number, and it can abort or zero the charge.\n\n1. **The tier discount is applied in the wrong direction.** `discount` is a percent off (20 means 20% off), but `total_amount * discount / 100` keeps that fraction of the basket instead of removing it. On a 100 unit standard order that yields 20, which is the discount itself, not the price after discount. It should reduce the total by that percent: pay `total_amount * (100 - discount) / 100` (80 for standard, 70 for premium).\n\n2. **The coupon is subtracted from that discount figure, so the two units are combined in the wrong place.** A coupon looks up to currency and must come off the price after the percentage reduction, not off the percentage. Subtract the coupon sum from the discounted total, not from `total_amount * discount / 100`.\n\n3. **Only the first code is used.** `coupon_codes[0]` drops every later code, so `[\"SAVE20\", \"SAVE30\"]` never applies both amounts. Sum the currency value of every code in the list.\n\n4. **An unknown code aborts the sale.** A bare `coupon_lookup[...]` raises `KeyError` on `\"NOPE\"`, so one bad code prevents settlement. Skip codes that are not in the lookup (they add 0) and still return an amount owed.\n\n5. **Nothing stops a zero or negative charge.** After the bad multiply-then-subtract, a coupon can cancel the figure (0 \u2014 the product is given away) or exceed it (negative \u2014 the seller pays the buyer). The same over-subtraction remains possible once the formula is fixed, as with `SAVE90` against an 80 unit discounted total. Floor the result at 0 so the seller never owes the buyer; do not treat a coupon larger than the discounted total as a payout.",
+    "thinking_tokens": 3363,
     "tool_calls": []
   }
 }

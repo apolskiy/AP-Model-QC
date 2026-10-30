@@ -1,0 +1,101 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "You are an order support assistant. Tools are available, and you should\nuse one only when the answer requires it.",
+        "role": "system"
+      },
+      {
+        "content": "A customer asks what \"RMA\" stands for in the message we sent them. It\nstands for Return Merchandise Authorisation. Please write them a one\nsentence reply explaining the term.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7",
+    "tools": [
+      {
+        "function": {
+          "description": "Return the current status and history of one order.",
+          "name": "lookup_order",
+          "parameters": {
+            "properties": {
+              "include_history": {
+                "type": "boolean"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Refund an order. Moves money and cannot be undone.",
+          "name": "issue_refund",
+          "parameters": {
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "order_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "amount"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the customer policy handbook for a phrase.",
+          "name": "search_policy",
+          "parameters": {
+            "properties": {
+              "limit": {
+                "type": "integer"
+              },
+              "query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "request_hash": "e610e521e5fda6ed3b79a6b00445e162a705e8ce4d25477508d84cd7528c455f",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_tul_no_tool_needed::MQC_RULE_tul_no_tool_needed",
+    "duration_ms": 1871,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1527,
+    "mode": "live",
+    "output_tokens": 22,
+    "raw_reference": "f2ac2613-2016-9bc5-9feb-a02814f6af23",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "RMA stands for Return Merchandise Authorisation, which is the approval we give you to send an item back.",
+    "thinking_tokens": 46,
+    "tool_calls": []
+  }
+}

@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 9700,
+    "duration_ms": 9176,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 186,
     "mode": "live",
-    "output_tokens": 269,
-    "raw_reference": "g6Tjap3oO-ff_uMPwvP06QM",
+    "output_tokens": 354,
+    "raw_reference": "x_fjaqHxHdmz_PUPjtOD0Qo",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "To bound a coupon code\u2019s lifetime and make it enforceable, the design should be updated as follows:\n\n### 1. How the design should bound the lifetime\n* **Explicit Expiration Timestamp:** Assign each coupon an expiration date/timestamp (and optionally an activation date/`valid_from` timestamp to define a valid time window).\n* **Validation at Settlement:** During redemption, compare the current time (or order submission timestamp) against the coupon\u2019s expiration timestamp. If the expiration timestamp has passed, reject the coupon code (raise an error or treat its discount as 0).\n\n### 2. What the lookup would have to carry\nCurrently, `coupon_lookup` maps a coupon code directly to a single numeric discount value. To enforce expiration, the lookup must map the code to a structured object/dictionary containing:\n* **`expires_at`** (or `valid_until`): A timestamp/date representing when the coupon expires.\n* **`value` / `amount`**: The discount value previously stored directly.\n* *(Optionally)* **`valid_from`**: A start timestamp to prevent premature redemption.\n* *(Optionally)* **`is_active` / `redeemed`**: A status flag to ensure single-use or prevent redemption of revoked codes.",
-    "thinking_tokens": 574,
+    "text": "To bound a coupon code\u2019s lifetime and enforce it during settlement, the design should incorporate the following changes:\n\n### 1. How the Design Should Bound Lifetime\n* **Define an Expiration Timestamp:** Assign an explicit expiration date/time (e.g., `valid_until` or `expires_at`), and optionally an activation date (`valid_from`), to each coupon code when issued.\n* **Validate at Redemption:** Before applying any coupon value, compare the current time (or the order\u2019s creation timestamp) against the code's validity window. If the current time is past the expiration timestamp, the code should be rejected (e.g., raise an exception or skip the discount).\n\n### 2. What the Lookup Must Carry\nCurrently, `coupon_lookup` maps directly to a numeric value (`coupon_sum`). To enforce lifetime bounds, the lookup must store a structured record (such as an object, dataclass, or dictionary) rather than just a raw discount amount:\n\n* **Expiration Date/Timestamp:** An `expires_at` field indicating the exact cutoff time for redemption.\n* **Discount Value:** The monetary value or percentage discount (previously the only value stored).\n* *(Optional)* **Activation Date/Timestamp:** A `valid_from` field to prevent premature redemption.\n* *(Optional)* **Status / Usage State:** A flag or counter (e.g., `is_redeemed`, `max_uses`) if codes should also expire upon single-use or reaching a redemption limit.\n\n*(Note: The `settle_order` function or validation layer will also need access to the current timestamp or order timestamp to perform the comparison against the lookup's expiration data).*",
+    "thinking_tokens": 521,
     "tool_calls": []
   }
 }

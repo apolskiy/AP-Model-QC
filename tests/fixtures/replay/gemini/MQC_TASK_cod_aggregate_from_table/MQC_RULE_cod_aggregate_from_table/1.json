@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_aggregate_from_table::MQC_RULE_cod_aggregate_from_table",
-    "duration_ms": 4677,
+    "duration_ms": 6095,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 85,
     "mode": "live",
-    "output_tokens": 36,
-    "raw_reference": "7qPjaq2UL8ro-8YP3KyC2Q8",
+    "output_tokens": 76,
+    "raw_reference": "ovnjavHxAZaQ_uMPoIH0uAg",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the table, here are the totals across all regions:\n\n* **Total Orders:** 255\n* **Total Revenue:** 87,400",
-    "thinking_tokens": 348,
+    "text": "Based on the table:\n\n* **Total Orders:** 255 (120 + 80 + 35 + 20)\n* **Total Revenue:** 87,400 (41,200 + 28,700 + 11,400 + 6,100)",
+    "thinking_tokens": 338,
     "tool_calls": []
   }
 }

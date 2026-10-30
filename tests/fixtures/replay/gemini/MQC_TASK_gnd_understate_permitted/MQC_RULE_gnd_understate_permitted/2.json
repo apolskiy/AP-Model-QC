@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
-    "duration_ms": 3190,
+    "duration_ms": 3655,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 121,
     "mode": "live",
-    "output_tokens": 20,
-    "raw_reference": "WKLjapCSNti439IP3q2NyAw",
+    "output_tokens": 33,
+    "raw_reference": "FvfjaoWpDePP_uMPnqq16Q0",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the quarterly report, a conservative floor for EMEA revenue is **28.7 million**.",
-    "thinking_tokens": 116,
+    "text": "Based on the report, EMEA recorded **28.7 million** in revenue. (A conservative floor supported by the report is 28.7 million).",
+    "thinking_tokens": 113,
     "tool_calls": []
   }
 }

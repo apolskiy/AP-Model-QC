@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
-    "duration_ms": 61998,
+    "duration_ms": 41075,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1455,
     "mode": "live",
-    "output_tokens": 565,
-    "raw_reference": "93a76250-13b0-932e-ab29-ade373ff681b",
+    "output_tokens": 482,
+    "raw_reference": "29bd3738-c737-9c5b-8434-ac8fcfc7dc49",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function undercharges, can return a negative balance, and crashes on inputs the call sites already use.\n\n1. **Discount is applied as the amount due, not as a reduction.** `total_amount * discount / 100` is the discount itself (20 on a 100-unit standard basket). That value is then treated as the bill. A standard customer is charged 20% of the basket instead of 80%; a premium customer is charged 30% instead of 70%. On the first two production calls the results are `-10` and `0`, not about 50 and 60. The merchant loses most of the revenue; customers are undercharged; finance and the payment provider see zero or credit balances.\n\n2. **The result is not floored at zero.** After the bad discount math, the coupon is subtracted with no lower bound. `settle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})` returns `-10`. The customer is credited, the merchant pays out, and a gateway that rejects negatives fails the checkout.\n\n3. **Only the first coupon is used.** `coupon_codes[0]` ignores every later code, and `coupon_sum` is not a sum. A customer who passes more than one valid code is overcharged relative to a multi-coupon policy; everyone else is unaffected only because they never receive the extra discount.\n\n4. **An unknown coupon crashes the call.** `coupon_lookup[coupon_codes[0]]` raises `KeyError` when the code is missing. The third production call, `[\"NOPE\"]`, does this. That customer cannot check out; support and on-call get an unhandled exception instead of a rejected coupon.\n\n5. **No coupons also crash the call.** An empty `coupon_codes` list raises `IndexError` on `[0]`. A customer checking out without a coupon cannot settle.\n\n6. **An unknown tier crashes the call.** `DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for anything other than `\"standard\"` or `\"premium\"`. Guest, legacy, misspelled, or newly added tiers cannot check out.\n\n7. **Bad numeric inputs are accepted.** A negative `total_amount`, a negative coupon value, or a non-numeric value is not rejected. A negative coupon is subtracted as a negative, so it increases the amount owed; a negative basket produces a nonsense charge. The caller, the customer, and accounting all get a wrong figure with no error.\n\n8. **Money is computed with binary floating point and never rounded.** `/ 100` yields a float. Odd basket sizes can be off by a fraction of a unit. Customers and reconciliation both see penny drift.",
-    "thinking_tokens": 3681,
+    "text": "The function charges the wrong amount, ignores most coupons, and crashes on ordinary inputs. Against the 100-unit production calls, standard customers are billed \u221210, 0, or the checkout dies.\n\n1. **Percent-off is used as the amount due.** `total_amount * discount / 100` is the discount, not the balance. Standard is 20% off, so a 100-unit basket should start at 80, not 20. Premium (30) would be billed 30 instead of 70. Customers are undercharged; the merchant loses most of the sale. `settle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})` returns \u221210. `settle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})` returns 0.\n\n2. **The coupon is subtracted from that discount, not from the price.** A coupon larger than the mistaken \u201camount due\u201d goes negative. There is no floor at 0. Customers can be credited; settlement and payment systems see a negative charge. Same two calls: \u221210 and 0 instead of 50 and 60 if both 20% off and the coupon were applied to 100.\n\n3. **Only `coupon_codes[0]` is applied.** The name `coupon_sum` and the list argument imply every code counts. Extra codes are dropped, so customers who stack coupons do not get them. An empty list raises `IndexError`, so a no-coupon checkout cannot call this at all.\n\n4. **Unknown coupon is an unhandled `KeyError`.** `settle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})` looks up `\"NOPE\"` and crashes. That customer cannot pay; the merchant gets a failed request instead of \u201cinvalid coupon.\u201d\n\n5. **Unknown tier is an unhandled `KeyError`.** Anything other than `\"standard\"` or `\"premium\"` (typo, new tier, missing tier) aborts before pricing. Those accounts cannot check out.\n\n6. **Money is computed with binary floats.** `/ 100` yields a float. Totals that are not dyadic fractions will not round to currency units. Customers and finance see off-by-a-fraction charges even after the formula is fixed.",
+    "thinking_tokens": 2460,
     "tool_calls": []
   }
 }

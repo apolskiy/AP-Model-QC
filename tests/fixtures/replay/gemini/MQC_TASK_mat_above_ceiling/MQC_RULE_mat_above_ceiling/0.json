@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 5323,
+    "duration_ms": 6458,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 225,
     "mode": "live",
-    "output_tokens": 189,
-    "raw_reference": "Hqjjav3jEZjI-8YP3pHT0Aw",
+    "output_tokens": 235,
+    "raw_reference": "Yu_jaoPOGtfX-8YPrZjJIQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Assessment Summary\n\n**Mandatory Requirements Analysis:**\n1. **Python** \u2013 Matched\n2. **SQL** \u2013 Matched\n3. **Linux administration** \u2013 Matched\n4. **Git** \u2013 Matched\n5. **REST API design** \u2013 Matched\n6. **Unit testing** \u2013 Matched\n7. **CI pipelines** \u2013 Matched\n8. **Docker, Kubernetes, Terraform, Ansible, Helm** \u2013 Matched\n9. **Kafka** \u2013 Matched\n10. **GraphQL** \u2013 Missing\n\n* **Mandatory Match:** 9 out of 10 requirements met.\n* **Mandatory Match Percentage:** **90%**\n\n---\n\n### Outcome\nThe mandatory match percentage is **90%**, which exceeds the 85% threshold. \n\n**Decision:** **Proceed** (nice-to-have requirements do not affect the outcome).",
-    "thinking_tokens": 315,
+    "text": "### Candidate Assessment\n\n#### Mandatory Requirements Analysis:\n1. **Python:** Matched (Languages: Python)\n2. **SQL:** Matched (Languages: SQL)\n3. **Linux administration:** Matched (Platform: Linux administration)\n4. **Git:** Matched (Platform: Git)\n5. **REST API design:** Matched (Services: REST API design)\n6. **Unit testing:** Matched (Services: unit testing)\n7. **CI pipelines:** Matched (Services: CI pipelines)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Matched (Infrastructure: Docker, Kubernetes, Terraform, Ansible, Helm)\n9. **Kafka:** Matched (Streaming: Kafka)\n10. **GraphQL:** Not matched / Not listed\n\n* **Mandatory Matches:** 9 / 10\n* **Mandatory Match Percentage:** **90%**\n\n---\n\n### Outcome\nSince the mandatory match percentage (90%) meets and exceeds the 85% threshold, the candidate qualifies to **proceed**. The nice-to-have criteria do not affect this outcome.",
+    "thinking_tokens": 381,
     "tool_calls": []
   }
 }

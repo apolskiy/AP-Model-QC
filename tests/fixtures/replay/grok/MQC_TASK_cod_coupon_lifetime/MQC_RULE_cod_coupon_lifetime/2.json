@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 15295,
+    "duration_ms": 10522,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 290,
-    "raw_reference": "58df1855-62cd-951a-9cce-e7ebc3caaa5a",
+    "output_tokens": 321,
+    "raw_reference": "6096e7cf-0bf2-936e-88b6-c0e86ee21915",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Bound each code at issuance with an absolute validity window, and stop treating the lookup as a bare amount.\n\nGive every code a **not-before** and an **expires-at** timestamp (server clock, UTC). Redemption is allowed only while `not_before <= now < expires_at`. Absolute instants are what make \u201cthis code does not live forever\u201d enforceable; \u201cvalid for N days\u201d only works if those N days were already turned into instants when the code was issued. Do not take the current time from the client.\n\nFor that check to be enforceable, `coupon_lookup[code]` cannot be just the discount number. It has to carry at least:\n\n- the discount value you subtract or apply\n- `expires_at` (required)\n- `not_before` (if you want a start bound, not only an end)\n\nThe redeem path must read those fields and reject the code when `now` is outside the window\u2014before using the amount. A lookup that only maps code \u2192 number can never enforce a lifetime, no matter what you store elsewhere, because this function never consults anything but that value.\n\nRevocation and single-use are separate from lifetime. Expiry does not need a redemption log; \u201calready used\u201d does. If you want both, keep expiry on the lookup entry and record redemptions (or a remaining-use count) in something this path actually checks.",
-    "thinking_tokens": 728,
+    "text": "Give every code an absolute validity window and refuse redemption outside it. A relative rule such as \u201c30 days after issue\u201d is not enforceable from the code string alone.\n\n**What the lookup must carry.** `coupon_lookup[code]` cannot be only an amount. It needs at least:\n\n- `not_before` \u2014 earliest instant the code may be redeemed (UTC)\n- `not_after` \u2014 latest instant it may be redeemed (UTC)\n- the discount value (amount or percent), separate from the window\n\n`not_after` is the bound. `not_before` stops codes that are issued early from working before the campaign starts. Both should be timezone-aware instants, not local dates, so \u201cend of day\u201d does not depend on the redeemer\u2019s clock or zone.\n\n**How to enforce it.** Resolve the code, then compare a trusted server clock to that window before applying any value:\n\n- missing code, or `now < not_before`, or `now >= not_after` \u2192 reject (do not treat expiry as zero discount)\n- otherwise use the stored value\n\nDo not derive expiry from issuance time at redeem time unless the lookup also stores `issued_at` and a fixed TTL. Prefer storing the already-computed `not_after` so the check does not depend on policy that may have changed since issue.\n\nLifetime bounding is independent of single-use. If a code must also die after one redemption, the record needs a consumed flag or `redeemed_at` as well; expiry alone does not prevent reuse inside the window.",
+    "thinking_tokens": 405,
     "tool_calls": []
   }
 }

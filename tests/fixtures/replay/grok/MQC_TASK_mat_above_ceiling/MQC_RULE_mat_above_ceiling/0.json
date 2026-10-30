@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 8515,
+    "duration_ms": 9882,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1436,
     "mode": "live",
-    "output_tokens": 80,
-    "raw_reference": "6ed40a41-3fc0-9a57-97a7-e61add1acd22",
+    "output_tokens": 164,
+    "raw_reference": "fce967ab-c993-9bd7-bcd9-618ff6bb7224",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 90% (9/10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nMissing: GraphQL.\n\n90% is at or above 85%, so the bar is met. Nice-to-haves do not change the outcome.",
-    "thinking_tokens": 728,
+    "text": "**Mandatory match: 90% (9/10).**\n\nThat is at or above 85%, so the candidate clears the bar on mandatory requirements alone. Nice-to-haves do not change the outcome.\n\n| # | Mandatory requirement | Match |\n| --- | --- | --- |\n| 1 | Python | Yes |\n| 2 | SQL | Yes |\n| 3 | Linux administration | Yes |\n| 4 | Git | Yes |\n| 5 | REST API design | Yes |\n| 6 | Unit testing | Yes |\n| 7 | CI pipelines | Yes |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Yes |\n| 9 | Kafka | Yes |\n| 10 | GraphQL | No |\n\n**Gap:** GraphQL is not on the resume.",
+    "thinking_tokens": 736,
     "tool_calls": []
   }
 }

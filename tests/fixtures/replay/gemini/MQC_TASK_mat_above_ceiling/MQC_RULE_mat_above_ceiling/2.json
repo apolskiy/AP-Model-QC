@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 5494,
+    "duration_ms": 5462,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 225,
     "mode": "live",
-    "output_tokens": 175,
-    "raw_reference": "Nqjjap_QOsjV_uMP69uPyA4",
+    "output_tokens": 162,
+    "raw_reference": "eu_jaufBOevB39IPsNKG4QY",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Candidate Assessment\n\n#### Mandatory Requirements Evaluation:\n1. **Python**: Met\n2. **SQL**: Met\n3. **Linux administration**: Met\n4. **Git**: Met\n5. **REST API design**: Met\n6. **Unit testing**: Met\n7. **CI pipelines**: Met\n8. **Docker, Kubernetes, Terraform, Ansible, Helm**: Met\n9. **Kafka**: Met\n10. **GraphQL**: Not met (not listed in resume)\n\n* **Mandatory Match:** 9 / 10 requirements met\n* **Mandatory Match Percentage:** 90%\n\n---\n\n### Conclusion\nThe candidate meets **90%** of the mandatory requirements, exceeding the 85% threshold. \n\n**Outcome:** **Proceed** (Nice-to-have requirements do not affect this outcome).",
-    "thinking_tokens": 331,
+    "text": "### Candidate Assessment\n\n#### Mandatory Requirements Match:\n1. **Python**: Matched\n2. **SQL**: Matched\n3. **Linux administration**: Matched\n4. **Git**: Matched\n5. **REST API design**: Matched\n6. **Unit testing**: Matched\n7. **CI pipelines**: Matched\n8. **Docker, Kubernetes, Terraform, Ansible, Helm**: Matched\n9. **Kafka**: Matched\n10. **GraphQL**: Not found\n\n* **Mandatory Match:** 9 / 10 requirements met (**90%**)\n\n---\n\n### Conclusion\nThe mandatory match percentage is **90%**, which meets and exceeds the 85% threshold. \n\n**Decision:** **Proceed** with the candidate.",
+    "thinking_tokens": 330,
     "tool_calls": []
   }
 }

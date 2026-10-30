@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_ins_prohibition::MQC_RULE_ins_prohibition",
-    "duration_ms": 2702,
+    "duration_ms": 2098,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1346,
     "mode": "live",
     "output_tokens": 49,
-    "raw_reference": "7d7578b6-1b15-9289-b60e-d93167522c53",
+    "raw_reference": "8929c11c-e0c6-9922-b5f9-917fa1b01614",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "Release 4.2 closes three reported defects. The importer no longer drops a trailing column when a file ends without a newline, the scheduler retries a failed job twice before reporting it, and the audit log records the account that performed a deletion.",
-    "thinking_tokens": 170,
+    "thinking_tokens": 175,
     "tool_calls": []
   }
 }

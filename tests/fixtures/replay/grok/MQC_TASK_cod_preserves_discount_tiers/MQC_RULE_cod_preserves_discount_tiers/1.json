@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
-    "duration_ms": 16313,
+    "duration_ms": 16327,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1387,
     "mode": "live",
-    "output_tokens": 274,
-    "raw_reference": "5cd666e5-cee4-9dc0-a742-32381775c60a",
+    "output_tokens": 187,
+    "raw_reference": "e6f22afd-63b4-9b06-b8d9-00a8857a380b",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function charges the tier discount percent of the total, then subtracts only the first coupon. It should charge the total after that percent off, then subtract every coupon.\n\n**What it computes now**\n\n- `discount` is the stated percent off (`20` or `30`), but it is used as the fraction to charge: `total_amount * discount / 100`. A standard account is therefore billed 20% of the total (an 80% markdown), not 80% of the total (20% off).\n- Only `coupon_codes[0]` is looked up. Any later codes are ignored. An empty list raises `IndexError`.\n- That single coupon value is subtracted from the mis-scaled total, so the return value is not an amount owed after a tier discount.\n\n**What it should compute**\n\nLeave `DISCOUNT_BY_TIER` as stated percents off. The amount owed is the total after that percent off, minus the sum of all coupon values:\n\n```text\namount_owed = total_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)\n```\n\nSo standard pays 80% of `total_amount` and premium pays 70%, then every coupon in `coupon_codes` is deducted.",
-    "thinking_tokens": 1048,
+    "text": "The function returns the tier discount amount minus a single coupon, not the balance due.\n\nIt looks up the tier\u2019s stated percent off (`20` or `30`) and only `coupon_codes[0]`, then computes:\n\n```text\ntotal_amount * discount / 100 - first_coupon\n```\n\nThat is the discount slice of the total, reduced by one coupon. For a $100 standard order with a $5 coupon it returns `15`, not the amount owed.\n\nIt should keep those same percents as percent-off rates and return the remainder after that reduction and after every coupon:\n\n```text\ntotal_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)\n```\n\nEquivalently: `total_amount - total_amount * discount / 100 - coupon_sum`. For the same example that is `75`.",
+    "thinking_tokens": 1085,
     "tool_calls": []
   }
 }

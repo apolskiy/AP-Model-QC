@@ -29,7 +29,7 @@
     "input_tokens": 129,
     "mode": "live",
     "output_tokens": 6,
-    "raw_reference": "chatcmpl-EZK2E3mw9istcxwMvtahflXvCOBM8",
+    "raw_reference": "chatcmpl-EeWOIXhKcnq4Jqazvsy8jqlwRevvg",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
     "text": "The candidate matches the requirement.",

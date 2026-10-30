@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
-    "duration_ms": 5159,
+    "duration_ms": 6709,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 73,
     "mode": "live",
-    "output_tokens": 63,
-    "raw_reference": "kqPjauCDNpzQjMcPhtfeuQw",
+    "output_tokens": 52,
+    "raw_reference": "3fjjapGTAsm839IP2Zi-gQY",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The `fetch_profile` function takes `client` and `user_id` as arguments. It performs the following:\n\n1. Calls `client.get(f\"/users/{user_id}\")` and assigns the result to `response`.\n2. Calls and returns `response.json()`.",
-    "thinking_tokens": 357,
+    "text": "The `fetch_profile` function takes a `client` and `user_id`, calls `client.get(f\"/users/{user_id}\")`, assigns the result to `response`, and returns the result of calling `response.json()`.",
+    "thinking_tokens": 338,
     "tool_calls": []
   }
 }

@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
-    "duration_ms": 4383,
+    "duration_ms": 4679,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 116,
     "mode": "live",
-    "output_tokens": 57,
-    "raw_reference": "MaXjavWCGIGQjMcP2OKYsAs",
+    "output_tokens": 61,
+    "raw_reference": "KPfjat_ZIZHa-8YP__L8KA",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "To apply this change request unambiguously, please provide the following missing details:\n\n1. **Which threshold** needs to be raised (`retry_threshold` or `alert_threshold`)?\n2. **What new value** (or specific increment) should be applied to that threshold?",
-    "thinking_tokens": 242,
+    "text": "The change request is missing specific details needed to update the configuration unambiguously. Please clarify:\n\n1. **Which threshold** should be raised (`retry_threshold` or `alert_threshold`)?\n2. **What value** it should be changed to (or by how much it should be increased)?",
+    "thinking_tokens": 270,
     "tool_calls": []
   }
 }

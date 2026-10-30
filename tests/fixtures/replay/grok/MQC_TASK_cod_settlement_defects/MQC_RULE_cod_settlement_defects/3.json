@@ -1,0 +1,35 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Review the function below and list every defect you find. For each,\nsay what goes wrong and who is affected.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
+  "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
+    "duration_ms": 36605,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1455,
+    "mode": "live",
+    "output_tokens": 490,
+    "raw_reference": "2920c3b1-8ad3-9eb4-9f2a-60fe8f6b7dc0",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The settlement math is wrong, and invalid coupons crash checkout. Against the 100-unit production calls, standard customers are charged \u221210 and 0 instead of 50 and 60, and the third call raises `KeyError`.\n\n1. **Tier \u201cdiscount\u201d is used as the amount to pay, not the amount off.** `total_amount * discount / 100 - coupon_sum` treats 20 as \u201ccharge 20%,\u201d then subtracts the coupon from that slice. For a percent-off tier (standard 20, premium 30 \u2014 premium should pay less, not more), amount owed should be `total_amount * (100 - discount) / 100 - coupons`, floored at 0.  \n   **Who:** standard customers on a 100-unit basket are billed \u221210 with `SAVE30` and 0 with `SAVE20` instead of 50 and 60. The merchant under-collects or issues a negative balance; finance books bad settlements.\n\n2. **Unknown coupon codes are not handled.** `coupon_lookup[coupon_codes[0]]` raises `KeyError` when the code is missing. The third call (`\"NOPE\"`) does this.  \n   **Who:** the customer cannot check out; the caller gets an unhandled exception instead of a rejected-coupon result.\n\n3. **Only the first coupon is applied.** The argument is `coupon_codes` and the local is `coupon_sum`, but the code reads `coupon_codes[0]` only. Extra codes are ignored. An empty list raises `IndexError`.  \n   **Who:** customers stacking codes do not get the extra discount; a no-coupon checkout crashes.\n\n4. **Unknown tier is an unhandled `KeyError`.** `DISCOUNT_BY_TIER[account_tier]` assumes every tier exists. A missing or new tier aborts settlement.  \n   **Who:** that customer\u2019s order fails; any caller that passes a tier outside `{standard, premium}` gets a crash.\n\n5. **No floor at zero, and money is a float.** A coupon larger than the (already wrong) base produces a negative amount owed. `/ 100` yields a binary float, so totals can be off by fractions of a unit.  \n   **Who:** the merchant can owe the customer; accounting and the customer see rounding drift.",
+    "thinking_tokens": 2064,
+    "tool_calls": []
+  }
+}

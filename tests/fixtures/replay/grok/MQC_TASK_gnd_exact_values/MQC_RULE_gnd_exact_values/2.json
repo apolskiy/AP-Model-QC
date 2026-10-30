@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 2683,
+    "duration_ms": 2570,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1348,
     "mode": "live",
-    "output_tokens": 53,
-    "raw_reference": "fa9180f2-1089-9c30-81cc-c1d154e129c1",
+    "output_tokens": 52,
+    "raw_reference": "94b4c4c2-9270-90cb-adfc-12f9e76fac40",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "In Q3, North America recorded 41.2 million in revenue and EMEA recorded 28.7 million. Japan recorded 11.4 million and Australia recorded 6.1 million. Total revenue was 87.4 million across these four regions.",
-    "thinking_tokens": 230,
+    "text": "North America recorded 41.2 million in Q3 revenue. EMEA recorded 28.7 million, Japan recorded 11.4 million, and Australia recorded 6.1 million. Total revenue was 87.4 million across these four regions.",
+    "thinking_tokens": 164,
     "tool_calls": []
   }
 }

@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_threshold::MQC_RULE_cod_preserves_threshold",
-    "duration_ms": 4156,
+    "duration_ms": 5116,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 72,
     "mode": "live",
-    "output_tokens": 27,
-    "raw_reference": "GaPjao6wGJ2U39IP77Ta6Aw",
+    "output_tokens": 26,
+    "raw_reference": "L_jjavjVLKuq_PUPgbfYyQw",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "A build is promoted when line coverage is at or above 82 percent, while builds falling below that figure are held for review.",
-    "thinking_tokens": 351,
+    "text": "A build is promoted when line coverage is at or above 82 percent, while builds below that figure are held for review.",
+    "thinking_tokens": 341,
     "tool_calls": []
   }
 }

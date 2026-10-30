@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1408,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
-    "duration_ms": 51520,
+    "duration_ms": 32421,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1455,
     "mode": "live",
-    "output_tokens": 431,
-    "raw_reference": "787b6f9e-8371-929c-b884-265e33a70f00",
+    "output_tokens": 366,
+    "raw_reference": "9afc84ac-aaa7-933a-a5c0-3fd6cefd4650",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function bills the wrong amount, can go negative, and crashes on bad inputs. Against the three production calls it returns **-10**, **0**, and a **KeyError**.\n\n1. **Tier percent is treated as the amount charged, not the amount off.** `total_amount * discount / 100` keeps 20% of a standard basket (and 30% of a premium one) instead of taking 20% off. On a 100-unit standard order that base is 20, not 80. Customers are undercharged; the merchant loses most of the sale. Premium customers are undercharged the same way.\n\n2. **The coupon is subtracted from that already-wrong base, so the balance can go negative.** `SAVE30` on the first call yields `20 - 30 = -10`. The customer is credited instead of charged; payments, refunds, and the ledger all see a negative amount owed. The second call settles at 0, so that customer pays nothing.\n\n3. **Only `coupon_codes[0]` is used.** The name `coupon_sum` is wrong: later codes are silently dropped, not added. A customer who passed more than one valid code does not get them. Callers cannot tell from the return value.\n\n4. **An unknown code crashes the checkout.** The third call looks up `\"NOPE\"` and raises `KeyError`. That customer cannot settle; the request fails instead of rejecting the coupon and still charging the tier price.\n\n5. **An unknown tier crashes the same way.** `DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for anything other than `\"standard\"` or `\"premium\"`. Those customers cannot check out.\n\n6. **No coupons crashes too.** An empty `coupon_codes` list raises `IndexError` on `[0]`. A customer with no coupon cannot use this function at all.\n\n7. **Money is computed with binary floats.** `/` yields a float, so non-round baskets can be off by fractions of a unit. Finance and the customer both see reconciliation drift.",
-    "thinking_tokens": 3102,
+    "text": "The settlement math is wrong, coupons are only partly handled, and bad inputs crash checkout. Against the three production calls, the results are **-10**, **0**, and **KeyError**.\n\n**1. Tier \u201cdiscount\u201d is used as the price to charge.** `total_amount * discount / 100 - coupon_sum` treats `20` as \u201ccharge 20%,\u201d not \u201c20% off.\u201d On a 100-unit standard basket that is `20 - coupon`, not `80 - coupon`. Premium (`30`) would be charged *more* than standard, which contradicts the table. Shoppers are undercharged or credited; the merchant loses the sale.\n\n**2. The amount can go negative, and nothing floors it.** `[\"SAVE30\"]` yields **-10**. Downstream billing, refunds, or ledger code then either fails or pays the customer. Affects shoppers, finance, and anyone reconciling the order.\n\n**3. `coupon_sum` is not a sum.** Only `coupon_codes[0]` is read. Extra codes are silently ignored, so a shopper who stacked coupons is charged more than the API shape implies. An empty list raises `IndexError` and nobody without a coupon can check out.\n\n**4. Unknown coupon or tier aborts the order.** `[\"NOPE\"]` raises `KeyError` on the lookup; an unknown `account_tier` raises `KeyError` on `DISCOUNT_BY_TIER`. One bad code fails the whole basket instead of being rejected. Affects that shopper and whoever gets the production exception.\n\n**5. Money is computed with binary floats.** `/` produces a float. Penny-level totals will drift. Affects shoppers (wrong cents) and finance (reconciliation).",
+    "thinking_tokens": 1872,
     "tool_calls": []
   }
 }

@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 8645,
+    "duration_ms": 5811,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1436,
     "mode": "live",
-    "output_tokens": 83,
-    "raw_reference": "f44de3b7-984b-93ae-a335-8355d16441f0",
+    "output_tokens": 85,
+    "raw_reference": "bca3d58b-d220-9932-9008-de700c6cde73",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 90% (9 of 10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nMissing: GraphQL.\n\n90% is at or above 85%, so the candidate clears the mandatory bar. Nice-to-have items do not change that outcome.",
-    "thinking_tokens": 689,
+    "text": "**Mandatory match: 90% (9/10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.  \nMissing: GraphQL.\n\n90% is at or above 85%, so the result stands on mandatory requirements alone. The nice-to-have set does not affect the outcome.",
+    "thinking_tokens": 469,
     "tool_calls": []
   }
 }

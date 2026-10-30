@@ -3,7 +3,7 @@
 """Unit precondition for the creation and update dates every module docstring here carries.
 
 Created: 2026-10-21
-Last updated: 2026-10-21
+Last updated: 2026-10-30
 
 The case here runs the harness's ``cmn.file_dates.file_date_problems`` against
 this repository: every Python file's docstring carries ``Created:`` and
@@ -27,13 +27,13 @@ Specified by the harness ``.claude/rules/code-style.md`` section 3.1.2.
 #   115773  a_file_date_line_missing_or_stale_is_reported
 # ------------------------------------------------------------ end of cases
 
-from datetime import date
 from pathlib import Path
 
 import pytest
 
 from cmn.case_steps import step
 from cmn.file_dates import file_date_problems
+from cmn.project_clock import project_today
 
 from tests.cases.graded_support import repository_root
 
@@ -53,7 +53,7 @@ class TestMQCFileDates:
         Returns:
             None
         """
-        today = date.today()
+        today = project_today()
         (tmp_path / "undated.py").write_text(
             '"""A planted module.\n\nWhat it holds.\n"""\n', encoding="utf-8"
         )

@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
-    "duration_ms": 4371,
+    "duration_ms": 3311,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 121,
     "mode": "live",
     "output_tokens": 26,
-    "raw_reference": "RqLjasXhNKjU-8YP4IzPiQE",
+    "raw_reference": "A_fjar-6Idfh-sAPuJ2MgA0",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "Based on the report, a conservative floor for EMEA revenue is **28.7 million** (or 28 million).",
-    "thinking_tokens": 209,
+    "thinking_tokens": 171,
     "tool_calls": []
   }
 }

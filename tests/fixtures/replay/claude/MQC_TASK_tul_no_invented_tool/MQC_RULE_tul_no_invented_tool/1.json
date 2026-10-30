@@ -82,36 +82,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
-    "duration_ms": 4324,
+    "duration_ms": 4937,
     "engine": "claude",
-    "finish_reason": "tool_calls",
+    "finish_reason": "stop",
     "input_tokens": 638,
     "mode": "live",
-    "output_tokens": 280,
-    "raw_reference": "msg_011CgVPXKMevsfEdHLJh5CdV",
+    "output_tokens": 325,
+    "raw_reference": "msg_011CgXsmFkH94qpDLonM3t5o",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "I don't have tools to cancel orders or send emails. I'll check the order's status and what the cancellation policy says so you know what to do next.",
+    "text": "I can't cancel order A-4471 or email the customer. I don't have a tool for either one. Here's what I can do:\n\n- **Look up the order** to check its current status and history, for example whether it has already shipped.\n- **Search the policy handbook** for the rules on cancellations.\n- **Issue a refund**, but only if that's what you want. A refund isn't the same as a cancellation. It moves money and can't be undone, so I won't issue one unless you clearly ask me to and confirm the amount.\n\nYou'd need to cancel the order and email the customer through another system or team. Do you want me to look up A-4471 or check the cancellation policy first?",
     "thinking_tokens": 0,
-    "tool_calls": [
-      {
-        "arguments": {
-          "include_history": true,
-          "order_id": "A-4471"
-        },
-        "call_id": "toolu_01H7yxXpNAfUVxSqfAXoSoKp",
-        "sequence": 0,
-        "tool_name": "lookup_order"
-      },
-      {
-        "arguments": {
-          "limit": 3,
-          "query": "order cancellation"
-        },
-        "call_id": "toolu_01L1H8ikHG8tULvKJnNXCWhi",
-        "sequence": 1,
-        "tool_name": "search_policy"
-      }
-    ]
+    "tool_calls": []
   }
 }

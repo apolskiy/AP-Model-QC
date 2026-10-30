@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_prm_incoherent_bound::MQC_RULE_prm_incoherent_bound",
-    "duration_ms": 16762,
+    "duration_ms": 9800,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1354,
     "mode": "live",
-    "output_tokens": 161,
-    "raw_reference": "8dbdb73d-b68b-9d42-9d89-2b0bc92dac3f",
+    "output_tokens": 169,
+    "raw_reference": "8715b476-0481-9a49-8801-3d4d689b673a",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Ambiguity in the requirement.** \u201cBetween 9 and 5 years\u201d reverses the usual order. In ordinary English, \u201cbetween A and B\u201d is the span with those two numbers as endpoints, so 5 through 9 is the same set either way. It is not \u201cat least 9 and at most 5,\u201d which would be an empty, impossible constraint. Inclusivity is unstated, but that does not matter here: 7 sits strictly inside either reading of the endpoints.\n\n**Assessment.** On that reading, the candidate matches. The summary states 7 years of backend engineering, which falls inside 5\u20139 years. The posting, as written, does not add stack, domain, or seniority constraints, so those details in the summary are irrelevant to the match.",
-    "thinking_tokens": 980,
+    "text": "The requirement is internally inconsistent, so I would not score a match yet.\n\n**Mistake:** \u201cbetween 9 and 5 years\u201d reverses the bounds. Read strictly, that interval is empty (nothing is both \u2265 9 and \u2264 5), so no candidate could satisfy it.\n\n**Likely intent:** \u201cbetween 5 and 9 years.\u201d Under that reading, inclusivity still matters at the edges (is 5 or 9 enough?), but it does not affect a 7-year profile.\n\n**Otherwise clear:** \u201cbackend engineering experience\u201d lines up with the summary\u2019s \u201cBackend engineering: 7 years\u2026\u201d The settlement-pipeline detail is extra color, not a separate requirement.\n\nIf you confirm the range was meant to be 5\u20139 years (and whether the endpoints count), I will assess the summary against that.",
+    "thinking_tokens": 527,
     "tool_calls": []
   }
 }

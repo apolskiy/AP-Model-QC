@@ -3,7 +3,7 @@
 """Unit preconditions for the reasons and rule a finding's ticket states.
 
 Created: 2026-10-20
-Last updated: 2026-10-29
+Last updated: 2026-10-30
 
 This file contains ``TestMQCTicketReasons``, six cases on the ticket tools,
 ``tools/ticket_report.py``, ``tools/ticket_reasons.py`` and ``tools/ticket_recordings.py``.
@@ -178,13 +178,23 @@ class TestMQCTicketReasons:
             section.index("**Input**")), "the reason is not between Problem and Input"
         assert "data leak" in section, "the filed relay section does not name the leak"
 
-        # A FILED FINDING OF THIS FAMILY, NAMED BY A CASE STILL IN THE REGISTER.
-        # `154501` was withdrawn on 2026-10-28 and this lookup raised
-        # StopIteration, which is the cost of reading a measurement: `154502`
-        # is the same relay shape and is filed (section 9.5.5.11).
-        step(13, "read the problem and diagnosis claude's 154502 and openai's 154401 open with")
-        entry = next(item for item in register["findings"]
-                       if item["case"].startswith("MQC_EVL_SEC_154502_"))
+        # SELECTED BY THE PROPERTY UNDER TEST, NEVER BY IDENTIFIER. This lookup
+        # named `154501`, which was withdrawn on 2026-10-28, and then `154502`,
+        # which was held on 2026-10-30 for no longer reproducing: each time it
+        # raised StopIteration, so a precondition broke because a measurement
+        # moved. What the step needs is any filed finding whose observations
+        # failed an assertion, which is a property of the register rather than
+        # of one entry in it.
+        step(13, "read the problem and diagnosis a filed claude finding opens with")
+        entry = next(
+            (item for item in register["findings"]
+             if item.get("actual", "") != "no assertion failed"),
+            None,
+        )
+        assert entry is not None, (
+            "claude's bug file holds no finding whose observations failed an "
+            "assertion, so the diagnosis a ticket opens with is unasserted"
+        )
         section = "\n".join(finding_section(
             _ROOT, "claude", entry, case_rules_from_suite(_ROOT), tasks))
         problem = section.split("**Problem:** ", 1)[1].split("\n", 1)[0]
@@ -200,7 +210,7 @@ class TestMQCTicketReasons:
             f"a tool finding's problem is a bare failure code: {problem!r}"
         )
 
-        step(16, "explain a quote from a variant whose system prompt forbade quoting")
+        step(17, "explain a quote from a variant whose system prompt forbade quoting")
         said = " ".join(failure_reasons(
             case_for(_PLAIN_TASK + "_no_quote", "MQC_RULE_sec_hidden_passage_plain_no_quote_detect"
                      ).golden_rules, tasks[_PLAIN_TASK + "_no_quote"],
@@ -526,24 +536,37 @@ class TestMQCTicketReasons:
             f"a finding on the sheet does not name its evidence file: {sheet}"
         )
 
-        step(9, "and a sheet built from the shipped registers counts what they hold")
+        step(9, "and a sheet built from the shipped registers accounts for all of them")
         # GENERATED HERE RATHER THAN READ FROM reports/, which `.gitignore`
         # excludes entirely. Reading the written sheet asserted something about
         # an untracked file: it passed on a disk where somebody had run the
         # tool and failed on every clean checkout, which is what it did on the
         # consumer regression of 2026-10-26.
-        filed = {
-            engine: [entry for entry, _ in page_for(_ROOT, engine)[1]]
-            for engine in roster
-        }
-        generated = filing_sheet("2026-10-28", filed)
+        pages = {engine: page_for(_ROOT, engine) for engine in roster}
+        generated = filing_sheet("2026-10-28", {
+            engine: [entry for entry, _ in built[1]] for engine, built in pages.items()
+        })
+        fileable = sum(len(built[1]) for built in pages.values())
+        assert f"**{fileable} finding(s) to file**" in generated, (
+            f"a sheet built from the registers does not state the {fileable} "
+            f"finding(s) it filed: {generated}"
+        )
+
+        # FILED PLUS AWAITING EQUALS OPEN (design section 9.5.5.10). The total
+        # alone was asserted against the bug files, which held only while every
+        # open finding happened to have been measured: openai's `134402` skipped
+        # behind `134400` on 2026-10-30 and the case read the difference as the
+        # generator disagreeing with the register.
+        awaiting = sum(
+            built[0].count("`, last observed ") for built in pages.values()
+        )
         held = sum(
             len((yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get(
                 "findings", []) or [])
             for path in sorted((_ROOT / "config" / "findings").glob("*.yaml"))
         )
-        assert f"**{held} finding(s) to file**" in generated, (
-            f"a sheet built from the registers does not state the {held} finding(s) "
-            f"the bug files hold, so the generator and the registers disagree: "
-            f"{generated}"
+        assert fileable + awaiting == held, (
+            f"the bug files hold {held} open finding(s) and the generator "
+            f"accounts for {fileable} filed and {awaiting} awaiting "
+            f"measurement, so {held - fileable - awaiting} appears nowhere"
         )

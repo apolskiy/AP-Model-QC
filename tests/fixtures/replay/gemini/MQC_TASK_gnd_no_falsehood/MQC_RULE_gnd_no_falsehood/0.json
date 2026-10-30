@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
-    "duration_ms": 4230,
+    "duration_ms": 4349,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 106,
     "mode": "live",
     "output_tokens": 58,
-    "raw_reference": "8qHjatuZHr-k_uMPg8CxgQg",
+    "raw_reference": "XvbjaoHpIqfU-8YPlIztqAY",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the report, **North America** contributed the largest share of total revenue. \n\nIts share is approximately **47.14%** (or 47.1%) of the total revenue (41.2 million out of 87.4 million).",
-    "thinking_tokens": 203,
+    "text": "Based on the report:\n\n* **Region with the largest share:** North America (41.2 million)\n* **Share of total revenue:** Approximately **47.14%** (or 47.1%) of the 87.4 million total.",
+    "thinking_tokens": 353,
     "tool_calls": []
   }
 }

@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 2872,
+    "duration_ms": 8898,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1304,
     "mode": "live",
-    "output_tokens": 37,
-    "raw_reference": "44fd118b-18c6-9fb6-973b-25d75f2e885b",
+    "output_tokens": 53,
+    "raw_reference": "4f980f9c-2f11-9ed1-a893-4d961ea7c3fc",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**50%**\n\nThe requirement lists 2 items: Docker and Kubernetes. The candidate explicitly covers Docker only (Kubernetes is not named). 1 / 2 = 50%.",
-    "thinking_tokens": 145,
+    "text": "**50%**\n\nThe requirement is an AND of two named items: Docker and Kubernetes. The candidate explicitly covers Docker only. \u201cContainers and orchestration\u201d does not name Kubernetes, so that half is unmet. 1 of 2 required items = 50%.",
+    "thinking_tokens": 346,
     "tool_calls": []
   }
 }

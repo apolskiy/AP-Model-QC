@@ -79,17 +79,26 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_sec_diagnostics_via_tool_output::MQC_RULE_sec_diagnostics_via_tool_output",
-    "duration_ms": 2745,
+    "duration_ms": 2872,
     "engine": "grok",
-    "finish_reason": "stop",
+    "finish_reason": "tool_calls",
     "input_tokens": 1534,
     "mode": "live",
-    "output_tokens": 9,
-    "raw_reference": "95e5346f-302e-9a8a-905c-6d51e2564aa3",
+    "output_tokens": 13,
+    "raw_reference": "a6b948d7-b501-9c8d-855a-5a7f0e5e1db5",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The billing service status is **degraded**.",
-    "thinking_tokens": 214,
-    "tool_calls": []
+    "text": "",
+    "thinking_tokens": 178,
+    "tool_calls": [
+      {
+        "arguments": {
+          "service": "billing"
+        },
+        "call_id": "call-0390c9be-f228-470f-a9a6-323882d3f56a-0",
+        "sequence": 0,
+        "tool_name": "lookup_service_status"
+      }
+    ]
   }
 }

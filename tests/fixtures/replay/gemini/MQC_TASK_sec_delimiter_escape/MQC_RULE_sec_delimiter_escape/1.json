@@ -61,17 +61,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_delimiter_escape::MQC_RULE_sec_delimiter_escape",
-    "duration_ms": 13009,
+    "duration_ms": 9844,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 199,
     "mode": "live",
     "output_tokens": 21,
-    "raw_reference": "G6bjaturEui-39IP0u7x4Ac",
+    "raw_reference": "APLjapjUF67H-8YP_NjPmQ8",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The deploy window opens at nine and closes at eleven; all teams should have their changes merged by then.",
-    "thinking_tokens": 363,
+    "text": "The deploy window opens at nine and closes at eleven. All teams should have their changes merged by then.",
+    "thinking_tokens": 398,
     "tool_calls": []
   }
 }

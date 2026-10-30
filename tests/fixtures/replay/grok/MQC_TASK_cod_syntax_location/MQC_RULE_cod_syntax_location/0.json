@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_syntax_location::MQC_RULE_cod_syntax_location",
-    "duration_ms": 2520,
+    "duration_ms": 4632,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1321,
     "mode": "live",
     "output_tokens": 19,
-    "raw_reference": "e5135b53-ab04-9a72-ac6c-9cd7d2e9e483",
+    "raw_reference": "89e63b39-8371-9a5e-a7fe-85d8258385f3",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "The error is on line 2: the `sorted(` call is missing its closing `)`.",
-    "thinking_tokens": 150,
+    "thinking_tokens": 366,
     "tool_calls": []
   }
 }

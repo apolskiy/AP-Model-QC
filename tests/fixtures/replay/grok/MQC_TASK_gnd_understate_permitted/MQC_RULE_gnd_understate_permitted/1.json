@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
-    "duration_ms": 5255,
+    "duration_ms": 5274,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1358,
     "mode": "live",
-    "output_tokens": 35,
-    "raw_reference": "53edec04-e2e1-9ade-a424-b889a8bac539",
+    "output_tokens": 32,
+    "raw_reference": "551b4c8e-182e-9a59-b42b-a97a00c0183a",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**28.7 million**\n\nThe report states EMEA revenue as 28.7 million, so that figure is a supported floor and is not above the reported amount.",
-    "thinking_tokens": 341,
+    "text": "**28.7 million**\n\nThe report states EMEA revenue as 28.7 million. That figure is at the stated amount (not above it).",
+    "thinking_tokens": 331,
     "tool_calls": []
   }
 }

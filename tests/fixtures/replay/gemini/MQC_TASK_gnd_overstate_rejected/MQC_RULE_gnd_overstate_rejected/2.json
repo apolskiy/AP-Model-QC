@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_overstate_rejected::MQC_RULE_gnd_overstate_rejected",
-    "duration_ms": 5255,
+    "duration_ms": 4966,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 140,
     "mode": "live",
-    "output_tokens": 55,
-    "raw_reference": "PaLjauCgAr25sOIPs9KMiQ0",
+    "output_tokens": 56,
+    "raw_reference": "2Pbjar3GC5GM-8YP7PSisQ8",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "EMEA revenue was **28.7 million**. \n\nThe figure was not rounded up to 30 million (the nearest ten million) because doing so would represent an overstatement of approximately 4.53%, which exceeds the 3 percent allowable limit.",
-    "thinking_tokens": 402,
+    "text": "EMEA revenue was 28.7 million. \n\nThe figure is reported as-is because rounding it up to the nearest ten million (30 million) would represent an overstatement of approximately 4.53%, which exceeds the allowed 3 percent limit.",
+    "thinking_tokens": 385,
     "tool_calls": []
   }
 }

@@ -3,7 +3,7 @@
 """Support code that dispatches and evaluates a graded case, written once for every case.
 
 Created: 2026-09-25
-Last updated: 2026-10-21
+Last updated: 2026-10-30
 
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
@@ -29,7 +29,6 @@ decides, and a case cannot quietly spend quota.
 """
 
 import logging
-from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Final, Optional
@@ -50,6 +49,7 @@ from cmn.observations import assemble_observation
 from cmn.options import resolve_judge_mode
 from cmn.pricing import load_price_table
 from cmn.prerequisites import record_rule_set_hash
+from cmn.project_clock import project_today
 from evaluation.isolation import UnauthoredMaterial
 from evaluation.judge import JudgeBinding
 from evaluation.pipeline import ObservationContext, evaluate_observation
@@ -286,7 +286,7 @@ def _session(engine: str, ceiling: float) -> DispatchSession:
         # THE RUN'S OWN DATE, read once here rather than per response. A run
         # spanning midnight prices every request the same way, which is what
         # makes two readings of one corpus agree.
-        priced_on=date.today(),
+        priced_on=project_today(),
     )
 
 

@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
-    "duration_ms": 5491,
+    "duration_ms": 3598,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1394,
     "mode": "live",
     "output_tokens": 27,
-    "raw_reference": "f0318bb5-4d6f-9ef5-bf40-4b7733632ec0",
+    "raw_reference": "912045a9-ea4c-9900-bc9f-ebff5b233e41",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "Backend engineer with 8+ years of experience across transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
-    "thinking_tokens": 403,
+    "thinking_tokens": 268,
     "tool_calls": []
   }
 }

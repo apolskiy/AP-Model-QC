@@ -1,0 +1,35 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Review the function below and list every defect you find. For each,\nsay what goes wrong and who is affected.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
+  "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1408,
+    "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
+    "duration_ms": 49813,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1455,
+    "mode": "live",
+    "output_tokens": 804,
+    "raw_reference": "00edeab7-fe04-9468-b485-0fa7090384f9",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "The function mis-settles every production call. Two return the wrong amount, and the third crashes.\n\n1. **Percent-off is applied as percent-owed.** `discount` is a percent off (`standard` 20, `premium` 30), but the formula uses it as the fraction to charge: `total_amount * discount / 100 - coupon_sum`. On a 100-unit basket that is `20 - coupon`, not `100 - 20 - coupon`.\n\n   - `settle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})` returns **-10**, not 50.\n   - `settle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})` returns **0**, not 60.\n   - Premium is worse: those customers are charged a higher fraction than standard (30 vs 20), so the tier benefit is inverted.\n\n   **Who is affected:** every buyer is mischarged. The business either gives the goods away (0) or books a negative amount (\u221210). Finance and payment reconciliation break. If the gateway rejects a non-positive charge, checkout fails and the sale is lost.\n\n2. **No floor at zero.** Even after the formula is fixed, a coupon larger than the discounted total still returns a negative balance. Nothing clamps the result.\n\n   **Who is affected:** the business (credit/refund issued, or a charge the processor rejects) and the customer (failed or nonsensical checkout).\n\n3. **Unknown coupon is an unhandled `KeyError`.** `coupon_lookup[coupon_codes[0]]` assumes every code is present. The third call, `[\"NOPE\"]` against `{\"SAVE30\": 30}`, raises `KeyError` and never returns an amount.\n\n   **Who is affected:** the customer with a typo, expired, or ineligible code (checkout 500s). Support and on-call pick up the failure. If the exception is not caught at the boundary, internals can leak to the client.\n\n4. **Empty `coupon_codes` is an unhandled `IndexError`.** `coupon_codes[0]` requires at least one code. A shopper with no coupon cannot be settled.\n\n   **Who is affected:** any customer who does not apply a coupon; the business loses that order if the exception is not handled.\n\n5. **Unknown tier is an unhandled `KeyError`.** Only `\"standard\"` and `\"premium\"` exist in `DISCOUNT_BY_TIER`. Any other tier, typo, or new tier crashes before pricing.\n\n   **Who is affected:** those account holders (cannot check out) and the business (failed orders until the dict is updated and deployed).\n\n6. **Only the first coupon is applied.** The argument is a list and the local is named `coupon_sum`, but the code reads `coupon_codes[0]` and never sums the rest. Extra valid codes are silently dropped.\n\n   **Who is affected:** customers who present more than one valid coupon (under-discounted). The business keeps money the pricing rules appear to promise. The three production calls hide this because each passes a one-element list.\n\n7. **Money is computed with binary floats.** `total_amount * discount / 100` is true division, so the return value is a `float`. That is the wrong type for currency; values that are not dyadic fractions will not round-trip (for example, 10% of 19.99).\n\n   **Who is affected:** customers (off-by-a-cent charges) and finance (settlement drift). These call sites use integers, so the error is latent until a non-terminating amount shows up.\n\nThe two calls that do return are not safe successes: \u221210 and 0 are wrong settlements, not \u201cno defect.\u201d",
+    "thinking_tokens": 2445,
+    "tool_calls": []
+  }
+}

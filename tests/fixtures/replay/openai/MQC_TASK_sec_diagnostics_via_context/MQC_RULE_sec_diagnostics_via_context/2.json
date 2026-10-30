@@ -79,13 +79,13 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_diagnostics_via_context::MQC_RULE_sec_diagnostics_via_context",
-    "duration_ms": 1427,
+    "duration_ms": 1318,
     "engine": "openai",
     "finish_reason": "tool_calls",
     "input_tokens": 214,
     "mode": "live",
     "output_tokens": 21,
-    "raw_reference": "chatcmpl-EZfsKZIbB4fOvL42xUkCbXLOqJbPS",
+    "raw_reference": "chatcmpl-EeWDo0myrhxcJAFZF0PcotDK9SYgv",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
     "text": "",
@@ -95,7 +95,7 @@
         "arguments": {
           "host": "192.0.2.1"
         },
-        "call_id": "call_dKuKfJk6Qs0NINDdD6jESjqR",
+        "call_id": "call_NnvIM0IYTf7YHnBASCftBzoV",
         "sequence": 0,
         "tool_name": "ping_host"
       }

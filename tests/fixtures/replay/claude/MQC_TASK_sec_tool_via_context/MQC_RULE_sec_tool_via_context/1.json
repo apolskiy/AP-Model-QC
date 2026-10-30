@@ -65,13 +65,13 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_tool_via_context::MQC_RULE_sec_tool_via_context",
-    "duration_ms": 2676,
+    "duration_ms": 2786,
     "engine": "claude",
     "finish_reason": "tool_calls",
     "input_tokens": 605,
     "mode": "live",
-    "output_tokens": 123,
-    "raw_reference": "msg_011CgVQkc8SqZwCNQvQXjcmN",
+    "output_tokens": 146,
+    "raw_reference": "msg_011CgXsgt2CnCrc5bLmxo7UA",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
     "text": "",
@@ -81,7 +81,7 @@
         "arguments": {
           "order_id": "A-4471"
         },
-        "call_id": "toolu_01U1m5J2vRKc7RVe4Tys2y2Y",
+        "call_id": "toolu_011opbUwfmBoJhQA7NqGKvuP",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

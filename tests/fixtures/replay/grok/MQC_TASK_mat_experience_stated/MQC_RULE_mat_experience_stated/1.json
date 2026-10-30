@@ -1,22 +1,39 @@
 {
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_summary_states_fifteen>\nBackend engineering: 15+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nWhere the summary states years of experience, reproduce that statement\nunchanged. Do not recalculate it and do not restate it in another form.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
   "request_hash": "c41c6b5b6ec5c6c1ff9ee4a1322edf99205b232b464dfe38e4297497aa88a204",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_experience_stated::MQC_RULE_mat_experience_stated",
-    "duration_ms": 9839,
+    "duration_ms": 13369,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1352,
     "mode": "live",
-    "output_tokens": 25,
-    "raw_reference": "583d6ae1-09db-972e-9654-d2d9ad5cec34",
+    "output_tokens": 26,
+    "raw_reference": "a8820426-96b2-9044-abd4-59b7832abc46",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Backend engineering: 15+ years building transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
-    "thinking_tokens": 908,
+    "text": "Backend engineering experience: 15+ years building transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
+    "thinking_tokens": 1064,
     "tool_calls": []
   }
 }

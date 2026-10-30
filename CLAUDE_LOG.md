@@ -6372,3 +6372,165 @@ the re-record, which is expected.
 
 Figures moved: inventory 132 to 135 cases and 93 to 96 negative, README 178 to
 181 preconditions, 192 to 194 requirements, 1003 to 1005 harness cases.
+
+## 2026-10-30: The Filing Sheet Was Dated By Whichever Clock The Process Sat On
+
+The owner closed a decision carried since 2026-10-28: "utc was decided we
+decided to do all in utc". The rule is the harness's, in `code-style.md` section
+8.3, and this entry records what it changed here.
+
+### What was wrong
+
+**`tools/ticket_report.py` dated the filing sheet from the local clock, and the
+sheet is published.** Four more modules here read a clock of their own, against
+a changelog declaring its dates UTC at its head, so one change could carry two
+dates.
+
+`date.today` returns wherever the process happens to sit and raises nothing. The
+local date and the UTC date agree for most of the day, so the disagreement is
+present for part of every day and announces itself as nothing.
+
+### The five call sites
+
+| Call site | What it dated |
+|---|---|
+| `tools/ticket_report.py` | The filing sheet's date, which is published |
+| `tests/cases/graded_support.py` | The pricing date a graded observation carries |
+| `tests/cases/mqc_uni_file_dates.py` | A check's output compared against today |
+| `tests/cases/mqc_uni_standards.py`, twice | As above, for support extraction and the runway |
+
+**The pricing date is the one worth naming beside the sheet.** An observation
+priced on the local date is priced a day early for part of every day, and the
+price table is read by date.
+
+### What this repository asserts, and what the harness does
+
+`MQC_CAS_UNI_115507` calls `local_clock_reads` with this root and asserts it is
+empty, which is the half the harness cannot see. **The constructed legs stay in
+the harness**, where `MQC_CMN_UNI_112528` builds a probe making all five
+relevant calls and reads which three are reported. Duplicating that probe here
+would be a copy nothing compares, which is the same reason the encoding, header
+and annotation checks are one implementation called with each root.
+
+Before the conversion `local_clock_reads` reported five reads here; it reports
+none now, so the case fails without the fix.
+
+### The day rolled over mid-change
+
+The conversion ran at 17:56 Pacific on 2026-10-29, which is 00:56 UTC on
+2026-10-30, so `refresh_file_dates.py` stamped 2026-10-30 on every file it
+touched. This entry and this change's changelog entry carry that date while the
+entries above them, written in the same session, carry 2026-10-29. The earlier
+entries keep the date they were written with.
+
+### Verification
+
+| Layer | Total | Executed | Passed | Failed | Skipped | Exit |
+|---|---|---|---|---|---|---|
+| Model `UNI` | 182 | 182 | 181 | **1** | 0 | **1** |
+| Model pylint, `tests/ tools/ conftest.py` | | | 10.00/10 | | | **0** |
+| Harness `UNI` | 978 | 978 | 978 | 0 | 0 | **0** |
+| Harness `SYS` replay | 24 | 24 | 24 | 0 | 0 | **0** |
+
+The one failure is `MQC_CAS_UNI_115771`, unchanged by this work and closed only
+by the live re-record.
+
+Figures moved: inventory 135 to 136 cases and 96 to 97 negative, README 181 to
+182 preconditions, 194 to 195 requirements, 1005 to 1006 harness cases.
+
+## 2026-10-30: The Whole Suite Re-Recorded Live, And Two Preconditions That Named A Measurement
+
+The owner dispatched the re-record to get the latest graded status for the demo
+release: "we need to spend to grade and record to have status so we can release
+the demo. for that we need the latest results." The budget guard stays as a
+mechanism; the ceiling was lifted for this leg only and goes back.
+
+### Why the recordings had to be retaken
+
+They dated from 2026-10-15 and had been patched per subject six times since. The
+planted score the rubric would have passed was corrected after most of them were
+taken, so the corpus answered with a retired payload: `MQC_CAS_UNI_115771` was
+red for exactly that reason and the harness merge regression failed behind it on
+two commits.
+
+### What each leg measured
+
+| Engine | Total | Executed | Passed | Failed | Skipped | Exit | Wall |
+|---|---|---|---|---|---|---|---|
+| gemini | 94 | 94 | 93 | 1 | 0 | **1** | 51m16s |
+| openai | 94 | 91 | 83 | 8 | 3 | **1** | 32m04s |
+| claude | 94 | 91 | 82 | 9 | 3 | **1** | 49m03s |
+| grok | 94 | 94 | 92 | 2 | 0 | **1** | 2h19m17s |
+
+Every skip is a dependent of a failed foundation carrying
+`QC_HARNESS_DEPENDENCY_UNMET`, which is the designed outcome rather than a gap:
+openai's three sit behind `134400` and claude's three behind `154103`.
+
+**claude's first attempt measured nothing usable.** It reached its spending
+ceiling two thirds through, and a case the ceiling prevented incremented the
+engine's consecutive-failure streak, so the circuit breaker tripped and marked
+the rest broken. That is a harness defect, fixed in `AP-Harness-QC` with
+`MQC_EXE_UNI_113221`, and the leg was retaken with a non-binding ceiling: zero
+budget stops and zero breaker trips on the second pass.
+
+**grok needed a second dispatch.** `134107`'s response could not be parsed, so
+the run skipped it with `QC_HARNESS_PARSER_ERROR` and recorded nothing; the
+replay then reported `QC_HARNESS_FIXTURE_STALE` for it, which is the same gap
+seen from the other side. A gap-filling live run took it again and it passed.
+
+**Every leg replays to the same numbers it measured live**, which is what the
+full per-engine replay was for: four replays, four matches, each skip and each
+failure identical.
+
+### How the findings moved
+
+15 open findings before and after, redistributed:
+
+| | claude | openai | gemini | grok |
+|---|---|---|---|---|
+| Before | 4 | 9 | 2 | 0 |
+| After | **5** | **8** | **1** | **1** |
+
+Held findings 6 to 11, each having stopped reproducing. Findings classified as
+inconsistency 9 to 5. **Six withdrawn findings reproduce again**, four against
+claude and one each against openai and grok, and the recorder says what it cannot
+decide: either the assertion was repaired since the withdrawal and now fires
+correctly, or the same false positive has come back. That is a reading per
+finding and it is the owner's to make, so nothing was reopened here.
+
+**Only a live run can retire a finding**, so the recorder ran in replay with
+`--hold-unreproduced`: it asks whether our own record still holds rather than
+whether the model changed, which is what a replay can bear on.
+
+### Two preconditions named a measurement, and the measurement moved
+
+**`115768` read one named finding out of claude's register.** `154501` was
+withdrawn on 2026-10-28 and the lookup raised `StopIteration`; re-pointed at
+`154502`, which was held on 2026-10-30, it raised again. Nothing was wrong with
+the code under test either time. It selects any filed finding whose observations
+failed an assertion now, which is the property the step needs.
+
+**`115781` asserted the sheet's total against the registers.** The sheet files
+what the latest run measured and leaves an unmeasured open finding on its
+engine's page under "Awaiting measurement", so the two numbers differ whenever a
+finding's case skips, and openai's `134402` made that concrete at 14 against 15.
+`consumer_ci.md` section 9.5.5.10 stated both readings, its table saying the
+total came from the bug files while its prose said a dependent is already absent,
+so the design was corrected first and the case now asserts filed plus awaiting
+equals open.
+
+**Injected, the new assertion fires.** Dropping the awaiting list from the
+generator reported "the bug files hold 15 open finding(s) and the generator
+accounts for 14 filed and 0 awaiting measurement, so 1 appears nowhere". The
+total alone could not have caught it.
+
+### Verification
+
+| Layer | Total | Executed | Passed | Failed | Skipped | Exit |
+|---|---|---|---|---|---|---|
+| Model `UNI` preconditions | 182 | 182 | 182 | 0 | 0 | **0** |
+| Model pylint | | | 10.00/10 | | | **0** |
+
+Preconditions carry no priority, so they report as one row. No mutation audit was
+requested. The graded legs are the table above, one row per engine, each exiting
+1 on a model finding.

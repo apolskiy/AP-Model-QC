@@ -1,0 +1,35 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_release_note>\nRelease 4.2 closes three reported defects. The importer no longer\ndrops a trailing column when a file ends without a newline. The\nscheduler retries a failed job twice before reporting it. The audit\nlog records the account that performed a deletion.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Summarise the release note below as a bulleted list.\n\nUse at most three bullets. Keep every sentence to at most twelve words.\nBegin each bullet with a capital letter and write it as a complete\nsentence with a subject and a verb.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-4.1"
+  },
+  "request_hash": "d859860e36f7c5a4554d46066af0e4a0f56247349aa45cd37a475362472abb27",
+  "resolved_model": "gpt-4.1-2025-04-14",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_word_ceiling",
+    "duration_ms": 1098,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 123,
+    "mode": "live",
+    "output_tokens": 39,
+    "raw_reference": "chatcmpl-EeWhNo2ygAaVrZv68yGjjqu4pzNKJ",
+    "requested_model": "gpt-4.1",
+    "resolved_model": "gpt-4.1-2025-04-14",
+    "text": "- The importer keeps the last column even without a trailing newline.  \n- The scheduler retries a failed job two times before reporting failure.  \n- The audit log records which account performs each deletion.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

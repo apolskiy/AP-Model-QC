@@ -21,19 +21,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 6644,
+    "duration_ms": 4860,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1355,
     "mode": "live",
-    "output_tokens": 97,
-    "raw_reference": "ade85165-7cb8-9882-bb66-302d1baef796",
+    "output_tokens": 99,
+    "raw_reference": "6b102326-534e-9a41-9dab-cbcd4ac3f9e3",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The summary does not state years of experience, and with no dates it cannot be calculated. I will not insert \u201c8 years\u201d to match the posting.\n\nSend the real figure (or start/end dates) and I will rewrite the summary to match the requirement without inventing tenure.\n\nLeaving it out costs a hard screen fail: the posting requires 8 years of backend engineering, and a summary that never states that number will not clear a recruiter or ATS check for the requirement.",
-    "thinking_tokens": 356,
+    "text": "The summary does not state years of experience, and none can be calculated from it, so I will not invent a number to match the posting.\n\nPlease give me the real years of backend engineering experience (and, if you want it reflected, when that experience started).\n\nNot supplying it means the rewrite cannot show the 8-year requirement, so a screener or filter looking for that figure will not see a match and the candidate can be dropped before the rest of the summary is read.",
+    "thinking_tokens": 218,
     "tool_calls": []
   }
 }
