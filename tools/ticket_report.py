@@ -3,7 +3,7 @@
 """The ticket report, which writes each engine's filed findings as pages ready to submit.
 
 Created: 2026-10-05
-Last updated: 2026-10-30
+Last updated: 2026-11-01
 
 This file contains ``page_for``, which builds one engine's findings page,
 ``finding_section``, which writes one finding's defect report with its problem,
@@ -11,7 +11,11 @@ the request as sent, every recorded response, the expected rule and a replay
 command, and ``main``, which writes a page per engine and one ticket file per
 filed finding under ``reports/tickets/``.
 
-It is run by hand, normally after ``tools.findings`` has updated a register.
+It is run by hand, normally after ``tools.findings`` has updated a register, and
+``tools.review_report`` runs after it to write the withdrawn findings that are
+failing again, which are a decision to make rather than something to file
+(``consumer_ci.md`` section 9.5.5.12).
+
 Its sections are assembled from ``tools.ticket_recordings``,
 ``tools.ticket_reasons`` and ``tools.ticket_framing``, and ``tools.ticket_files``
 writes the files. A person submits each ticket to its vendor, and
@@ -50,7 +54,6 @@ Usage::
     python -m tools.ticket_report --engine claude
 """
 
-import argparse
 import re
 import sys
 from pathlib import Path
@@ -77,6 +80,7 @@ from tools.ticket_files import (
     drop_engine_output,
     filing_sheet,
     page_name,
+    report_arguments,
     write_tickets,
 )
 from tools.ticket_framing import framed_problem
@@ -671,10 +675,18 @@ def _observed(
     task_id, rule_id = pair
     stored = recorded_judgements(root, engine, task_id, rule_id, count)
     recordings = recorded_responses(root, engine, task_id, rule_id)
+    outcomes = observation_outcomes(task_id, rule_id, recordings)
+    # THE JUDGEMENT AND THE PROMPT ARE DROPPED TOGETHER where the checks
+    # failed, both being the same stale record read two ways: the page would
+    # otherwise count a score the judge gave an earlier response as a
+    # measurement of this one (sections 9.5.5.8 and 9.5.5.9).
+    unjudged = {index for index, passed, _ in outcomes if not passed}
+    own = [None if index in unjudged else judgement
+           for index, judgement in enumerate(stored)]
     return (
-        observation_outcomes(task_id, rule_id, recordings),
-        [judged_outcome(judgement, getattr(rules, "rubric", None)) for judgement in stored],
-        judge_prompts(task_id, rule_id, recordings, stored),
+        outcomes,
+        [judged_outcome(judgement, getattr(rules, "rubric", None)) for judgement in own],
+        judge_prompts(task_id, rule_id, recordings, own, outcomes),
     )
 
 
@@ -826,7 +838,7 @@ def page_for(root: Path, engine: str) -> tuple[str, list[tuple[dict[str, Any], l
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    """Write one page per engine, and the filing sheet across them.
+    """Write one page per engine, one ticket per filed finding, and the filing sheet.
 
     Args:
         argv (Optional[list]): Arguments, or None to read from the command line.
@@ -834,14 +846,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     Returns:
         int: Zero on success.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--engine", default="", help="One engine, or all when absent")
-    parser.add_argument("--out-dir", type=Path, default=_DEFAULT_OUT)
-    parsed = parser.parse_args(argv)
-
+    parsed = report_arguments(__doc__, _DEFAULT_OUT, argv)
     root = Path(__file__).resolve().parents[1]
     chosen = (parsed.engine,) if parsed.engine else _ENGINES
-    parsed.out_dir.mkdir(parents=True, exist_ok=True)
 
     filed: dict[str, list[dict[str, Any]]] = {}
     for engine in chosen:

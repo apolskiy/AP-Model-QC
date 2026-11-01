@@ -3,7 +3,7 @@
 """Unit preconditions for evaluation families, live workflow steps and the findings register.
 
 Created: 2026-10-04
-Last updated: 2026-10-29
+Last updated: 2026-11-01
 
 This file contains seven cases. ``TestMQCDeclaredFamilies`` checks every rule set
 declares a registered evaluation family and that the matrix and ``tools/case_index.py``
@@ -61,6 +61,7 @@ from tests.cases.graded_support import engine_roster, shipped_corpus
 from tests.cases.suite_support import case_families_from_suite, case_rules_from_suite
 from tools import case_index
 from tools import findings as findings_tool
+from tools.findings_run import parse_failures
 
 pytestmark = pytest.mark.unit
 
@@ -417,7 +418,7 @@ class TestMQCFindingsRegister:
             "</testcase></testsuite></testsuites>",
             encoding="utf-8",
         )
-        parsed = findings_tool.parse_failures(report)
+        parsed = parse_failures(report)
         assert parsed["MQC_EVL_SEC_154100_x"]["taxonomy_code"] == "", (
             "a harness event was classified as a model finding, which would "
             "file our own defect with a vendor"

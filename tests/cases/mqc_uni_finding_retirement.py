@@ -3,7 +3,7 @@
 """Unit preconditions for the ways a finding leaves the bug file.
 
 Created: 2026-10-29
-Last updated: 2026-10-29
+Last updated: 2026-11-01
 
 This file contains four cases on retirement in ``tools/findings.py``: the two
 paths that take a finding out of the bug file, and what each may read before it
@@ -58,9 +58,9 @@ from tests.cases.retirement_support import (
 from tools.findings import (
     RunContext,
     hold_unreproduced,
-    parse_passed,
     resolve_upstream,
 )
+from tools.findings_run import parse_passed
 
 pytestmark = pytest.mark.unit
 

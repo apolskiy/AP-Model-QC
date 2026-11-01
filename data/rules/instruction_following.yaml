@@ -46,6 +46,10 @@
     - assertion_id: A_INS_FORMAT_NO_PREAMBLE
       kind: regex
       parameters:
+        # THE BRACE IS THE SUBJECT, so this reads the answer as written. Blanked
+        # it matches nothing and fails every answer, correct ones included
+        # (test plan section 9.14).
+        literal_punctuation: true
         pattern: '\A\s*\{'
         present: true
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
@@ -228,6 +232,10 @@
     - assertion_id: A_INS_NO_LONG_DASH
       kind: regex
       parameters:
+        # THE DASH IS THE SUBJECT, so this reads the answer as written. Blanked
+        # it can never fire, and the check passes an answer carrying the dash
+        # the prompt forbade (test plan section 9.14).
+        literal_punctuation: true
         pattern: '[–—]'
         present: false
       taxonomy_code: QC_LLM_FORMAT_VIOLATION
@@ -289,6 +297,11 @@
         # bullet holding two short ones was refused (test plan 9.3.3). A run
         # starts at the bullet or after a sentence's end; punctuation inside a
         # token, as in 4.3, does not end one.
+        #
+        # THE BULLET AND THE TERMINATOR ARE WHAT A RUN IS MEASURED BETWEEN, so
+        # this reads the answer as written. Blanked it can never fire, and a
+        # thirteen-word sentence passes (test plan section 9.14).
+        literal_punctuation: true
         pattern: '(?:^[ \t]*[-*][ \t]+|(?<=[.!?])[ \t]+)(?:(?:[^\s.!?]|[.!?](?=\S))+[ \t]+){12,}(?:[^\s.!?]|[.!?](?=\S))+'
         present: false
       taxonomy_code: QC_LLM_LENGTH_VIOLATION
@@ -305,6 +318,9 @@
     - assertion_id: A_INS_COMBINED_NO_LONG_DASH
       kind: regex
       parameters:
+        # THE DASH IS THE SUBJECT, as in `A_INS_NO_LONG_DASH` above (test plan
+        # section 9.14).
+        literal_punctuation: true
         pattern: '[–—]'
         present: false
       taxonomy_code: QC_LLM_FORMAT_VIOLATION
@@ -363,6 +379,10 @@
         # bullet holding two short ones was refused (test plan 9.3.3). A run
         # starts at the bullet or after a sentence's end; punctuation inside a
         # token, as in 4.3, does not end one.
+        #
+        # THE BULLET AND THE TERMINATOR ARE WHAT A RUN IS MEASURED BETWEEN, as
+        # in `A_INS_COMBINED_WORDS` above (test plan section 9.14).
+        literal_punctuation: true
         pattern: '(?:^[ \t]*[-*][ \t]+|(?<=[.!?])[ \t]+)(?:(?:[^\s.!?]|[.!?](?=\S))+[ \t]+){12,}(?:[^\s.!?]|[.!?](?=\S))+'
         present: false
       taxonomy_code: QC_LLM_LENGTH_VIOLATION
@@ -377,6 +397,10 @@
     - assertion_id: A_INS_CAPITALISED
       kind: regex
       parameters:
+        # THE BULLET MARKER IS WHAT THE CASE IS ANCHORED ON, so this reads the
+        # answer as written. Blanked the marker is a space, the pattern can
+        # never fire, and a lower-case bullet passes (test plan section 9.14).
+        literal_punctuation: true
         pattern: '^[ \t]*[-*][ \t]+[a-z]'
         present: false
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
@@ -401,6 +425,10 @@
     - assertion_id: A_INS_COMPLETE_SENTENCE
       kind: regex
       parameters:
+        # THE MARKER AND THE TERMINATOR ARE BOTH THE SUBJECT, so this reads the
+        # answer as written. Blanked it can never fire and an unterminated
+        # bullet passes (test plan section 9.14).
+        literal_punctuation: true
         pattern: '^[ \t]*[-*][ \t]+.*[^.!?\s][ \t]*$'
         present: false
       taxonomy_code: QC_LLM_INSTRUCTION_DRIFT

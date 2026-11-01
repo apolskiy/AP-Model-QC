@@ -3,7 +3,7 @@
 """Unit preconditions for the ticket page a graded finding is filed from, and its register.
 
 Created: 2026-10-12
-Last updated: 2026-10-29
+Last updated: 2026-11-01
 
 This file contains fifteen cases on ``tools/ticket_report.py`` and the findings,
 recordings, evidence and register tools it joins. ``TestMQCTicketInput`` checks a
@@ -88,10 +88,10 @@ from tools.ticket_recordings import (
 )
 from tools.findings import (
     RunContext,
-    _first_sentence,
     hold_unreproduced,
     merge,
 )
+from tools.findings_run import _first_sentence
 from tools.ticket_files import (
     GENERATED_MARK,
     drop_engine_output,

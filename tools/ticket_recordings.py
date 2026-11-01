@@ -3,7 +3,7 @@
 """What each recorded observation holds, and how its checks and judgement came out.
 
 Created: 2026-10-16
-Last updated: 2026-10-21
+Last updated: 2026-11-01
 
 This file reads the replay fixtures for one engine, task and rule.
 ``recorded_request`` returns the request as sent, ``recorded_responses`` and
@@ -151,6 +151,7 @@ def _context(case: Any, index: int, text: str) -> ObservationContext:
 def judge_prompts(
     task_id: str, rule_id: str, recordings: list[dict[str, Any]],
     judgements: list[Optional[dict[str, Any]]],
+    outcomes: list[tuple[int, bool, str]],
 ) -> list[str]:
     """Return the prompt each judged observation's judge received, empty where none was.
 
@@ -158,12 +159,19 @@ def judge_prompts(
     recorded response for a recording made before recordings stored one
     (``consumer_ci.md`` section 9.5.5.8).
 
+    An observation whose checks failed reached no judge, so whatever is stored
+    at its index was recorded against an earlier response and is not its
+    prompt. It shows none.
+
     Args:
         task_id (str): The task identifier.
         rule_id (str): The rule set identifier.
         recordings (list): Each recorded observation's response, as stored.
         judgements (list): Each observation's recorded judgement, None where
             the judge never saw it.
+        outcomes (list): Each observation's index, whether its checks passed,
+            and what failed if not. **Required rather than defaulted**, a
+            default having to reproduce the defect this parameter closes.
 
     Returns:
         list[str]: One prompt per observation, in order.
@@ -172,9 +180,16 @@ def judge_prompts(
         case = case_for(task_id, rule_id)
     except (KeyError, ValueError):
         case = None
+    # A FAILED CHECK MEANS THE JUDGE WAS NEVER CALLED, so nothing overwrote the
+    # judgement recorded at that index against an earlier response. Read as
+    # this observation's, it put a judge prompt quoting text the engine did not
+    # return beneath a label saying the judge was not called (section 9.5.5.8).
+    unjudged = {index for index, passed, _ in outcomes if not passed}
     prompts: list[str] = []
     for index, response in enumerate(recordings):
-        judgement = judgements[index] if index < len(judgements) else None
+        judgement = None if index in unjudged else (
+            judgements[index] if index < len(judgements) else None
+        )
         if judgement is None:
             prompts.append("")
         elif judgement.get("prompt"):

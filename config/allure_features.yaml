@@ -61,6 +61,7 @@ modules:
 
   # The corpus the graded cases read, and whether it is sound.
   tests/cases/mqc_uni_corpus.py: Corpus
+  tests/cases/mqc_uni_declared_sources.py: Corpus
   tests/cases/mqc_uni_excerpts.py: Corpus
   tests/cases/mqc_uni_families.py: Corpus
   tests/cases/mqc_uni_instrument.py: Corpus

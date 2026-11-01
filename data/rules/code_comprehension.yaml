@@ -24,6 +24,10 @@
     - assertion_id: A_COD_NO_INVENTED_CALLS
       kind: regex
       parameters:
+        # THE DOT IS WHAT MAKES IT A CALL, so this reads the answer as written.
+        # Blanked, `response.post(` reads as two words and the check passes an
+        # invented call (test plan section 9.14).
+        literal_punctuation: true
         pattern: '(?i)\.(post|put|delete|patch|raise_for_status|iter_lines|stream)\b'
         present: false
       taxonomy_code: QC_LLM_UNSOURCED_CLAIM
@@ -242,6 +246,12 @@
     - assertion_id: A_COD_KEEPS_SLICE
       kind: contains
       parameters:
+        # THE BRACKETS AND THE COLON ARE THE SLICE, so this reads the answer as
+        # written. Blanked, both sides collapse to the word `limit` and the
+        # check passes an answer that names it and drops the slice. Its two
+        # neighbours above stay blanked, where blanking is what lets a
+        # differing quote style pass (test plan section 9.14).
+        literal_punctuation: true
         value: "[:limit]"
       taxonomy_code: QC_LLM_SOURCE_ALTERATION
       severity: violation
@@ -439,6 +449,13 @@
         # `C_COD_NAMES_THE_CAUSE` judges whether the unclosed call to
         # sorted is identified at all. This assertion was never the only
         # thing standing between an echo and a pass.
+        #
+        # THE QUOTED LINE IS CODE, so this reads the answer as written. The
+        # second alternative is the broken line itself, and blanked it loses
+        # the `=` that distinguishes it, so an answer that shows the line
+        # instead of numbering it fails although it located the error. Measured
+        # against gemini's recording (test plan section 9.14).
+        literal_punctuation: true
         pattern: '(?i)(line\s*2\b|reverse\s*=\s*True\s*$)'
         present: true
       taxonomy_code: QC_LLM_HALLUCINATION
