@@ -49,6 +49,7 @@ designs live in `AP-Harness-QC` and are **never copied in**, per `CLAUDE.md`.
 | `docs/model_open_questions.md` | **Decisions waiting on a person**, and the measurement questions only the owner can settle. Not a backlog: a closed question moves to its settled list and its number is retired, so the same ground is not argued twice |
 | `CHANGELOG.md` | **What changed, when and why**, newest first. Added 2026-10-12: a README change carries an entry here in the same change, because the README is historyless by design (harness `code-style.md` section 7.4) |
 | `CLAUDE_LOG.md` | Decisions and their reasoning in date order, written for an external reader |
+| `CLAUDE_TASK.md` | **What is active now**, one row per item with what must hold before it is done. Entries are removed when they close, so it carries no history |
 
 **The three divide by time and by purpose, not by topic.** The README says what
 is true now, the changelog says what moved and when, and the log says how it

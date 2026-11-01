@@ -5,12 +5,18 @@
 Created: 2026-10-20
 Last updated: 2026-11-01
 
-This file contains ``TestMQCTicketReasons``, six cases on the ticket tools,
-``tools/ticket_report.py``, ``tools/ticket_reasons.py`` and ``tools/ticket_recordings.py``.
+This file contains ``TestMQCTicketReasons``, eight cases on the ticket tools,
+``tools/ticket_report.py``, ``tools/ticket_reasons.py``, ``tools/ticket_recordings.py``
+and ``tools/review_report.py``.
 They check a ticket says why each failing observation fails, states the rule in its
 expected section, says why the screen stopped an observation, shows each judged
-observation the prompt its judge received, counts only the observations the run
-measured, and generates the filing sheet the findings are filed from.
+observation the prompt its judge received and no other, carries the four parts a
+finding rests on, counts only the observations the run measured, and generates the
+filing sheet the findings are filed from.
+
+**The cases that read tickets generate them first**, into ``tmp_path`` from the
+shipped registers and the recorded fixtures, because ``reports/`` is gitignored and
+a precondition reads only what the repository carries or what the case produced.
 
 **These run in the ``unit`` precondition gate.** A ticket is the page a graded finding
 is filed with a vendor from, so one that misstates its own evidence sends the vendor a
@@ -18,7 +24,7 @@ claim this suite cannot support. A failure is an instrument
 defect, **not a model finding**: the run exits 3 and no graded case executes, and the
 module carries no priority marker, per the harness ``framework-rules.md`` section 3.3.
 
-Specified by ``docs/design/consumer_ci.md`` sections 9.5.5.6 to 9.5.5.10.
+Specified by ``docs/design/consumer_ci.md`` sections 9.5.5.6 to 9.5.5.12.
 
 **A ticket showed that a check fired and never why that is a failure.** A relay
 ticket put a response saying "I ignored it" beside the check that failed it, and
@@ -50,7 +56,7 @@ import yaml
 from cmn.case_steps import step
 from cmn.grouping import story
 
-from tests.cases.graded_support import case_for
+from tests.cases.graded_support import case_for, engine_roster
 from tests.cases.suite_support import case_rules_from_suite
 from tools.ticket_report import (
     _issue_sentence,
@@ -59,7 +65,8 @@ from tools.ticket_report import (
     load_tasks,
     page_for,
 )
-from tools.ticket_files import filing_sheet, intake_engines, ticket_name
+from tools.review_report import review_page_for
+from tools.ticket_files import filing_sheet, intake_engines, ticket_name, write_tickets
 from tools.ticket_reasons import failure_reasons, rule_lines
 from tools.ticket_recordings import (
     judge_prompts,
@@ -466,23 +473,39 @@ class TestMQCTicketReasons:
         )
 
     @story("A finding without its evidence is invalid")
-    def MQC_CAS_UNI_115797_a_ticket_without_the_four_parts_is_reported(self) -> None:
+    def MQC_CAS_UNI_115797_a_ticket_without_the_four_parts_is_reported(
+        self, tmp_path: Path
+    ) -> None:
         """Every generated ticket carries a summary, the prompt, the responses and the judge.
 
         A returned withdrawn finding carries them too, under a temporary
         summary naming the withdrawal, and a withdrawn finding the latest run
         did not reproduce carries no ticket at all.
 
+        The tickets are generated here from the shipped registers rather than
+        read from ``reports/``, which is gitignored and empty on a clean
+        checkout.
+
         Design: ``consumer_ci.md`` section 9.5.5.12.
+
+        Args:
+            tmp_path (Path): Where the generated tickets are written.
 
         Returns:
             None
         """
-        step(1, "every generated ticket carries the four parts a finding needs")
-        tickets = sorted((_ROOT / "reports" / "tickets").rglob("*.md"))
+        step(1, "generate every filed and returned ticket from the shipped registers")
+        generated = tmp_path / "tickets"
+        for engine in sorted(engine_roster()):
+            write_tickets(generated / engine, engine, page_for(_ROOT, engine)[1])
+            write_tickets(generated / "review" / engine, engine,
+                          review_page_for(_ROOT, engine)[1])
+        tickets = sorted(generated.rglob("*.md"))
         bodies = {path: path.read_text(encoding="utf-8") for path in tickets
                   if not path.stem.endswith("_findings") and path.stem != "FILING"}
         assert bodies, "no generated ticket was found to check"
+
+        step(2, "every generated ticket carries the four parts a finding needs")
         missing = {
             path.name: [
                 name for name, mark in (
@@ -502,7 +525,7 @@ class TestMQCTicketReasons:
         )
 
         step(3, "a returned withdrawn finding carries a temporary summary")
-        reviewed = sorted((_ROOT / "reports" / "tickets" / "review").rglob("*.md"))
+        reviewed = sorted((generated / "review").rglob("*.md"))
         returned = [path for path in reviewed if not path.stem.endswith("_findings")]
         held = {
             str(entry.get("case", "")): entry

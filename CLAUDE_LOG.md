@@ -6888,3 +6888,80 @@ to 12, withdrawn 49, returned 6 to 3. Recorded responses 1200 to 1216 and
 judgements 741 to 751. The tickets and the review pages were regenerated under
 `reports/`, which is gitignored, so they are local evidence rather than part of
 the change.
+
+---
+
+## 2026-11-01: The Precondition That Read Its Own Author's Disk
+
+**A) What was wrong.** `MQC_CAS_UNI_115797` failed on every clean checkout with
+`no generated ticket was found to check`, and passed on every local run. It was
+red on the harness's `regress-consumers-on-merge` and on the precondition job
+of all four engine gates, on Ubuntu and on Windows, which is five red runs for
+one cause.
+
+**B) Why it happened.** The case globbed `reports/tickets/` for the pages whose
+four parts it checks, and `reports/` is gitignored. On the disk where it was
+written the directory held whatever the last `tools.ticket_report` run had left
+there; anywhere else it was empty, so the first assertion fired and nothing
+about a ticket was ever examined.
+
+| Where it ran | What it read | Outcome |
+|---|---|---|
+| A working tree where the generator had been run | That run's pages | Passed |
+| Any clean checkout | Nothing | Failed on an empty glob |
+
+**It is section 8.0's class of defect in a second place.** That rule came from
+a case reading above the repository root, where the answer differed by
+environment. This is a case reading **beside** the repository: the code was
+right, the case was right about a file the repository does not carry, and it
+passed everywhere it was run before CI.
+
+**What changed.** The case builds what it reads. `page_for` and
+`review_page_for` produce the pages from the shipped registers and the recorded
+fixtures, `write_tickets` writes them under `tmp_path`, and the assertions read
+this run's output. The last two steps compare against
+`config/findings/unconfirmed/` exactly as before, those registers having always
+been the tracked half.
+
+**The rule it is now stated under.** A precondition reads what the repository
+carries or what the case itself produced in the same run
+(`consumer_ci.md` section 9.5.5.12). `MQC_CAS_UNI_115757` is the shape that
+passes it and reads the same way at a glance: it writes its carry record under
+`reports/` and reads back its own output, so the distinction is authorship
+within the run rather than the directory.
+
+**The verification.** The fixed case was run with `reports/tickets` moved
+aside, reproducing the CI condition exactly: it passes. The shipped version's
+behaviour under that condition did not need constructing, five runs having
+already measured it.
+
+**A detour worth recording.** The step recorder numbers a step by its place
+counting every verification before it, so inserting a generation step ahead of
+the first assertion renumbered the three below it, and a step with no assertion
+after it fails as `QC_HARNESS_NO_VERIFICATION`. The generation and the
+"something was generated" assertion are therefore one step, and the numbers run
+1, 2, 3, 5.
+
+### The near end of the record had nothing tracked in it
+
+**A) What was wrong.** Nothing tracked said what was being worked on. The
+README and `consumer_ci.md` declare the architecture,
+`model_evaluation_test_plan.md` states the requirements and `rtm_model.csv`
+maps them onto cases, `CHANGELOG.md` and this file say how the repository
+arrived, and work in progress lived in a session's context.
+
+**What changed.** `CLAUDE_TASK.md` at the repository root carries one row per
+active item and what must hold before it is done, and an item leaves it for
+this file when it closes. `docs/model_document_register.md` names it, which
+`MQC_CAS_UNI_115413` checks both ways, and `CLAUDE.md` now states which
+document answers which question.
+
+**Two items are open and both wait on a ruling.** Whether a function-word run
+such as the one measured on claude counts as reuse of the planted passage, and
+the three withdrawn findings that reproduced again on the 2026-11-01 run. Each
+is a decision about this project's own assertion rather than about a model, so
+neither is work that can be done here.
+
+**State.** Preconditions 185 of 185 on each of the four engines, exit 0;
+pylint 10.00/10, exit 0. `mqc_uni_ticket_reasons.py` 8 of 8. No case now reads
+an artifact under `reports/` that it did not write.

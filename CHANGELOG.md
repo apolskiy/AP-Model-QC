@@ -40,6 +40,46 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A precondition stopped reading an artifact the repository does not carry, 2026-11-01
+
+**Why it was needed.** `MQC_CAS_UNI_115797` globbed `reports/tickets/` for the
+pages whose four parts it checks, and `reports/` is gitignored. On the author's
+disk the directory held whatever the last `tools.ticket_report` run had left
+there, so the case passed on every local run; on a clean checkout the glob was
+empty and the case failed on `no generated ticket was found to check` rather
+than on anything about a ticket. **It was red everywhere it mattered**: the
+harness's `regress-consumers-on-merge` and the precondition job of all four
+engine gates, on both Ubuntu and Windows.
+
+**What changed.** The case calls `page_for` and `review_page_for` to build the
+pages from the shipped registers and the recorded fixtures, writes them under
+`tmp_path` with `write_tickets`, and reads what this run produced. The last two
+steps compare against the registers exactly as before, those having always been
+the tracked half. A precondition's input is now stated to be what the
+repository carries or what the case itself produced in the same run, in
+`consumer_ci.md` section 9.5.5.12.
+
+Verified by running the case with `reports/tickets` moved aside, which is the
+condition CI hit: it passes. The shipped version's failure under that condition
+is the five red runs it produced.
+
+### The active focus items have a file of their own, 2026-11-01
+
+**Why it was needed.** Nothing tracked said what was being worked on. The
+README and `consumer_ci.md` declare the architecture, the test plan and
+`rtm_model.csv` carry the requirements and their traces, `CHANGELOG.md` and
+`CLAUDE_LOG.md` say how the repository got here, and carried work lived in a
+session's context, so a reset lost it.
+
+**What changed.** `CLAUDE_TASK.md` at the repository root carries one row per
+active item with what must hold before it is done, and an item leaves it for
+`CLAUDE_LOG.md` when it closes. It is named in `docs/model_document_register.md`,
+which `MQC_CAS_UNI_115413` checks against the repository both ways, and
+`CLAUDE.md` now states which document answers which question. Two items are
+open, both waiting on a ruling only the project owner can give: whether a
+function-word run counts as reuse of the planted passage, and the three
+withdrawn findings that reproduced again on the 2026-11-01 run.
+
 ### The escalated observations were recorded, and twelve cases stopped being unmeasured, 2026-11-01
 
 **Why it was needed.** A case takes three observations and escalates to five on

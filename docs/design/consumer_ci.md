@@ -4528,6 +4528,39 @@ whose case the run measured as passing loses the field, and the condition is
 the one section 9.4.7.1 already states for an open finding: only a case the run
 measured as passing has stopped reproducing, and a skip decides nothing.
 
+##### The case generates the tickets it reads, because the repository carries none
+
+**A precondition reads what the repository carries or what the case itself
+produced in the same run, and nothing else.** `115797` globbed
+`reports/tickets/` for the pages to check, and `reports/` is gitignored: on the
+author's disk the directory holds whatever the last `tools.ticket_report` run
+left there, and on every clean checkout it is empty, so the case failed on
+`no generated ticket was found to check` rather than on anything about a
+ticket.
+
+| Where it ran | What it read | Outcome |
+|---|---|---|
+| A working tree where the generator had been run | The pages from that run | Passed |
+| Any clean checkout | Nothing | **Failed, naming an empty glob** |
+
+**It was red everywhere it mattered and green where it was written**, which is
+the signature of a case whose input is an artifact rather than a fixture: the
+harness's `regress-consumers-on-merge` and the precondition job of all four
+engine gates, on both platforms, against a case that passed locally on every
+run.
+
+**So the case calls the generators.** `page_for` and `review_page_for` build
+the pages from the shipped registers and the recorded fixtures, which the
+repository does carry, and `write_tickets` writes them under `tmp_path`; the
+assertions then read what this run produced. The comparison in the last two
+steps is unchanged, because the registers it compares against were always the
+tracked half.
+
+**`115757` is the shape that is allowed and reads the same way at a glance.**
+It writes its carry record under `reports/` and reads back its own output,
+which is the case producing its input; the distinction is authorship within the
+run, not the directory.
+
 **Each one opens with a temporary summary** naming the date it was withdrawn,
 the reason recorded at the time, and the date it failed again, above the same
 four parts a filed ticket carries. It is temporary by construction: it states an

@@ -46,6 +46,26 @@ defect that ships.
 
 `docs/design/consumer_ci.md` section 5 states the parity mechanism in full.
 
+## The Tracked Records Divide By Time
+
+**The architecture is declared in `README.md` and the design documents**, which
+this file routes a reader to. `CLAUDE_TASK.md` holds what is active now, and
+`CLAUDE_LOG.md` is the permanent development trail: what was found, what it
+broke, what the injection showed. The trail is what stops a failed attempt
+being repeated or context being lost across a session reset.
+
+| Document | Answers |
+|---|---|
+| `README.md`, `docs/design/consumer_ci.md` | **The architecture**, and what this repository owns |
+| `docs/testing/model_evaluation_test_plan.md` | **The requirements**, each stated as what must hold |
+| `docs/testing/rtm_model.csv` | **Which case satisfies which requirement**, traced both ways and checked both ways |
+| `CLAUDE.md` | The directive router: what to read, the boundaries, the deltas from the harness |
+| `CLAUDE_TASK.md` | **What is active now.** One row per item, removed when it closes |
+| `CLAUDE_LOG.md` | Changes and the reasoning behind them, in date order |
+
+**No tracked file records a verbatim prompt or who asked for what.** Those stay
+in the local working log, which is never committed and never shared.
+
 ## Read The Register First
 
 **`docs/model_document_register.md` names every tracked document in this repository and what each holds.** Read it before any documentation work and work through it on any review: it is the only complete list, and `MQC_CAS_UNI_115413` checks it against the repository in both directions.
