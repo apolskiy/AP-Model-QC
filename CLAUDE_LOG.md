@@ -6965,3 +6965,53 @@ neither is work that can be done here.
 **State.** Preconditions 185 of 185 on each of the four engines, exit 0;
 pylint 10.00/10, exit 0. `mqc_uni_ticket_reasons.py` 8 of 8. No case now reads
 an artifact under `reports/` that it did not write.
+
+
+## 2026-11-01: The Judgement That Outlived The Response It Scored
+
+A) **A judgement in this store could hold a score for a response the store no
+longer carries, and no precondition would report it.** B) Because the only
+guard is in the harness's `load_judgement`, which compares the judge request
+hash when it loads a judgement, and a judgement no escalation draws is never
+loaded.
+
+**It is 9.4.3.1's finding on the side 9.4.3.1 excluded.** That subsection
+requires a case's candidate recordings to agree on the request, and it leaves
+judgements out because each scores a different response, which is true and is
+not the whole question. The question nothing put was whether each judgement
+agrees with the **one** response it scored. This repository re-records
+observations, which is the event that separates them.
+
+### What the audit found, which is nothing, and why it was written anyway
+
+| | Count |
+|---|---|
+| Judgements in the store | 751 |
+| Carrying a prompt that holds their own recording's response | 720 |
+| Carrying a prompt that holds other text | 0 |
+| Recorded before the harness stored the prompt | 31 |
+| Scoring an observation with no recording | 0 |
+
+**A clean store is the reason to write it now rather than the reason not to.**
+The one instance 9.4.3.1 found was invisible until a rule change drew the
+observation, and the fix for that one was to stop asking a run and read the
+files. The same remedy had not been applied here.
+
+**The 31 are an abstention with a reason.** The harness rebuilds a judgement
+with no prompt from the observation it scored, so it replays correctly and
+carries nothing to compare; the first measurement reported all 31 as stale
+before the harness design settled what their absence means.
+
+### The case asserts it read something
+
+`115799` asserts the judgement subtree holds more than a hundred files before
+it asserts the audit is quiet. **A check that reports nothing cannot otherwise
+be told from a check that read nothing**, and the harness spent 2026-11-01
+correcting exactly that in `112312`, which had fed five checks their own input.
+The injection confirms it from the other direction: reading an absent prompt as
+an empty one made this case name all 31 old judgements.
+
+**State.** Preconditions 186 of 186 on each of the four engines, exit 0;
+pylint 10.00/10, exit 0. `mqc_uni_instrument_audit.py` 9 of 9. The
+`consumer_ci.md` inventory 138 to 139 cases, and the README precondition count
+185 to 186 with the stale harness figure beside it.

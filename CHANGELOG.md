@@ -40,6 +40,42 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The judgement store is audited against the responses it scored, 2026-11-01
+
+**Why it was needed.** Section 9.4.3.1 requires a case's candidate recordings
+to agree on the request and excludes judgements, because each of them scores a
+different response. What nothing compared was each judgement against the one
+response it scored, and re-recording an observation is the ordinary event that
+separates the two. This repository re-records. The harness refuses a stale
+judgement on the run that draws it, so a judgement no escalation reaches is
+refused by nothing, which is 9.4.3.1's own silence one step along.
+
+**What changed.** `MQC_CAS_UNI_115799` calls the harness's new
+`cmn.replay_audit.stale_judgements` with this repository's fixture root, the
+one-implementation-two-callers arrangement 9.4.3.1 already uses. It reports a
+judgement whose stored prompt does not carry the text its own recording holds,
+and one whose observation has no recording at all. The case also asserts that
+the store it read holds judgements, so an audit of nothing cannot pass as an
+audit. `consumer_ci.md` section 9.4.3.1.1 specifies it and
+`MQC_REQ_CAS_CI_0068` states it.
+
+**What it measured on the shipped fixtures.** 751 judgements, of which 720
+carry a prompt and every one of those holds the response its recording holds,
+31 predate the stored prompt and are rebuilt from the observation they scored,
+and none scores an observation that was never recorded.
+
+**Figures that moved.** The `consumer_ci.md` inventory 138 to 139 cases and 98
+to 99 negative, the README precondition count 185 to 186 and its traced
+requirements 199 to 200. The same README sentence stated 1006 harness test
+cases against the 1018 the harness now declares, so that figure moved with it.
+`MQC_CAS_UNI_115317` reported the requirement count rather than a reader
+finding it, as its harness counterpart did on the same change.
+
+**Verified by injection.** Reading an absent prompt as an empty one made this
+case report all 31 judgements that predate the stored prompt, which is what
+establishes it reads the shipped store rather than passing on an empty one. The
+harness cases hold the other two directions.
+
 ### A precondition stopped reading an artifact the repository does not carry, 2026-11-01
 
 **Why it was needed.** `MQC_CAS_UNI_115797` globbed `reports/tickets/` for the

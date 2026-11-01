@@ -3,15 +3,15 @@
 """Unit preconditions for whether a graded result from this suite means what it says.
 
 Created: 2026-10-06
-Last updated: 2026-10-24
+Last updated: 2026-11-01
 
-This file contains eight cases. ``TestMQCTheInstrumentDoesNotManufactureFindings``
+This file contains nine cases. ``TestMQCTheInstrumentDoesNotManufactureFindings``
 checks the injection screen raises nothing on an ordinary case and every failure message
 carries a taxonomy code. ``TestMQCAssertionsCanFail`` checks every shipped assertion can
 fail, through ``vacuity_support``; that an unmeasured observation is not counted as a
-failure; that a replay store refreshed in part is reported; that every observation
-records its steps, as do the steps after it; and that a caught injection is a failure,
-not a skip.
+failure; that a replay store refreshed in part is reported, and so is a judgement left
+behind by a refresh; that every observation records its steps, as do the steps after it;
+and that a caught injection is a failure, not a skip.
 
 **These run in the ``unit`` precondition gate**, ahead of every graded band, so a
 graded red is never the instrument's own fault and a graded pass is one that could have
@@ -43,6 +43,7 @@ caught them.
 #   115716  an_assertion_that_cannot_fail_is_reported
 #   115728  an_unmeasured_observation_is_not_counted_as_a_failure
 #   115729  a_replay_store_refreshed_in_part_is_reported
+#   115799  a_judgement_left_behind_by_a_refresh_is_reported
 #   115731  an_observation_that_records_no_steps_is_reported
 #   115761  the_steps_after_the_observations_are_recorded
 #   115016  a_caught_injection_is_recorded_as_a_failure_not_a_skip
@@ -61,7 +62,7 @@ import pytest
 from cmn.case_steps import step
 from cmn.grouping import story
 from cmn.registries import is_registered_harness_code, registered_codes
-from cmn.replay_audit import divergent_recordings
+from cmn.replay_audit import divergent_recordings, stale_judgements
 from evaluation.screening import screen_text
 
 from tests.cases.graded_support import (
@@ -409,6 +410,43 @@ class TestMQCAssertionsCanFail:
             "a case holds recordings answering different requests, so an "
             "escalation reaching the older ones skips the case instead of "
             "measuring it: " + "; ".join(divergent)
+        )
+
+
+    @story("A judgement outlives the response it scored")
+    def MQC_CAS_UNI_115799_a_judgement_left_behind_by_a_refresh_is_reported(
+        self,
+    ) -> None:
+        """Every judgement holds a score for the response its recording holds.
+
+        **`115729`'s subject on the judgement side.** That case requires a
+        case's candidate recordings to agree on the request and excludes
+        judgements, because each of them scores a different response. What
+        nothing compared was each judgement against the **one** response it
+        scored, and re-recording an observation is the ordinary event that
+        separates the two.
+
+        **The harness refuses a stale judgement on the run that draws it**, so
+        a judgement no escalation reaches is refused by nothing. That is the
+        silence 9.4.3.1 was written for, one step along.
+
+        Design: ``consumer_ci.md`` section 9.4.3.1.1.
+
+        Returns:
+            None
+        """
+        store = repository_root() / FIXTURE_ROOT / "judgements"
+        judged = sorted(store.rglob("*.json"))
+        assert len(judged) > 100, (
+            f"the judgement store holds {len(judged)} file(s) where it is "
+            f"read, so an audit of nothing would pass as an audit: {store}"
+        )
+
+        stale = stale_judgements(repository_root() / FIXTURE_ROOT)
+        assert not stale, (
+            "a judgement scores a response this store no longer holds, so a "
+            "run drawing that observation skips on a stale fixture instead of "
+            "reading a score: " + "; ".join(stale)
         )
 
 

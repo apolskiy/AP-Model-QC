@@ -1017,6 +1017,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115727` | N | `a_gate_reporting_only_on_green_is_reported` |
 | `115728` | N | `an_unmeasured_observation_is_not_counted_as_a_failure` |
 | `115729` | N | `a_replay_store_refreshed_in_part_is_reported` |
+| `115799` | N | `a_judgement_left_behind_by_a_refresh_is_reported` (9.4.3.1.1) |
 | `115730` | N | `a_blocking_band_passing_on_unmeasured_cases_is_reported` |
 | `115717` | P | `a_blocking_band_releases_only_on_a_recorded_dispensation` |
 | `115718` | N | `a_document_naming_no_repository_is_reported` |
@@ -1110,7 +1111,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | `115794` | N | `a_withdrawn_finding_is_not_resolved_upstream` (9.4.9) |
 
-**Inventory: 138 cases, 98 negative, 32 positive, 8 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 139 cases, 99 negative, 32 positive, 8 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3279,6 +3280,49 @@ one candidate response, so its request carries that response and every
 observation's judgement answers a legitimately different request. The first run
 against real fixtures reported the whole store until that was understood, which
 is the check correcting its own rule.
+
+##### 9.4.3.1.1 And the judgement that scored the response left behind
+
+Added 2026-11-01, closing the side the exclusion above leaves open.
+
+**The exclusion is right and it is not the whole question.** Judgements may not
+be required to agree with each other, because each scores a different
+response. What they can be required to do is agree with **the one response each
+of them scored**, and nothing asked that.
+
+| | What refuses a judgement scoring a replaced response |
+|---|---|
+| A run that draws the observation | The harness, on the request hash, as `QC_HARNESS_FIXTURE_STALE` |
+| A run whose escalation never reaches it | **Nothing** |
+| An audit of these fixtures | **Nothing, until this subsection** |
+
+**So it is 9.4.3.1's own defect, one step along.** The guard sits at the moment
+of reading, which is why a recording nothing reads was stale in silence for a
+day, and a judgement nothing reads is in exactly that position. Re-recording an
+observation is the ordinary event that creates one, and this repository
+re-records.
+
+**The check is the harness's and the fixtures are ours**, so
+`cmn.replay_audit.stale_judgements` is called here with this repository's root,
+the arrangement 9.4.3.1 already uses. It reads the prompt the harness stores
+beside each judgement, which carries the candidate response verbatim, so
+nothing has to compose a judge request or load a rubric to compare the two.
+
+| This store holds | Reported |
+|---|---|
+| A judgement whose prompt carries its recording's response | No |
+| A judgement whose prompt carries other text | **Yes** |
+| A judgement recorded before the prompt was stored | No. It is rebuilt from the observation it scored |
+| A judgement whose observation has no recording | **Yes.** No run can draw it, so no run can refuse it |
+
+Measured on 2026-11-01, before the check was written: 751 judgements, of which
+720 carry a prompt and every one of those holds the response its own recording
+holds, 31 predate the stored prompt, and none scores an observation that was
+never recorded. **The store is clean and the audit is what keeps it so**, the
+one instance 9.4.3.1 found having been invisible until a rule change drew it.
+
+`MQC_CAS_UNI_115799` calls it, and the harness's `MQC_CMN_UNI_112436` and
+`112437` hold what it reports and what it abstains on.
 
 ### 9.4.3.2 The step record is asserted at its call site, not only in its logic
 
