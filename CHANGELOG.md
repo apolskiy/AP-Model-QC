@@ -40,6 +40,90 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A failed case is judged while this corpus is in development, and the judging flag now reaches the pipeline, 2026-11-02
+
+**Why it was needed.** Section 6.3 said the gate spends nothing on a case that
+has already failed and the debug workflow paid for the rubric instead. Measured
+against the store, that default left 39 of the 120 observations under the eight
+no-quote rules unassessed and 14 of them holding no judgement at all, so
+widening one of those assertions later would turn its case into a skip for want
+of a judgement nobody had asked for. **And the flag the debug workflow passed
+reached nothing**: no caller read the option into the pipeline, so the one run
+written to obtain a rubric on a failed case got the default instead.
+
+**The rule now in force.** Where no injection is detected, the response is
+forwarded to the judge for assessment, and a partial or complete violation of
+the system instruction does not change that. The condition is that this corpus
+is being developed: the judge is what spots a failure to observe a system
+instruction and an inconsistent answer, and a scenario whose assertions are
+corrected later is re-recorded rather than left unmeasured. Injection and
+instruction relay are excluded, and the screen already enforces that; a
+deterministic failure, with no rubric or no judge bound, is still sent nowhere.
+The harness carries the ruling in `tier3_evaluation.md` section 4.2.
+
+**The flag is the authoring flag, and it is now implemented.**
+`--judge-on-failure` states what one invocation asked for, which is a different
+claim from what the phase's default does, and the result records which of the
+two produced a judgement. `tests/cases/graded_support.py` reads it through
+`judging_requested` and passes it at the one pipeline call site, which is the
+whole of the wiring.
+
+**What changed.** `consumer_ci.md` section 6.3 keeps the debug run's purpose,
+new section 6.3.1 carries the development-phase default with the gaps it leaves
+open, and new section 6.3.2 records the unimplemented flag and the case that
+now holds the wiring. `docs/model_running_jobs.md` section 5 says the gate
+judges a failed case too and that the debug run still names the flag.
+`debug-cases-on-demand.yml` passes it. `MQC_CAS_UNI_115802` asserts the read
+and the call site, `115701` is restored with the workflow line it reads, and
+`115801` is retired the day it was assigned, having asserted that no workflow
+names a flag that is not retired. `MQC_REQ_CAS_CI_0006` and
+`MQC_REQ_CAS_PRE_0002` are restated in the plan and the matrix.
+
+**The gaps it leaves open.** A live run's judge spend now scales with the
+failure count rather than the pass count, so a band failing widely costs more
+than the same band passing. A replay still spends nothing, and a judgement the
+store lacks is a `QC_HARNESS_FIXTURE_MISSING` skip. And the default is a
+constant in the harness, so nothing here states which phase this corpus is in.
+
+**Measured.** The store was filled live against all four engines with the
+candidate replayed, so only the missing judgements were dispatched: 751
+judgements to 766, four of them re-asked because the request they answered had
+moved. Every graded skip for want of a judgement is gone, openai 94 total, 89
+executed, 82 passed, 7 failed, 5 skipped becoming 94, 94, 86, 8, 0, and grok 94,
+93, 91, 2, 1 becoming 94, 94, 92, 2, 0. claude and gemini are unchanged, claude
+keeping three skips behind a prerequisite that did not hold. **The observation
+the screen ruling of 2026-11-01 was written for now scores 4 of 5**, where the
+stale judgement it replaced scored 1 against a different request. A replay of
+all four engines after the wiring reproduces those figures exactly, so the flag
+reaching the pipeline changed no graded outcome. The README's precondition
+count moves 189 to 190 and its harness figure 1020 to 1021, and the test plan's
+precondition inventory 49 to 50 cases.
+
+### A failing band run no longer decides a band whose floor it cleared, 2026-11-02
+
+**Why it was needed.** All four engine gates went red on `main` while every
+band cleared what it is judged by: P0 and P1 passed every case they selected,
+and the lower band printed `the band cleared its floor: 68 of 69 measured
+passed (98.6%), 0 skipped, floor 90%` underneath `Process completed with exit
+code 1`. The band composite action's pytest step propagated its own exit status,
+and a composite step cannot carry `continue-on-error`, so the step that ran the
+band decided the job before the floor could. The action's own comment said the
+step does not gate and the floor does, while the step gated, for twenty six
+days.
+
+**What changed.** The pytest step captures its exit status and publishes it, and
+both floor steps pass it to `tools/band_floor.py`, which gained
+`run_status_problem`: a clean run and the graded-failure code are the two
+statuses a rate may be read from, and any other status, or none at all, is
+refused as an instrument defect rather than scored as a model that
+underperformed. `consumer_ci.md` section 3.12.2 carries the rule and the status
+table, `MQC_REQ_CAS_PRE_0005` is widened in the plan and the matrix, and
+`MQC_CAS_UNI_115800` holds the step shape, the flag on every floor step and the
+refusal for each status. **`1158xx` opens with that case**, `1157xx` holding 99
+assigned identifiers and one retired.
+
+**Measured.** Preconditions 188 to 189.
+
 ### Three gates stopped deciding a case on this repository's own word list, 2026-11-01
 
 **Why it was needed.** The graded run was read case by case against its prompt

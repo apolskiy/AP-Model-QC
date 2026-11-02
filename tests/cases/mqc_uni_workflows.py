@@ -3,7 +3,7 @@
 """Unit preconditions for what this repository's CI workflows must and must not do.
 
 Created: 2026-09-26
-Last updated: 2026-10-25
+Last updated: 2026-11-02
 
 This file contains ten cases over the workflow definitions, read through
 ``workflow_support``. ``TestMQCWorkflowProperties`` checks the debug workflow yields no
@@ -273,18 +273,19 @@ class TestMQCWorkflowProperties:
     def MQC_CAS_UNI_115701_only_the_debug_workflow_judges_a_failed_case(
         self,
     ) -> None:
-        """The gate spends nothing on a case that has already failed.
+        """The debug workflow asks for a rubric on a failed case and the gate does not.
 
-        Invoking a judge on a failed case costs a request for information that
-        changes no outcome, which is why skipping it is the default. **Debugging
-        is the case where the information does change something**: the rubric
-        separates a wrong case from a wrong model, and those prompt entirely
-        different fixes.
+        **Debugging is where the rubric changes something**: a failed assertion
+        says the case did not pass and not whether the case or the model is
+        wrong, and those prompt entirely different fixes. So the debug workflow
+        names ``--judge-on-failure`` and no other workflow does.
 
-        **A judged run in the gate spends nothing**, because ``--judge-mode``
-        follows ``--mode`` and a replayed judge reads a stored judgement. A
-        debug run passing ``--judge-mode live`` spends deliberately, against a
-        named subset.
+        **The flag is not the gate's default and never was.** Since 2026-11-02
+        the gate judges a failed case as well, while this corpus is in
+        development, and that is a property of the phase rather than of the
+        flag (``consumer_ci.md`` section 6.3.1). What this case asserts is that
+        the request is made where it is meant: an authoring run states it, and
+        the result records which of the two supplied the judgement.
 
         Returns:
             None
@@ -303,8 +304,8 @@ class TestMQCWorkflowProperties:
             if workflow.name == "debug-cases-on-demand.yml":
                 continue
             assert judging not in workflow.read_text(encoding="utf-8"), (
-                f"{workflow.name} judges a failed case, spending a request for "
-                f"information that changes no outcome"
+                f"{workflow.name} states an authoring run's intent, which is "
+                f"not a gate's to state"
             )
 
 

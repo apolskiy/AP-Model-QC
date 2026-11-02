@@ -3,13 +3,14 @@
 """Support code reading the CI workflow definitions, for the cases that check them.
 
 Created: 2026-10-03
-Last updated: 2026-10-21
+Last updated: 2026-11-02
 
 This file contains ``load``, ``jobs`` and ``needs``, which parse a workflow and its job
 graph; ``run_lines``, which returns each step's run body, following a local ``uses:``;
 ``selects_a_graded_marker`` and ``graded_invocations``, which find the pytest calls that
-run graded cases; ``floor_conditions`` and ``band_action_inputs``, which read the shared
-band definition; and ``cases_by_priority`` and ``repository_root``.
+run graded cases; ``floor_conditions``, ``band_action_inputs`` and
+``band_definition_runs``, which read the shared band definition; and
+``cases_by_priority`` and ``repository_root``.
 
 **``mqc_uni_workflows.py``, ``mqc_uni_engine_jobs.py`` and ``mqc_uni_band_gating.py``
 import it**, all in the ``unit`` precondition gate, so every check on a workflow reads
@@ -279,6 +280,36 @@ def band_action_inputs(root: Path) -> dict[str, Any]:
         )
     parsed = yaml.safe_load(definition.read_text(encoding="utf-8")) or {}
     return dict(parsed.get("inputs") or {})
+
+
+def band_definition_runs(root: Path) -> list[str]:
+    """Return the run body of each step in the shared band definition, in order.
+
+    **The steps are where the band's gating lives.** A composite step cannot
+    carry ``continue-on-error``, so which step exits with what is the whole of
+    whether a band's floor decides it (`consumer_ci.md` section 3.12.2).
+
+    Args:
+        root (Path): The repository root.
+
+    Returns:
+        list[str]: One run body per step, empty for a step that runs nothing.
+
+    Raises:
+        ValueError: With ``QC_HARNESS_PARSER_ERROR`` when the definition is
+            absent, so a caller is never told its steps run nothing.
+    """
+    definition = root / ".github" / "actions" / "band" / "action.yml"
+    if not definition.is_file():
+        raise ValueError(
+            f"QC_HARNESS_PARSER_ERROR: {definition} is absent, so the band "
+            f"definition's steps cannot be read"
+        )
+    parsed = yaml.safe_load(definition.read_text(encoding="utf-8")) or {}
+    return [
+        str(step.get("run", ""))
+        for step in (parsed.get("runs") or {}).get("steps") or []
+    ]
 
 
 def cases_by_priority() -> dict[int, int]:

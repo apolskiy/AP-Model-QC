@@ -51,6 +51,14 @@ runs:
     # header and the per-test PASSED, FAILED and SKIPPED listing appear in the
     # log exactly as they do from a job. A Python wrapper would nest that
     # output under a step named for the wrapper.
+    #
+    # THE RUN REPORTS AND THE FLOOR DECIDES, so this step records the status it
+    # exited with and exits 0. A COMPOSITE STEP CANNOT CARRY
+    # `continue-on-error`, so a pytest exit of 1 failed the job before the
+    # floor was consulted, and all four engine gates went red on 2026-11-02 on
+    # a lower band whose own verdict line read "the band cleared its floor".
+    # The floor step below takes the status and owns the outcome, in every
+    # band. Design `consumer_ci.md` section 3.12.2.
     - name: Band ${{ inputs.band }}, both sides replayed
       shell: bash
       env:
@@ -58,6 +66,7 @@ runs:
         # an empty input omits the flag rather than naming an empty path.
         PRECONDITIONS_RECORD: ${{ inputs.preconditions_record }}
       run: |
+        set +e
         pytest -m "evaluator or tool or sec" \
           --engine ${{ inputs.engine }} \
           --mode replay \
@@ -66,6 +75,10 @@ runs:
           --carry-outcomes reports/carry.json \
           --junitxml=reports/junit_mqc_${{ inputs.report }}.xml \
           --alluredir=reports/allure-results
+        BAND_RUN_STATUS=$?
+        set -e
+        echo "BAND_RUN_STATUS=${BAND_RUN_STATUS}" >> "$GITHUB_ENV"
+        echo "the band's run exited ${BAND_RUN_STATUS}, and its floor decides"
 
     # THE BAND'S OWN DENOMINATOR. pytest's last line reports what it declined
     # to run, and the deselected count is every precondition plus the other
@@ -95,12 +108,17 @@ runs:
     # `consumer_ci.md` section 3.12.2.
     #
     # ALWAYS, BECAUSE THE BAND THAT FAILED IS THE ONE THESE COUNTS ARE FOR.
+    #
+    # AND THE RUN'S STATUS, which this step weighs rather than the job taking
+    # it. An unset variable reads as -1 and refuses, because a band whose run
+    # reported nothing cannot be said to have measured anything.
     - name: Band ${{ inputs.band }} answered for everything it selected
       if: always() && inputs.blocking == 'true'
       shell: bash
       run: |
         python tools/band_floor.py \
           reports/junit_mqc_${{ inputs.report }}.xml \
+          --run-status="${BAND_RUN_STATUS:--1}" \
           --blocking --engine ${{ inputs.engine }}
 
     # A LOWER BAND IS SCORED RATHER THAN HELD TO EVERY CASE, because a failure
@@ -111,4 +129,5 @@ runs:
       shell: bash
       run: |
         python tools/band_floor.py \
-          reports/junit_mqc_${{ inputs.report }}.xml
+          reports/junit_mqc_${{ inputs.report }}.xml \
+          --run-status="${BAND_RUN_STATUS:--1}"

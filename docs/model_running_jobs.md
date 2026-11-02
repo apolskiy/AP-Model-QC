@@ -421,17 +421,22 @@ whose cases broke printed nothing and read as clean.
 
 ## 5. Judging, And When It Costs You Something
 
-`debug-cases-on-demand` passes `--judge-on-failure` and the gate never does.
+`debug-cases-on-demand` passes `--judge-on-failure` and no gate workflow does.
+**The gate judges a failed case too**, since 2026-11-02, while this corpus is
+in development: that is a property of the phase rather than of the flag, and
+the flag states one invocation's intent (`consumer_ci.md` section 6.3.1). An
+injection and an instruction relay are judged by nobody, the screen having
+stopped the observation first.
 
 **A failed assertion says the case did not pass. It does not say whether the
 case is wrong or the model is wrong**, and those prompt entirely different
-fixes. The rubric is what separates them, which is the whole reason to spend a
-judge request here and not in a gate.
+fixes. The rubric is what separates them, which is the whole reason the
+assessment happens at all on a case the assertions have already failed.
 
 | `mode` | Candidate quota | Judge quota |
 |---|---|---|
 | `replay` | None | None |
-| `live` | Spent | Spent, when a case fails |
+| `live` | Spent | Spent, on a failing case as well as a passing one |
 
 **Replay replays the judge too.** A failed case is judged from a stored
 judgement, and one no live run has judged reports its judgement as unavailable

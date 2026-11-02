@@ -19,11 +19,11 @@ written, and every one is recorded for all four engines.
 | `docs/testing/rtm_model.csv` | 200 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 82 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **188 cases, all passing**, each recording its numbered steps |
+| Preconditions (`CAS`, `UNI`) | **190 cases, all passing**, each recording its numbered steps |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **94 written**: 45 evaluator, 41 security, 8 tool |
-| Recorded responses | **1216 candidate responses** and **751 judgements**, complete for all four engines, the whole graded suite re-recorded live on 2026-10-30 against each of them with gemini judging and the escalated observations filled live on 2026-11-01. Replays in seconds and costs nothing |
+| Recorded responses | **1216 candidate responses** and **766 judgements**, complete for all four engines, the whole graded suite re-recorded live on 2026-10-30 against each of them with gemini judging, the escalated observations filled live on 2026-11-01 and the observations that failed an assertion filled live on 2026-11-02, once a violation failure began reaching the judge. Replays in seconds and costs nothing |
 | Model findings | **21 findings**: claude 9, openai 9, gemini 1, grok 2, in `config/findings/` with a reproduction, an expected result and an observed one. 20 reproduced on the latest run and openai's `134402` was not measured, its case skipping behind a foundation that failed. **49 were withdrawn** as ours and **12 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8). **21 of the withdrawals are from 2026-10-24**, when a screen that aborted a quote no prompt had forbidden, a rubric that failed a correct uninfluenced screening, and four missing judgements were each corrected: grok went from 8 findings to none. **Two more are from 2026-10-28**, where the same guard survived in an assertion and read a model's report of the attack as its adoption. **Three withdrawn findings reproduced again on the 2026-11-01 run** and are awaiting review, each being either an assertion that was repaired and now fires correctly or the same false positive returning |
 | Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
@@ -43,7 +43,7 @@ differs. **A replay is therefore the same test, not a reduced one.**
 | Case executions per full sweep | **344** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
 | Recorded candidate responses | **1216 candidate responses** |
-| Recorded judge responses | **751 judgements** |
+| Recorded judge responses | **766 judgements** |
 
 **Three observations per case, not one, and that is a method rather than a
 margin.** A single sample cannot distinguish a model that fails from a model
@@ -90,7 +90,7 @@ is the one thing not in question.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 1020 harness test cases, each executed once per run, and 188 preconditions pass;
+separately from what it measures. 1021 harness test cases, each executed once per run, and 190 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate

@@ -3,14 +3,15 @@
 """Unit preconditions for how a priority band's result is gated and reported.
 
 Created: 2026-10-07
-Last updated: 2026-10-21
+Last updated: 2026-11-02
 
-This file contains eight cases on the band jobs the workflows define, read through
+This file contains ten cases on the band jobs the workflows define, read through
 ``workflow_support``, and on the floor in ``tools/band_floor.py``. They check a band publishes
 its result even when red, never passes a blocking band on cases that did not run,
 releases a blocker only on a recorded dispensation, reports a skipped floor step and
-refuses an impossible floor, runs every band from the one shared definition within its
-case ceiling, and reads a command behind a local ``uses:``.
+refuses an impossible floor, hands the status its run exited with to the floor rather
+than letting the run decide the band, runs every band from the one shared definition
+within its case ceiling, and reads a command behind a local ``uses:``.
 
 **These run in the ``unit`` precondition gate**, ahead of every graded band, so a band
 that would misreport its own result is caught before it reports one. A failure is an
@@ -45,6 +46,8 @@ go and read it.
 # TestMQCFloorReporting
 #   115720  a_floor_step_skipped_on_a_red_band_is_reported
 #   115740  an_impossible_band_floor_refuses_rather_than_deciding
+# TestMQCRunReportsFloorDecides
+#   115800  a_failing_run_does_not_decide_a_band_its_floor_cleared
 # TestMQCOneBandDefinition
 #   115724  a_band_job_not_using_the_shared_definition_is_reported
 #   115725  a_band_job_above_its_case_ceiling_is_reported
@@ -62,12 +65,13 @@ import pytest
 
 from cmn.grouping import story
 
-from tools.band_floor import assess, assess_blocking
+from tools.band_floor import assess, assess_blocking, main as _band_floor
 
 from tests.cases.workflow_support import (
     jobs as _jobs,
     load as _load,
     needs as _needs,
+    band_definition_runs as _band_definition_runs,
     floor_conditions as _floor_conditions,
     run_lines as _run_lines,
     BAND_ACTION as _BAND_ACTION,
@@ -467,6 +471,89 @@ class TestMQCFloorReporting:
                 f"the band against a standard that is not a rate"
             )
             assert "floor" in message and repr(impossible) in message
+
+
+class TestMQCRunReportsFloorDecides:
+    """The step running a band reports its status, and the floor decides the band."""
+
+    @story("A run that failed hands its status to the floor instead of the job")
+    def MQC_CAS_UNI_115800_a_failing_run_does_not_decide_a_band_its_floor_cleared(
+        self, tmp_path: Path
+    ) -> None:
+        """The pytest step records its exit status, and every floor step weighs it.
+
+        **All four engine gates went red on `main` on 2026-11-02** while every
+        band was inside what it is judged by: P0 and P1 measured and passed
+        every case they selected, and the lower band printed "the band cleared
+        its floor: 68 of 69 measured passed (98.6%), 0 skipped, floor 90%"
+        underneath the job's own error line.
+
+        **A composite step cannot carry `continue-on-error`**, so the step that
+        ran the band was the step that decided it: one failing case below P1
+        exited 1 and the floor's verdict had nowhere to go. The definition's
+        comment had said the step does not gate while the step gated.
+
+        **A status the floor cannot read is still fatal**, so only the
+        graded-failure code reaches a rate. Anything else measured no model.
+
+        Design: section 3.12.2.
+
+        Args:
+            tmp_path (Path): Where the band report is written.
+
+        Returns:
+            None
+        """
+        bodies = _band_definition_runs(_repository_root())
+        running = [body for body in bodies if "pytest " in body]
+        assert len(running) == 1, (
+            f"the band definition holds {len(running)} step(s) invoking pytest, "
+            f"so which one decides the band is not a single answer"
+        )
+        assert "=$?" in running[0] and "GITHUB_ENV" in running[0], (
+            "the band definition's pytest step does not record the status it "
+            "exited with, so the step decides the band and a lower band inside "
+            "its floor still fails the job"
+        )
+
+        floors = [body for body in bodies if "band_floor" in body]
+        assert floors, "the band definition assesses no floor"
+        unweighed = [body for body in floors if "--run-status" in body]
+        assert len(unweighed) == len(floors), (
+            f"{len(floors) - len(unweighed)} floor step(s) take no run status, "
+            f"so a run that exited for a reason of ours would be averaged as a "
+            f"model that underperformed"
+        )
+
+        # THE SHAPE THE GATE REPORTED, 68 of 69 passing against a floor of 90
+        # percent. The report carries one element per case because the floor
+        # counts elements rather than the suite's attributes.
+        report = tmp_path / "junit_band.xml"
+        cases = "".join(
+            f'<testcase name="MQC_CAS_EVAL_13{index:04d}_passes"/>'
+            for index in range(68)
+        )
+        report.write_text(
+            '<?xml version="1.0"?>'
+            '<testsuites><testsuite tests="69" failures="1" errors="0" '
+            'skipped="0">'
+            f'{cases}'
+            '<testcase name="MQC_CAS_EVAL_134999_fails"><failure/></testcase>'
+            "</testsuite></testsuites>",
+            encoding="utf-8",
+        )
+
+        assert _band_floor([str(report), "--run-status=1"]) == 0, (
+            "a band whose run reported failures and whose floor cleared is red, "
+            "which is the defect this case exists for"
+        )
+
+        for status in (-1, 2, 3, 4, 5):
+            code = _band_floor([str(report), f"--run-status={status}"])
+            assert code == 4, (
+                f"a run exiting {status} returned {code}, so an instrument "
+                f"defect was weighed as a rate about the model"
+            )
 
 
 class TestMQCOneBandDefinition:

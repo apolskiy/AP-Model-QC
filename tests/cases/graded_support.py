@@ -3,7 +3,7 @@
 """Support code that dispatches and evaluates a graded case, written once for every case.
 
 Created: 2026-09-25
-Last updated: 2026-10-30
+Last updated: 2026-11-02
 
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
@@ -427,6 +427,28 @@ def judge_binding(config: Any, candidate_engine: str) -> Any:
     )
 
 
+def judging_requested(config: Any) -> bool:
+    """Return whether the run asked for a judgement on a case whose assertions failed.
+
+    The pipeline judges such a case by default while this corpus is in
+    development, so what this answers is the narrower question the result
+    records: whether the judgement was asked for by the invocation or inherited
+    from that default.
+
+    It never overrides a screen abort or a fatal failure, which withhold the
+    judge whatever a run asks for.
+
+    Design: ``consumer_ci.md`` sections 6.3 and 6.3.2.
+
+    Args:
+        config (Any): pytest's configuration.
+
+    Returns:
+        bool: True where ``--judge-on-failure`` was supplied.
+    """
+    return bool(config.getoption("--judge-on-failure"))
+
+
 # THE LAYER A RULE BELONGS TO, from its identifier's third token. The layer is
 # a property of the test and `observe` has no item, so it is derived from the
 # corpus the case comes from: one rule file per layer, which `pytest.ini`'s
@@ -696,8 +718,16 @@ def observe(
     if judge is None and case.golden_rules.rubric is not None:
         judge = judge_binding(config, config.getoption("--engine"))
 
+    # THE FLAG REACHES THE PIPELINE HERE, and until 2026-11-02 nothing carried
+    # it: it was declared, documented and recorded in the result metadata, and
+    # no caller read it, so an authoring run that named it got the default.
+    # This is the one production call site, so this line is the whole of the
+    # wiring, and `115802` holds it (harness `tier3_evaluation.md` section
+    # 4.2.0, design section 6.3.2).
     with entering(marker, 4, "ACTION", "screen, assertions and judge"):
-        result = evaluate_observation(context, judge)
+        result = evaluate_observation(
+            context, judge, judge_on_failure=judging_requested(config),
+        )
 
     # THIS OBSERVATION'S STEP, per harness `harness_test_taxonomy.md` section
     # 8.2.2: one dispatch, its action and one verification, the pipeline

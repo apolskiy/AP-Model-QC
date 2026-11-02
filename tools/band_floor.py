@@ -3,18 +3,26 @@
 """The band check, which decides from a band's JUnit XML whether that band passed.
 
 Created: 2026-10-01
-Last updated: 2026-10-21
+Last updated: 2026-11-02
 
 This file contains ``assess``, which compares a lower-priority band's pass rate
 against the project's pass floor, ``assess_blocking``, which requires a release
-blocking band to have measured and passed every case it selected, and ``main``,
-the command line both run behind. Skips are explained by cause, and a skip the
-engine's quarantine file or a recorded dispensation excuses is counted apart.
+blocking band to have measured and passed every case it selected,
+``run_status_problem``, which says whether the status the band's run reported
+leaves a rate worth reading, and ``main``, the command line they run behind.
+Skips are explained by cause, and a skip the engine's quarantine file or a
+recorded dispensation excuses is counted apart.
 
-The band composite action runs it after each band's pytest job, with
-``--blocking --engine`` for P0 and P1 and without them for the lower band. Its
-exit status is the band job's outcome, ``0`` cleared, ``1`` failed and ``4``
-refused, so it decides whether a band reads green in the run.
+The band composite action runs it after each band's pytest step, with
+``--blocking --engine`` for P0 and P1 and without them for the lower band, and
+with ``--run-status`` in every band. Its exit status is the band job's outcome,
+``0`` cleared, ``1`` failed and ``4`` refused, so it decides whether a band
+reads green in the run.
+
+**The run step reports and this tool decides**, since 2026-11-02. A composite
+action step cannot carry ``continue-on-error``, so a pytest step exiting 1
+failed the job before this tool was consulted, and all four engine gates went
+red on a lower band that had cleared its floor.
 
 Specified by ``docs/design/consumer_ci.md`` section 3.12.2.
 
@@ -60,6 +68,41 @@ _ENCODING: Final[str] = "utf-8"
 _EXIT_GREEN: Final[int] = 0
 _EXIT_BELOW_FLOOR: Final[int] = 1
 _EXIT_REFUSED: Final[int] = 4
+
+# THE STATUS A BAND'S RUN REPORTED, handed here rather than left to fail the
+# job. A composite action step cannot carry `continue-on-error`, so the step
+# running the band would otherwise decide it (section 3.12.2).
+_UNREPORTED: Final[int] = -1
+
+
+def run_status_problem(status: int) -> Optional[str]:
+    """Return why a band's run status leaves nothing to weigh, or ``None``.
+
+    **Only the graded-failure code is the floor's business.** It says cases
+    failed, which is what a rate exists to measure. Every other nonzero status
+    is an instrument defect: a collection error, a usage error, a precondition
+    that did not hold, and none of those measured a model.
+
+    Args:
+        status (int): The exit status the band's run reported, or ``-1`` where
+            it reported none.
+
+    Returns:
+        Optional[str]: The refusal to report, or ``None`` where the floor
+        decides.
+    """
+    if status == _UNREPORTED:
+        return (
+            "the band's run reported no exit status, so whether it ran at all "
+            "is unknown and no rate from its report is a statement about the model"
+        )
+    if status in (_EXIT_GREEN, _EXIT_BELOW_FLOOR):
+        return None
+    return (
+        f"the band's run exited {status}, which is neither a clean run nor the "
+        f"graded-failure code, so it is an instrument defect rather than a "
+        f"model that underperformed"
+    )
 
 
 def _counts(report: Path) -> tuple[int, int, int, int]:
@@ -406,7 +449,23 @@ def main(argv: Optional[list[str]] = None) -> int:
         default="",
         help="Which engine ran, naming the quarantine file to honour",
     )
+    parser.add_argument(
+        "--run-status",
+        type=int,
+        default=_EXIT_GREEN,
+        help=(
+            "The exit status the band's run reported, which the floor weighs "
+            "rather than the job taking it; -1 where none was reported"
+        ),
+    )
     parsed = parser.parse_args(argv)
+
+    # BEFORE EITHER FLOOR, because a run that exited for a reason of ours
+    # measured no model and neither floor is a statement about one.
+    problem = run_status_problem(parsed.run_status)
+    if problem is not None:
+        logger.error("%s", problem)
+        return _EXIT_REFUSED
 
     if parsed.blocking:
         code, message = assess_blocking(

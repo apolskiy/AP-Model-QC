@@ -3,13 +3,14 @@
 """Unit preconditions for how this case set reaches the installed harness, never by path.
 
 Created: 2026-09-28
-Last updated: 2026-10-21
+Last updated: 2026-11-02
 
-This file contains nine cases. ``TestMQCHarnessLocatedByInstall`` checks no file locates
+This file contains ten cases. ``TestMQCHarnessLocatedByInstall`` checks no file locates
 harness material by directory adjacency and that the engine roster resolves from the
 installed harness and names engines. ``TestMQCOptionsReachTheHarness`` checks the
-run's fill-gaps, candidate engine and spend ceiling reach the dispatch session and judge
-channel ``graded_support`` builds, and that a single disagreement dispatches two more
+run's fill-gaps, candidate engine, spend ceiling and request for a judgement on a
+failed case reach the dispatch session, the judge channel and the pipeline call
+``graded_support`` builds and makes, and that a single disagreement dispatches two more
 observations. ``TestMQCBandFloor`` checks ``tools/band_floor.py`` judges a
 lower band against its floor, drops a skip from the denominator and refuses on an error.
 
@@ -42,6 +43,7 @@ asks which harness commit may be used, this one asks where the harness is.
 #   115206  the_candidate_engine_reaches_the_plan_the_channel_uses
 #   115207  a_single_disagreement_dispatches_two_more
 #   115208  max_spend_reaches_the_session_ceiling
+#   115802  the_judging_flag_reaches_the_pipeline_call
 # TestMQCBandFloor
 #   115203  a_lower_band_is_judged_against_the_floor
 #   115204  a_skip_leaves_the_denominator
@@ -55,7 +57,9 @@ from typing import Final
 import pytest
 
 from cmn.observations import further_observations
-from tests.cases.graded_support import dispatch_session, _channel, engine_roster
+from tests.cases.graded_support import (
+    dispatch_session, _channel, engine_roster, judging_requested,
+)
 from tools.band_floor import assess
 
 pytestmark = pytest.mark.unit
@@ -320,6 +324,64 @@ class TestMQCOptionsReachTheHarness:
         # as "no ceiling" rather than "a ceiling of nothing".
         assert dispatch_session(_Invocation({})).max_spend == 0.0
         assert dispatch_session(_Invocation({"--max-spend": 0})).max_spend == 0.0
+
+
+    def MQC_CAS_UNI_115802_the_judging_flag_reaches_the_pipeline_call(self) -> None:
+        """``--judge-on-failure`` is read from the run and passed to the pipeline.
+
+        The pipeline judges a failed case by default while this corpus is in
+        development, so what the flag decides is what the result records about
+        the run that produced a judgement: asked for, or inherited.
+
+        **The flag reached nothing until 2026-11-02.** It was registered,
+        documented, traced and recorded in ``cli_flags``, and the one call site
+        never read it, so a run naming it was judged on the default alone.
+        Both halves are asserted here, the read and the call, because a flag
+        read into a variable nobody passes is the same defect one step later.
+
+        Design: ``consumer_ci.md`` section 6.3.2.
+
+        Returns:
+            None
+        """
+        asked = judging_requested(_Invocation({"--judge-on-failure": True}))
+
+        assert asked is True, (
+            "the run asked for a judgement on a failed case and the reader "
+            "reported that it had not"
+        )
+
+        # ABSENT IS NOT ASKED FOR, which is what the result records for a
+        # judgement the development default produced rather than the flag.
+        assert judging_requested(_Invocation({})) is False
+        assert judging_requested(_Invocation({"--judge-on-failure": False})) is False
+
+        # AND THE CALL SITE ITSELF, read from the source: the flag is one
+        # keyword on one call, and nothing else here can observe it without
+        # dispatching a request.
+        calls = [
+            node for node in ast.walk(
+                ast.parse(
+                    (_root() / "tests" / "cases" / "graded_support.py").read_text(
+                        encoding="utf-8"
+                    )
+                )
+            )
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "evaluate_observation"
+        ]
+
+        assert len(calls) == 1, (
+            f"graded_support holds {len(calls)} pipeline call sites, so this "
+            f"case no longer reads the whole of the wiring"
+        )
+        assert any(
+            keyword.arg == "judge_on_failure" for keyword in calls[0].keywords
+        ), (
+            "the pipeline is called with no judging request, so an authoring "
+            "run naming the flag would be judged on the default alone"
+        )
 
 
 class TestMQCBandFloor:

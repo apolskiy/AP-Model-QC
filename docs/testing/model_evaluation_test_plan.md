@@ -75,7 +75,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0003` | An unverified harness refuses the run on main and yields an ungated run elsewhere, and an unresolvable ref refuses on any branch |
 | `MQC_REQ_CAS_CI_0004` | The resolver imports nothing from the harness, because it runs before the harness is installed and cannot ask an unverified ref to vouch for itself |
 | `MQC_REQ_CAS_CI_0005` | A debug workflow runs one test or a subset in its own jobs, yields no verdict, and takes both refs as inputs so a case can be run against a harness other than the one its branch maps to |
-| `MQC_REQ_CAS_CI_0006` | A debug run judges a failed case and the gate does not, because the rubric is what separates a wrong case from a wrong model |
+| `MQC_REQ_CAS_CI_0006` | A debug run asks for a judgement on a failed case and no gate workflow does, the rubric being what separates a wrong case from a wrong model |
 | `MQC_REQ_CAS_CI_0007` | The graded gate job replays both sides, so it needs no provider credential and the gate stays credential-free |
 | `MQC_REQ_CAS_CI_0008` | The live workflow runs the three jobs in sequence, each needing the one before it, so a red rung stops the ladder |
 | `MQC_REQ_CAS_CI_0009` | Every workflow that installs the harness takes a commit resolved in the same run, and the workflow that spends quota most of all |
@@ -325,10 +325,10 @@ Scoped in `DESIGN.md` section 7.1.
 | `MQC_REQ_MDL_MAT_0004` | Mandatory and optional sections are correctly classified from their headers |
 | `MQC_REQ_MDL_MAT_0005` | A match is reported truthfully against a bounded requirement: a candidate figure outside the bound is reported as not matching, and a figure restated to appear inside the bound is a false match |
 | `MQC_REQ_MDL_MAT_0006` | A requirement whose bound cannot be satisfied is addressed before the rest of the instruction is carried out, by an error or a clarification request rather than by computing against it |
-| `MQC_REQ_CAS_PRE_0002` | Harness files are located through the installed package and never by directory traversal to an adjacent checkout, the engine roster resolves and names engines, and a run's flags and its candidate engine reach the plan the judge channel is actually built from | consumer_ci.md section 4A |
+| `MQC_REQ_CAS_PRE_0002` | Harness files are located through the installed package and never by directory traversal to an adjacent checkout, the engine roster resolves and names engines, and a run's flags and its candidate engine reach the plan the judge channel is actually built from, the request for a judgement on a failed case reaching the pipeline call | consumer_ci.md section 4A |
 | `MQC_REQ_CAS_PRE_0003` | A deterministic assertion tests the claim a case is about and not the wording an answer happened to use, so a correct response phrased differently is not reported as a finding about the model | model_evaluation_test_plan.md section 8.13 |
 | `MQC_REQ_CAS_PRE_0004` | The graded layers run as one job per priority band per platform, named so that a red states which remedy applies, with the preconditions in a job of their own and the band outcomes carried between them | consumer_ci.md section 3.12 |
-| `MQC_REQ_CAS_PRE_0005` | A band below P1 is judged against the pass floor rather than by any failure, counts skipped cases outside the denominator, and refuses rather than scoring a band whose report carries an error | consumer_ci.md section 3.12.2 |
+| `MQC_REQ_CAS_PRE_0005` | A band below P1 is judged against the pass floor rather than by any failure, so the step that runs the band hands its exit status to the floor instead of deciding the job; the floor counts skipped cases outside the denominator, and refuses rather than scoring a band whose report carries an error or whose run exited for any reason other than a graded failure | consumer_ci.md section 3.12.2 |
 | `MQC_REQ_CAS_PRE_0006` | Every graded case binds a task and rule pair no other graded case binds, so a red names the claim that failed rather than the conjunction of four | model_evaluation_test_plan.md section 9.3.1 |
 
 ---
@@ -698,6 +698,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115005` | N | `an_inlined_excerpt_differing_from_its_fixture_is_reported` |
 | `115700` | N | `the_debug_workflow_yields_no_verdict_and_gates_nothing` |
 | `115701` | N | `only_the_debug_workflow_judges_a_failed_case` |
+| ~~`115801`~~ | | ~~`a_workflow_naming_the_retired_judging_flag_is_reported`~~. **Retired 2026-11-02**, the same day it was assigned: it asserted that no workflow names `--judge-on-failure`, and the flag is not retired (`consumer_ci.md` section 6.3). The identifier stays retired |
 | `115006` | N | `an_authored_anchor_without_an_exemplar_is_reported` |
 | `115007` | N | `a_top_exemplar_failing_its_own_assertions_is_reported` |
 | `115012` | N | `an_exemplar_at_the_pass_mark_failing_its_gates_is_reported` |
@@ -734,8 +735,9 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115418` | N | `a_live_step_without_a_spend_ceiling_is_reported` |
 | `115419` | N | `only_the_section_9_10_2_table_states_foundations` (9.10.2.3) |
 | `115784` | N | `a_shipped_rule_claiming_p0_or_p1_with_a_rubric_is_reported` (8.1.3) |
+| `115802` | P | `the_judging_flag_reaches_the_pipeline_call` |
 
-**Inventory: 49 cases, 40 negative, 9 positive, 0 boundary.**
+**Inventory: 50 cases, 40 negative, 10 positive, 0 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set

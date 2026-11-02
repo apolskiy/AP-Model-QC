@@ -721,6 +721,61 @@ already knows how to read.
 `cmn.threshold_domain.check_rate` is the harness's own predicate, so the
 override and the default cannot come to disagree about what a rate is.
 
+##### The run reports and the floor decides, which the step had to be made to allow
+
+Added 2026-11-02, after all four engine gates went red on `main` while every
+band cleared what it is judged by.
+
+**A) A single failure below P1 failed the band job, although the band's floor
+had cleared.** P0 and P1 measured and passed every case they selected, and the
+lower band's own verdict line read:
+
+```
+total: 69  executed: 69  passed: 68  failed: 1  skipped: 0
+##[error]Process completed with exit code 1.
+the band cleared its floor: 68 of 69 measured passed (98.6%), 0 skipped, floor 90%
+```
+
+**B) The step that ran the band was the step that decided it.** A composite
+action fails when any of its steps does, and **`continue-on-error` is not
+available to a composite step**, so the pytest invocation's own exit status
+reached the job before the floor was consulted. The floor step runs under
+`if: always()` and printed its verdict underneath the error, where nothing
+reads it: a composite step cannot undo a sibling's failure.
+
+**The rule is the one this section already stated, now true of the
+implementation.** A band's run reports and its floor decides, in every band:
+the run step records the status it exited with and exits 0, and the floor step
+takes that status with `--run-status` and owns the outcome.
+
+**A status the floor cannot interpret is still fatal**, which is the error
+distinction above one level out. Only the graded-failure code means what a
+floor is for, a model that underperformed; any other nonzero status is an
+instrument defect that measured no model.
+
+| The run exited | The floor does |
+|---|---|
+| 0 | Assesses the report, as before |
+| 1, the graded-failure code | Assesses the report. Failures below P1 are what the floor exists to weigh |
+| Anything else | **Refuses, exit 4**, naming the status |
+| Nothing, the status unset | **Refuses, exit 4**, because whether the band ran is unknown |
+
+**`continue-on-error` on the job's `uses:` step is the wrong answer**, and it
+is the obvious one. It would carry the floor step with it, so a band **below**
+its floor would report green, which is this section's defect read backwards.
+
+**The policy is a parameter of the floor and not a line of shell**, because a
+shell line choosing which status to swallow is a decision nothing can check.
+The definition's own comment said the step does not gate while the step gated,
+for twenty six days. `MQC_CAS_UNI_115800` calls the floor with each status and
+reads the definition's steps.
+
+**`1158xx` begins with that case.** `1157xx` holds 99 assigned identifiers and
+`115792`, retired on 2026-10-29 when the shell-shape check it belonged to was
+ruled out of this repository, so the category is full and this subject
+continues in the next one. The harness `harness_test_taxonomy.md` section 3.2.1
+is where the block is partitioned.
+
 ---
 
 #### 3.12.3 A reporting job runs after every band, and a red run is the one worth reading
@@ -1083,6 +1138,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115773` | N | `a_file_date_line_missing_or_stale_is_reported` |
 | `115774` | N | `every_code_production_code_names_is_registered` |
 | `115775` | N | `a_band_not_reading_the_precondition_record_is_reported` (3.12.1.1) |
+| `115800` | N | `a_failing_run_does_not_decide_a_band_its_floor_cleared` (3.12.2) |
 | `115776` | N | `a_graded_invocation_leaving_out_a_layer_is_reported` (4.21) |
 | `115777` | N | `a_rung_that_grades_without_naming_its_judge_is_reported` (7.7) |
 | `115782` | N | `a_graded_job_not_gated_on_the_preconditions_is_reported` (7.2.1) |
@@ -1111,7 +1167,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | `115794` | N | `a_withdrawn_finding_is_not_resolved_upstream` (9.4.9) |
 
-**Inventory: 139 cases, 99 negative, 32 positive, 8 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 140 cases, 100 negative, 32 positive, 8 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2604,12 +2660,7 @@ verdict, and those two facts together are what make that safe.
 
 ### 6.3 A debug run judges a failed case, and that is the point
 
-The gate does not judge a case whose assertions failed. Invoking a judge on a
-case that has already failed costs a request for information that changes no
-outcome, and `tier3_evaluation.md` section 4.2 makes skipping it the default for
-that reason.
-
-**Debugging is the case where the information does change something.** A failed
+**Debugging is the case where the information changes something.** A failed
 assertion says the case did not pass. It does not say whether the case is wrong
 or the model is wrong, and those prompt entirely different fixes:
 
@@ -2618,7 +2669,81 @@ or the model is wrong, and those prompt entirely different fixes:
 | Good content, failed a shape assertion | The assertion or the case is wrong |
 | Content that was poor as well | The model is wrong |
 
-So a debug run passes `--judge-on-failure`, and the gate never does.
+**So a debug run passes `--judge-on-failure`**, which is what the flag is for:
+authoring a case and debugging one. The flag is not the defaults switch, and
+harness `tier3_evaluation.md` section 4.2.0 records the day it was mistaken for
+one.
+
+#### 6.3.1 The gate judges a failed case too while these cases are in development
+
+**Changed 2026-11-02 at the project owner's ruling.** Where no injection is
+detected, the response is forwarded to the judge for assessment, and a partial
+or complete violation of the system instruction does not change that. The
+condition is that this corpus is being developed: the judge is what spots a
+failure to observe a system instruction and an inconsistent answer, and a
+scenario whose assertions have since been corrected is re-recorded rather than
+left unmeasured, which is an iterative process rather than a one-off pass.
+
+**It is not the flag, and it does not replace it.** The flag states the
+intent of one invocation and is recorded in `cli_flags`, so a run's record
+says whether its judgements were asked for or inherited; the default is a
+property of the phase the corpus is in. Harness section 4.2 carries both.
+
+**Injection and instruction relay are excluded, and structurally.** A rule
+forbidding a relay is screened as an ordinary case, so an answer repeating the
+injection aborts at the screen and reaches neither the assertions nor a judge,
+and a declared adversarial rule judged on more than its answer invokes no judge
+at all. What the default newly judges is a wording failure on an answer the
+screen passed. **Measured over the population it affects**: of the judgements
+this change added under the eight no-quote rules, none carries a phrase of the
+planted instruction in the judge prompt.
+
+**And it applies only where judging is part of the case.** A tool-only rule, a
+rule with no rubric and a case with no judge bound are deterministic, and a
+deterministic failure is not sent anywhere: `no_rubric_authored`,
+`no_judge_configured` and `unjudged` continue to say so.
+
+**The gate pays nothing for it.** `--judge-mode` follows `--mode`, so a
+replayed gate run reads a stored judgement and a judgement the store lacks is a
+`QC_HARNESS_FIXTURE_MISSING` skip. What it costs is one judge request per
+failing observation in a **live** run, accepted at the ruling.
+
+**The gaps it leaves open.** Each is a consequence of judging more, and none is
+closed by this section:
+
+| Gap | Where it bites |
+|---|---|
+| A live run's judge spend now scales with the failure count rather than with the pass count | A band failing widely costs more than the same band passing, which is the opposite of the previous shape |
+| The store gains judgements for observations whose assertions fail | A reader comparing two runs sees a score where an earlier run recorded none, and the earlier absence was a default rather than a finding |
+| A score on a failed case is diagnostic and nothing enforces that reading | Section 9.4.10 and harness section 4.1 both say the assertions gate the outcome, and a reader who takes a passing rubric for a passing case is contradicted by the verdict rather than by a check |
+| The default is a constant in the harness rather than a declaration here | Nothing in this repository states which phase the corpus is in, so the day the default tightens is a harness edit that this design learns about by being read |
+
+#### 6.3.2 The flag reaches the pipeline, and a case holds it there
+
+**A) The flag changed nothing when a run named it.** `--judge-on-failure` was
+registered, documented, traced and recorded in `cli_flags`, and the one place
+that calls the pipeline never read it, so an authoring run that passed it got
+whatever the default was. **B) Nothing here could have noticed**, because the
+only case naming the flag asserts which workflow names it, and a workflow
+naming a flag says nothing about what the run does with it.
+
+| Established by | What it covers |
+|---|---|
+| `115701` | The debug workflow names the flag and no gate workflow does |
+| `115802` | The run's request reaches the pipeline call, where judging is decided |
+
+**It is section 4.15's shape, on a second flag.** Harness
+`cmn_verdict_and_cli.md` section 7.1.0.1 records `--max-spend` as the first
+flag that reached nothing, and `MQC_CAS_UNI_115208` closed it by asserting the
+value arrives where it is enforced. The registry in
+`config/flag_coverage.yaml` says a consumer-owned flag is named by a consumer
+case, and its own comment says naming is not exercising.
+
+**So the read is a function rather than an expression inside the call.**
+`judging_requested` takes the invocation and answers whether a judgement was
+asked for, in the shape `dispatch_plan` and `dispatch_session` already use for
+the flags they carry, which is what lets a case ask the question without
+dispatching anything.
 
 ### 6.4 What a judged run spends
 
