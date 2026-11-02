@@ -3,12 +3,14 @@
 """Support code reading which corpus case each graded case observes, from the suite itself.
 
 Created: 2026-10-21
-Last updated: 2026-10-21
+Last updated: 2026-11-01
 
 This file contains ``case_rules_from_suite``, which parses every graded case module
 and returns the task and rule set each case dispatches through ``observe`` or
-``observe_repeatedly``, and ``case_families_from_suite``, which returns the
-evaluation family each case's rule set declares.
+``observe_repeatedly``, ``case_families_from_suite``, which returns the
+evaluation family each case's rule set declares, and ``mixed_population_finding``,
+which returns the first filed finding whose observations split into judged and
+unjudged.
 
 The priority agreement and family preconditions, the case index and the ticket
 tools call them, so a case is tied to its corpus entry by the call it makes rather
@@ -18,9 +20,12 @@ when that module reached the 900-line runway (harness ``code-style.md`` section 
 
 import ast
 from pathlib import Path
-from typing import Final
+from typing import Final, Optional
 
-from tests.cases.graded_support import shipped_corpus
+import yaml
+
+from tests.cases.graded_support import engine_roster, shipped_corpus
+from tools.ticket_recordings import observation_outcomes, recorded_responses
 
 # A CASE'S DISPATCH CALL, whose second and third string arguments name the task
 # and the rule set it observes. Parsed rather than matched, because a regex over
@@ -104,3 +109,51 @@ def case_families_from_suite(root: Path) -> dict[str, str]:
         for case, (_, rule_id) in case_rules_from_suite(root).items()
         if rule_id in family_by_rule
     }
+
+
+def mixed_population_finding(
+    root: Path, suite: dict[str, tuple[str, str]]
+) -> Optional[tuple[str, dict, list[int], list[int], int]]:
+    """Return the first filed finding whose observations split into judged and unjudged.
+
+    A rule authoring no rubric is passed over, its section showing no judge
+    prompt for any observation, and so is a case whose recordings cannot be
+    read.
+
+    Scanned rather than named: which case holds such a population is a property
+    of the recordings and of every gate that reads them, so a caller that names
+    one is re-pinned by each assertion repair. ``consumer_ci.md`` section
+    9.4.10 records the two that moved.
+
+    Args:
+        root (Path): This repository's root.
+        suite (dict[str, tuple[str, str]]): Each case's task and rule.
+
+    Returns:
+        Optional[tuple[str, dict, list[int], list[int], int]]: The engine, the
+        register entry, the judged indices, the unjudged indices and the
+        population measured, or None where no filed finding holds both.
+    """
+    judging = {
+        rules.rule_id for rules in shipped_corpus()[1] if rules.rubric is not None
+    }
+    for engine in engine_roster():
+        register_path = root / "config" / "findings" / f"{engine}.yaml"
+        if not register_path.exists():
+            continue
+        register = yaml.safe_load(register_path.read_text(encoding="utf-8")) or {}
+        for item in register.get("findings") or []:
+            pair = suite.get(item.get("case", ""))
+            if not pair or pair[1] not in judging:
+                continue
+            try:
+                outcomes = observation_outcomes(
+                    *pair, recorded_responses(root, engine, *pair),
+                )
+            except (FileNotFoundError, KeyError, ValueError, StopIteration):
+                continue
+            judged = [index for index, passed, _ in outcomes if passed]
+            unjudged = [index for index, passed, _ in outcomes if not passed]
+            if judged and unjudged:
+                return (engine, item, judged, unjudged, len(outcomes))
+    return None

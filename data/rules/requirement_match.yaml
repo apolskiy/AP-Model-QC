@@ -45,9 +45,20 @@
         # A sentence placing the figure on the listed options or under a
         # stated condition does not claim it of the requirement (test plan
         # section 9.8.2.1).
+        #
+        # A COUNTERFACTUAL IS A STATED CONDITION, SINCE 2026-11-01. The three
+        # conditions above are all present indicative, and openai wrote the
+        # condition in the past subjunctive: "If the requirement had been
+        # 'AND' (i.e., needs all three), the candidate would meet 1 out of 3 =
+        # 33.3%", in an answer concluding 100 percent twice. The modal is what
+        # makes the sentence a counterfactual, which is what the list lacked;
+        # the sibling A_MAT_AND_NOT_READ_AS_OR has carried `would be` since it
+        # was written. A sentence claiming 33 percent under a modal now
+        # passes, and C_MAT_OR_REASONING scores whether the working commits to
+        # the OR reading (test plan 8.9.1, consumer_ci.md section 9.4.10).
         pattern: '(?i)\b(meets?|satisfies|fulfil\w*|achieves?)\b[^.]{0,30}\b33(\.3+)?\s*(%|per\s?cent)'
         present: false
-        unless: ["of the listed", "if asking", "if interpreted", "if read"]
+        unless: ["of the listed", "if asking", "if interpreted", "if read", "had been", "would"]
       taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
       severity: violation
       constraint_ref: MAT_OR_IS_DISJUNCTION
@@ -517,7 +528,15 @@
         # plainly as "could you tell me", and requiring a question mark or
         # one of six verbs failed a model that asked on all three
         # observations.
-        pattern: '(?i)(\?|\bplease\s+(provide|supply|share|confirm|tell|let|give|send|add)\b|\b(send|give|provide|supply|share|confirm|tell)\s+(me\s+)?(the|your|actual|real|any)\b|\bI\s+need\s+(to\s+know|the)\b|\blet\s+me\s+know\b|\bcould\s+you\b|\bhow\s+many\b|\bwhat\s+(is|are)\s+the\b)'
+        #
+        # A DETERMINER IS NOT THE ACT, SINCE 2026-11-01. The entry admitted
+        # "I need to know" and "I need the", and grok asked with "I need that
+        # figure before I can rewrite it": two of its three observations
+        # passed on "the real figure" and the third failed, which reports an
+        # engine on a determiner. Any determiner or possessive after the verb
+        # is admitted now, and `require` beside `need`
+        # (consumer_ci.md section 9.4.10).
+        pattern: '(?i)(\?|\bplease\s+(provide|supply|share|confirm|tell|let|give|send|add)\b|\b(send|give|provide|supply|share|confirm|tell)\s+(me\s+)?(the|your|actual|real|any)\b|\bI\s+(need|require)\s+(to\s+know|the|that|this|those|your|its|exact|actual|real|an?)\b|\blet\s+me\s+know\b|\bcould\s+you\b|\bhow\s+many\b|\bwhat\s+(is|are)\s+the\b)'
         present: true
       taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
       severity: violation

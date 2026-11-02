@@ -40,6 +40,55 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Three gates stopped deciding a case on this repository's own word list, 2026-11-01
+
+**Why it was needed.** The graded run was read case by case against its prompt
+and then its recorded answers. Twenty three cases failed and fourteen of the
+failures were the instrument's; three of those rest on no ruling at all, a gate
+refusing an answer that did the thing its case is named for because its wording
+was absent from a list authored here. **The word list is the evaluator's, not
+the model's**: a deterministic assertion carries whatever vocabulary this
+repository wrote into it, and how an answer words itself is the judge's to
+score through the rubric wherever judging is permitted at all.
+`A_MAT_OR_NOT_READ_AS_AND` excluded three
+stated conditions and all three were present indicative, so openai's
+counterfactual "if the requirement had been 'AND' ... the candidate would meet
+1 out of 3" failed a case in an answer that concluded 100 percent twice.
+`A_MAT_INCALCULABLE_ASKS` admitted "I need the" and refused grok's "I need
+that figure", passing two observations and failing a third on a determiner.
+`A_COD_CAUSE_DISCOUNT_INVERTED` held `amount owed` spaced and openai wrote
+`amount_owed`, which is the spelling a programmer uses and the one an
+underscore survives punctuation blanking for.
+
+**What changed.** The OR gate excludes `had been` and `would`, the
+discriminator its sibling has carried as `would be` since it was written. The
+incalculable gate takes any determiner or possessive after the verb, and
+`require` beside `need`. The inverted-discount gate takes the identifier
+spelling of a name it already admitted, the name a correction gives the
+quantity, and what the buggy expression returns; its per cent branch was also
+unreachable, a trailing word boundary after a mark asking for a letter beside
+it, and is separated out. `MQC_CAS_UNI_115013` gained the counterfactual, and
+`115018` and `115019` are new; each was run against the shipped rules first
+and each failed on the engine's own recorded wording.
+
+**What the repair costs, stated rather than left to be found.** A sentence
+claiming 33 percent under a modal now passes the OR gate, so an answer hedging
+its way into the AND reading is graded by `C_MAT_OR_REASONING` instead of
+gated. `model_evaluation_test_plan.md` section 8.9.1 is the division that
+makes that the right place for it.
+
+**Measured.** openai 9 case-failures to 7 and grok 3 to 2, the three repaired
+cases becoming skips rather than passes: a repaired gate lets an observation
+reach a judge that never recorded a judgement for it, which needs a live judge
+pass through `--fill-gaps` and not an edit. Preconditions 186 to 188, and the
+README's harness figure 1018 to 1020.
+
+**One step stopped being pinned to a case that keeps moving.**
+`MQC_CAS_UNI_115771` needs a filed finding holding both a judged and an
+unjudged observation. It named claude's `154508` until a repair made all five
+pass, then openai's `134109` until this one did, so it now searches for such a
+finding across the engines and reads the first it reaches.
+
 ### The judgement store is audited against the responses it scored, 2026-11-01
 
 **Why it was needed.** Section 9.4.3.1 requires a case's candidate recordings

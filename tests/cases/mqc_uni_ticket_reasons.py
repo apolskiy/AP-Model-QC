@@ -57,7 +57,7 @@ from cmn.case_steps import step
 from cmn.grouping import story
 
 from tests.cases.graded_support import case_for, engine_roster
-from tests.cases.suite_support import case_rules_from_suite
+from tests.cases.suite_support import case_rules_from_suite, mixed_population_finding
 from tools.ticket_report import (
     _issue_sentence,
     expected_block,
@@ -71,7 +71,6 @@ from tools.ticket_reasons import failure_reasons, rule_lines
 from tools.ticket_recordings import (
     judge_prompts,
     observation_outcomes,
-    recorded_responses,
 )
 
 pytestmark = pytest.mark.unit
@@ -382,38 +381,43 @@ class TestMQCTicketReasons:
         # observation's checks failed: it was asserting the prompt of a stale
         # judgement, which is the defect `115796` now guards. Which observation
         # is judged is a property of the recordings and moves with them.
-        # AND THE CASE BY WHAT IT HOLDS, since 2026-10-30. This step read
-        # claude's `154508`, whose five answers all pass their checks once the
-        # quotation clause is withdrawn (harness `tier3_evaluation.md` section
-        # 5.1.1), so it held no unjudged observation to assert about. The
-        # property needs a finding whose rule authors a rubric and some of
-        # whose observations a check failed, so one carries a judge prompt and
-        # another carries none. openai's `134109` is that, and the cause
-        # analysis it fails reads the same either side of this change.
+        # AND THE CASE IS SEARCHED FOR, NEVER NAMED, since 2026-11-01. Naming
+        # one moved twice: claude's `154508` stopped holding an unjudged
+        # observation when the quotation clause was withdrawn, and openai's
+        # `134109` stopped holding one when the cause gate was widened to admit
+        # the identifier spelling (`consumer_ci.md` section 9.4.10). **Which
+        # case holds a mixed population is a property of the recordings and of
+        # every gate that reads them**, so each assertion repair re-pins a step
+        # that names one. Nine findings across three engines hold such a
+        # population when this was written, and the first the scan reaches is
+        # the one read.
+        #
+        # A RULE AUTHORING NO RUBRIC IS SKIPPED, because its section shows no
+        # judge prompt for any observation and the property is about which of
+        # them shows one. openai's `134303` is the first mixed finding the scan
+        # reaches and is exactly that case.
         step(3, "read a filed section holding a judged observation and an unjudged one")
-        causes = ("MQC_TASK_cod_settlement_causes", "MQC_RULE_cod_settlement_causes")
-        register = yaml.safe_load(
-            (_ROOT / "config" / "findings" / "openai.yaml").read_text(encoding="utf-8"))
-        entry = next(item for item in register["findings"]
-                     if item["case"].startswith("MQC_EVL_EVAL_134109_"))
+        suite = case_rules_from_suite(_ROOT)
+        selected = mixed_population_finding(_ROOT, suite)
+        assert selected is not None, (
+            "no filed finding holds both a judged and an unjudged observation, "
+            "so this step has no recorded section to read the property from"
+        )
+        found_on, entry, judged, unjudged, measured = selected
         section = "\n".join(finding_section(
-            _ROOT, "openai", entry, case_rules_from_suite(_ROOT), load_tasks(_ROOT)))
-        outcomes = observation_outcomes(
-            *causes, recorded_responses(_ROOT, "openai", *causes),
+            _ROOT, found_on, entry, suite, load_tasks(_ROOT)))
+        headings = [
+            f"<summary>Judge prompt, observation {index + 1} of {measured}</summary>"
+            for index in (judged[0], unjudged[0])
+        ]
+        assert headings[0] in section, (
+            f"a judged observation shows no judge prompt, on {found_on} "
+            f"{entry.get('case')}"
         )
-        judged = [index for index, passed, _ in outcomes if passed]
-        unjudged = [index for index, passed, _ in outcomes if not passed]
-        assert judged and unjudged, (
-            "this step needs the case to hold a judged observation and an "
-            f"unjudged one, and it holds {len(judged)} and {len(unjudged)}"
+        assert headings[1] not in section, (
+            f"an observation that reached no judge shows a judge prompt it was "
+            f"never sent, on {found_on} {entry.get('case')}"
         )
-        assert f"<summary>Judge prompt, observation {judged[0] + 1} of 5</summary>" in section, (
-            "a judged observation shows no judge prompt"
-        )
-        assert (
-            f"<summary>Judge prompt, observation {unjudged[0] + 1} of 5</summary>"
-            not in section
-        ), "an observation that reached no judge shows a judge prompt it was never sent"
 
         step(6, "replay the same case and read the exchanges its run attached")
         results = tmp_path / "allure"
@@ -424,9 +428,8 @@ class TestMQCTicketReasons:
             cwd=_ROOT, capture_output=True, text=True, check=False, timeout=300,
             stdin=subprocess.DEVNULL,
         )
-        attached = [json.loads(path.read_text(encoding="utf-8"))
-                    for path in results.glob("*-attachment.json")]
-        exchanges = [body for body in attached
+        exchanges = [body for body in (json.loads(path.read_text(encoding="utf-8"))
+                                       for path in results.glob("*-attachment.json"))
                      if isinstance(body, dict) and "exchanges" in body
                      and "154508" in str(body.get("case_id"))]
         assert exchanges and any(

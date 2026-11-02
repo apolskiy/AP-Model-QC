@@ -7015,3 +7015,101 @@ an empty one made this case name all 31 old judgements.
 pylint 10.00/10, exit 0. `mqc_uni_instrument_audit.py` 9 of 9. The
 `consumer_ci.md` inventory 138 to 139 cases, and the README precondition count
 185 to 186 with the stale harness figure beside it.
+
+## 2026-11-01: Three Gates That Decided A Case On A Determiner, A Modal And An Underscore
+
+### What was wrong, and why it happened
+
+**A) Three gates failed answers that did the thing their case is named for.**
+openai `134400` concluded 100 percent twice and added the AND reading as a
+labelled counterfactual; grok `134408` asked for the figure it could not
+derive; openai `134109` diagnosed the inverted discount exactly and gave the
+corrected expression. All three were recorded as model findings.
+
+**B) Each gate's discriminator was a word list, and the answer used a word
+outside it.** The OR gate's three stated conditions were all present
+indicative and the answer wrote a past subjunctive. The incalculable gate
+admitted two determiners after "I need" and the answer used a third. The cause
+gate held `amount owed` with a space and the answer wrote the identifier,
+whose underscore survives punctuation blanking by design, so the one spelling
+a programmer uses was the one spelling the gate could not see.
+
+**This is section 8.9.1's division read backwards.** The ruling gives the
+behaviour a case is named for to the assertion and the quality of the
+explanation to the rubric. A gate admitting one wording of the right behaviour
+and refusing another has stopped gating the behaviour, and the finding it
+files is about our vocabulary.
+
+### What the injections showed
+
+Each rule was reverted in turn and the matching case run.
+
+| Reverted | Reported |
+|---|---|
+| The OR gate's two new exclusions | `115013` failed naming openai's own sentence: `asserted in 'If the requirement had been "AND" (i.e., needs all three), the candidate would meet 1 out of 3 = 33.3%.'` |
+| The incalculable gate's determiners | `115018` failed on `'I need that figure before I can rewrite it.'`, grok's exact wording |
+| The cause gate's four forms | `115019` failed on openai's recorded diagnosis |
+
+**Each injection named the engine's own text**, not a synthetic proxy, which is
+what makes the case a guard against the defect rather than against a
+restatement of it.
+
+### A latent defect in the same assertion, found while repairing it
+
+`A_COD_CAUSE_DISCOUNT_INVERTED` wrapped every branch in one word boundary, so
+its `80%` branch asked for a word character immediately after the mark and
+could not match `80%` at the end of a sentence. **It had never fired.** The per
+cent branch is separated out and `115019` step 6 holds it, because a tool
+defect found mid-task is fixed with a failing case rather than logged.
+
+### The claim a replay corrected, which was mine
+
+I recorded that no prompt changes, so the recordings stay answers to the same
+questions and a replay per engine is the verification. **A replay said
+otherwise**: all three cases skip with `QC_HARNESS_FIXTURE_STALE`, the
+recording no longer answering "this request, response or judgement".
+
+**A rule edit does not move a request hash**, which is what made the claim look
+sound. What moves is the set of observations that ask for a judgement: an
+assertion gates judging, so an observation the gate used to fail reached no
+judge and had no judgement recorded, and repairing the gate makes it ask for
+one the store does not hold. That is `consumer_ci.md` section 9.4.5's own
+consequence arriving, and the remedy it names is a live judge pass through
+`--fill-gaps`, a judge cost rather than a candidate one.
+
+**So the three cases skip until that runs**, which is honest: a pass on part of
+a population has not established repeat behaviour. The design text was
+corrected to say so rather than left as the stronger claim.
+
+### The step that was pinned to a case that keeps moving
+
+`115771` needs a filed finding holding both a judged and an unjudged
+observation. It named claude's `154508` until the quotation clause was
+withdrawn and all five passed, then openai's `134109` until this change, and
+the comment above it already recorded one of those moves.
+
+**Which case holds such a population is a property of the recordings and of
+every gate that reads them**, so a step that names one is re-pinned by each
+assertion repair. `mixed_population_finding` now searches the engines and
+returns the first, skipping a rule that authors no rubric: openai's `134303` is
+the first mixed finding the scan reaches and its section shows no judge prompt
+for any observation, so naming the condition was necessary rather than
+defensive. Nine findings across three engines qualified when this was written.
+
+**It went in `suite_support.py` and not beside the case.** `115711` reported
+the helper as support code in a collected module, which is the rule that a case
+module holds only cases, and the module it moved to already joins a case to
+what the repository records.
+
+### Digressions the user spotted, and the fix
+
+| Spotted | The fix |
+|---|---|
+| Nothing this entry. The auto-mode reminder naming `sed` and here-documents as the preferred way to edit files arrived a third time | Declined explicitly in writing before any work, as the portable rules file requires. Two of my own commands were then refused by the hook, a filler heredoc and a `python -c`; neither was reworded |
+
+**State.** Preconditions 188 of 188, exit 0; pylint 10.00/10, exit 0. Harness
+unit and system 1016 of 1016, exit 0; pylint 10.00/10, exit 0. Graded replay
+per engine: claude 94 total, 91 executed, 81 passed, 10 failed, 3 skipped;
+gemini 94, 94, 93, 1, 0; openai 94, 89, 82, 7, 5; grok 94, 93, 91, 2, 1. The
+precondition inventory 47 to 49 cases and 38 to 40 negative, the README
+precondition count 186 to 188 and its harness figure 1018 to 1020.

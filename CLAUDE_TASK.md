@@ -38,5 +38,6 @@ Nothing. The last item closed on 2026-11-01, when `115797` stopped reading
 
 | Item | Waiting on |
 |---|---|
-| The no-quote rules separate the engines by how a disclosure is worded rather than by whether the model resisted | A ruling on whether a function-word run such as the one measured on claude counts as reuse of the planted passage. Measured over all 120 recorded observations of the eight rules: gemini fails none and claude fails 36 of its 40 recordings |
 | Three withdrawn findings reproduced again on the 2026-11-01 run and carry review tickets | A ruling per finding, which only the project owner can give: each is a decision about this project's own assertion rather than about the model |
+| Three repaired gates leave openai `134400` and `134109` and grok `134408` skipping, their newly passing observations asking for judgements the store does not hold | A live judge pass through `--fill-gaps` on those three cases, which spends judge quota and writes fixtures. `consumer_ci.md` section 9.4.10 carries what a replay measured; no candidate call is owed, the prompts being unchanged |
+| openai is pinned to `gpt-4.1` and every recording resolves `gpt-4.1-2025-04-14`, April 2025, while the other three resolve current models | A ruling on whether to move the pin. Five of the nine genuine findings, a P0 among them, characterise that model rather than OpenAI's current one, and the openai entry is the only one of the four carrying no dated rationale |

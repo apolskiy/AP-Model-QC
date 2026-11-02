@@ -756,7 +756,22 @@
         # VOCABULARY ONLY. The adjacency branch required a verb within 40
         # characters of `discount` and a contrast word 40 beyond it, which is
         # one sentence shape out of many that state the same fact.
-        pattern: '(?i)\b(100\s*-\s*discount|1\s*-\s*discount|80\s*%|remaining|remainder|amount\s+(owed|due|payable)|discounted\s+(subtotal|price|total))\b'
+        #
+        # THE IDENTIFIER SPELLING, SINCE 2026-11-01. The list held `amount
+        # owed` with a space and openai wrote `amount_owed`, which is the one
+        # spelling a programmer uses: an underscore inside an identifier
+        # survives punctuation blanking by design (harness
+        # tier3_evaluation.md section 5.1.1), so the gate refused a diagnosis
+        # that named the cause exactly and gave the corrected expression.
+        # Three forms join it, each naming something only a correct answer
+        # contains: the identifier spelling of a name already admitted, the
+        # name a correction gives the quantity, and what the buggy expression
+        # returns (consumer_ci.md section 9.4.10).
+        #
+        # THE PER CENT BRANCH WAS UNREACHABLE and is separated out. A
+        # trailing \b after `%` asks for a word character next to a mark, so
+        # `80%` matched only where a letter followed it immediately.
+        pattern: '(?i)(\b(100\s*-\s*discount|1\s*-\s*discount|remaining|remainder|amount[_\s]+(owed|due|payable)|discount[_\s]+(amount|value)|discounted\s+(subtotal|price|total)|(gives|returns|computes|yields|produces)\s+(only\s+)?the\s+discount)\b|\b80\s*%)'
         present: true
       taxonomy_code: QC_LLM_DEFECT_MISSED
       severity: violation

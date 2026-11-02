@@ -3806,6 +3806,152 @@ reached resolution is part of its history.
 before it was corrected, which is what section 9.4.7.1's own case did for the
 hold.
 
+### 9.4.10 Three more assertions repaired, each a vocabulary standing in for a judgement
+
+Added 2026-11-01, after the graded run was read case by case against its
+prompt and then its recorded answers. **Twenty three cases failed and fourteen
+of the failures were the instrument's.** Three of those fourteen rest on no
+ruling at all: a gate refused an answer that did the thing its case is named
+for, because its wording was absent from a list this repository authored.
+
+| Assertion | Refused | What the answer did |
+|---|---|---|
+| `A_MAT_OR_NOT_READ_AS_AND` | openai `134400`, observation 2 | Concluded 100 percent twice, then named the AND reading under "if the requirement had been" |
+| `A_MAT_INCALCULABLE_ASKS` | grok `134408`, observation 2 | Asked for the figure, as "I need that figure before I can rewrite it" |
+| `A_COD_CAUSE_DISCOUNT_INVERTED` | openai `134109`, observation 1 | Diagnosed the cause and wrote the corrected expression, in its own words |
+
+**This is test plan section 8.9.1's division read the wrong way round.** That
+ruling gives the behaviour a case is named for to the assertion and the quality
+of the explanation to the rubric. A gate that admits one wording of the right
+behaviour and refuses another has stopped gating the behaviour and started
+gating the vocabulary, and the finding it files is about this repository.
+
+**The vocabulary is the evaluator's, which is what makes it ours to answer
+for.** An answer does not pick from a list; a deterministic assertion carries
+whatever wording this repository wrote into it, and what the answer wrote is
+read by the judge against the rubric. **That division presupposes a judge is
+permitted to read it**, and on these two corpora one is: neither
+`requirement_match` nor `code_comprehension` declares adversarial content or
+forbids a relay, and both author rubrics, so nothing bars judging. Where an
+injection attempt is in play the judge may be barred, by a screen abort or by a
+rule forbidding the relay, and then no rubric reads the wording at all. The
+test plan's section 9.10.7.3.1 rules on a word combination under exactly that
+condition and rules the other way, for that reason.
+
+#### A counterfactual is a stated condition, which the test plan already decided
+
+`A_MAT_OR_NOT_READ_AS_AND` excludes a sentence putting 33 percent under a
+stated condition, which is test plan section 9.8.2.1. Its exclusions held
+three conditional forms and all three were present indicative; openai wrote
+the condition in the past subjunctive:
+
+> If the requirement had been "AND" (i.e., needs all three), the candidate
+> would meet 1 out of 3 = 33.3%.
+
+**The modal is what makes the sentence a counterfactual**, and the modal is
+what the list lacked. `had been` and `would` join it, the second being the
+discriminator the sibling `A_MAT_AND_NOT_READ_AS_OR` has carried as `would be`
+since it was written.
+
+**The cost is stated rather than left to be found.** Any sentence claiming 33
+percent under a modal now passes this gate, so an answer hedging its way into
+the AND reading does not fail here. Section 8.9.1 of the test plan puts that
+answer with `C_MAT_OR_REASONING`, which scores whether the working commits to
+the OR reading, and a hedge committing to nothing is what a rubric reads
+better than a pattern.
+
+#### A determiner is not the act of asking
+
+`A_MAT_INCALCULABLE_ASKS` admitted "I need to know" and "I need the". grok
+asked with "I need that figure before I can rewrite it", and **two of its
+three observations passed on "the real figure" while the third failed on "that
+figure"**, which reports an engine on a determiner.
+
+The entry now takes any determiner or possessive after the verb, and
+`require` beside `need`.
+
+#### A diagnosis read as a vocabulary, for the fourth time
+
+`A_COD_CAUSE_DISCOUNT_INVERTED` is a word list for a diagnosis, which the
+comment above it states in those words. openai diagnosed cause A exactly and
+matched none of the list:
+
+> gives the discount value itself (e.g. 100 * 20 / 100 = 20) ... rather than
+> subtracting discount and coupons from the total
+
+and wrote the corrected expression as
+`amount_owed = total_amount - discount_amount - coupon_sum`.
+
+**The list held `amount owed` with a space and the answer wrote
+`amount_owed`.** An underscore inside an identifier survives punctuation
+blanking by design, per the harness `tier3_evaluation.md` section 5.1.1, so
+the one spelling a programmer uses was the one spelling the gate could not
+see.
+
+Four forms join it, and each names something only a correct answer contains:
+
+| Added | Matches |
+|---|---|
+| The identifier spelling of a name already admitted | `amount_owed`, `amount_due` |
+| The name a correction gives the quantity | `discount_amount`, `discount value` |
+| The corrected subtraction | `total_amount -`, the buggy line multiplying instead |
+| Naming what the expression returns | "gives the discount", "returns only the discount" |
+
+**`A_MAT_INCALCULABLE_NAMES_PENALTY` was retired for this shape on
+2026-10-15** after three widenings, and `model_open_questions.md` section 2A
+records the answer as no: a keyword list for an explanation does not belong in
+an assertion. **The three cause gates are kept by the same ruling**, because
+what they assert is the cause found rather than how it was explained, so this
+is a widening of a construction the project judged weak once and kept
+deliberately.
+
+#### Each repair carries a case that fails without it
+
+| Case | Holds |
+|---|---|
+| `115013`, extended | The past subjunctive passes the OR gate, and 33 percent claimed of the requirement still fails |
+| `115018` | Each determiner form of a request for the figure passes, and an answer asserting a figure instead still fails |
+| `115019` | The recorded diagnosis passes the cause gate, and an answer giving only the outcome still fails |
+
+#### The repair needs a live judge pass, which a replay measured rather than assumed
+
+**No prompt a model ever read changes here**, so every candidate recording
+stays an answer to the same question and no live candidate call is owed. That
+much is test plan section 9.10.7.3's reasoning applied to a gate instead of to
+a source text, and it is where the first reading of this stopped.
+
+**A replay of the three cases contradicted it.** Each one skips:
+
+```
+MQC_EVL_EVAL_134109_diagnoses_the_cause_and_not_only_the_outcome,
+QC_HARNESS_FIXTURE_STALE, the recording no longer answers this request,
+response or judgement
+```
+
+openai `134400` and `134109` and grok `134408` all report it. **This is
+section 9.4.5's own consequence arriving**: an assertion gates judging, so an
+observation a gate used to fail reached no judge and had no judgement
+recorded. Repair the gate and the observation passes, asks for a judgement,
+and the store has none that answers it.
+
+| | |
+|---|---|
+| What the repair changed | Which observations reach a judge |
+| What it did not change | Any prompt, any candidate recording |
+| What a replay can establish | That the gate now admits the answer, which `115013`, `115018` and `115019` assert directly |
+| What it cannot | The case's verdict, the judgements for the newly judged observations being absent |
+
+**So the remedy is the one section 9.4.5 already names**, a live judge pass
+through `--fill-gaps` rather than an edit, and it is a judge cost rather than a
+candidate one. Until it runs the three cases skip, which is honest: a pass on
+part of a population has not established repeat behaviour, and a skip is not a
+non-event.
+
+**The claim this corrects was mine and was stated before it was measured.**
+A rule edit does not move a request hash, which is what made "a replay is the
+verification" look sound; what moves is the set of observations that ask for a
+judgement, and nothing in the request hash can show that.
+
 ### 9.5 Filing needs three sources joined, and nothing joined them
 
 Added 2026-10-05, when filing began and the question was "which file do I open".
