@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate output provides a direct, plain prose summary without introducing any unrequested machine-readable formatting or heavy incidental structure.",
+        "rationale": "The candidate output provides a plain prose summary with no unrequested machine-readable format or incidental structure, fully satisfying the level 5 anchor.",
         "score": 5
       }
     }

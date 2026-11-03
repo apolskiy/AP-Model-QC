@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 4305,
+    "duration_ms": 5067,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 65,
     "mode": "live",
-    "output_tokens": 112,
-    "raw_reference": "n-7javCvGeywjrEP0cTRsA8",
+    "output_tokens": 119,
+    "raw_reference": "5QzpapH5LJOw1MkPkJiYyAI",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The candidate meets **50%** of the requirement.\n\n### How this was calculated:\n\n1. **Total requirements:** The position requires 2 specific skills:\n   - Docker\n   - Kubernetes\n2. **Requirements met by the candidate:** The candidate possesses 1 of the required skills:\n   - Docker (met)\n   - Kubernetes (missing)\n3. **Calculation:** \n   $$\\frac{1 \\text{ met}}{2 \\text{ required}} \\times 100 = 50\\%$$",
-    "thinking_tokens": 187,
+    "text": "The candidate meets **50%** of the requirement.\n\n### How this was calculated:\n\n1. **Total Requirements:** 2 skills  \n   * Docker  \n   * Kubernetes  \n\n2. **Requirements Met:** 1 skill  \n   * Docker (listed under \"Containers and orchestration\")  \n\n3. **Requirements Missing:** 1 skill  \n   * Kubernetes  \n\n$$\\text{Percentage Met} = \\left(\\frac{1 \\text{ met}}{2 \\text{ required}}\\right) \\times 100 = 50\\%$$",
+    "thinking_tokens": 247,
     "tool_calls": []
   }
 }

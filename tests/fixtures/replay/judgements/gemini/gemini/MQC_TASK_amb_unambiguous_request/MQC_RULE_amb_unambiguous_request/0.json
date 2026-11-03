@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_AMB_PROCEEDS_WITHOUT_ASKING": {
-        "rationale": "The model applied the requested change to alert_threshold (setting it to 90), left retry_threshold unchanged at 3, and did not ask for clarification or include any unnecessary caveats.",
+        "rationale": "The candidate applied the requested change by setting alert_threshold to 90, kept retry_threshold at 3 as specified, and did not ask unnecessary questions or add caveats.",
         "score": 5
       }
     }

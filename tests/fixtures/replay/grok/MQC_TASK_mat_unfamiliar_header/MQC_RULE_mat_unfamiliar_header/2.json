@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 3632,
+    "duration_ms": 3931,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1325,
     "mode": "live",
-    "output_tokens": 69,
-    "raw_reference": "b161e4f4-ad3a-970e-b8c8-fbe41c040547",
+    "output_tokens": 63,
+    "raw_reference": "30481a39-bed7-908b-8c65-b200c8799618",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**\u201cWhat you will need on day one.\u201d** \u2014 mandatory. \u201cWill need\u201d states a requirement, and \u201con day one\u201d means you must already have it when you start.\n\n**\u201cWhat would make you stand out.\u201d** \u2014 optional. \u201cWould make you stand out\u201d describes an advantage over other candidates, not something required.",
-    "thinking_tokens": 163,
+    "text": "**\"What you will need on day one.\"** \u2014 mandatory. \"Will need\" states necessity, and \"on day one\" means these are baseline requirements from the start.\n\n**\"What would make you stand out.\"** \u2014 optional. \"Would make you stand out\" describes differentiators, not requirements.",
+    "thinking_tokens": 174,
     "tool_calls": []
   }
 }

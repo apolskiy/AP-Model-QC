@@ -23,8 +23,8 @@ written, and every one is recorded for all four engines.
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **94 written**: 45 evaluator, 41 security, 8 tool |
-| Recorded responses | **1216 candidate responses** and **766 judgements**, complete for all four engines, the whole graded suite re-recorded live on 2026-10-30 against each of them with gemini judging, the escalated observations filled live on 2026-11-01 and the observations that failed an assertion filled live on 2026-11-02, once a violation failure began reaching the judge. Replays in seconds and costs nothing |
-| Model findings | **21 findings**: claude 9, openai 9, gemini 1, grok 2, in `config/findings/` with a reproduction, an expected result and an observed one. 20 reproduced on the latest run and openai's `134402` was not measured, its case skipping behind a foundation that failed. **49 were withdrawn** as ours and **12 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8). **21 of the withdrawals are from 2026-10-24**, when a screen that aborted a quote no prompt had forbidden, a rubric that failed a correct uninfluenced screening, and four missing judgements were each corrected: grok went from 8 findings to none. **Two more are from 2026-10-28**, where the same guard survived in an assertion and read a model's report of the attack as its adoption. **Three withdrawn findings reproduced again on the 2026-11-01 run** and are awaiting review, each being either an assertion that was repaired and now fires correctly or the same false positive returning |
+| Recorded responses | **1228 candidate responses** and **776 judgements**, complete for all four engines, with gemini judging. The whole graded suite was re-recorded live on 2026-10-30 against each of them, the escalated observations filled live on 2026-11-01, the observations that failed an assertion filled live on 2026-11-02 once a violation failure began reaching the judge, and the re-record finished on 2026-11-03: **every case on every engine now holds a recording from 2026-11-02 or later**. **Eight cases were measured live for the first time** on that last day, each having been blocked behind a foundation that failed, and all eight passed. Replays in seconds and costs nothing |
+| Model findings | **19 findings**: claude 10, openai 8, gemini 0, grok 1, in `config/findings/` with a reproduction, an expected result and an observed one. **Reconciled against the 2026-11-03 recording**, which reproduced 15 of the 21 then open, held 6 that no longer reproduce, and surfaced 4 the register did not describe: **gemini is clean for the first time**. **49 were withdrawn** as ours and **17 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8). **21 of the withdrawals are from 2026-10-24**, when a screen that aborted a quote no prompt had forbidden, a rubric that failed a correct uninfluenced screening, and four missing judgements were each corrected: grok went from 8 findings to none. **Two more are from 2026-10-28**, where the same guard survived in an assertion and read a model's report of the attack as its adoption. **Three withdrawn findings reproduced again on the 2026-11-01 run** and are awaiting review, each being either an assertion that was repaired and now fires correctly or the same false positive returning |
 | Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
 ## What Is Measured Against Each Model
@@ -42,16 +42,16 @@ differs. **A replay is therefore the same test, not a reduced one.**
 | Models measured | **4**: gemini, openai, claude, grok |
 | Case executions per full sweep | **344** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
-| Recorded candidate responses | **1216 candidate responses** |
-| Recorded judge responses | **766 judgements** |
+| Recorded candidate responses | 1228, which is 294 to 320 per engine: **a model that answers inconsistently is sampled more, so it is recorded more** |
+| Recorded judge responses | 776, which is 182 to 207 per engine: a rule that authors no rubric is judged by nobody, and an observation that fails an assertion never reaches the judge |
 
 **Three observations per case, not one, and that is a method rather than a
 margin.** A single sample cannot distinguish a model that fails from a model
 that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
-**14 of the 21 findings carry a disagreement population**: the model answered
+**14 of the 19 findings carry a disagreement population**: the model answered
 the same question two ways, so a single-sample run could have drawn the passing
-answer and reported nothing. Only **5 are classified as inconsistency**, because
+answer and reported nothing. Only **3 are classified as inconsistency**, because
 a finding is named by the most critical thing that fired: a model that obeyed an
 injected instruction on two of five attempts is an injection finding that
 happens to be intermittent, not an inconsistency finding.
@@ -62,9 +62,28 @@ happens to be intermittent, not an inconsistency finding.
 |---|---|---|
 | Where the response comes from | The provider's endpoint | `tests/fixtures/replay/` |
 | Cases collected | 94 per model | 94 per model |
-| Cost | Real. Grok's full recording ran 25 minutes for about **$0.22** | **Nothing** |
+| Cost | Real, and measured per engine over every observation a full run dispatches: about **$0.55** on openai, **$0.71** on gemini, **$1.25** on grok and **$3.37** on claude, or **$5.87** for all four | **Nothing** |
 | What it establishes | How the model behaves **now** | That a finding still reproduces from the evidence |
 | Credential needed | Yes | **None** |
+
+**What those figures are.** Each is the candidate's own bill, priced from the
+token counts the provider reported for every stored observation, plus the
+judge's bill estimated from the stored prompt and reply at four characters per
+token. The judge costs between $0.12 and $0.17 whichever engine is measured,
+because gemini judges every run. Claude is five times gemini because its output
+rate is 20.00 per million tokens and its thinking is billed inside that output,
+and grok's bill is dominated by input, 414,826 tokens of which 371,200 were
+served from cache.
+
+**The cheapest engine is not the cheapest to measure.** Openai and claude each
+hold 320 observations against gemini's and grok's 294, because a disagreement
+escalates a case from three samples to five: a model that answers inconsistently
+is asked more often, and the method charges for that.
+
+**A ceiling is set above the whole figure, and it counts the candidate half
+only.** `--max-spend 2.00` stopped a claude sweep on 2026-11-02 at 50 of its 94
+cases; 8.00 is the figure these measurements support, and the judge's bill sits
+outside whatever is set.
 
 **The recordings are committed**, so anyone can reproduce any finding here
 without an account with any vendor:

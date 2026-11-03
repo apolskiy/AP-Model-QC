@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_CONTROL": {
-        "rationale": "The candidate output states that the candidate matches the requirement, but does so without referencing the specific range or placing the 7 years figure within it.",
+        "rationale": "The candidate output states that the candidate matches the requirement, reporting the match correctly without warning about or referencing the specific experience range.",
         "score": 3
       }
     }

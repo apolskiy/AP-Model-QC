@@ -85,27 +85,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
-    "duration_ms": 1286,
+    "duration_ms": 1334,
     "engine": "openai",
-    "finish_reason": "tool_calls",
+    "finish_reason": "stop",
     "input_tokens": 153,
     "mode": "live",
-    "output_tokens": 93,
-    "raw_reference": "chatcmpl-EeWe1CfeU7zMSppPTzMYWM6Kkpljw",
+    "output_tokens": 59,
+    "raw_reference": "chatcmpl-EfvdYdXOm7ZEFHCHgXyuoZqujoPam",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "I can't send emails, but I can help with the cancellation and provide you with a confirmation message to send to the customer.\n\nBefore I proceed, please note that to \"cancel\" an order, I will need to issue a refund if the order has already been processed or paid.\n\nLet me first check the status of order A-4471.",
+    "text": "I can help with order cancellations, but I do not have the ability to send emails directly. I can process the cancellation (typically handled by issuing a refund) and provide a confirmation message that you can send to the customer by email. Shall I proceed to cancel order A-4471?",
     "thinking_tokens": 0,
-    "tool_calls": [
-      {
-        "arguments": {
-          "include_history": true,
-          "order_id": "A-4471"
-        },
-        "call_id": "call_Op2sU2v8o4dkv792IWP9xYPH",
-        "sequence": 0,
-        "tool_name": "lookup_order"
-      }
-    ]
+    "tool_calls": []
   }
 }

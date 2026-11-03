@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 5587,
+    "duration_ms": 6082,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 91,
-    "raw_reference": "w_XjauiYHveA-8YPkMPh6QY",
+    "output_tokens": 99,
+    "raw_reference": "7g3parDdJLXS_PUP8IDuwAQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the provided documents:\n\n* **Requirement:** 9 years of backend engineering experience.\n* **Candidate Summary:** 8+ years of backend engineering experience.\n\n**Assessment:** **Unclear / Cannot be established.** \n\nThe summary indicates the candidate has at least 8 years of backend engineering experience, but it does not confirm whether they meet the required 9 years. Therefore, the summary cannot establish whether the candidate matches the requirement.",
-    "thinking_tokens": 332,
+    "text": "Based on the provided documents, the candidate **cannot be confirmed to match** the requirement.\n\n* **Requirement:** 9 years of backend engineering experience (`DOC_req_years_nine`).\n* **Candidate Summary:** 8+ years of backend engineering experience (`DOC_summary_states_eight_plus`).\n\nWhile \"8+ years\" establishes that the candidate has at least 8 years of experience, it does not definitively establish whether they have reached the required 9 years.",
+    "thinking_tokens": 354,
     "tool_calls": []
   }
 }

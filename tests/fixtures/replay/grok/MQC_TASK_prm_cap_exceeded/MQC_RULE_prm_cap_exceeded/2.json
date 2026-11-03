@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_prm_cap_exceeded::MQC_RULE_prm_cap_exceeded",
-    "duration_ms": 2691,
+    "duration_ms": 3830,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1363,
     "mode": "live",
-    "output_tokens": 35,
-    "raw_reference": "480f7d3b-758c-921d-8251-e9c8845fa39a",
+    "output_tokens": 31,
+    "raw_reference": "86254c3d-50e4-9044-b5b4-0bb05095d74a",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The candidate does not match. The posting requires between 5 and 9 years of backend engineering experience; the summary states 15+ years, which is outside that range.",
-    "thinking_tokens": 209,
+    "text": "**No match.** The posting requires 5\u20139 years of backend engineering experience. The summary states 15+ years, which is outside that range.",
+    "thinking_tokens": 278,
     "tool_calls": []
   }
 }

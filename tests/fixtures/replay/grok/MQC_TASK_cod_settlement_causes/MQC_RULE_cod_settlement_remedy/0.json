@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1536,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 48043,
+    "duration_ms": 98219,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 415,
-    "raw_reference": "d32666c1-5ae5-914e-835d-a3e0aa97c954",
+    "output_tokens": 405,
+    "raw_reference": "479dc456-2ee2-93e4-80e9-7e21ec2b063d",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement formula treats a percentage and a currency amount as if they were the same kind of number, and it can abort or zero the charge.\n\n1. **The tier discount is applied in the wrong direction.** `discount` is a percent off (20 means 20% off), but `total_amount * discount / 100` keeps that fraction of the basket instead of removing it. On a 100 unit standard order that yields 20, which is the discount itself, not the price after discount. It should reduce the total by that percent: pay `total_amount * (100 - discount) / 100` (80 for standard, 70 for premium).\n\n2. **The coupon is subtracted from that discount figure, so the two units are combined in the wrong place.** A coupon looks up to currency and must come off the price after the percentage reduction, not off the percentage. Subtract the coupon sum from the discounted total, not from `total_amount * discount / 100`.\n\n3. **Only the first code is used.** `coupon_codes[0]` drops every later code, so `[\"SAVE20\", \"SAVE30\"]` never applies both amounts. Sum the currency value of every code in the list.\n\n4. **An unknown code aborts the sale.** A bare `coupon_lookup[...]` raises `KeyError` on `\"NOPE\"`, so one bad code prevents settlement. Skip codes that are not in the lookup (they add 0) and still return an amount owed.\n\n5. **Nothing stops a zero or negative charge.** After the bad multiply-then-subtract, a coupon can cancel the figure (0 \u2014 the product is given away) or exceed it (negative \u2014 the seller pays the buyer). The same over-subtraction remains possible once the formula is fixed, as with `SAVE90` against an 80 unit discounted total. Floor the result at 0 so the seller never owes the buyer; do not treat a coupon larger than the discounted total as a payout.",
-    "thinking_tokens": 3363,
+    "text": "The settlement math uses the tier percentage as the amount charged, reads only the first coupon, aborts on an unknown code, and can finish at or below zero.\n\n**The percentage is treated as the price, not as a reduction.** `total_amount * discount / 100` is the discount itself (20 on a 100 basket at the standard tier), and that value is then used as the amount owed. A discount is a percentage of the total, so the charge should be the total minus that percentage: `total_amount * (100 - discount) / 100` (80 here), not the discount slice.\n\n**The coupon is subtracted from that wrong base, mixing the two units.** A tier discount is a percent; a coupon lookup is a currency amount. Those are not interchangeable. Convert the percent into a currency reduction and take it off the total first, then subtract coupon currency from the remaining currency. Do not subtract the coupon from the discount amount.\n\n**Only `coupon_codes[0]` is applied.** Later codes never affect the total. Every supplied code should contribute. On the two-code call that means both 20 and 30, not just 20.\n\n**A missing code aborts the sale.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so settlement never finishes. An unrecognised code should add nothing and the rest of the settlement should still run.\n\n**The result is not bounded, so the seller can give the goods away.** After a correct 20% reduction, `SAVE90` is 90 against 80 and the current formula is even further negative (`20 - 90`). A negative amount means the customer pays nothing and the seller pays them. Coupon currency should be capped by the discounted total so the amount owed is never below zero.\n\nFor the four production calls, that is 50, 0, 80, and 30 \u2014 not -10, -70, an exception, and 0.",
+    "thinking_tokens": 5895,
     "tool_calls": []
   }
 }

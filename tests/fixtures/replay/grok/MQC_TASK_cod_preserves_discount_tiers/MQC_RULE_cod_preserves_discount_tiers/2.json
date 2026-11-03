@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
-    "duration_ms": 13780,
+    "duration_ms": 25896,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1387,
     "mode": "live",
-    "output_tokens": 225,
-    "raw_reference": "518f7622-5c29-9e36-a8ee-d6b93e6cd061",
+    "output_tokens": 291,
+    "raw_reference": "0fe8422a-6740-9bb2-b96d-d4929075d7a0",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function computes the wrong amount owed. It treats the tier percentage as the fraction to charge, and it applies only the first coupon.\n\n`DISCOUNT_BY_TIER` stores percent-off values (20 and 30), but the formula uses them as the price fraction:\n\n- It sets `discount` to 20 or 30.\n- It looks up only `coupon_codes[0]`.\n- It returns `total_amount * discount / 100 - coupon_sum`.\n\nFor a $100 standard order and a $5 coupon, that is `100 * 20 / 100 - 5 = 15`. That is the discount amount minus the coupon, not the balance due.\n\nIt should charge the undiscounted remainder and subtract every coupon:\n\n`total_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)`\n\nThe same example should be `100 * 80 / 100 - 5 = 75`. The stated rates stay 20% off for standard and 30% off for premium.",
-    "thinking_tokens": 942,
+    "text": "The function returns the wrong amount because it treats the tier rate as the fraction of the bill still owed, and it only applies the first coupon.\n\n**What it computes now**\n\n`DISCOUNT_BY_TIER` stores percent-off rates: 20 for standard, 30 for premium. The function uses that rate as if it were the share of `total_amount` the customer still pays:\n\n```text\namount_owed = total_amount * discount / 100 - coupon_lookup[coupon_codes[0]]\n```\n\nFor a $100 standard order and a $5 first coupon, that is `100 * 20 / 100 - 5 = 15`, not the balance after 20% off. It also ignores every coupon after `coupon_codes[0]`.\n\n**What it should compute**\n\nKeep the stated rates (20 and 30) as percent off. The amount owed is the total after that percent-off, minus every coupon value:\n\n```text\namount_owed = total_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)\n```\n\nSame example: `100 * (100 - 20) / 100 - 5 = 75`. Premium stays 30% off, so the same order would be `100 * 70 / 100 - 5 = 65`.",
+    "thinking_tokens": 1501,
     "tool_calls": []
   }
 }

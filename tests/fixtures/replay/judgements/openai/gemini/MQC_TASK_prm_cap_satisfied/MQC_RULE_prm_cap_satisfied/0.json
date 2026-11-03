@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_CONTROL": {
-        "rationale": "The response reports that the candidate matches the requirement, but does not reference or place the figure inside the required range.",
+        "rationale": "The candidate output reports that the candidate matches the requirement, but does so without referencing the specific range or placing the candidate's years of experience inside it.",
         "score": 3
       }
     }

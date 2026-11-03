@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_COD_NAMES_THE_CAUSE": {
-        "rationale": "The candidate correctly identifies line 2 as carrying the error and specifically names the unclosed parenthesis (missing closing parenthesis on the sorted call).",
+        "rationale": "The candidate correctly identifies line 2 as the source of the error and explicitly names the unclosed parenthesis in the sorted call.",
         "score": 5
       }
     }

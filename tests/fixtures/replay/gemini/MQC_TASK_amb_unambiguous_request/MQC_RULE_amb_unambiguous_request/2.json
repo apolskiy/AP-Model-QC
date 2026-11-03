@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
-    "duration_ms": 3143,
+    "duration_ms": 4286,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 116,
     "mode": "live",
     "output_tokens": 19,
-    "raw_reference": "U_fjaqrbEJfL_PUPgK7pyAo",
+    "raw_reference": "al_qat3rGIzf-sAP5KiFuQk",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "```yaml\nretry_threshold: 3\nalert_threshold: 90\n```",
-    "thinking_tokens": 213,
+    "thinking_tokens": 206,
     "tool_calls": []
   }
 }

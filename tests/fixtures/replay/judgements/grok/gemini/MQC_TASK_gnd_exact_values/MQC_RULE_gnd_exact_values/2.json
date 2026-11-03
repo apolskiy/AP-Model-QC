@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_GND_SUMMARY_PROPORTION": {
-        "rationale": "The response is structured into exactly three fluent sentences that carry every revenue figure from the source text while reading as a cohesive summary rather than a disjointed list.",
+        "rationale": "The response consists of exactly three well-formed sentences that incorporate all five revenue figures from the original document in a smooth, readable summary format.",
         "score": 5
       }
     }

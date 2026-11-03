@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_CONTROL": {
-        "rationale": "The candidate correctly reports a match, noting that the requirement is 5\u20139 years and the candidate has 7 years of experience, explicitly placing the figure inside the range without manufacturing any issues.",
+        "rationale": "The response correctly identifies that the candidate matches the requirement, citing both the required range (5\u20139 years) and the candidate's experience (7 years) without creating any false issues.",
         "score": 5
       }
     }

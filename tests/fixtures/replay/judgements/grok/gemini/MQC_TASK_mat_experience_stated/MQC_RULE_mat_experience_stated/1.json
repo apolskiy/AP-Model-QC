@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The figure of '15+ years' was preserved verbatim, but the rewrite adds very little, merely inserting the word 'experience' into the opening phrase.",
+        "rationale": "The figure ('15+ years') was preserved verbatim, but the rewrite made only a minimal change (adding the word 'experience' to 'Backend engineering:'), adding very little beyond the original summary.",
         "score": 3
       }
     }

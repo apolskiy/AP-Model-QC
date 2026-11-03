@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1536,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 67831,
+    "duration_ms": 89875,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 375,
-    "raw_reference": "d4571453-68fb-9823-b3b8-41ccef9f7630",
+    "output_tokens": 448,
+    "raw_reference": "a6ff01c9-57ea-9900-bcc7-3e2e0412948c",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math is wrong in four separate ways. Each one is a cause, not just a bad return value.\n\n**The tier percentage is used as the amount charged, not as a reduction.** `discount` is a percent off (20 means 20% off), but `total_amount * discount / 100` treats it as the fraction the buyer still owes. On a 100-unit standard basket that produces a 20-unit pre-coupon balance instead of 80. A discount and a coupon are different units: the percent has to be turned into a currency reduction of the total first (`total_amount * (100 - discount) / 100`), and only then can currency coupons be subtracted from that remainder.\n\n**Only the first coupon is applied.** `coupon_codes[0]` never looks at the rest of the list, so `[\"SAVE20\", \"SAVE30\"]` drops the 30. Every supplied code should be resolved and summed.\n\n**An unknown code aborts the sale.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so settlement never finishes. An unrecognised code should contribute nothing and be skipped; settlement should continue with the tier discount and any codes that do resolve.\n\n**Nothing stops the balance from hitting zero or going negative.** After the currency coupons are subtracted there is no floor, so a coupon larger than the discounted total (SAVE90 against the 80 left on a standard 100 basket) makes the seller give the goods away or pay the buyer. The amount owed should be clamped so it cannot be negative. Clamping at zero still comps the order when coupons meet or exceed the discounted total; the spec says the seller does not expect that, but it does not define a positive minimum, so the defect to fix is the missing bound rather than an invented floor.",
-    "thinking_tokens": 4710,
+    "text": "The settlement math is wrong in four ways. Each one is a cause, not just a bad return value.\n\n**The percentage is used as the amount charged.** `discount` is a percent of the basket, so `total_amount * discount / 100` is the currency taken off, not the balance due. The function then treats that reduction as `amount_owed` and subtracts the coupon from it. On a 100-unit standard order that starts from 20, not from 80. It should charge the total minus that percentage: `total_amount * (100 - discount) / 100`, and only then subtract coupons.\n\n**A currency coupon is subtracted from that percentage slice.** A tier discount and a coupon are different units. The percent has to be turned into a currency reduction of the total first. The lookup value is already currency and must come off the remaining balance, not off the discount figure.\n\n**Only the first code is applied.** `coupon_codes[0]` drops every later code, so `[\"SAVE20\", \"SAVE30\"]` never adds the second 30. It should add the currency value of every recognised code.\n\n**An unknown code aborts the sale.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so one bad code prevents any settlement. An unrecognised code should contribute nothing and the order should still settle.\n\n**The result is not bounded, so the seller can give the goods away.** After the subtractions there is no floor. With the current formula a normal `SAVE30` already goes negative, and `SAVE20` plus the mistaken 20-unit base returns 0. Even after the percentage is applied correctly, `SAVE90` is 80 \u2212 90 = \u221210, which pays the buyer to take the product. The amount owed should be the discounted total minus the sum of recognised coupons, and never below 0. The seller collects that balance; they do not owe the customer and do not hand the product over for nothing when the coupons do not actually cover a correctly discounted basket.\n\nFor the four production calls that is 50, 0, 80, and 30.",
+    "thinking_tokens": 5602,
     "tool_calls": []
   }
 }

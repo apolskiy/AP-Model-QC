@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 7856,
+    "duration_ms": 9463,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 108,
-    "raw_reference": "c62a49b3-8d0c-90f2-b189-23d0ca32a856",
+    "output_tokens": 129,
+    "raw_reference": "4b17de0f-569b-97b7-b002-7074d474e3fc",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Give every code an absolute expiry and refuse redemption once that time has passed. A relative TTL alone is not enforceable at lookup time unless the issue time is stored with it.\n\nThe lookup must carry the discount value and an expiration timestamp (or a validity window: `valid_from` and `valid_until`). `settle_order` should read that record, compare it to the current time, and apply the value only if the code is still inside the window. A map from code to a bare number cannot express or enforce a lifetime.",
-    "thinking_tokens": 502,
+    "text": "Give every code an absolute validity window, and stop treating the lookup as a bare amount.\n\nStore each code as a record the lookup returns, not a number: at least the discount value plus `valid_from` and `expires_at` (or `issued_at` plus a fixed TTL, if you prefer relative lifetime). Redemption is allowed only when `valid_from <= now < expires_at`. Without those fields on the lookup result, expiry cannot be enforced at settle time\u2014the current `coupon_lookup[code] -> amount` shape has nowhere to put a bound, so every issued code stays redeemable forever.",
+    "thinking_tokens": 473,
     "tool_calls": []
   }
 }

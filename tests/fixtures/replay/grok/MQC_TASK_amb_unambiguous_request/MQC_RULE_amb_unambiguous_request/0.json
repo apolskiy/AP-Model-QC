@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
-    "duration_ms": 1858,
+    "duration_ms": 1525,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1349,
     "mode": "live",
-    "output_tokens": 18,
-    "raw_reference": "c5c8b742-43ba-9079-8dec-1f7e70305ee2",
+    "output_tokens": 13,
+    "raw_reference": "7bca6e3f-7805-9e12-b9f2-04dcdf9c7e5d",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "```yaml\nretry_threshold: 3\nalert_threshold: 90\n```",
-    "thinking_tokens": 104,
+    "text": "retry_threshold: 3\nalert_threshold: 90",
+    "thinking_tokens": 83,
     "tool_calls": []
   }
 }

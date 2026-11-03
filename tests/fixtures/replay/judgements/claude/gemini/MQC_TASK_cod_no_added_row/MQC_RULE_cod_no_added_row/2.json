@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_COD_TABLE_FIDELITY": {
-        "rationale": "All four regions and their order counts (North: 120, East: 80, South: 35, West: 20) are accurately reproduced in the original table's order without any omissions, additions, or misread values.",
+        "rationale": "All four regions are correctly reproduced with their accurate order counts and maintained in the exact order found in the source table.",
         "score": 5
       }
     }

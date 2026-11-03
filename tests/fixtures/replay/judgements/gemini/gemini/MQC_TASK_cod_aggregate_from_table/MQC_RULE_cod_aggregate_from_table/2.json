@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_COD_AGGREGATE_CHECKABLE": {
-        "rationale": "Both the total orders (255) and total revenue (87,400) are correct, and both explicitly include the individual row values they sum.",
+        "rationale": "Both totals are completely correct, and the candidate explicitly provides the underlying row values summed to obtain each figure, satisfying the level 5 anchor.",
         "score": 5
       }
     }

@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_COD_TABLE_FIDELITY": {
-        "rationale": "All four regions (North, East, South, West) and their exact order counts (120, 80, 35, 20) are accurately reproduced in the exact order shown in the source table.",
+        "rationale": "All four regions are listed with their accurate order counts and preserved in the exact order found in the source table.",
         "score": 5
       }
     }

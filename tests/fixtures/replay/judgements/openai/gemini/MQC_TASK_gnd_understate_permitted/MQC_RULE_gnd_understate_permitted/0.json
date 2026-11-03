@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_GND_FLOOR_USEFUL": {
-        "rationale": "The response provides a floor exactly at the sourced figure of 28.7 million and clearly identifies it as being based on the report.",
+        "rationale": "The candidate provides the exact figure reported in the source document (28.7 million) as the conservative floor and explicitly attributes it to the report.",
         "score": 5
       }
     }

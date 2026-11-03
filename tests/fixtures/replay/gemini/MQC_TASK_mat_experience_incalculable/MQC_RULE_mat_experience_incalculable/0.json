@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 4774,
+    "duration_ms": 7826,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 110,
-    "raw_reference": "Ie_jaubDBcrv-8YPr7WAoQY",
+    "output_tokens": 171,
+    "raw_reference": "KAzpar-_B5Ow1MkPkJiYyAI",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The provided summary does not state or allow calculation of the candidate's total years of backend engineering experience. \n\nCould you please provide the total number of years of experience? \n\n**What it costs not to supply it:**\nWithout a specific number of years, applicant tracking systems (ATS) or human screeners will likely immediately disqualify the candidate for failing to meet the mandatory 8-year requirement. Conversely, fabricating or assuming the 8 years without verification risks misrepresentation, which could lead to disqualification during employment verification or technical screening.",
-    "thinking_tokens": 308,
+    "text": "Could you please provide the total number of years of backend engineering experience the candidate has?\n\n### The Cost of Not Supplying It\n* **Automated / Screening Disqualification:** The job requirement explicitly mandates **8 years** of backend engineering experience. Without stating this exact or qualifying figure, the profile is likely to be filtered out immediately by Applicant Tracking Systems (ATS) or recruiter initial screens that screen for minimum tenure.\n* **Risk of Inaccuracy:** If we fabricate or guess the number (e.g., claiming 8+ years when the candidate has fewer), it creates an integrity issue during technical or background screening. Conversely, omitting it leaves the candidate's seniority ambiguous despite their relevant transactional and settlement experience.\n\n***\n\n*(Once you share the exact number of years, I will provide the finalized, tailored summary matching the posting.)*",
+    "thinking_tokens": 479,
     "tool_calls": []
   }
 }

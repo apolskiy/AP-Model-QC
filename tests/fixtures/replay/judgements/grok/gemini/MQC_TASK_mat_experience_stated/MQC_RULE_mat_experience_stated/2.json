@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The candidate preserved the figure '15+ years' verbatim and smoothly adapted the phrasing into '15+ years of backend engineering experience' to directly match the posting requirement.",
+        "rationale": "The candidate preserved the original figure ('15+ years') verbatim and effectively rewrote the sentence structure to mirror the target posting requirement ('backend engineering experience').",
         "score": 5
       }
     }

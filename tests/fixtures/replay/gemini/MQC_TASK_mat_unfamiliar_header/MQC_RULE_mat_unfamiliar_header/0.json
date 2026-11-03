@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 5674,
+    "duration_ms": 5943,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 90,
     "mode": "live",
-    "output_tokens": 155,
-    "raw_reference": "Qu_jauazNau8jrEPieSmqA8",
+    "output_tokens": 154,
+    "raw_reference": "bgzpapo59IP7xg-DgfzIDw",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the document, here is the breakdown for each header:\n\n1. **\"What you will need on day one.\"**\n   * **Status:** Mandatory.\n   * **Why:** The phrase **\"will need\"** expresses a firm requirement (necessity), and **\"on day one\"** indicates that these skills are essential prerequisites that you must possess immediately upon starting the role.\n\n2. **\"What would make you stand out.\"**\n   * **Status:** Optional (preferred / \"nice-to-have\").\n   * **Why:** The conditional phrasing **\"would make you stand out\"** indicates that these skills are not baseline requirements to be considered, but rather extra qualifications that would give a candidate a competitive edge.",
-    "thinking_tokens": 303,
+    "text": "Based on the document, here is the breakdown for each header:\n\n* **Header: \"What you will need on day one.\"**\n  * **Classification:** **Mandatory**\n  * **Reason:** The words **\"will need\"** indicate an absolute requirement rather than a preference, and **\"on day one\"** specifies that these are essential baseline skills expected immediately upon starting the job.\n\n* **Header: \"What would make you stand out.\"**\n  * **Classification:** **Optional** (preferred/bonus)\n  * **Reason:** The phrase **\"would make you stand out\"** uses conditional language to describe nice-to-have qualities that give an applicant a competitive edge, rather than non-negotiable prerequisites.",
+    "thinking_tokens": 400,
     "tool_calls": []
   }
 }

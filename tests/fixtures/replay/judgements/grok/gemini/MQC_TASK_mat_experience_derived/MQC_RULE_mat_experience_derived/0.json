@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The candidate output states the requirement minimum with a plus ('8+ years of experience') and does not hint at, gesture towards, or state the full calculated total derived from the employment dates.",
+        "rationale": "The candidate output states the floor ('8+ years of experience') without gesturing at or disclosing the full calculated total.",
         "score": 5
       }
     }

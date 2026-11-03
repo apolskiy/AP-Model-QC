@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_GND_STAYS_IN_SOURCE": {
-        "rationale": "Every region and corresponding revenue figure listed in the candidate output directly matches the source document without adding unsupported external knowledge or unnecessary padding.",
+        "rationale": "Every region and figure provided in the candidate output directly traces to the context document without any unsupported claims, external knowledge, or padding.",
         "score": 5
       }
     }

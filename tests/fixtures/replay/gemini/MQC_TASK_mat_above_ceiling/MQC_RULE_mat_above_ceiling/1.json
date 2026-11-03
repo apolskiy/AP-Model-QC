@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 5523,
+    "duration_ms": 5595,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 225,
     "mode": "live",
-    "output_tokens": 206,
-    "raw_reference": "bO_jauW4M4yt1MkP8IzioQo",
+    "output_tokens": 167,
+    "raw_reference": "Fg3pauehI7PWjMcP3_KAmQE",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Mandatory Requirements Assessment\n\n1. **Python:** Met (listed under Languages)\n2. **SQL:** Met (listed under Languages)\n3. **Linux administration:** Met (listed under Platform)\n4. **Git:** Met (listed under Platform)\n5. **REST API design:** Met (listed under Services)\n6. **Unit testing:** Met (listed under Services)\n7. **CI pipelines:** Met (listed under Services)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met (listed under Infrastructure)\n9. **Kafka:** Met (listed under Streaming)\n10. **GraphQL:** Not Met (not found in resume)\n\n---\n\n### Mandatory Match Percentage\n* **Requirements Met:** 9 / 10\n* **Mandatory Match Percentage:** **90%**\n\n---\n\n### Outcome\nSince the match percentage is **90%**, which meets and exceeds the 85% threshold, **proceed** with the candidate.",
-    "thinking_tokens": 318,
+    "text": "### Assessment of Candidate\n\n#### Mandatory Requirements Match:\n1. **Python:** Met\n2. **SQL:** Met\n3. **Linux administration:** Met\n4. **Git:** Met\n5. **REST API design:** Met\n6. **Unit testing:** Met\n7. **CI pipelines:** Met\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met\n9. **Kafka:** Met\n10. **GraphQL:** Not listed\n\n* **Mandatory Match Score:** 9 / 10 (90%)\n\n---\n\n### Outcome\nThe mandatory match percentage is **90%**, which meets and exceeds the required **85%** threshold. \n\n**Decision:** **Proceed** (the candidate advances; nice-to-have requirements do not affect this outcome).",
+    "thinking_tokens": 347,
     "tool_calls": []
   }
 }

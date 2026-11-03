@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1536,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_causes",
-    "duration_ms": 51504,
+    "duration_ms": 52196,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 339,
-    "raw_reference": "21bf89d6-d7c7-90c6-9b81-8c1b35f883f6",
+    "output_tokens": 495,
+    "raw_reference": "f117cec1-f8fc-9076-943b-d8d3f652c35f",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement formula treats the tier percentage as the amount due and then subtracts a currency coupon from that figure. A discount is a percentage off the basket, and a coupon is a separate currency amount, so those are not the same unit and must not be combined that way.\n\nFor a 100 basket at the standard tier (20), the percentage reduction is 20, so 80 is still owed before coupons. The function instead computes `100 * 20 / 100 - coupon`, i.e. 20 minus the coupon. It should subtract the percentage of the total from the total, then subtract coupon currency from that remainder: `total * (100 - discount) / 100 - coupon_sum`.\n\nOnly `coupon_codes[0]` is looked up, so later codes are ignored. Every recognised code should be summed. `\"SAVE20\"` and `\"SAVE30\"` are 20 and 30, not just 20.\n\nAn unknown code is fetched with `coupon_lookup[code]`, which raises and aborts settlement. Unrecognised codes should be skipped and contribute 0 so the order still settles.\n\nNothing keeps the result from going to zero or below, so a large coupon (or the inverted discount) can wipe out the price or create a credit. The seller should not pay the customer or hand over a credit past the price; excess reduction should be discarded and the amount owed floored at 0.\n\nOn a 100 standard basket that is 50 for `[\"SAVE30\"]`, 0 for `[\"SAVE90\"]`, 80 for `[\"NOPE\"]`, and 30 for `[\"SAVE20\", \"SAVE30\"]`.",
-    "thinking_tokens": 3826,
+    "text": "The settlement is wrong for four separate reasons. Each one is a cause, not just a bad return value.\n\n1. The tier number is a percent off, but the formula uses it as the percent still owed. `DISCOUNT_BY_TIER` stores a reduction (`standard` 20 means 20% off, and `premium` is a larger reduction, not a larger bill). `total_amount * discount / 100` therefore charges the discount itself. On a 100-unit basket that is 20, not 80. A larger tier discount would make the customer pay more. The percent must be turned into a currency reduction and subtracted from the total: `total_amount * (100 - discount) / 100`.\n\n2. That wrong currency figure is then combined with the coupon as if they were the same kind of value. A coupon lookup is already a currency amount; the tier value is a percent of the basket. Subtracting the coupon from `total_amount * discount / 100` applies a currency coupon to the discount slice instead of to the price. Both reductions have to be currency amounts taken off `total_amount`: percent-off first, then the coupon sum.\n\n3. Only `coupon_codes[0]` is looked up, so every later code is ignored. `[\"SAVE20\", \"SAVE30\"]` can only ever see 20. Every recognised code should be resolved and those currency amounts summed.\n\n4. An unknown code is a bare `coupon_lookup[...]` lookup, so `[\"NOPE\"]` raises and the settlement never finishes. An unrecognised code should be skipped (contribute 0), not abort the call.\n\n5. Nothing stops the result at or below zero. After a real 20% off, `SAVE90` is 80 \u2212 90. With the current formula, `SAVE30` is already 20 \u2212 30, and the first code of `[\"SAVE20\", \"SAVE30\"]` yields 0. A non-positive result gives the product away or credits the buyer. After both reductions, the amount owed must stay positive.\n\nAgainst the 100-unit basket, the intended bills are: `SAVE30` \u2192 50; `SAVE90` \u2192 still positive, not 80 \u2212 90; `NOPE` \u2192 80 with no exception; `SAVE20` plus `SAVE30` \u2192 30.",
+    "thinking_tokens": 3031,
     "tool_calls": []
   }
 }

@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_INS_PROHIBITION_NATURAL": {
-        "rationale": "The output contains no em dashes or en dashes, and the prose is completely natural and fluent, reading as though unconstrained.",
+        "rationale": "The candidate completely avoids en dashes and em dashes, joining the listed items naturally with standard comma coordination. The prose reads smoothly and as though unconstrained.",
         "score": 5
       }
     }

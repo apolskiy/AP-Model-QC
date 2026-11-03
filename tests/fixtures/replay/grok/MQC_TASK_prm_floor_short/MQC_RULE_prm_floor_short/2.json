@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 4913,
+    "duration_ms": 6034,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1356,
     "mode": "live",
-    "output_tokens": 60,
-    "raw_reference": "f91e475f-31a8-9636-9e48-9b825af6625c",
+    "output_tokens": 125,
+    "raw_reference": "b7b15b62-51e9-9390-92ed-467e94685f31",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The candidate does not clearly match the requirement. The posting requires 9 years of backend engineering experience, while the summary only states \u201c8+ years.\u201d That floor is below 9 and does not establish whether the candidate has 9 years or more, so the requirement cannot be confirmed from the summary.",
-    "thinking_tokens": 269,
+    "text": "**No \u2014 the summary does not establish a match.**\n\nThe posting requires **9 years** of backend engineering experience. The summary only states **8+ years** of backend engineering (transactional services, including a settlement pipeline at 40,000 orders/day).\n\n\u201c8+\u201d means at least 8 years. That is compatible with 9 or more, but it does not show that the candidate has reached 9. Do not treat the \u201c+\u201d as proof of 9 years, and do not treat \u201c8+\u201d as proof they fall short. On this requirement, the summary is inconclusive.",
+    "thinking_tokens": 247,
     "tool_calls": []
   }
 }

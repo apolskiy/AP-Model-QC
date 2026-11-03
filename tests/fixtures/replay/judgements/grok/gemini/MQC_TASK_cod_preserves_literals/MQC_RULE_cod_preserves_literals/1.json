@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_COD_MINIMAL_CORRECTION": {
-        "rationale": "The model added only the single missing closing parenthesis on the second line and left everything else untouched, perfectly matching the original function.",
+        "rationale": "The missing closing parenthesis was added to the sorted() call, and no other characters, formatting, or literals were altered.",
         "score": 5
       }
     }

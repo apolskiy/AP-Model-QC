@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_COD_AGGREGATE_CHECKABLE": {
-        "rationale": "Both totals (orders: 255, revenue: 87,400) are correct and are explicitly presented alongside the individual row values they sum.",
+        "rationale": "Both the total orders (255) and total revenue (87,400) are correct, and each figure is presented alongside the exact row values summed to obtain it.",
         "score": 5
       }
     }

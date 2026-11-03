@@ -85,13 +85,13 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_invokes_required::MQC_RULE_tul_invokes_required",
-    "duration_ms": 949,
+    "duration_ms": 1305,
     "engine": "openai",
     "finish_reason": "tool_calls",
     "input_tokens": 148,
     "mode": "live",
-    "output_tokens": 23,
-    "raw_reference": "chatcmpl-EeWdrR181QuHZohGyjlwvTJcdEJSM",
+    "output_tokens": 18,
+    "raw_reference": "chatcmpl-EfvdMXy1DSLnlXGuxCxMysxyJCiYE",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
     "text": "",
@@ -99,10 +99,9 @@
     "tool_calls": [
       {
         "arguments": {
-          "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "call_3v77jxLMtfLRzwpxwKaXKABa",
+        "call_id": "call_Zwpo9nvHT3IdpdcIPdIpdMhu",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

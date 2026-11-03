@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_INS_SUMMARY_FAITHFUL": {
-        "rationale": "The summary faithfully represents all three defect fixes described in the release note without omitting details, adding extraneous claims, or distorting the emphasis.",
+        "rationale": "Every change from the release note is represented accurately, with nothing added, dropped, or distorted in emphasis.",
         "score": 5
       }
     }

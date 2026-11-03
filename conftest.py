@@ -3,7 +3,7 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-10-29
+Last updated: 2026-11-03
 
 This file contains the pytest hooks for the case suite. They declare the
 execution flags, record what the run was invoked with, label severity, select
@@ -48,6 +48,7 @@ import pytest
 from cmn.environments import (
     deselect_unavailable_environments,
     is_precondition,
+    refuse_precondition_failures,
     refuse_precondition_skips,
 )
 from cmn.band_summary import Alarms, result_lines, skipped_cases_from
@@ -349,6 +350,9 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     # nothing, and pytest exits 0 on a skip: a unit job reported green
     # at 99.44% with four of them (`harness_test_taxonomy.md` 7.5.1).
     refuse_precondition_skips(session)
+    # AND A FAILED PRECONDITION IS AN INSTRUMENT DEFECT, not a model finding,
+    # so it exits 3 rather than pytest's 1 (taxonomy section 7.5.2).
+    refuse_precondition_failures(session)
     # AND A CRASH MEASURED NOTHING EITHER (taxonomy section 5.1.1).
     refuse_broken(session)
     # LAST, after the refusals that raise the exit status: only a session that

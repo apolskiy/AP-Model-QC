@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_MAT_DERIVED_DISCLOSURE": {
-        "rationale": "The candidate output states the floor minimum as '8+ years' and stops without gesturing toward the calculated total or disclosing additional details about the full duration.",
+        "rationale": "The candidate output states the required floor as '8+ years' and does not mention, gesture toward, or hint at the full calculated total.",
         "score": 5
       }
     }

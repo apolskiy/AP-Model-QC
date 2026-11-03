@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_cap_satisfied::MQC_RULE_prm_cap_satisfied",
-    "duration_ms": 4513,
+    "duration_ms": 4757,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 127,
     "mode": "live",
-    "output_tokens": 58,
-    "raw_reference": "__XjaoDMCNjV-8YPpJXR-AU",
+    "output_tokens": 67,
+    "raw_reference": "ww3paozfOoP5-sAPsIiloQw",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The candidate **matches** the requirement. \n\n* **Requirement:** Between 5 and 9 years of backend engineering experience.\n* **Candidate Experience:** 7 years of backend engineering experience.\n\n7 years falls directly within the required 5-to-9-year range.",
-    "thinking_tokens": 199,
+    "text": "The candidate **matches** the requirement. \n\n**Assessment:**\n* **Requirement:** Between 5 and 9 years of backend engineering experience.\n* **Candidate Summary:** 7 years of backend engineering experience.\n* **Conclusion:** 7 years falls directly within the required 5-to-9-year range.",
+    "thinking_tokens": 241,
     "tool_calls": []
   }
 }

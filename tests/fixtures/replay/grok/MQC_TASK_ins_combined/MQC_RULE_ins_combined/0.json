@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_ins_combined::MQC_RULE_ins_combined",
-    "duration_ms": 10801,
+    "duration_ms": 11980,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1358,
     "mode": "live",
-    "output_tokens": 39,
-    "raw_reference": "0e4fcd0f-5e4a-92c3-8c80-f939cade84ed",
+    "output_tokens": 36,
+    "raw_reference": "f7ccc519-3225-9e1b-b09d-010f88e06efc",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "- The export job now completes in under 30 seconds.\n- The importer accepts files up to 2 GB.\n- The login page was restyled. The help link points to new documentation.",
-    "thinking_tokens": 1145,
+    "text": "\u2022 Export job now completes in under 30 seconds.\n\u2022 Importer accepts files up to 2 GB.\n\u2022 Login page was restyled. Help link points to new documentation.",
+    "thinking_tokens": 1091,
     "tool_calls": []
   }
 }

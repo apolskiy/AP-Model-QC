@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes from the source document are included. The two changes with measurable quantities appear first in their original order, followed by the two non-measurable changes in their original order.",
+        "rationale": "All four changes from the source text are included. The two changes featuring measurable quantities (30 seconds, 2 GB) appear first in their original order of appearance, followed by the two non-measurable changes in their source order.",
         "score": 5
       }
     }

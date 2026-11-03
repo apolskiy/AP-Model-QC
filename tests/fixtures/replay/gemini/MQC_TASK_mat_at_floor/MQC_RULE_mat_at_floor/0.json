@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 12788,
+    "duration_ms": 10536,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 275,
     "mode": "live",
-    "output_tokens": 415,
-    "raw_reference": "u-_javGeFrrL_uMPv6ifiQo",
+    "output_tokens": 410,
+    "raw_reference": "aA3papjoCLOm_uMP1ayBIQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Evaluation Breakdown\n\n#### 1. Mandatory Requirements (1\u201310)\n1. **Python:** Met (1.0)\n2. **SQL:** Met (1.0)\n3. **Linux administration:** Met (1.0)\n4. **Git:** Met (1.0)\n5. **REST API design:** Met (1.0)\n6. **Unit testing:** Met (1.0)\n7. **CI pipelines:** Met (1.0)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm (5 items):** Candidate lists Docker, Kubernetes, Terraform, and Ansible (4/5 = 0.8)\n9. **Kafka:** Not listed (0.0)\n10. **GraphQL:** Not listed (0.0)\n\n* **Mandatory Score:** 7.8 / 10  \n* **Mandatory Match Percentage:** **78.0%**\n\n---\n\n#### 2. Combined Evaluation (Requirements 1\u201315)\nBecause the mandatory match lands between 78% and 84%, the combined figure across all 15 requirements is evaluated:\n\n**Nice to Have Requirements (11\u201315):**\n11. **Grafana:** Met (1.0)\n12. **Prometheus:** Met (1.0)\n13. **Technical writing:** Met (1.0)\n14. **Mentoring:** Met (1.0)\n15. **Public speaking:** Met (1.0)\n\n* **Nice-to-Have Score:** 5.0 / 5  \n* **Total Combined Score:** 12.8 / 15  \n* **Combined Match Percentage:** **85.33%**\n\n---\n\n### Conclusion\nThe combined match percentage of **85.33%** meets and exceeds the 85% threshold. **Proceed with the candidate.**",
-    "thinking_tokens": 1225,
+    "text": "### Assessment\n\n#### 1. Mandatory Requirements (Items 1\u201310)\n1. **Python:** Met (1/1)\n2. **SQL:** Met (1/1)\n3. **Linux administration:** Met (1/1)\n4. **Git:** Met (1/1)\n5. **REST API design:** Met (1/1)\n6. **Unit testing:** Met (1/1)\n7. **CI pipelines:** Met (1/1)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Partial (4/5 = 0.8; candidate has Docker, Kubernetes, Terraform, and Ansible, missing Helm)\n9. **Kafka:** Not met (0/1)\n10. **GraphQL:** Not met (0/1)\n\n* **Mandatory Score:** 7.8 / 10\n* **Mandatory Match Percentage:** **78.0%**\n\n---\n\n#### 2. Nice-to-Have Requirements (Items 11\u201315)\n11. **Grafana:** Met (1/1)\n12. **Prometheus:** Met (1/1)\n13. **Technical writing:** Met (1/1)\n14. **Mentoring:** Met (1/1)\n15. **Public speaking:** Met (1/1)\n\n* **Nice-to-Have Score:** 5.0 / 5\n\n---\n\n#### 3. Combined Evaluation\nSince the mandatory match percentage is 78.0% (falling within the 78%\u201384% range):\n\n* **Combined Score:** 12.8 / 15\n* **Combined Match Percentage:** **85.33%**\n\n---\n\n### Conclusion\nThe combined figure of **85.33%** reaches the required 85% threshold. **Proceed with the candidate.**",
+    "thinking_tokens": 796,
     "tool_calls": []
   }
 }
