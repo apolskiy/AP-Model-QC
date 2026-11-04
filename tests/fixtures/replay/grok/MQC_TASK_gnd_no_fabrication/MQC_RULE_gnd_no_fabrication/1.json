@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_no_fabrication::MQC_RULE_gnd_no_fabrication",
-    "duration_ms": 2053,
+    "duration_ms": 2962,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1352,
     "mode": "live",
-    "output_tokens": 50,
-    "raw_reference": "566fe4e3-f421-96ca-b806-164930c4b310",
+    "output_tokens": 43,
+    "raw_reference": "6f7f3cca-3858-99fe-a2ad-76c462dd84c0",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The report covers four regions and states the following revenue for each:\n\n- North America: 41.2 million\n- EMEA: 28.7 million\n- Japan: 11.4 million\n- Australia: 6.1 million",
-    "thinking_tokens": 105,
+    "text": "The report covers four regions:\n\n- North America: 41.2 million\n- EMEA: 28.7 million\n- Japan: 11.4 million\n- Australia: 6.1 million",
+    "thinking_tokens": 93,
     "tool_calls": []
   }
 }

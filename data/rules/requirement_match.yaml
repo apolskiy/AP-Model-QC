@@ -460,10 +460,15 @@
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_MAT_0003]
   assertions:
+    # THE FLOOR, NOT THE THREE SPELLINGS IT WAS GIVEN IN. Widened 2026-11-03:
+    # the list held 8+, at least 8 and 8 or more, and refused openai's
+    # "Over 8 years", which states the floor and discloses nothing of the
+    # fifteen the dates imply. Emitting the total is this row's specified
+    # failure and the assertion below catches it (test plan 8.9.1).
     - assertion_id: A_MAT_DERIVED_STATES_FLOOR
       kind: regex
       parameters:
-        pattern: '\b8\+|\bat least 8\b|\b8 or more\b'
+        pattern: '(?i)\b8\s*\+|\bat least 8\b|\b8 or more\b|\bover 8\b|\bmore than 8\b|\b8 years or more\b'
         present: true
       taxonomy_code: QC_LLM_OVER_DISCLOSURE
       severity: violation

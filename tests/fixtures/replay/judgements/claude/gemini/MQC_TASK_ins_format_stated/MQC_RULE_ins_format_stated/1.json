@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_INS_SUMMARY_FAITHFUL": {
-        "rationale": "Every change from the release note is accurately represented without additions, omissions, or distortions of emphasis.",
+        "rationale": "Every change from the release note is accurately represented without additions, omissions, or distortion of emphasis.",
         "score": 5
       }
     }

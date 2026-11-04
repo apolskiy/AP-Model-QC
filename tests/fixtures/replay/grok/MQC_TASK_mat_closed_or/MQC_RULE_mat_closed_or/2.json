@@ -21,19 +21,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
-    "duration_ms": 3450,
+    "duration_ms": 5166,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1309,
     "mode": "live",
-    "output_tokens": 47,
-    "raw_reference": "65043299-3521-9b96-b068-fdd04ec542da",
+    "output_tokens": 36,
+    "raw_reference": "9bfb57e1-b1b8-907f-b094-deb028d5b860",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**100%**\n\nThe requirement is an OR: any one of Python, Go, or Rust is enough. The candidate lists Python, so the requirement is fully met. SQL and Bash are extra and do not change the result.",
-    "thinking_tokens": 189,
+    "text": "**100%**\n\nThe requirement is a closed OR: any one of Python, Go, or Rust is enough. The candidate lists Python, so the requirement is fully met.",
+    "thinking_tokens": 297,
     "tool_calls": []
   }
 }

@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_COD_MINIMAL_CORRECTION": {
-        "rationale": "The candidate correctly identified the missing closing parenthesis in the sorted() call, added only that single character, and left the rest of the function, literals, and formatting entirely untouched.",
+        "rationale": "The missing closing parenthesis at the end of the sorted call was added, and nothing else in the code was modified or reformatted.",
         "score": 5
       }
     }

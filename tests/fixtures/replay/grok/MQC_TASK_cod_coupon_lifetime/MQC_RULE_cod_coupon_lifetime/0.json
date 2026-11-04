@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 9463,
+    "duration_ms": 14867,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 129,
-    "raw_reference": "4b17de0f-569b-97b7-b002-7074d474e3fc",
+    "output_tokens": 353,
+    "raw_reference": "3655623b-f36a-9580-b780-c68db9d9fbec",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Give every code an absolute validity window, and stop treating the lookup as a bare amount.\n\nStore each code as a record the lookup returns, not a number: at least the discount value plus `valid_from` and `expires_at` (or `issued_at` plus a fixed TTL, if you prefer relative lifetime). Redemption is allowed only when `valid_from <= now < expires_at`. Without those fields on the lookup result, expiry cannot be enforced at settle time\u2014the current `coupon_lookup[code] -> amount` shape has nowhere to put a bound, so every issued code stays redeemable forever.",
-    "thinking_tokens": 473,
+    "text": "Bound each code by an absolute expiry instant, and make the lookup return that instant so redemption can reject the code when it is past.\n\n**How to bound lifetime**\n\n- Give every issued code a `valid_until` (or a `valid_from` / `valid_until` window) set at issue time. Absolute timestamps are enforceable; \u201cN days after first use\u201d is not, unless you also persist the first-use time.\n- Treat expiry as server-side policy, checked at redeem time against a trusted clock. A code that is merely omitted from a client cache, or whose discount value is still in the map, is not expired.\n- Optionally add a hard revoke (`status`) and a redemption cap so lifetime is not the only way a code dies. Those are separate bounds; expiry still needs its own field.\n- Decide the edge: reject when `now >= valid_until` (or `>` if you want the exact instant included). Do not apply the discount and then hope something else notices.\n\n**What the lookup has to carry**\n\nToday `coupon_lookup[code]` is only a number, so the redeem path cannot tell a live code from a dead one. Each entry needs at least:\n\n- the discount (or other value) to apply\n- `valid_until` (timezone-aware instant, not a display string)\n- enough status to refuse non-time failures (`active` / `revoked` / `exhausted`), if you use those\n\nRedeem should load that record, refuse when missing, revoked, exhausted, or `now` is outside the window, and only then use the value. A lookup that still returns a bare number cannot enforce a lifetime no matter what you store elsewhere.",
+    "thinking_tokens": 475,
     "tool_calls": []
   }
 }

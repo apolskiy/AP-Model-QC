@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
-    "duration_ms": 7642,
+    "duration_ms": 5626,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1394,
     "mode": "live",
-    "output_tokens": 90,
-    "raw_reference": "996708fc-e6d5-9170-b495-217b508d95ae",
+    "output_tokens": 51,
+    "raw_reference": "9bc3ad7e-53a4-9d63-9b89-fc3a78c79608",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "EMEA revenue rounds up to **30 million** for a headline.\n\nThe reported figure is 28.7 million. Rounding up to the nearest ten million adds 1.3 million, an overstatement of about **4.5%** (1.3 \u00f7 28.7). That is within the 5% limit (5% of 28.7 million is 1.435 million), so the rounded figure is used.",
-    "thinking_tokens": 553,
+    "text": "EMEA revenue was 28.7 million. Rounded up to the nearest ten million, that is 30 million. The overstatement is 1.3 million, or about 4.53 percent, which is within the 5 percent limit.",
+    "thinking_tokens": 423,
     "tool_calls": []
   }
 }

@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 25677,
+    "duration_ms": 20585,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1483,
     "mode": "live",
-    "output_tokens": 105,
-    "raw_reference": "e29012c9-65af-9d93-8154-3d8177ed8386",
+    "output_tokens": 103,
+    "raw_reference": "8215843e-d065-9096-b6b0-8965464caef5",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 78%** (7.8 / 10).\n\nRequirement 8 is partial (Docker, Kubernetes, Terraform, Ansible; Helm missing) at 4/5. Kafka and GraphQL are absent. The other seven mandatory items match fully.\n\n**Combined match: 85.3%** (12.8 / 15). All five nice-to-haves match (Grafana, Prometheus, technical writing, mentoring, public speaking). That clears 85%, so the candidate proceeds.",
-    "thinking_tokens": 1911,
+    "text": "**Mandatory match: 78%.** Combined match: **85.3%** (12.8/15). That clears 85%, so the candidate proceeds.\n\nMandatory credit is 7.8/10. Items 1\u20137 are fully met. Item 8 (Docker, Kubernetes, Terraform, Ansible, Helm) is 4/5. Kafka and GraphQL are missing. All five nice-to-haves are present (Grafana, Prometheus, technical writing, mentoring, public speaking).",
+    "thinking_tokens": 1770,
     "tool_calls": []
   }
 }

@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes are included. The two changes with measurable quantities ('under 30 seconds' and 'up to 2 GB') appear first in their source order, followed by the two non-measurable changes, also in their relative source order.",
+        "rationale": "All four release changes are present. The two changes with measurable quantities appear first in their source order, followed by the two non-measurable changes, also preserving their relative source order.",
         "score": 5
       }
     }

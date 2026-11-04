@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 5664,
+    "duration_ms": 5679,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1355,
     "mode": "live",
-    "output_tokens": 70,
-    "raw_reference": "08842bcb-5988-90b3-98ae-deac90ec103e",
+    "output_tokens": 85,
+    "raw_reference": "c236a4a4-0bc5-9547-85e8-2c1d099eba3d",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The summary does not state years of experience, and nothing in it lets me calculate them. I will not invent \u201c8 years\u201d to match the posting.\n\nSend the real figure (and, if you have it, when that experience started and ended). Without it, any rewrite either fails the requirement or falsely claims experience the source text does not support.",
-    "thinking_tokens": 248,
+    "text": "I can\u2019t match the 8-year requirement from what\u2019s given: the summary doesn\u2019t state years of experience, and nothing in it lets me calculate them.\n\nSend the actual years of backend engineering experience and I\u2019ll rewrite the summary to the posting. If you don\u2019t supply that figure, I won\u2019t invent it\u2014the summary stays unqualified against a hard \u201c8 years\u201d screen and can be filtered out before the rest of the work is read.",
+    "thinking_tokens": 283,
     "tool_calls": []
   }
 }

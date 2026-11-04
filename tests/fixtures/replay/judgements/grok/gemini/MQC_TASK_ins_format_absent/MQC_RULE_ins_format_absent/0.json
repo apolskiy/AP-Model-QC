@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_INS_UNPROMPTED_SHAPE": {
-        "rationale": "The candidate output is written in plain prose with no unprompted machine-readable structure or heavy incidental formatting.",
+        "rationale": "The candidate output provides a clear, single-sentence prose summary without introducing any machine-readable formats or incidental structures (such as JSON, bullet points, or tables) that were not requested.",
         "score": 5
       }
     }

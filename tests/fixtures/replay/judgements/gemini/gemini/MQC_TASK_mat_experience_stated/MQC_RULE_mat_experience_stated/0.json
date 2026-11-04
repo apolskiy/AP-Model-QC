@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The candidate preserved the original figure ('15+ years') verbatim without altering or recalculating it to match the required 8 years, and successfully rephrased the summary to mirror the posting requirement's phrasing ('backend engineering experience').",
+        "rationale": "The stated years figure ('15+ years') is preserved verbatim without alteration, and the summary is cleanly rewritten to directly target the posting requirement phrase ('backend engineering experience').",
         "score": 5
       }
     }

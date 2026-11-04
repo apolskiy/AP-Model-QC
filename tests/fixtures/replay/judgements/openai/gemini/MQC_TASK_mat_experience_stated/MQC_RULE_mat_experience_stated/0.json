@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_MAT_STATED_REWRITE_QUALITY": {
-        "rationale": "The figure of experience ('15+ years') was preserved verbatim from the original summary, but no rewriting was performed to better target the job posting requirements (the output is identical to the input summary).",
+        "rationale": "The candidate preserved the original figure ('15+ years') verbatim, but did not perform any meaningful rewriting to align with the posting beyond reproducing the original summary unchanged.",
         "score": 3
       }
     }

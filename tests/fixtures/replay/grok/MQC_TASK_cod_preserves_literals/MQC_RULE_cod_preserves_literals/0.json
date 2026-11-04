@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_preserves_literals::MQC_RULE_cod_preserves_literals",
-    "duration_ms": 2463,
+    "duration_ms": 2489,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1334,
     "mode": "live",
     "output_tokens": 42,
-    "raw_reference": "30863160-7c3f-9a75-ab12-79433992e7f7",
+    "raw_reference": "192a118c-0c00-9f1f-b500-9d93f4fa5635",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",
-    "thinking_tokens": 149,
+    "thinking_tokens": 156,
     "tool_calls": []
   }
 }

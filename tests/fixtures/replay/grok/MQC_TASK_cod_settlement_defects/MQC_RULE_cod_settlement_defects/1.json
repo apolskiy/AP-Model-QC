@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
-    "duration_ms": 26972,
+    "duration_ms": 44067,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1455,
     "mode": "live",
-    "output_tokens": 398,
-    "raw_reference": "ab79439a-ed89-9fee-821a-85fd4a74ea21",
+    "output_tokens": 498,
+    "raw_reference": "11980d8d-9730-9222-8c46-f1f82135e0bd",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function undercharges, can return a negative balance, and crashes on inputs already used in production.\n\n1. **Discount is applied backwards.** `total_amount * discount / 100` treats the tier value as the percent to charge, not the percent off. `DISCOUNT_BY_TIER` is a percent-off table (`premium` 30 > `standard` 20). On a 100-unit standard basket the code keeps 20, not 80. Customers are billed a fraction of the price; the merchant loses most of the sale. Premium accounts are also mis-priced relative to the table.\n\n2. **The coupon is subtracted from that already-shrunk figure, so the amount owed can be zero or negative.** `100 * 20 / 100 - 30` is `-10`; `SAVE20` yields `0`. Checkout, payments, and ledger code that assume a positive charge break. Customers may be refunded or comped; finance and support absorb the bad balances.\n\n3. **Only `coupon_codes[0]` is read, and it is not a sum.** Extra codes are ignored, so anyone who passed more than one coupon is shorted the rest. The name `coupon_sum` does not match the behavior.\n\n4. **Unknown coupon codes raise `KeyError`.** The third production call, `[\"NOPE\"]` against `{\"SAVE30\": 30}`, crashes instead of rejecting the code. That customer cannot check out.\n\n5. **An empty `coupon_codes` list raises `IndexError` on `[0]`.** Shoppers with no coupon cannot settle.\n\n6. **An unknown `account_tier` raises `KeyError`.** Any tier not in the two-key dict fails closed only by exception. Those accounts cannot check out either.\n\nThe two successful-looking production calls do not succeed commercially: they return `-10` and `0`, not a discounted remainder.",
-    "thinking_tokens": 1526,
+    "text": "The function does not compute a payable balance. On the two calls that return, it undercharges; the third call crashes.\n\n1. **Discount is applied as the amount due, not as a reduction.** `total_amount * discount / 100` is the discount itself ($20 on a $100 standard basket), and that value is then used as the balance. A 20% tier discount should leave about $80 before coupons, not $20. Every settled order is undercharged. The merchant loses revenue; standard and premium customers are underbilled. Against the 100-unit basket, `[\"SAVE30\"]` returns `-10.0` instead of `50.0`, and `[\"SAVE20\"]` returns `0.0` instead of `60.0` (20% off, then the coupon).\n\n2. **The result is not floored at zero.** Call 1 returns `-10.0`. A payment capture can fail, or the gateway can treat it as a refund. The merchant funds an erroneous credit; accounting and the customer both see a negative sale.\n\n3. **Only `coupon_codes[0]` is read, despite `coupon_sum`.** Later codes are ignored, so stacked coupons are silently dropped. Customers who pass more than one code pay more than the function\u2019s own name implies; nothing signals that the rest were discarded.\n\n4. **Unknown coupon codes raise `KeyError`.** `[\"NOPE\"]` with lookup `{\"SAVE30\": 30}` crashes before any return. That customer cannot check out; checkout and support take the exception.\n\n5. **Unknown tiers raise `KeyError`.** Anything other than `\"standard\"` or `\"premium\"` aborts settlement. Those accounts cannot pay.\n\n6. **No coupons crash too.** `coupon_codes[0]` raises `IndexError` on an empty list. Customers who are not redeeming a code cannot settle.\n\n7. **Money is computed with binary floats.** ` / 100` yields a float. Non-dyadic amounts will not reconcile to the cent. Finance and downstream ledgers are affected.\n\n8. **No validation of sign or type.** A negative `total_amount`, a negative coupon value, or a non-sequence `coupon_codes` either inflates what is owed, issues a credit, or throws `TypeError`. Bad catalog or client data hits the merchant and the payer with no controlled error.",
+    "thinking_tokens": 2641,
     "tool_calls": []
   }
 }

@@ -40,6 +40,75 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The corpus is re-recorded on all four engines after the rule change, and every figure moves with it, 2026-11-04
+
+**Why it was needed.** A rule change invalidates every recording the rule
+scored, so the two gates repaired on 2026-11-03 put the whole store out of date.
+Nothing could be reconciled against it: a register generated from recordings a
+repaired gate never read would hold entries for failures that no longer exist.
+
+**What changed.** The graded suite ran live against all four engines, gemini,
+openai and grok on 2026-11-03 and claude across 2026-11-03 and 2026-11-04, and a
+full replay per engine reproduced each sweep exactly with no instrument defect
+and no stale fixture. **Both repairs are confirmed on fresh recordings**: claude
+`134500` and openai `134407` passed and the register held each as no longer
+reproducing, which is also what cleared `MQC_CAS_UNI_115768`.
+
+**The figures that moved.** Preconditions 190 to 192. Candidate responses 1228 to
+1238, judgements 776 to 786. The 19 open findings redistributed, claude 10 to 9,
+openai 8 to 7, gemini 0 to 1 and grok 1 to 2, with 22 held and 49 withdrawn. Run
+cost 5.87 to 5.93 for all four, openai 0.57, gemini 0.74, grok 1.31 and claude
+3.32. **The README's harness figure was wrong by three** and now reads the
+measured 1018: that figure describes the other repository, so nothing here can
+check it without the boundary violation `CLAUDE.md` forbids.
+
+**Two orphaned judgements were removed.** Openai's `154515` aborts at the screen
+on observations 1 and 4, so neither reaches the judge in any mode, and the
+judgements left from the previous run scored responses the store no longer held.
+`MQC_CAS_UNI_115799` reported both, which is the audit written on 2026-11-01
+earning its place.
+
+**What it leaves open.** 64 recordings are the fourth and fifth observations of
+cases that escalated to five in an earlier run and took three in this one. They
+are inert while the three fresh observations agree, and a later run that
+escalates would read them: `CLAUDE_TASK.md` carries the row, and no audit reports
+them yet.
+
+### Two more gates stopped deciding a case on wording, one of them now reading a sentence rather than a phrase, 2026-11-03
+
+**Why it was needed.** The four failures that no register entry described were
+read against their prompts, their recorded answers and their judgements. Two
+were the instrument's, and both are the shape the entry of 2026-11-01 names: a
+gate refusing an answer that did the thing its case is named for.
+`A_PRM_CAP_NO_RESTATED_FLOOR` forbids restating fifteen years as a figure that
+fits a nine year ceiling, and it refused claude for writing that describing the
+candidate as having "9+ years" **would hide** the conflict with the stated
+maximum. The restatement was named in order to be rejected, the no match was
+stated plainly above it, and the rubric scored 5 of 5.
+`A_MAT_DERIVED_STATES_FLOOR` requires the stated floor to be reported and held
+`8+`, `at least 8` and `8 or more`; openai wrote "Over 8 years", which states
+the same floor and discloses nothing of the fifteen the employment dates imply.
+
+**What changed.** The cap gate is `kind: claim` rather than `kind: regex`, so
+it reads one sentence at a time and takes the `unless` markers that mean the
+sentence asserts nothing: `would hide`, `would conceal`, `would misstate`,
+`would be inaccurate`, `would be wrong`, `would be misleading`, `inaccurate to
+say`. The derived-floor gate admits `over 8`, `more than 8` and `8 years or
+more` beside the three spellings it was given. Both patterns gained `(?i)`, so
+a capitalised "At least 9" is now caught where it was not before. Two
+preconditions are new, `MQC_CAS_UNI_115020` and `115021`, each run against the
+shipped rules first and each failing on the engine's own recorded wording.
+
+**What the repair costs, stated rather than left to be found.** A sentence that
+hedges a restatement now passes the cap gate, so an answer that says calling
+the candidate `9+` would be inaccurate and then treats the candidate as a match
+is graded by `C_PRM_CAP_TRUTHFULNESS` instead of gated. The derived-floor gate
+no longer distinguishes a floor from the three forms authored here, and what it
+exists beside is untouched: `A_MAT_DERIVED_WITHHOLDS_TOTAL` still refuses the
+calculated total, which is that row's specified failure.
+`model_evaluation_test_plan.md` section 8.9.1 carries both rows and the
+division that puts the wording on the rubric's side of it.
+
 ### The findings register is reconciled against the finished recording, 2026-11-03
 
 **Why it was needed.** The register described the run of 2026-11-01 and the

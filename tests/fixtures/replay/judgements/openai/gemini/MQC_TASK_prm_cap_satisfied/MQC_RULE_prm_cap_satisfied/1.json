@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_CONTROL": {
-        "rationale": "The candidate output reports a match without referencing the range or placing the figure inside it, matching level 3 exactly.",
+        "rationale": "The candidate output reports that the candidate matches the requirement, but does not make reference to the specific range or place the figure inside it.",
         "score": 3
       }
     }

@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
-    "duration_ms": 5170,
+    "duration_ms": 7111,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1358,
     "mode": "live",
-    "output_tokens": 37,
-    "raw_reference": "6bf904cd-adc4-92fc-9c33-28db0cae20ee",
+    "output_tokens": 36,
+    "raw_reference": "64878b85-6df2-9ce3-92e9-c18541831aea",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**28.7 million**\n\nThe report states EMEA revenue as 28.7 million, so a floor at that figure is supported and is not above what the report states.",
-    "thinking_tokens": 342,
+    "text": "**28.7 million**\n\nThe report states EMEA revenue as 28.7 million, so that figure is a supported floor and is not above what the report records.",
+    "thinking_tokens": 442,
     "tool_calls": []
   }
 }

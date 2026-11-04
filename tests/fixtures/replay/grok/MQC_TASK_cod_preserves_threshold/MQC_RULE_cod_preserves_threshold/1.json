@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_preserves_threshold::MQC_RULE_cod_preserves_threshold",
-    "duration_ms": 2577,
+    "duration_ms": 4076,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1308,
     "mode": "live",
-    "output_tokens": 24,
-    "raw_reference": "fd456a0b-d579-96c4-8a63-5a7a658d6fba",
+    "output_tokens": 22,
+    "raw_reference": "479f7a00-fc3d-942f-b033-96270b4c17ad",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "A build is promoted when line coverage is at or above 82 percent; builds below that figure are held for review.",
-    "thinking_tokens": 90,
+    "text": "A build is promoted when line coverage is at or above 82 percent; otherwise it is held for review.",
+    "thinking_tokens": 84,
     "tool_calls": []
   }
 }

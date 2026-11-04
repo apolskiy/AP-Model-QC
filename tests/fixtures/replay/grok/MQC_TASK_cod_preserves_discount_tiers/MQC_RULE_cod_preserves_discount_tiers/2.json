@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
-    "duration_ms": 25896,
+    "duration_ms": 13835,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1387,
     "mode": "live",
-    "output_tokens": 291,
-    "raw_reference": "0fe8422a-6740-9bb2-b96d-d4929075d7a0",
+    "output_tokens": 242,
+    "raw_reference": "fd145666-4142-9a0b-ab70-0d1ae6f307ee",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function returns the wrong amount because it treats the tier rate as the fraction of the bill still owed, and it only applies the first coupon.\n\n**What it computes now**\n\n`DISCOUNT_BY_TIER` stores percent-off rates: 20 for standard, 30 for premium. The function uses that rate as if it were the share of `total_amount` the customer still pays:\n\n```text\namount_owed = total_amount * discount / 100 - coupon_lookup[coupon_codes[0]]\n```\n\nFor a $100 standard order and a $5 first coupon, that is `100 * 20 / 100 - 5 = 15`, not the balance after 20% off. It also ignores every coupon after `coupon_codes[0]`.\n\n**What it should compute**\n\nKeep the stated rates (20 and 30) as percent off. The amount owed is the total after that percent-off, minus every coupon value:\n\n```text\namount_owed = total_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)\n```\n\nSame example: `100 * (100 - 20) / 100 - 5 = 75`. Premium stays 30% off, so the same order would be `100 * 70 / 100 - 5 = 65`.",
-    "thinking_tokens": 1501,
+    "text": "The function charges the discount rate itself and only the first coupon, instead of charging the price after the tier discount minus every coupon.\n\n**What it computes now**\n\n- It reads the tier percent (20 or 30) and keeps it as the fraction of `total_amount` to bill: `total_amount * discount / 100`. A 20% tier therefore bills 20% of the total, not 80%.\n- It looks up only `coupon_codes[0]` and ignores the rest.\n- It returns that partial total minus that one coupon: `total_amount * discount / 100 - coupon_lookup[coupon_codes[0]]`.\n\n**What it should compute**\n\nKeep the stated percents. Treat each as a reduction, sum every coupon, then subtract that sum from the discounted total:\n\n`amount_owed = total_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)`\n\nSo a standard order is 80% of `total_amount` minus all coupon values; a premium order is 70% of `total_amount` minus all coupon values.",
+    "thinking_tokens": 770,
     "tool_calls": []
   }
 }

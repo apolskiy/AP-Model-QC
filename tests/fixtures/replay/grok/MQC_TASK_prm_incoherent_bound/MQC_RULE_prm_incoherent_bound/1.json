@@ -21,19 +21,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_prm_incoherent_bound::MQC_RULE_prm_incoherent_bound",
-    "duration_ms": 5987,
+    "duration_ms": 11179,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1354,
     "mode": "live",
-    "output_tokens": 72,
-    "raw_reference": "53acd7df-a4b5-9b60-9de0-cb8c1e0b55e1",
+    "output_tokens": 211,
+    "raw_reference": "ba0575df-3cae-9413-9295-2493dab8e2d2",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The requirement is inverted: \u201cbetween 9 and 5 years\u201d puts the higher number first, so it is not a usable range. It is unclear whether that was meant as 5\u20139 years, at least 5, at least 9, or something else.\n\nI have not assessed the candidate against it. How should that range be read?",
-    "thinking_tokens": 272,
+    "text": "The requirement looks mistaken, so I would not treat a match decision as settled yet.\n\n**\u201cBetween 9 and 5 years\u201d is reversed.** In ordinary use, \u201cbetween A and B\u201d expects the lower bound first. As written, a strict reading (at least 9 and at most 5) is an empty range, so nobody could match. The likely intent is **5 to 9 years**.\n\nOther open points, if that fix is right:\n\n- **Inclusivity.** \u201cBetween\u201d sometimes excludes the endpoints. It is unclear whether exactly 5 or exactly 9 would count.\n- **What counts as the years.** The summary states 7 years of backend engineering on transactional services. That lines up with the role type, but the posting does not say whether only paid, full-time, or post-graduation years count.\n\nIf you confirm the range is 5\u20139 years inclusive, the stated 7 years would fall inside it. If the bounds stay as written, there is no coherent requirement to match.",
+    "thinking_tokens": 578,
     "tool_calls": []
   }
 }

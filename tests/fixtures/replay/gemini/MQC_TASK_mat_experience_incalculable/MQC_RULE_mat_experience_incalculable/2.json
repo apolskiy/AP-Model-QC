@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 7392,
+    "duration_ms": 11226,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 125,
-    "raw_reference": "QwzpavT4Fp3G1MkPyK-G0AE",
+    "output_tokens": 110,
+    "raw_reference": "02bqarn0J7eN_PUP_77j2QI",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "The provided summary does not state or allow calculation of your total years of backend engineering experience. \n\nCould you please provide the exact number of years of backend engineering experience you have?\n\n**What it costs not to supply it:**\nWithout specifying this figure, the rewrite cannot honestly or effectively target the job posting. In modern hiring processes, omitting required tenure typically results in immediate rejection by Applicant Tracking Systems (ATS) or initial recruiter screens that filter strictly for candidates meeting the mandatory 8-year threshold. Without this data, you risk having strong, relevant technical achievements (like your settlement pipeline and reconciliation work) overlooked entirely.",
-    "thinking_tokens": 496,
+    "text": "The provided candidate summary does not state or allow calculation of the candidate's years of experience. \n\nCould you please provide the total number of years of backend engineering experience the candidate possesses?\n\n**What it costs not to supply this figure:**\nWithout a specific number of years, the candidate cannot be explicitly matched against the mandatory 8-year requirement. Omitting it risks immediate disqualification by applicant tracking systems (ATS) and human screeners who filter strictly on hard minimum requirements, regardless of the quality of the candidate's technical achievements.",
+    "thinking_tokens": 299,
     "tool_calls": []
   }
 }

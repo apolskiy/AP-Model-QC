@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1536,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 98219,
+    "duration_ms": 44830,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 405,
-    "raw_reference": "479dc456-2ee2-93e4-80e9-7e21ec2b063d",
+    "output_tokens": 286,
+    "raw_reference": "515a6265-3e07-97f7-85c5-ba5b3b1662fd",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math uses the tier percentage as the amount charged, reads only the first coupon, aborts on an unknown code, and can finish at or below zero.\n\n**The percentage is treated as the price, not as a reduction.** `total_amount * discount / 100` is the discount itself (20 on a 100 basket at the standard tier), and that value is then used as the amount owed. A discount is a percentage of the total, so the charge should be the total minus that percentage: `total_amount * (100 - discount) / 100` (80 here), not the discount slice.\n\n**The coupon is subtracted from that wrong base, mixing the two units.** A tier discount is a percent; a coupon lookup is a currency amount. Those are not interchangeable. Convert the percent into a currency reduction and take it off the total first, then subtract coupon currency from the remaining currency. Do not subtract the coupon from the discount amount.\n\n**Only `coupon_codes[0]` is applied.** Later codes never affect the total. Every supplied code should contribute. On the two-code call that means both 20 and 30, not just 20.\n\n**A missing code aborts the sale.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so settlement never finishes. An unrecognised code should add nothing and the rest of the settlement should still run.\n\n**The result is not bounded, so the seller can give the goods away.** After a correct 20% reduction, `SAVE90` is 90 against 80 and the current formula is even further negative (`20 - 90`). A negative amount means the customer pays nothing and the seller pays them. Coupon currency should be capped by the discounted total so the amount owed is never below zero.\n\nFor the four production calls, that is 50, 0, 80, and 30 \u2014 not -10, -70, an exception, and 0.",
-    "thinking_tokens": 5895,
+    "text": "The settlement formula is wrong in four separate ways.\n\n1. The tier discount is a percent of the basket, but `total_amount * discount / 100` is used as the amount owed. For a standard tier that is the 20-unit reduction, not the price. It should be taken off the total first: owe `total_amount * (100 - discount) / 100`, i.e. 80 on a 100-unit standard basket.\n\n2. A coupon is a currency amount, not a percent. It must be subtracted only after that percent has been turned into a currency reduction of the full total. Subtracting it from the bare percent figure mixes the two units.\n\n3. `coupon_codes[0]` applies only the first code, so later codes are dropped. Every recognised code should be summed and subtracted. On the last call that is 20 + 30, not 20 alone.\n\n4. `coupon_lookup[code]` raises on an unknown code and aborts the sale. An unrecognised code should contribute 0 and settlement should continue. On the third call the tier discount still applies and the amount owed is 80.\n\nAfter the percent-off and the currency coupons, the result must not be allowed to reach 0 or go negative. Otherwise a large coupon gives the product away or pays the buyer. The owed amount has to stay a positive charge.",
+    "thinking_tokens": 2981,
     "tool_calls": []
   }
 }

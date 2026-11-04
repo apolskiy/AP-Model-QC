@@ -21,19 +21,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1408,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 5220,
+    "duration_ms": 8596,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1444,
     "mode": "live",
-    "output_tokens": 36,
-    "raw_reference": "687815db-34a2-97eb-ab90-2399a43ea4cf",
+    "output_tokens": 29,
+    "raw_reference": "39de5021-4e15-95a2-95c4-8bd884d69b8f",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 70% (7/10).**\n\n**Warning:** this is below the **78 percent** cutoff. Nice-to-have requirements were not evaluated.",
-    "thinking_tokens": 443,
+    "text": "**Mandatory match: 70%.**\n\nThat is below the **78 percent** cutoff. Nice-to-have requirements were not evaluated.",
+    "thinking_tokens": 622,
     "tool_calls": []
   }
 }

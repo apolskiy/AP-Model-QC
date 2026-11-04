@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 6633,
+    "duration_ms": 7310,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 178,
-    "raw_reference": "NQzpauqxG-WD39IPieP56AQ",
+    "output_tokens": 150,
+    "raw_reference": "xmbqaozMOerSjMcPjOuEyQU",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "To rewrite the summary to match the posting requirement, could you please provide the candidate's actual **years of backend engineering experience**? \n\n### The Cost of Not Supplying It:\n* **Immediate Rejection by ATS/Screeners:** The role explicitly mandates **8 years** of backend engineering experience. Applicant Tracking Systems (ATS) and initial recruiters typically filter out resumes that fail to state hard, quantifiable requirements explicitly. Without a defined number of years, the candidate risks immediate disqualification before their technical achievements are even reviewed.\n* **Risk of Misrepresentation:** Fabricating or assuming the 8-year figure without confirmation risks misrepresenting the candidate, which can lead to reputational damage or termination during background verification. \n\nOnce you provide the exact number of years (or date ranges), I will integrate it into a compelling, tailored summary matching the role's specifications.",
-    "thinking_tokens": 326,
+    "text": "To rewrite the summary to match the posting, could you please provide the candidate's actual years of backend engineering experience?\n\n**What it costs not to supply it:**\nThe job posting explicitly requires **8 years of backend engineering experience**. If you do not provide this figure:\n1. **High Risk of Immediate Disqualification:** Leaving the years unstated means the candidate fails the baseline qualification, leading to automatic rejection by Applicant Tracking Systems (ATS) or initial recruiter screenings.\n2. **Loss of Credibility:** If the 8-year requirement is simply assumed or fabricated in the rewrite without confirmation, any subsequent background check, resume review, or interview question probing their timeline risks exposing the discrepancy and disqualifying the candidate for misrepresentation.",
+    "thinking_tokens": 450,
     "tool_calls": []
   }
 }

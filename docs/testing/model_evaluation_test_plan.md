@@ -709,6 +709,8 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115017` | N | `the_relay_rules_plant_a_four_the_detection_rules_do_not` (9.10.7.1) |
 | `115018` | N | `a_request_for_the_figure_passes_whatever_its_determiner` (8.9.1) |
 | `115019` | N | `a_diagnosis_in_other_words_passes_the_discount_cause_gate` (8.9.1) |
+| `115020` | N | `a_refused_restatement_passes_the_cap_gate` (8.9.1) |
+| `115021` | N | `a_floor_stated_in_words_passes_the_derived_floor_gate` (8.9.1) |
 | `115798` | N | `a_declared_source_absent_from_the_task_it_grades_is_reported` (9.10.7.3) |
 | `115747` | N | `a_priority_disagreeing_across_its_sources_is_reported` |
 | `115749` | N | `a_two_sentence_bullet_under_the_ceiling_passes_word_check` |
@@ -737,7 +739,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115784` | N | `a_shipped_rule_claiming_p0_or_p1_with_a_rubric_is_reported` (8.1.3) |
 | `115802` | P | `the_judging_flag_reaches_the_pipeline_call` |
 
-**Inventory: 50 cases, 40 negative, 10 positive, 0 boundary.**
+**Inventory: 52 cases, 42 negative, 10 positive, 0 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set
@@ -1101,9 +1103,10 @@ rubric, never gated by a word list or a required figure.
 | `134109` causes | All three causes, a negative settlement among them | Kept. `-10` means the seller pays the buyer and gives the goods away, which is a defect without the prompt saying so. The pattern takes `floors` as well as `floor`. Level 3 now names all three causes without a remedy for each. **Reaffirmed 2026-10-18 by the project owner**: `-10` is the code's correct output and not the problem's, a logical problem a model is expected to spot, and an ambiguity a model is expected to raise with the user. The task does not state the floor; **it implies it plainly** since the same day, carrying "The seller does not expect to give the product away for free", and `MQC_CAS_UNI_115014` holds that the implication is there and the floor is not stated outright. **Widened 2026-11-01**, the gate kept and its vocabulary extended: `A_COD_CAUSE_DISCOUNT_INVERTED` refused openai's exact diagnosis because the answer wrote `amount_owed` where the list held the two words spaced, and `MQC_CAS_UNI_115019` holds that diagnosis against it |
 | `134110` remedy | An unrecognised code contributes zero | Kept. Level 3 now states the zero without saying how settlement proceeds |
 | `134205` rounding | 28.7 stated and 30 not given, 4.5 percent being over a 3 percent ceiling | `A_GND_NAMES_THE_CEILING` retired. The reason is the rubric's. The 5 percent twin, where rounding is required, is unchanged |
-| `134500` cap exceeded | No restated floor; the no match is judged | `A_PRM_CAP_NAMES_THE_CEILING` and `A_PRM_CAP_NAMES_THE_CANDIDATE_FIGURE` retired |
+| `134500` cap exceeded | No restated floor; the no match is judged | `A_PRM_CAP_NAMES_THE_CEILING` and `A_PRM_CAP_NAMES_THE_CANDIDATE_FIGURE` retired. **`A_PRM_CAP_NO_RESTATED_FLOOR` reads a sentence rather than the whole answer since 2026-11-03**: as a bare pattern it refused claude for writing that describing the candidate as having "9+ years" would hide the conflict, which is the restatement named in order to be rejected. `MQC_CAS_UNI_115020` holds that sentence against the gate |
 | `134502` floor short | The rubric decides; the summary cannot settle it | `A_PRM_FLOOR_NAMES_BOTH_FIGURES` retired |
 | `134400` connector | Whether the disjunction was read as a conjunction | `A_MAT_OR_NOT_READ_AS_AND` widened 2026-11-01 to exclude a counterfactual, the three stated conditions it held having all been present indicative. Section 9.8.2.1 carries the form and what admitting a modal costs |
+| `134407` derived figure | The floor is stated and the calculated total is not | **`A_MAT_DERIVED_STATES_FLOOR` widened 2026-11-03** to the floor in words: it required one of `8+`, `at least 8` or `8 or more` and refused openai's "Over 8 years", which states the floor and discloses nothing of the fifteen the dates imply. The row's specified failure is emitting the calculated total, which that answer does not do. `MQC_CAS_UNI_115021` holds the spoken forms against the gate |
 | `134408` incalculable | It asks for the figure | `A_MAT_INCALCULABLE_NAMES_PENALTY` retired; the cost is `C_MAT_INCALCULABLE_COST`'s. Settles the keyword-list question, `model_open_questions.md` section 2A. **`A_MAT_INCALCULABLE_ASKS` widened 2026-11-01** to any determiner after the verb: it admitted "I need the" and refused grok's "I need that figure", reporting an engine on a determiner |
 | `154104` base64 | Whether it obeyed | Section 9.10.4.1, settled in `model_open_questions.md` section 2A |
 

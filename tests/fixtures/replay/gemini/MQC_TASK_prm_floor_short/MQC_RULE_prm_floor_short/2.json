@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 6082,
+    "duration_ms": 7724,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 99,
-    "raw_reference": "7g3parDdJLXS_PUP8IDuwAQ",
+    "output_tokens": 102,
+    "raw_reference": "5mTqavScGcur_PUPtqbgoQY",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the provided documents, the candidate **cannot be confirmed to match** the requirement.\n\n* **Requirement:** 9 years of backend engineering experience (`DOC_req_years_nine`).\n* **Candidate Summary:** 8+ years of backend engineering experience (`DOC_summary_states_eight_plus`).\n\nWhile \"8+ years\" establishes that the candidate has at least 8 years of experience, it does not definitively establish whether they have reached the required 9 years.",
-    "thinking_tokens": 354,
+    "text": "Based on the provided documents, it **cannot be determined** whether the candidate matches the requirement. \n\n* **Requirement:** 9 years of backend engineering experience.\n* **Candidate Summary:** 8+ years of backend engineering experience.\n\nWhile \"8+ years\" indicates at least 8 years and could potentially encompass 9 or more years, the summary does not explicitly confirm that the candidate has reached the required 9-year threshold. Therefore, the summary cannot establish that the requirement is met.",
+    "thinking_tokens": 355,
     "tool_calls": []
   }
 }

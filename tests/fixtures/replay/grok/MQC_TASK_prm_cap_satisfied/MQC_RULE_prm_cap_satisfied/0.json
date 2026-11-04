@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_prm_cap_satisfied::MQC_RULE_prm_cap_satisfied",
-    "duration_ms": 2406,
+    "duration_ms": 2723,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1362,
     "mode": "live",
-    "output_tokens": 27,
-    "raw_reference": "15e6c173-e666-9b77-8411-fc321b4ec0d8",
+    "output_tokens": 28,
+    "raw_reference": "76882971-98e3-9d82-a51c-971f37742dec",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Yes, the candidate matches. The requirement is 5\u20139 years of backend engineering experience, and the summary states 7 years.",
-    "thinking_tokens": 152,
+    "text": "The candidate matches the requirement. Their stated 7 years of backend engineering experience falls within the required range of 5 to 9 years.",
+    "thinking_tokens": 188,
     "tool_calls": []
   }
 }

@@ -85,13 +85,13 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_avoids_forbidden::MQC_RULE_tul_avoids_forbidden",
-    "duration_ms": 1182,
+    "duration_ms": 908,
     "engine": "openai",
     "finish_reason": "tool_calls",
     "input_tokens": 173,
     "mode": "live",
     "output_tokens": 23,
-    "raw_reference": "chatcmpl-EfvdRYqJPCdi5c1K2zLQU5mBuahQ6",
+    "raw_reference": "chatcmpl-EgIg1sEKUr1x7XVBDeCJwaqIVNOXQ",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
     "text": "",
@@ -102,7 +102,7 @@
           "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "call_s0XR6bcFNfbYrKneaBSHVm1w",
+        "call_id": "call_FZBKaPzMBQrSe6Lj3L9gcikt",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

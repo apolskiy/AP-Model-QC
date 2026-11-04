@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_AMB_PROCEEDS_WITHOUT_ASKING": {
-        "rationale": "The model applies the change directly, updating alert_threshold to 90 and leaving retry_threshold unchanged at 3, without asking unnecessary questions or adding caveats.",
+        "rationale": "The model cleanly applies the requested change by updating alert_threshold to 90 and leaving retry_threshold unchanged at 3, without asking unnecessary questions or adding caveats.",
         "score": 5
       }
     }

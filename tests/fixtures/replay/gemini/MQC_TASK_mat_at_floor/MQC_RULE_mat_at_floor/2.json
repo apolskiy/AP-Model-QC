@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 10978,
+    "duration_ms": 14224,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 275,
     "mode": "live",
-    "output_tokens": 417,
-    "raw_reference": "iQ3paq6ZGP-qsOIP9-fu8AE",
+    "output_tokens": 465,
+    "raw_reference": "y2Xqaq2_OPbN-8YP6p2usAM",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Evaluation Against Job Requirements\n\n#### 1. Mandatory Requirements (1\u201310)\n* **1. Python:** Met (1/1)\n* **2. SQL:** Met (1/1)\n* **3. Linux administration:** Met (1/1)\n* **4. Git:** Met (1/1)\n* **5. REST API design:** Met (1/1)\n* **6. Unit testing:** Met (1/1)\n* **7. CI pipelines:** Met (1/1)\n* **8. Docker, Kubernetes, Terraform, Ansible, Helm:** Candidate shows 4 of 5 items (Docker, Kubernetes, Terraform, Ansible; missing Helm) = **0.8 / 1**\n* **9. Kafka:** Not met (0/1)\n* **10. GraphQL:** Not met (0/1)\n\n**Mandatory Score:** 7.8 out of 10  \n**Mandatory Match Percentage:** **78.0%**\n\n---\n\n#### 2. Combined Requirements (1\u201315)\nSince the mandatory score lands in the 78\u201384% range, we evaluate the nice-to-have requirements:\n\n* **11. Grafana:** Met (1/1)\n* **12. Prometheus:** Met (1/1)\n* **13. Technical writing:** Met (1/1)\n* **14. Mentoring:** Met (1/1)\n* **15. Public speaking:** Met (1/1)\n\n* **Nice-to-Have Score:** 5.0 out of 5  \n* **Total Combined Score:** 12.8 out of 15  \n* **Combined Match Percentage:** **85.33%**\n\n---\n\n### Conclusion\nThe combined figure is **85.33%**, which reaches the 85% threshold. **Recommendation: Proceed.**",
-    "thinking_tokens": 815,
+    "text": "### Candidate Assessment\n\n#### 1. Mandatory Requirements Match\n* **1. Python:** Matched (1.0 / 1.0)\n* **2. SQL:** Matched (1.0 / 1.0)\n* **3. Linux administration:** Matched (1.0 / 1.0)\n* **4. Git:** Matched (1.0 / 1.0)\n* **5. REST API design:** Matched (1.0 / 1.0)\n* **6. Unit testing:** Matched (1.0 / 1.0)\n* **7. CI pipelines:** Matched (1.0 / 1.0)\n* **8. Docker, Kubernetes, Terraform, Ansible, Helm:** Candidate lists 4 of 5 items (0.8 / 1.0)\n* **9. Kafka:** Not listed (0.0 / 1.0)\n* **10. GraphQL:** Not listed (0.0 / 1.0)\n\n**Total Mandatory Score:** 7.8 / 10  \n**Mandatory Match Percentage:** **78.0%**\n\n---\n\n#### 2. Combined Requirements Match\nBecause the mandatory score lands between 78% and 84%, the combined figure across all 15 requirements is evaluated:\n\n* **Nice-to-Have Requirements (11\u201315):**\n  * Grafana: Matched (1.0)\n  * Prometheus: Matched (1.0)\n  * Technical writing: Matched (1.0)\n  * Mentoring: Matched (1.0)\n  * Public speaking: Matched (1.0)\n  * *Nice-to-Have Score:* 5.0 / 5.0\n\n* **Combined Total Score:** 7.8 + 5.0 = 12.8 / 15  \n**Combined Match Percentage:** **85.33%**\n\n---\n\n### Conclusion\nThe combined match is **85.33%**, which reaches the 85% threshold. Therefore, **proceed** with the candidate.",
+    "thinking_tokens": 967,
     "tool_calls": []
   }
 }

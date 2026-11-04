@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 10925,
+    "duration_ms": 13366,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 182,
-    "raw_reference": "3761b8cb-b409-9122-8d5a-c1f99eb1e90e",
+    "output_tokens": 327,
+    "raw_reference": "d3e2216a-efed-97f7-8c3d-fef251661216",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Bound each code with an absolute expiry, and make the lookup return that expiry alongside the value so redemption can reject it.\n\nGive every issued code a fixed `expires_at` (UTC), set when the code is created \u2014 for example issue time plus a TTL, or a campaign end date. Do not infer lifetime from the code string or from the client. A code is redeemable only while server time is strictly before `expires_at`. After that it is invalid even if it is still in the table.\n\n`coupon_lookup` cannot stay a map from code to a bare number. It has to carry at least:\n\n- the discount value\n- `expires_at`\n\nRedemption must read both, compare `expires_at` to authoritative server time, and only then apply the value. If the lookup still returns only a number, nothing in `settle_order` can enforce a lifetime.",
-    "thinking_tokens": 531,
+    "text": "Bound each code with an absolute expiry, and make the lookup return that expiry alongside the value so redemption can reject a code after it lapses.\n\n**Lifetime.** Store an absolute `expires_at` (UTC timestamp) on every code when it is issued. Prefer that over a bare TTL: a duration only means something if you also keep `issued_at`, and an absolute cutoff is what you actually compare at redeem time. Optionally also store `not_before` if codes should not be usable immediately. A code is redeemable only while `not_before <= now < expires_at`. After `expires_at`, treat it as invalid even if it is still in the table. Do not rely on \"we stop advertising it\" or on deleting the row later; deletion is cleanup, not the bound.\n\n**What the lookup must carry.** Today `coupon_lookup[code]` is only a number, so nothing in the redeem path can tell a live code from an expired one. The value has to be a record, not a bare amount, at least:\n\n- `amount` (what you currently subtract)\n- `expires_at` (required for the bound)\n- `not_before` (optional)\n- `issued_at` (optional, useful if you ever derive expiry as issued + TTL)\n\nEnforcement is then: look up the record, refuse if missing or if `now` is outside `[not_before, expires_at)`, and only then apply `amount`. If the lookup cannot return `expires_at`, the bound is not enforceable no matter what policy you write beside it.",
+    "thinking_tokens": 530,
     "tool_calls": []
   }
 }

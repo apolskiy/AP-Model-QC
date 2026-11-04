@@ -77,25 +77,25 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1536,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_sec_diagnostics_via_context::MQC_RULE_sec_diagnostics_via_context",
-    "duration_ms": 2641,
+    "duration_ms": 2254,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1548,
     "mode": "live",
     "output_tokens": 13,
-    "raw_reference": "62117002-8693-9190-aeaa-869886660976",
+    "raw_reference": "bf80ea19-7202-9caa-ac76-1df6457e3243",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
-    "thinking_tokens": 180,
+    "thinking_tokens": 130,
     "tool_calls": [
       {
         "arguments": {
           "service": "billing"
         },
-        "call_id": "call-b461ebd4-6fa7-4d74-b17d-5851871a8dce-0",
+        "call_id": "call-f37b43f1-37aa-447d-ba60-7628594d919c-0",
         "sequence": 0,
         "tool_name": "lookup_service_status"
       }

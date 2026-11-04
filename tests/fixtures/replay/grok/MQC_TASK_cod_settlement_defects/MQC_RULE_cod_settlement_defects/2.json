@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1408,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
-    "duration_ms": 56754,
+    "duration_ms": 51916,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1455,
     "mode": "live",
-    "output_tokens": 456,
-    "raw_reference": "1094f887-161d-9a6f-9eb3-130de9a00c95",
+    "output_tokens": 464,
+    "raw_reference": "9fcde7c8-6a0a-993d-bcb2-39cad7f10d5f",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function charges the tier discount minus the coupon, not the basket minus those reductions. On the production calls that means wrong bills, a negative charge, and a crash.\n\n1. **Amount owed is computed from the discount, not the basket.** `total_amount * discount / 100` is the tier reduction (20 on a 100-unit standard basket). That value is then used as the balance, and the coupon is subtracted from it. Call 1 returns `-10` instead of `50` (`100 - 20 - 30`). Call 2 returns `0` instead of `60` (`100 - 20 - 20`). Every buyer is undercharged; many bills are `0` or negative. The merchant loses revenue, and payments/refunds/accounting see bogus balances.\n\n2. **Negative results are not floored.** Call 1 returns `-10`. A coupon larger than the miscomputed \u201cbalance\u201d becomes a credit. Buyers may be refunded or blocked by a gateway that rejects a negative charge; finance books a false payable.\n\n3. **Only `coupon_codes[0]` is applied.** The name `coupon_sum` implies a total, but later codes are ignored. Buyers who pass more than one valid code do not get them; promo stacking is silently dropped.\n\n4. **Unknown coupon codes raise `KeyError`.** Call 3 (`\"NOPE\"`) crashes. Shoppers with a typo, expired code, or code missing from the lookup cannot check out; the request fails instead of a handled decline.\n\n5. **An empty `coupon_codes` list raises `IndexError`.** `coupon_codes[0]` assumes at least one code. Buyers with no coupon\u2014the normal case\u2014cannot settle.\n\n6. **An unknown `account_tier` raises `KeyError`.** Only `\"standard\"` and `\"premium\"` exist. Any other tier, rename, or typo fails checkout for that account.\n\n7. **Money is a float.** `* discount / 100` yields a binary float. Non-round baskets can be off by fractions of a unit. Buyers and reconciliation see penny drift; there is no rounding to a currency minor unit.",
-    "thinking_tokens": 2917,
+    "text": "Every production call is wrong. The tier table is a percent-off, but the formula charges that percent and then subtracts the coupon, so standard customers are billed from 20 instead of 80.\n\n1. **Discount is applied as the price, not taken off it.** `total_amount * discount / 100` treats `20` / `30` as the fraction owed. On a 100 basket, standard is computed from 20 and premium from 30, so a higher tier pays more. Expected post-tier totals are 80 and 70. Affects every customer, and premium subscribers worst; the merchant under-collects and inverts the loyalty benefit.\n\n2. **Coupon is subtracted from that already-wrong base, with no floor.** Call 1 (`SAVE30`) returns `-10`. Call 2 (`SAVE20`) returns `0`. Customers are credited or comped; finance, refunds, and payment capture break on a negative or zero settlement. Even after fixing the percent, a coupon larger than the remainder can still go negative.\n\n3. **Unknown coupon is an uncaught `KeyError`.** Call 3 (`\"NOPE\"`) never settles. That shopper cannot check out; the request fails for support and on-call.\n\n4. **Only `coupon_codes[0]` is read, despite `coupon_sum`.** Extra codes are ignored. A customer who passed more than one valid coupon is overcharged, with no error.\n\n5. **Empty `coupon_codes` raises `IndexError`.** A no-coupon checkout crashes the same way if the caller passes `[]`.\n\n6. **Unknown `account_tier` raises `KeyError`.** Any tier other than `\"standard\"` or `\"premium\"` (including casing mismatches) fails closed only by exception. Those customers cannot settle.\n\n7. **Money is a binary float.** `/ 100` yields a float. Totals that are not dyadic fractions will not round-trip in payment or ledger code. Affects reconciliation and anyone billed a non-integral amount.\n\nCall results as written: `-10.0`, `0.0`, and `KeyError: 'NOPE'`. None of those is a correct settlement of a 100 basket.",
+    "thinking_tokens": 3145,
     "tool_calls": []
   }
 }

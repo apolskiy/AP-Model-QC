@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_INS_ORDER_COMPLETE": {
-        "rationale": "All four changes are included. The two changes with measurable quantities appear first in their source order, followed by the two remaining changes, also preserving their original order.",
+        "rationale": "All four changes from the release note are present. The changes containing measurable quantities appear first, and within both groups, the original source order is strictly maintained.",
         "score": 5
       }
     }

@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_PRM_CAP_TRUTHFULNESS": {
-        "rationale": "The response correctly identifies that there is no match and names both figures (the 5-9 year requirement and the candidate's 15+ years). However, it stops at stating the experience is 'outside that range' rather than explicitly identifying the ceiling of 9 years as the specific boundary that excludes the candidate, placing it between level 3 and level 5.",
+        "rationale": "The response clearly exceeds level 3 by naming both the required range (5 to 9 years) and the candidate's experience (15+ years). However, it falls short of level 5 because it states the candidate is 'outside that range' without specifically identifying the ceiling (upper limit) as the excluding factor.",
         "score": 4
       }
     }

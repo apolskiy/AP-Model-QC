@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 7826,
+    "duration_ms": 6959,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 171,
-    "raw_reference": "KAzpar-_B5Ow1MkPkJiYyAI",
+    "output_tokens": 162,
+    "raw_reference": "u2bqaqaLEvWM39IP5pr_-A4",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Could you please provide the total number of years of backend engineering experience the candidate has?\n\n### The Cost of Not Supplying It\n* **Automated / Screening Disqualification:** The job requirement explicitly mandates **8 years** of backend engineering experience. Without stating this exact or qualifying figure, the profile is likely to be filtered out immediately by Applicant Tracking Systems (ATS) or recruiter initial screens that screen for minimum tenure.\n* **Risk of Inaccuracy:** If we fabricate or guess the number (e.g., claiming 8+ years when the candidate has fewer), it creates an integrity issue during technical or background screening. Conversely, omitting it leaves the candidate's seniority ambiguous despite their relevant transactional and settlement experience.\n\n***\n\n*(Once you share the exact number of years, I will provide the finalized, tailored summary matching the posting.)*",
-    "thinking_tokens": 479,
+    "text": "How many years of backend engineering experience does the candidate have? \n\n**What it costs not to supply this figure:**\n* **Immediate Disqualification by ATS/Recruiters:** The job description strictly requires 8 years of experience. Applicant Tracking Systems (ATS) and initial resume screeners use minimum years of experience as a hard binary filter; omitting it means the candidate will likely be rejected before a human reads their technical accomplishments.\n* **Risk of Inaccuracy/Misrepresentation:** If the number is assumed or fabricated to bypass screening, it risks disqualification during subsequent interview rounds or employment background checks. \n\nOnce you provide the candidate's actual years of experience, I can rewrite the summary to seamlessly incorporate the figure while highlighting their high-volume settlement, payment reconciliation, and inventory systems background.",
+    "thinking_tokens": 398,
     "tool_calls": []
   }
 }

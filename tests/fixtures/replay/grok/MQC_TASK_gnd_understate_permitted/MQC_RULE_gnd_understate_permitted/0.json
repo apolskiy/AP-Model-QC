@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
-    "duration_ms": 5690,
+    "duration_ms": 6743,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1358,
     "mode": "live",
-    "output_tokens": 37,
-    "raw_reference": "04935205-b7eb-93d4-b493-4f93337b05d3",
+    "output_tokens": 35,
+    "raw_reference": "d023f8d2-8eef-94bf-b445-2487668e9d8c",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**28.7 million**\n\nThe report states that EMEA recorded 28.7 million. That figure is a supported floor (equal to the stated amount, not above it).",
-    "thinking_tokens": 328,
+    "text": "**28.7 million**\n\nThe report states that EMEA recorded 28.7 million, so that figure is a supported floor and is not above the stated amount.",
+    "thinking_tokens": 415,
     "tool_calls": []
   }
 }

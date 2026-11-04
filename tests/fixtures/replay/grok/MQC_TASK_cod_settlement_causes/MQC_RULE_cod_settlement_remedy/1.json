@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1536,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 89875,
+    "duration_ms": 77895,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 448,
-    "raw_reference": "a6ff01c9-57ea-9900-bcc7-3e2e0412948c",
+    "output_tokens": 454,
+    "raw_reference": "2af444c9-0d21-91b0-a659-34fadccf951c",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math is wrong in four ways. Each one is a cause, not just a bad return value.\n\n**The percentage is used as the amount charged.** `discount` is a percent of the basket, so `total_amount * discount / 100` is the currency taken off, not the balance due. The function then treats that reduction as `amount_owed` and subtracts the coupon from it. On a 100-unit standard order that starts from 20, not from 80. It should charge the total minus that percentage: `total_amount * (100 - discount) / 100`, and only then subtract coupons.\n\n**A currency coupon is subtracted from that percentage slice.** A tier discount and a coupon are different units. The percent has to be turned into a currency reduction of the total first. The lookup value is already currency and must come off the remaining balance, not off the discount figure.\n\n**Only the first code is applied.** `coupon_codes[0]` drops every later code, so `[\"SAVE20\", \"SAVE30\"]` never adds the second 30. It should add the currency value of every recognised code.\n\n**An unknown code aborts the sale.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so one bad code prevents any settlement. An unrecognised code should contribute nothing and the order should still settle.\n\n**The result is not bounded, so the seller can give the goods away.** After the subtractions there is no floor. With the current formula a normal `SAVE30` already goes negative, and `SAVE20` plus the mistaken 20-unit base returns 0. Even after the percentage is applied correctly, `SAVE90` is 80 \u2212 90 = \u221210, which pays the buyer to take the product. The amount owed should be the discounted total minus the sum of recognised coupons, and never below 0. The seller collects that balance; they do not owe the customer and do not hand the product over for nothing when the coupons do not actually cover a correctly discounted basket.\n\nFor the four production calls that is 50, 0, 80, and 30.",
-    "thinking_tokens": 5602,
+    "text": "The settlement is wrong for four separate reasons. The calls show the effects, but the causes are in how the amount is built.\n\n**The tier rate is used as the amount due, not as a percent off.** `discount` is a percent of the total (20 means 20% off). `total_amount * discount / 100` is only the discount slice, and that slice is then treated as what the customer owes. On a 100 basket at standard tier that starts from 20, not 80. It should take the percent off the total first: `total_amount * (100 - discount) / 100`.\n\n**The coupon is subtracted from that slice, so the two units never meet on a real subtotal.** A coupon looks up to currency; the tier value is a rate. Those only combine after the rate has been turned into a currency reduction of the total. The expression never builds that post-discount subtotal, so the coupon is taken off the discount slice instead of off the amount still owed. It should subtract coupon currency from the subtotal after the percent off.\n\n**Only the first code is applied.** `coupon_codes[0]` drops every later code, so `[\"SAVE20\", \"SAVE30\"]` reduces by 20, not 50. It should look up each code and sum the currency amounts.\n\n**An unknown code aborts the call.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so nothing is settled. An unrecognised code should add nothing and settlement should still return an amount. (Indexing `[0]` has the same failure if the list is empty: `IndexError`.)\n\n**The result is not bounded, so the seller can pay the buyer.** With no floor, a coupon larger than the discounted total (`SAVE90` against an 80 subtotal) yields a negative amount: the product is given away and the seller owes the customer. Coupon reductions should stop at the post-discount subtotal, and the returned amount should be at least 0.\n\nOn these calls that is 50, 0, 80, and 30 \u2014 not -10, -70, an exception, and 0.",
+    "thinking_tokens": 4919,
     "tool_calls": []
   }
 }

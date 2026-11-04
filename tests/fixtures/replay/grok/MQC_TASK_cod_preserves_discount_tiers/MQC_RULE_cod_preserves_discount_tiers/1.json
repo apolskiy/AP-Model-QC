@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
-    "duration_ms": 15146,
+    "duration_ms": 19714,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1387,
     "mode": "live",
-    "output_tokens": 224,
-    "raw_reference": "8e1971e5-291f-945d-b073-37ab8195c677",
+    "output_tokens": 382,
+    "raw_reference": "c8103639-a589-9adb-9d93-0ee053e06be3",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function returns the tier discount in dollars minus a single coupon, not the amount still owed.\n\n`DISCOUNT_BY_TIER` stores a percent off (`standard` 20, `premium` 30). The code treats that percent as the fraction to charge:\n\n```text\ntotal_amount * discount / 100 - coupon_lookup[coupon_codes[0]]\n```\n\nFor a $100 standard order that is 20% off, that expression uses $20, not the $80 left after the discount. It also reads only `coupon_codes[0]`, so every later code is ignored, and it subtracts that one coupon from the discount dollars instead of from the post-discount total.\n\nIt should keep those same percentages and compute the amount owed as:\n\n```text\ntotal_amount * (100 - discount) / 100 - sum(coupon_lookup[code] for code in coupon_codes)\n```\n\nThat is the total after the tier percent-off, minus every coupon value. An empty coupon list should contribute 0, not index `[0]`.",
-    "thinking_tokens": 996,
+    "text": "The function treats the tier percentages as the fraction of the total the customer still owes, and it only applies the first coupon. It should treat those percentages as discounts off the total and subtract every coupon.\n\n**What it computes**\n\n```text\namount_owed = total_amount * DISCOUNT_BY_TIER[account_tier] / 100\n              - coupon_lookup[coupon_codes[0]]\n```\n\n- `20` and `30` are used as the share of `total_amount` that remains, not as a percent off. A $100 standard order becomes $20 before coupons; a premium order becomes $30.\n- Only `coupon_codes[0]` is looked up. Any later codes are ignored.\n- That single coupon value is then subtracted from the already-reduced total.\n\nExample: standard tier, total `100`, coupons worth `5` and `10` \u2192 `100 * 20 / 100 - 5` = `15`. The second coupon never applies.\n\n**What it should compute**\n\nLeave `DISCOUNT_BY_TIER` as `{\"standard\": 20, \"premium\": 30}`. Those values are percent-off rates, so the payable fraction is `(100 - discount) / 100`. Sum every coupon, not just the first:\n\n```text\ndiscount = DISCOUNT_BY_TIER[account_tier]\ncoupon_sum = sum(coupon_lookup[code] for code in coupon_codes)\namount_owed = total_amount * (100 - discount) / 100 - coupon_sum\n```\n\nSame example: `100 * (100 - 20) / 100 - (5 + 10)` = `65`. A premium order would use `30`, so the customer would owe `70%` of the total minus all coupon values.",
+    "thinking_tokens": 1201,
     "tool_calls": []
   }
 }

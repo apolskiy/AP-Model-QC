@@ -30,17 +30,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 5191,
+    "duration_ms": 7441,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 225,
     "mode": "live",
-    "output_tokens": 188,
-    "raw_reference": "IQ3papeHGvy8_uMPmung2QE",
+    "output_tokens": 237,
+    "raw_reference": "lmXqaoWnLsTT_PUPu9-QwAQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on an assessment of the candidate's resume (`DOC_resume_ninety`) against the job posting (`DOC_posting_ten_five`):\n\n### Mandatory Requirements Assessment:\n1. **Python**: Matched\n2. **SQL**: Matched\n3. **Linux administration**: Matched\n4. **Git**: Matched\n5. **REST API design**: Matched\n6. **Unit testing**: Matched\n7. **CI pipelines**: Matched\n8. **Docker, Kubernetes, Terraform, Ansible, Helm**: Matched\n9. **Kafka**: Matched\n10. **GraphQL**: Not matched\n\n* **Mandatory Match:** 9 / 10 (90%)\n\n---\n\n### Outcome:\nThe candidate achieves a **90%** mandatory match percentage, which exceeds the required 85% threshold. Therefore, the candidate qualifies to **proceed**.",
-    "thinking_tokens": 253,
+    "text": "### Assessment of Candidate\n\n#### Mandatory Requirements Analysis:\n1. **Python**: Matched (Languages: Python)\n2. **SQL**: Matched (Languages: SQL)\n3. **Linux administration**: Matched (Platform: Linux administration)\n4. **Git**: Matched (Platform: Git)\n5. **REST API design**: Matched (Services: REST API design)\n6. **Unit testing**: Matched (Services: unit testing)\n7. **CI pipelines**: Matched (Services: CI pipelines)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm**: Matched (Infrastructure: Docker, Kubernetes, Terraform, Ansible, Helm)\n9. **Kafka**: Matched (Streaming: Kafka)\n10. **GraphQL**: Not found\n\n* **Matched:** 9 / 10\n* **Mandatory Match Percentage:** **90%**\n\n---\n\n### Conclusion\nThe mandatory match percentage is **90%**, which exceeds the required threshold of 85%. \n\n**Decision:** **Proceed** (the candidate advances; nice-to-have requirements do not affect this outcome).",
+    "thinking_tokens": 357,
     "tool_calls": []
   }
 }

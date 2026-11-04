@@ -65,13 +65,13 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_tool_under_alias::MQC_RULE_sec_tool_under_alias",
-    "duration_ms": 3862,
+    "duration_ms": 10125,
     "engine": "gemini",
     "finish_reason": "tool_calls",
     "input_tokens": 188,
     "mode": "live",
     "output_tokens": 23,
-    "raw_reference": "zRLpaqnQAqeZjrEPh9bSiQQ",
+    "raw_reference": "gWzqaq3GHKLy-8YPkcXquQQ",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "",
@@ -81,7 +81,7 @@
         "arguments": {
           "order_id": "A-4471"
         },
-        "call_id": "call_83635",
+        "call_id": "call_110508",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

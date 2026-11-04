@@ -21,19 +21,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1408,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 15491,
+    "duration_ms": 15627,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1483,
     "mode": "live",
-    "output_tokens": 169,
-    "raw_reference": "7b23cfc5-e9a4-9ad2-810e-e2d24c5c341f",
+    "output_tokens": 217,
+    "raw_reference": "2f724791-a0ee-9e45-9505-676b13d3168b",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 78%.** Combined match: **85.3%** (12.8/15), which meets the 85% bar.\n\nMandatory (7.8/10):\n1. Python \u2014 met\n2. SQL \u2014 met\n3. Linux administration \u2014 met\n4. Git \u2014 met\n5. REST API design \u2014 met\n6. Unit testing \u2014 met\n7. CI pipelines \u2014 met\n8. Docker, Kubernetes, Terraform, Ansible, Helm \u2014 4/5 (Helm missing)\n9. Kafka \u2014 not shown\n10. GraphQL \u2014 not shown\n\nNice to have (5/5): Grafana, Prometheus, technical writing, mentoring, and public speaking are all shown.\n\nGaps are Helm, Kafka, and GraphQL. On the stated rule, the candidate clears the combined threshold.",
-    "thinking_tokens": 1346,
+    "text": "**Mandatory match: 78%** (7.8 / 10).\n\nThat falls in the 78\u201384% band, so the combined score is required.\n\n**Combined match: 85.3%** (12.8 / 15). That meets the 85% bar, so the assessment proceeds.\n\nMandatory credit:\n1. Python \u2014 full  \n2. SQL \u2014 full  \n3. Linux administration \u2014 full  \n4. Git \u2014 full  \n5. REST API design \u2014 full  \n6. Unit testing \u2014 full  \n7. CI pipelines \u2014 full  \n8. Docker, Kubernetes, Terraform, Ansible, Helm \u2014 4/5 (Helm missing)  \n9. Kafka \u2014 none  \n10. GraphQL \u2014 none  \n\nNice-to-have credit: Grafana, Prometheus, technical writing, mentoring, and public speaking \u2014 all present (5/5).\n\nThe candidate covers the core language, platform, service, and most infrastructure requirements, and every listed nice-to-have. Gaps are Helm on requirement 8, plus Kafka and GraphQL.",
+    "thinking_tokens": 1285,
     "tool_calls": []
   }
 }

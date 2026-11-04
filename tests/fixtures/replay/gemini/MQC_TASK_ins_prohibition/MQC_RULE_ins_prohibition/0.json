@@ -27,17 +27,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_prohibition::MQC_RULE_ins_prohibition",
-    "duration_ms": 7368,
+    "duration_ms": 9112,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 109,
     "mode": "live",
-    "output_tokens": 47,
-    "raw_reference": "9BDpaoP6CarN_PUPttaNqAE",
+    "output_tokens": 53,
+    "raw_reference": "G2TqauqNNrLm-sAPxPbWwAk",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Release 4.2 addresses three reported defects, ensuring the importer preserves trailing columns on files without newlines and the scheduler retries failed jobs twice before reporting them. Furthermore, the audit log now captures the account that performed any deletion.",
-    "thinking_tokens": 631,
+    "text": "Release 4.2 resolves three reported defects. The update ensures the importer no longer drops a trailing column when a file ends without a newline, the scheduler retries a failed job twice before reporting it, and the audit log records the account that performed a deletion.",
+    "thinking_tokens": 851,
     "tool_calls": []
   }
 }

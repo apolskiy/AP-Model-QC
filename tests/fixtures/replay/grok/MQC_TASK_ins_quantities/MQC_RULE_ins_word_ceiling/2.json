@@ -19,17 +19,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_word_ceiling",
-    "duration_ms": 4175,
+    "duration_ms": 8164,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1356,
     "mode": "live",
-    "output_tokens": 35,
-    "raw_reference": "0d4a3404-307d-9f71-9fe4-92ab6833c082",
+    "output_tokens": 36,
+    "raw_reference": "d1feb01c-b0b8-9b26-8825-2963387bf4e4",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "- The importer keeps a trailing column without a newline.\n- The scheduler retries a failed job twice before reporting it.\n- The audit log records the account that performed a deletion.",
-    "thinking_tokens": 376,
+    "text": "- The importer keeps a trailing column without a final newline.\n- The scheduler retries a failed job twice before reporting it.\n- The audit log records the account that performed a deletion.",
+    "thinking_tokens": 741,
     "tool_calls": []
   }
 }
