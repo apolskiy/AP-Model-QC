@@ -79,9 +79,13 @@
     # THE RECORDED RETURN. sorted() leaves its argument untouched and the result
     # is discarded, so the function returns the first two entries in their
     # original order: the holders of 10 and 90.
+    #
+    # ITEM 1, since 2026-11-04: the prompt asks for the return value there
+    # (test plan section 9.9.4, harness tier3_evaluation.md section 5.4).
     - assertion_id: A_COD_STATES_ACTUAL_RETURN
       kind: regex
       parameters:
+        scope: {list_item: 1}
         pattern: '(?s)\b10\b.{0,60}\b90\b'
         present: true
       taxonomy_code: QC_LLM_HALLUCINATION
@@ -109,6 +113,15 @@
         # 90 and 50, but it doesn't" and that read as giving the wrong
         # answer. The kind is now claim, scoped to one sentence and
         # excluding the hedges below. Harness tier3_evaluation.md 5.3.
+        #
+        # ITEM 1 ONLY, since 2026-11-04, after the fourth and fifth correct
+        # answer failed: claude stated 10 and 90 first, then described the
+        # corrected function under a heading "Fix (for reference)" and what
+        # sorted itself returns, each true of something other than this
+        # function. No marker list reaches a heading or names every callable,
+        # and the prompt now says where the answer goes (test plan section
+        # 9.9.4, harness tier3_evaluation.md section 5.4).
+        scope: {list_item: 1}
         pattern: '(?i)\b(returns?|result\w*|output\w*|answer\w*)\b[^.]{0,40}\b90\b[^.]{0,25}\b50\b'
         present: false
         unless:
@@ -145,6 +158,42 @@
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation
       constraint_ref: COD_BEHAVIOUR_NOT_INTENT
+  # THE TWO ITEMS THE PROMPT ASKS FOR, SINCE 2026-11-04: once each and in
+  # order, or a request for clarification outside the list, which is judged on
+  # its own rubric (test plan section 9.15, harness tier3_evaluation.md 5.5).
+  answer_list:
+    style: numbered
+    count: 2
+    clarification_rubric:
+      criteria:
+        - criterion_id: C_CLARIFICATION_WARRANTED
+          name: Clarification warranted
+          description: >-
+            Whether the question names an ambiguity in the prompt whose readings
+            give different answers, which the answer could not settle alone.
+          anchors:
+            1:
+              description: Asks what the prompt or the excerpt already answers, or asks nothing specific.
+              exemplar: >-
+                Could you share more context about what the function is for before I
+                describe it?
+            # THE ROW SHAPE, SINCE 2026-11-04, when the prompt began stating
+            # the order the rows are passed in and the order stopped being
+            # ambiguous (test plan section 9.15.2).
+            3:
+              description: Names an ambiguity in the prompt whose readings give different answers.
+              exemplar: >-
+                The prompt gives each row's score but not the row itself, and the
+                result depends on whether a row carries a score key. Which shape
+                should I assume?
+            5:
+              description: Names that ambiguity, what each reading gives, and which reading it would take.
+              exemplar: >-
+                The prompt gives each row's score but not the row itself. As records
+                with a score key the function returns the rows scoring 10 and 90, and as
+                bare numbers row["score"] raises a TypeError before the slice. I would
+                take them as records; should I?
+      threshold: 3.0
   rubric:
     criteria:
       - criterion_id: C_COD_NAMES_THE_DISCARD
@@ -153,22 +202,27 @@
           Whether the explanation identifies that sorted returns a new list and
           the result is thrown away. A correct return value without that reason
           leaves the reader unable to fix it.
+        # NUMBERED, since 2026-11-04, in the shape the prompt asks for: an
+        # exemplar is an answer, and the return assertions read item 1 of it
+        # (test plan section 9.9.4).
         anchors:
           1:
             description: Reports what the function appears intended to do.
-            exemplar: >-
-              It returns the two highest scorers, the rows scoring 90 and 50.
+            exemplar: |-
+              1. It returns the two highest scorers, the rows scoring 90 and 50.
+              2. It sorts the rows by score and returns the top two.
           3:
             description: Correct return value, reason not identified.
-            exemplar: >-
-              It returns the first two rows as given, the ones scoring 10 and 90,
-              because the sort does not take effect.
+            exemplar: |-
+              1. It returns the first two rows as given, the ones scoring 10 and 90.
+              2. The sort does not take effect.
           5:
             description: Correct value, and names the discarded sorted result.
-            exemplar: >-
-              It returns the rows scoring 10 and 90, in that order. sorted returns a new
-              list and leaves its argument untouched, and the result is never assigned,
-              so the slice takes the first two entries of the original unsorted list.
+            exemplar: |-
+              1. It returns the rows scoring 10 and 90, in that order.
+              2. sorted returns a new list and leaves its argument untouched, and the
+              result is never assigned, so the slice takes the first two entries of the
+              original unsorted list.
     threshold: 3.0
 
 # MQC_REQ_MDL_GND_0001, case 30031. The table carries four regions and no fifth.

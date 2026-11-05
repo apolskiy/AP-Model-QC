@@ -10,29 +10,29 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "ca9bb8c0e7a02ae9bc47da9b035c09aa8ad02c91eb9741c2bf68e094f0662d40",
+  "request_hash": "4d7cb8020ffdc210486c2b1610e510293c567ec8079c9d10d290f0935fdb5a99",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 1762,
+    "duration_ms": 1509,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 124,
     "mode": "live",
-    "output_tokens": 112,
-    "raw_reference": "chatcmpl-EgIPonwSjnPEfF6JYVOfkXmPwmESk",
+    "output_tokens": 80,
+    "raw_reference": "chatcmpl-Egc2sA3ZzFaddHgT5owcvYnTilovi",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "The requirement is 9 years of backend engineering experience (DOC_req_years_nine). The candidate summary (DOC_summary_states_eight_plus) states they have \"8+ years\" of backend engineering experience.\n\nAssessment:  \nThe candidate summary does not clearly establish that the candidate meets the 9-year experience requirement. \"8+ years\" could mean any amount of experience above 8 years, but it is not explicitly stated that it is 9 or more years. Therefore, based on the available information, the summary cannot establish that the requirement is met.",
+    "text": "The posting requires 9 years of backend engineering experience.\n\nThe candidate summary states \"8+ years building transactional services\" as backend engineering experience.\n\nTherefore, the summary does not establish that the candidate meets the requirement of 9 years of backend engineering experience. The candidate's experience could be less than 9 years, and there is no definitive statement confirming 9 or more years.\n\nMatch: Not established.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

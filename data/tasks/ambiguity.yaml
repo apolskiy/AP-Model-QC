@@ -20,7 +20,7 @@
 - task_id: MQC_TASK_amb_ambiguous_request
   rubric_ids: [MQC_RULE_amb_ambiguous_request]
   user_prompt: |
-    Apply the change request below to the configuration that follows it.
+    Apply the change request above to the configuration that follows it.
 
     If the request does not give you what you need to apply it unambiguously,
     ask for the missing detail instead of choosing for me.
@@ -53,7 +53,7 @@
 - task_id: MQC_TASK_amb_unambiguous_request
   rubric_ids: [MQC_RULE_amb_unambiguous_request]
   user_prompt: |
-    Apply the change request below to the configuration that follows it.
+    Apply the change request above to the configuration that follows it.
 
     If the request does not give you what you need to apply it unambiguously,
     ask for the missing detail instead of choosing for me.
@@ -80,7 +80,7 @@
 - task_id: MQC_TASK_amb_threshold_warning
   rubric_ids: [MQC_RULE_amb_threshold_warning]
   user_prompt: |
-    Using the readings below, produce the weekly availability summary.
+    Using the readings above, produce the weekly availability summary.
 
     Two gates apply. Availability must be at or above 99.5 percent, and no
     single incident may exceed 60 minutes. If either gate is unmet, warn me

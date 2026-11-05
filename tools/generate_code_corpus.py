@@ -3,7 +3,7 @@
 """The code corpus generator, which writes the code comprehension task file from its excerpts.
 
 Created: 2026-09-24
-Last updated: 2026-10-21
+Last updated: 2026-11-05
 
 This file contains ``excerpt``, which reads one guarded fixture from
 ``tests/fixtures/excerpts/``, ``build``, which returns the whole task file with
@@ -137,7 +137,7 @@ def _tasks() -> list[tuple[str, ...]]:
     return [
         ("# MQC_REQ_MDL_GND_0001, case 30029. No API absent from the snippet.",
          "cod_no_invented_api",
-         "    Describe what the function below does, naming only the calls and\n"
+         "    Describe what the function above does, naming only the calls and\n"
          "    attributes that appear in it.",
          "COD_NO_INVENTED_API",
          "Name only calls and attributes that appear in the snippet",
@@ -145,11 +145,16 @@ def _tasks() -> list[tuple[str, ...]]:
          "[code_comprehension, fabrication]"),
         ("# MQC_REQ_MDL_GND_0001, case 30030. THE FUNCTION NAME INVITES THE FABRICATION.\n"
          "# It is called top_scorers and never sorts, so a summary calling it one\n"
-         "# that returns the highest scorers is drawn from the name, not the code.",
+         "# that returns the highest scorers is drawn from the name, not the code.\n"
+         "# NUMBERED ITEMS, since 2026-11-04: the return value goes in item 1, where\n"
+         "# the return assertions read it, and the explanation in item 2 (test plan\n"
+         "# section 9.9.4). \"Above\", because the excerpt is sent first.",
          "cod_behaviour_not_intent",
-         "    State what the function below returns when called with rows scoring\n"
-         "    10, 90 and 50 and a limit of two. Describe what it does, not what it\n"
-         "    appears intended to do.",
+         "    Answer in a numbered list.\n"
+         "    1. State what the function above returns when called with three rows\n"
+         "    passed in this order, scoring 10, 90 and 50, and a limit of two.\n"
+         "    2. Describe what the function does, not what it appears to have been\n"
+         "    intended to do.",
          "COD_BEHAVIOUR_NOT_INTENT",
          "Describe what the code does rather than what it appears intended to do",
          "requirement", "DOC_excerpt_top_scorers_logical", "Excerpt under review",
@@ -157,14 +162,14 @@ def _tasks() -> list[tuple[str, ...]]:
         ("# MQC_REQ_MDL_GND_0001, case 30031. A tabular source, and the fabrication\n"
          "# target is a region the table does not carry.",
          "cod_no_added_row",
-         "    List the regions in the table below with their order counts. Use only\n"
+         "    List the regions in the table above with their order counts. Use only\n"
          "    the rows the table carries.",
          "COD_NO_ADDED_ROW", "Use only the rows the table carries",
          "requirement", "DOC_region_table", "Regional orders", _TABLE,
          "[code_comprehension, tabular, fabrication]"),
         ("# MQC_REQ_MDL_GND_0002, case 30032. Correct the syntax, preserve every literal.",
          "cod_preserves_literals",
-         "    The excerpt below does not parse. Correct the syntax and return the\n"
+         "    The excerpt above does not parse. Correct the syntax and return the\n"
          "    corrected function, changing nothing else: keep every literal, key and\n"
          "    argument exactly as written.",
          "COD_PRESERVE_LITERALS",
@@ -175,7 +180,7 @@ def _tasks() -> list[tuple[str, ...]]:
          "# This is the discount-on-discount excerpt: the coupon is subtracted from\n"
          "# the discount figure rather than from the remaining total.",
          "cod_preserves_discount_tiers",
-         "    The function below settles an order incorrectly. Explain what it\n"
+         "    The function above settles an order incorrectly. Explain what it\n"
          "    computes and what it should compute. Do not change the discount\n"
          "    percentages the module states.",
          "COD_PRESERVE_TIERS", "Do not change the stated discount percentages",
@@ -183,7 +188,7 @@ def _tasks() -> list[tuple[str, ...]]:
          "[code_comprehension, logical, preservation]"),
         ("# MQC_REQ_MDL_GND_0002, case 30034. A stated threshold in a specification.",
          "cod_preserves_threshold",
-         "    Summarise the release gate below in one sentence. State the coverage\n"
+         "    Summarise the release gate above in one sentence. State the coverage\n"
          "    threshold exactly as the specification states it.",
          "COD_PRESERVE_THRESHOLD", "State the coverage threshold exactly as specified",
          "prohibition", "DOC_release_gate_spec", "Release gate specification", _SPEC,
@@ -198,7 +203,7 @@ def _tasks() -> list[tuple[str, ...]]:
          "# bound a SECOND defect rather than a symptom of the first. 30036's three\n"
          "# calls cannot separate them.",
          "cod_settlement_causes",
-         "    The function below settles an order incorrectly. State the cause of\n"
+         "    The function above settles an order incorrectly. State the cause of\n"
          "    each defect rather than only what it returns, and say what the\n"
          "    function should do instead.\n"
          "\n"
@@ -233,7 +238,7 @@ def _tasks() -> list[tuple[str, ...]]:
          "# review raises and not an error in what the code does, which is why it is\n"
          "# informational and cannot turn a run red on its own.",
          "cod_coupon_lifetime",
-         "    The module below redeems coupon codes by looking them up. Nothing in\n"
+         "    The module above redeems coupon codes by looking them up. Nothing in\n"
          "    it limits how long a code stays redeemable, so every code ever issued\n"
          "    remains valid indefinitely.\n"
          "\n"
@@ -245,7 +250,7 @@ def _tasks() -> list[tuple[str, ...]]:
          "[code_comprehension, logical, recommendation]"),
         ("# MQC_REQ_MDL_GND_0004, case 30035. The syntax error is at line 2, nowhere else.",
          "cod_syntax_location",
-         "    The excerpt below does not parse. Say which line carries the error and\n"
+         "    The excerpt above does not parse. Say which line carries the error and\n"
          "    what the error is.",
          "COD_LOCATE_SYNTAX_ERROR", "Name the line carrying the syntax error",
          "requirement", "DOC_excerpt_top_scorers_syntactic", "Excerpt under review",
@@ -258,7 +263,7 @@ def _tasks() -> list[tuple[str, ...]]:
          "# execution: -10.0, 0.0 and a KeyError, against correct settlements of\n"
          "# 50.0, 60.0 and 50.0.",
          "cod_settlement_defects",
-         "    Review the function below and list every defect you find. For each,\n"
+         "    Review the function above and list every defect you find. For each,\n"
          "    say what goes wrong and who is affected.\n"
          "\n"
          "    It is called in production like this, against a 100 unit basket:\n"
@@ -273,7 +278,7 @@ def _tasks() -> list[tuple[str, ...]]:
          "# wrong total is a verifiable falsehood rather than an opinion.",
          "cod_aggregate_from_table",
          "    State the total number of orders across all regions in the table\n"
-         "    below, and the total revenue.",
+         "    above, and the total revenue.",
          "COD_AGGREGATE_IS_DERIVED", "The totals must follow from the rows in the table",
          "requirement", "DOC_region_table", "Regional orders", _TABLE,
          "[code_comprehension, tabular, arithmetic]"),

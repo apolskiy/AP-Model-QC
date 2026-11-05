@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "The module below redeems coupon codes by looking them up. Nothing in\nit limits how long a code stays redeemable, so every code ever issued\nremains valid indefinitely.\n\nRecommend how the design should bound a code's lifetime, and say what\nthe lookup would have to carry for that bound to be enforceable.",
+        "content": "The module above redeems coupon codes by looking them up. Nothing in\nit limits how long a code stays redeemable, so every code ever issued\nremains valid indefinitely.\n\nRecommend how the design should bound a code's lifetime, and say what\nthe lookup would have to carry for that bound to be enforceable.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "c0e457e4f6ebe4a6a515d9b5e332c641dcd0f7710d1399dcd2b4cdaab1d7bbf1",
+  "request_hash": "a8d2b39e8e138045fdd957c0d8cc97a056ab8f03ba3a24281ff2efa422269792",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 14867,
+    "duration_ms": 8159,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1419,
     "mode": "live",
-    "output_tokens": 353,
-    "raw_reference": "3655623b-f36a-9580-b780-c68db9d9fbec",
+    "output_tokens": 143,
+    "raw_reference": "73af75af-debc-9bb5-aa6b-ccdacdd4d34a",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Bound each code by an absolute expiry instant, and make the lookup return that instant so redemption can reject the code when it is past.\n\n**How to bound lifetime**\n\n- Give every issued code a `valid_until` (or a `valid_from` / `valid_until` window) set at issue time. Absolute timestamps are enforceable; \u201cN days after first use\u201d is not, unless you also persist the first-use time.\n- Treat expiry as server-side policy, checked at redeem time against a trusted clock. A code that is merely omitted from a client cache, or whose discount value is still in the map, is not expired.\n- Optionally add a hard revoke (`status`) and a redemption cap so lifetime is not the only way a code dies. Those are separate bounds; expiry still needs its own field.\n- Decide the edge: reject when `now >= valid_until` (or `>` if you want the exact instant included). Do not apply the discount and then hope something else notices.\n\n**What the lookup has to carry**\n\nToday `coupon_lookup[code]` is only a number, so the redeem path cannot tell a live code from a dead one. Each entry needs at least:\n\n- the discount (or other value) to apply\n- `valid_until` (timezone-aware instant, not a display string)\n- enough status to refuse non-time failures (`active` / `revoked` / `exhausted`), if you use those\n\nRedeem should load that record, refuse when missing, revoked, exhausted, or `now` is outside the window, and only then use the value. A lookup that still returns a bare number cannot enforce a lifetime no matter what you store elsewhere.",
-    "thinking_tokens": 475,
+    "text": "Bound each code with an absolute expiry instant, and refuse redemption once the current time is past it. A relative TTL only works if issuance time is stored too, so the enforceable form is still an absolute bound.\n\nThe lookup must carry that bound with the value, not just the discount. For example, map each code to a record such as `{value, expires_at}` (or `valid_from` / `valid_until` if you need a window). `settle_order` then reads `expires_at` and rejects the code when `now >= expires_at` before applying `value`. Without the timestamp on the lookup entry, the check cannot be enforced no matter what the function does.",
+    "thinking_tokens": 441,
     "tool_calls": []
   }
 }

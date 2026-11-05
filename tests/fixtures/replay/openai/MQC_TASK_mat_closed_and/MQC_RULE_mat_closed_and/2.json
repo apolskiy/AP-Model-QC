@@ -10,29 +10,29 @@
         "role": "user"
       },
       {
-        "content": "State what percentage of the requirement below the candidate meets, and\nshow how you arrived at it.",
+        "content": "State what percentage of the requirement above the candidate meets, and\nshow how you arrived at it.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "942f5b9d8f99aad8f7ab378d8c402e4191104bcb81a73048c4f7644fc7e530e4",
+  "request_hash": "d5d48f039c9514c95e605fe992309ddcd2bd529874ec4dbd8c1525250823a144",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 1421,
+    "duration_ms": 1891,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 72,
     "mode": "live",
-    "output_tokens": 178,
-    "raw_reference": "chatcmpl-EgISFJOroux9Xs5Rbbd5gvKbevRMO",
+    "output_tokens": 161,
+    "raw_reference": "chatcmpl-EgfFILK1XINHGG12nPMLEH0VYtQuA",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Let's evaluate the requirement and candidate document:\n\n**Requirement (from DOC_req_closed_and):**  \n- Docker  \n- Kubernetes  \n\n**Candidate claim (from DOC_candidate_docker):**  \n- Docker\n\n**Scoring:**\n- The requirement has 2 items: Docker and Kubernetes.\n- The candidate meets 1 out of 2: Docker.\n- Kubernetes is missing.\n\n**Calculation:**  \nPercentage met = (number of requirements met / total requirements) \u00d7 100  \n= (1 / 2) \u00d7 100  \n= 50%\n\n**Answer:**  \nThe candidate meets 50% of the requirement.\n\n**How this is calculated:**  \nThere are two required skills: Docker and Kubernetes. The candidate shows experience with Docker, but not Kubernetes.  \nSo, 1 of 2 requirements are met: (1 \u00f7 2) \u00d7 100 = 50%.",
+    "text": "Let's break down the requirement and what the candidate has:\n\n**Requirement (DOC_req_closed_and):**\n- Docker\n- Kubernetes\n\n**Candidate (DOC_candidate_docker):**\n- Docker\n\n**Matching Process:**\n1. The requirement lists 2 skills: Docker and Kubernetes.\n2. The candidate has only 1 of these skills: Docker.\n\n**Calculation:**\n- Number of required skills: 2\n- Number of required skills present in candidate: 1\n\n**Percentage met = (Number matched / Total required) x 100**\n- = (1 / 2) x 100\n- = 0.5 x 100\n- = 50%\n\n**Final Answer:**\nThe candidate meets 50% of the requirement (Docker is present, but Kubernetes is missing).",
     "thinking_tokens": 0,
     "tool_calls": []
   }

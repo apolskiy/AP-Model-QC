@@ -6,29 +6,29 @@
         "role": "user"
       },
       {
-        "content": "The posting below groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
+        "content": "The posting above groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "c07650420f0e3b8fa522a31e01fc37f6f6aebb0e92a29ff06c51e6ecbbce72bf",
+  "request_hash": "5cc2ee5a678761a91ded583cf6534fa6b60ef200e9dc7b98e8ef7f65b89263b6",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 1642,
+    "duration_ms": 1858,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 92,
     "mode": "live",
-    "output_tokens": 180,
-    "raw_reference": "chatcmpl-EgIX69mnz8pIlQ9uevYxUfGuxSoWu",
+    "output_tokens": 129,
+    "raw_reference": "chatcmpl-Egc8je8BO9YyXxzVqboKSjPuH494Z",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Certainly! Here is the analysis for each header in the posting:\n\n---\n\n**Header:** What you will need on day one.  \n- **Are the requirements under it mandatory or optional?** **Mandatory**  \n- **What in the header told you?**  \n  The phrase **\"will need\"** indicates necessity. The addition of **\"on day one\"** further clarifies that these are baseline expectations for the role, making them mandatory requirements.\n\n---\n\n**Header:** What would make you stand out.  \n- **Are the requirements under it mandatory or optional?** **Optional**  \n- **What in the header told you?**  \n  The phrase **\"would make you stand out\"** suggests these are **\"nice to have\"** or bonus qualifications, not strictly required for the position. It's phrased to indicate desirability but not necessity, making them optional.\n\n---",
+    "text": "Certainly! Here is the analysis for each header in the posting:\n\n**Header: \"What you will need on day one.\"**\n\n- **Mandatory or Optional?** Mandatory\n- **Evidence:** The phrase \u201cwill need\u201d indicates these are required items you must have from the beginning (\u201cday one\u201d). This signifies necessity.\n\n**Header: \"What would make you stand out.\"**\n\n- **Mandatory or Optional?** Optional\n- **Evidence:** The phrase \u201cwould make you stand out\u201d suggests these are not required, but rather desirable or nice-to-have qualifications that give extra value. The header implies these are optional extras that enhance your application.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

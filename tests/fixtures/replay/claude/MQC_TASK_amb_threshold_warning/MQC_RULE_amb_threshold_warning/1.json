@@ -9,7 +9,7 @@
             "type": "text"
           },
           {
-            "text": "Using the readings below, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much.",
+            "text": "Using the readings above, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much.",
             "type": "text"
           }
         ],
@@ -21,23 +21,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "355d4427fc5bd3d262b5416742212319c4550d0154f02a79b1750cc7e693bd46",
+  "request_hash": "5ac240146ebb20c0e001d0cad50977f6cc0516d9881c54f5e7a15eddf47dcb6f",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 7134,
+    "duration_ms": 7734,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 160,
     "mode": "live",
-    "output_tokens": 690,
-    "raw_reference": "msg_011CggyBNA2GuDE2y14Hf4Qd",
+    "output_tokens": 744,
+    "raw_reference": "msg_011CgidJdmkRd6sdb671EZT8",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "**\u26a0\ufe0f Warning: Availability gate failed**\n\n- **Gate failed:** Availability \u2265 99.5%\n- **Measured:** 99.1%\n- **Shortfall:** 0.4 percentage points below target\n\nThe incident-duration gate passed.\n\n## Weekly Availability Summary\n\n| Metric | Value | Gate | Status |\n|---|---|---|---|\n| Availability | 99.1% | \u2265 99.5% | \u274c Fail (\u22120.4 pts) |\n| Longest single incident | 41 min | \u2264 60 min | \u2705 Pass (19 min margin) |\n\n**Incidents this week:** 2\n- Incident 1: 12 minutes\n- Incident 2: 41 minutes\n- Total incident time: 53 minutes\n\n**Overall:** Not met. Availability is below target, but no single incident exceeded the 60-minute limit.\n\n### Discrepancy to check\nThe two figures don't reconcile. Assuming a full 7-day week (10,080 minutes):\n- 99.1% availability implies about **91 minutes** of downtime.\n- The two incidents total only **53 minutes**, which would equal about **99.47%** availability.\n\nThat leaves roughly **38 minutes of downtime that the incident list doesn't account for**. Possible causes include an unlogged incident, planned maintenance counted as downtime, partial degradations, or a different measurement window. Even if only the 53 logged minutes counted, availability would still fall just short of the 99.5% gate.",
+    "text": "# \u26a0\ufe0f Warning: Availability Gate Failed\n\n**The availability gate failed by 0.4 percentage points.** Measured availability was 99.1 percent against a 99.5 percent minimum.\n\nThe incident-duration gate passed. The longest incident lasted 41 minutes, 19 minutes under the 60-minute limit.\n\n# Weekly Availability Summary\n\n| Metric | Reading | Gate | Status |\n|---|---|---|---|\n| Availability | 99.1% | \u2265 99.5% | \u274c Failed (short by 0.4 pts) |\n| Longest single incident | 41 min | \u2264 60 min | \u2705 Passed (19 min margin) |\n\n**Incidents**\n- Incident 1: 12 minutes\n- Incident 2: 41 minutes\n- Total recorded incident time: 53 minutes\n\n**Overall:** Not met. Availability fell below target, though no single incident breached the duration limit.\n\n**Discrepancy:** Over a 7-day week (10,080 minutes), 99.1 percent availability means about 91 minutes of downtime. The two recorded incidents total only 53 minutes, which would correspond to about 99.47 percent availability. Even that figure falls just short of the 99.5 percent gate, which allows about 50 minutes of downtime per week. So the gate fails either way, but roughly 38 minutes of downtime are unaccounted for. This could come from unlogged incidents, degraded-performance periods, or a different measurement window. It's worth reconciling before you finalize the report.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

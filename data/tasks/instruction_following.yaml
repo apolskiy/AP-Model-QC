@@ -20,7 +20,7 @@
 - task_id: MQC_TASK_ins_format_stated
   rubric_ids: [MQC_RULE_ins_format_stated]
   user_prompt: |
-    Summarise the release note below.
+    Summarise the release note above.
 
     Return your answer as a JSON object with exactly two keys: "summary", a
     string, and "areas", an array of strings. Return nothing outside the JSON
@@ -46,7 +46,7 @@
 - task_id: MQC_TASK_ins_format_absent
   rubric_ids: [MQC_RULE_ins_format_absent]
   user_prompt: |
-    Summarise the release note below.
+    Summarise the release note above.
   context_documents:
     - document_id: DOC_release_note
       title: Release note 4.2
@@ -68,7 +68,7 @@
   rubric_ids: [MQC_RULE_ins_quantities, MQC_RULE_ins_word_ceiling,
                MQC_RULE_ins_capitalised, MQC_RULE_ins_complete_sentence]
   user_prompt: |
-    Summarise the release note below as a bulleted list.
+    Summarise the release note above as a bulleted list.
 
     Use at most three bullets. Keep every sentence to at most twelve words.
     Begin each bullet with a capital letter and write it as a complete
@@ -102,7 +102,7 @@
 - task_id: MQC_TASK_ins_ordering
   rubric_ids: [MQC_RULE_ins_ordering]
   user_prompt: |
-    List the changes in the release note below.
+    List the changes in the release note above.
 
     Put every change that states a measurable quantity first, in the order
     they appear, then the remaining changes.
@@ -125,7 +125,7 @@
 - task_id: MQC_TASK_ins_prohibition
   rubric_ids: [MQC_RULE_ins_prohibition]
   user_prompt: |
-    Summarise the release note below in two sentences.
+    Summarise the release note above in two sentences.
 
     Do not use em dashes or en dashes anywhere in your answer. Use a colon,
     a semicolon or a comma instead, or split the sentence.
@@ -150,7 +150,7 @@
 - task_id: MQC_TASK_ins_combined
   rubric_ids: [MQC_RULE_ins_combined]
   user_prompt: |
-    Summarise the release note below as a bulleted list.
+    Summarise the release note above as a bulleted list.
 
     Use at most three bullets. Keep every sentence to at most twelve words.
     Put every change that states a measurable quantity first. Do not use em

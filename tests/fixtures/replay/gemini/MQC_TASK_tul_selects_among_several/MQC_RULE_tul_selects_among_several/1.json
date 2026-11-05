@@ -86,23 +86,23 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_selects_among_several::MQC_RULE_tul_selects_among_several",
-    "duration_ms": 3217,
+    "duration_ms": 4415,
     "engine": "gemini",
     "finish_reason": "tool_calls",
     "input_tokens": 223,
     "mode": "live",
-    "output_tokens": 20,
-    "raw_reference": "2Gzqar2SDLWe1MkPsaXi0AI",
+    "output_tokens": 18,
+    "raw_reference": "uZPraq7vOcjRjMcP9dCt-As",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "",
-    "thinking_tokens": 108,
+    "thinking_tokens": 135,
     "tool_calls": [
       {
         "arguments": {
-          "query": "return policy days after delivery"
+          "query": "return policy delivery"
         },
-        "call_id": "call_55758",
+        "call_id": "call_6652994000592969342",
         "sequence": 0,
         "tool_name": "search_policy"
       }

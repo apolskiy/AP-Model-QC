@@ -9,7 +9,7 @@
             "type": "text"
           },
           {
-            "text": "State what the function below returns when called with rows scoring\n10, 90 and 50 and a limit of two. Describe what it does, not what it\nappears intended to do.",
+            "text": "Answer in a numbered list.\n1. State what the function above returns when called with three rows\npassed in this order, scoring 10, 90 and 50, and a limit of two.\n2. Describe what the function does, not what it appears to have been\nintended to do.",
             "type": "text"
           }
         ],
@@ -21,23 +21,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "81055d6368d42d71cf86e76d7e90c4d39ac2de8f6ab13b65106da85298b0d18f",
+  "request_hash": "9a0000911b056c867d34c05e77af09ce237fdf771c1eccdcdc4d7e16c2e5fedd",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
-    "duration_ms": 4768,
+    "duration_ms": 4222,
     "engine": "claude",
     "finish_reason": "stop",
-    "input_tokens": 135,
+    "input_tokens": 163,
     "mode": "live",
-    "output_tokens": 338,
-    "raw_reference": "msg_011CggyHovjoFtjXt1d4DtiG",
+    "output_tokens": 301,
+    "raw_reference": "msg_011Cgimf3cherP1qHcf7uoE6",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "It returns **the rows scoring 10 and 90, in that order**: the first two rows of the original list, unsorted.\n\n`sorted()` does not modify the list in place. It builds and returns a new sorted list. The function never assigns that result to anything, so the new list is thrown away immediately. `entries` is left in its original order (10, 90, 50), and `entries[:limit]` slices the first two items from that unchanged list.\n\nThe apparent intent was to return the two highest scorers (90 and 50), but the code ignores scores entirely and returns whatever happens to come first. It is also non-destructive, so the caller's list is not modified.\n\nTo get the intended behaviour, use the sorted result:\n\n```python\nreturn sorted(entries, key=lambda row: row[\"score\"], reverse=True)[:limit]\n```\n\nYou could also sort in place with `entries.sort(...)`, but that would reorder the caller's list as a side effect.",
+    "text": "1. It returns the first two rows in their original order: the row scoring **10**, then the row scoring **90**. The row scoring 50 is left out, even though it outscores the row scoring 10.\n\n2. The function creates a sorted copy of `entries`, ordered by `\"score\"` from highest to lowest, and then discards it. `sorted()` returns a new list and does not modify its argument. Because the result is never assigned or used, that line has no effect. The function then returns the first `limit` items of the original, unsorted `entries` list. In effect, it returns the first `limit` rows in the order they were passed in, regardless of score.\n\n   (The apparent intent of returning the highest-scoring rows would need something like `return sorted(entries, key=lambda row: row[\"score\"], reverse=True)[:limit]`.)",
     "thinking_tokens": 0,
     "tool_calls": []
   }

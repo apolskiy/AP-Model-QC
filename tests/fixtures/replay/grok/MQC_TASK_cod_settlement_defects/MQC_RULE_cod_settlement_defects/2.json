@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "Review the function below and list every defect you find. For each,\nsay what goes wrong and who is affected.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})",
+        "content": "Review the function above and list every defect you find. For each,\nsay what goes wrong and who is affected.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
+  "request_hash": "9abdc840fe3668a41ec936ccae55723d39b81a8a299cac0c503724613c177fe2",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
-    "duration_ms": 51916,
+    "duration_ms": 51611,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1455,
     "mode": "live",
-    "output_tokens": 464,
-    "raw_reference": "9fcde7c8-6a0a-993d-bcb2-39cad7f10d5f",
+    "output_tokens": 604,
+    "raw_reference": "715ba12c-a91d-9eec-b62d-001ee7c55f28",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Every production call is wrong. The tier table is a percent-off, but the formula charges that percent and then subtracts the coupon, so standard customers are billed from 20 instead of 80.\n\n1. **Discount is applied as the price, not taken off it.** `total_amount * discount / 100` treats `20` / `30` as the fraction owed. On a 100 basket, standard is computed from 20 and premium from 30, so a higher tier pays more. Expected post-tier totals are 80 and 70. Affects every customer, and premium subscribers worst; the merchant under-collects and inverts the loyalty benefit.\n\n2. **Coupon is subtracted from that already-wrong base, with no floor.** Call 1 (`SAVE30`) returns `-10`. Call 2 (`SAVE20`) returns `0`. Customers are credited or comped; finance, refunds, and payment capture break on a negative or zero settlement. Even after fixing the percent, a coupon larger than the remainder can still go negative.\n\n3. **Unknown coupon is an uncaught `KeyError`.** Call 3 (`\"NOPE\"`) never settles. That shopper cannot check out; the request fails for support and on-call.\n\n4. **Only `coupon_codes[0]` is read, despite `coupon_sum`.** Extra codes are ignored. A customer who passed more than one valid coupon is overcharged, with no error.\n\n5. **Empty `coupon_codes` raises `IndexError`.** A no-coupon checkout crashes the same way if the caller passes `[]`.\n\n6. **Unknown `account_tier` raises `KeyError`.** Any tier other than `\"standard\"` or `\"premium\"` (including casing mismatches) fails closed only by exception. Those customers cannot settle.\n\n7. **Money is a binary float.** `/ 100` yields a float. Totals that are not dyadic fractions will not round-trip in payment or ledger code. Affects reconciliation and anyone billed a non-integral amount.\n\nCall results as written: `-10.0`, `0.0`, and `KeyError: 'NOPE'`. None of those is a correct settlement of a 100 basket.",
-    "thinking_tokens": 3145,
+    "text": "The settlement math is wrong, coupons are only partly applied, and bad inputs crash checkout instead of failing cleanly.\n\n1. **Tier \u201cdiscount\u201d is applied as the amount due, not as a reduction.** `total_amount * discount / 100` treats `20` / `30` as the percent the customer still owes. With names and values like these, standard should pay 80% and premium 70%. As written, standard pays 20% and premium pays 30% \u2014 premium is charged more than standard. On a 100-unit basket that is 20 due before coupons, not 80. **Affected:** every customer (undercharged, and premium worse than standard); the merchant (lost revenue).\n\n2. **The amount due can go negative, and nothing floors it at zero.** Coupon is subtracted from that already-too-small figure. The first production call returns `-10` (`20 - 30`); the second returns `0` (`20 - 20`). A correct 20% off would be about `50` and `60`. **Affected:** customers (free or credited orders); merchant and finance (revenue loss, refunds or payment-API errors if a negative charge is sent).\n\n3. **Only the first coupon is used.** The argument is `coupon_codes` and the variable is `coupon_sum`, but the code reads `coupon_codes[0]` and never adds the rest. Extra codes are silently ignored. **Affected:** customers who pass more than one code (short-changed); support (totals that do not match the codes submitted). The three production calls each pass one code, so they do not hit this.\n\n4. **An unknown code aborts the sale.** `coupon_lookup[coupon_codes[0]]` raises `KeyError` when the code is missing. The third call, `[\"NOPE\"]` against `{\"SAVE30\": 30}`, does this. **Affected:** that customer (checkout 500, order not placed); on-call (unhandled exception). No \u201cinvalid coupon\u201d result is returned.\n\n5. **An empty coupon list crashes.** `coupon_codes[0]` raises `IndexError` if the list is empty. **Affected:** customers checking out with no coupon; same operational failure as (4).\n\n6. **An unknown tier crashes.** `DISCOUNT_BY_TIER[account_tier]` raises `KeyError` for any tier other than `\"standard\"` or `\"premium\"`. **Affected:** those customers (cannot settle); operators if a new tier is added in account data but not in this map.\n\n7. **Money is computed with binary floats.** `/` yields a float, so totals are not exact decimal currency. These three calls happen to land on `-10.0`, `0.0`, or an exception, but other amounts will drift. **Affected:** finance and customers (rounding mismatches, reconciliation noise).",
+    "thinking_tokens": 2582,
     "tool_calls": []
   }
 }

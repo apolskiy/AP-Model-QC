@@ -13,7 +13,7 @@
             "type": "text"
           },
           {
-            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
+            "text": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
             "type": "text"
           }
         ],
@@ -25,23 +25,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "2f62083b1015536ea71ac5b03ea6c1aab97fa9ba316cb7be8ab8b7c74540bf7a",
+  "request_hash": "dcf0a4eadee1676bd481eda84abe714eb0b546d06656396df602c59381d097bb",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_cap_satisfied::MQC_RULE_prm_cap_satisfied",
-    "duration_ms": 3431,
+    "duration_ms": 3788,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 180,
     "mode": "live",
-    "output_tokens": 234,
-    "raw_reference": "msg_011CggzoRts1yLGuSaKeEvWh",
+    "output_tokens": 269,
+    "raw_reference": "msg_011CgienrXMsLRPzRaj1Bk3b",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "**Match: Yes.**\n\n- **Requirement:** 5 to 9 years of backend engineering experience.\n- **Candidate:** 7 years of backend engineering, building transactional services.\n\nSeven years falls inside the 5\u20139 year range, with two years of margin on each side. The experience is explicitly described as backend engineering, so it counts toward this requirement without reinterpretation.\n\nThe candidate's most recent work, a settlement pipeline handling 40,000 orders a day, shows the kind of production backend work the posting asks for. It doesn't change the year count; it only confirms the experience is relevant.",
+    "text": "**Match: Yes.**\n\n- **Requirement** (DOC_req_years_five_to_nine): 5 to 9 years of backend engineering experience.\n- **Candidate** (DOC_summary_states_seven): 7 years of backend engineering, building transactional services.\n\nSeven years falls inside the 5\u20139 range, and the summary explicitly labels the experience as backend engineering, so it meets both the field and the duration requirement.\n\nThe settlement pipeline handling 40,000 orders a day shows the scale of recent work, but the requirement doesn't ask for scale, so it neither adds to nor subtracts from the match.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

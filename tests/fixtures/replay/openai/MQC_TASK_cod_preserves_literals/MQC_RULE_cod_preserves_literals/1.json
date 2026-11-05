@@ -6,26 +6,26 @@
         "role": "user"
       },
       {
-        "content": "The excerpt below does not parse. Correct the syntax and return the\ncorrected function, changing nothing else: keep every literal, key and\nargument exactly as written.",
+        "content": "The excerpt above does not parse. Correct the syntax and return the\ncorrected function, changing nothing else: keep every literal, key and\nargument exactly as written.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "d1dca8ca4f34a95a775684f49bcf789fea787f7c85a35bdfbbd97c124cf1ad2f",
+  "request_hash": "65e2cf557e966a8908507755852963d14c75a05cdab9255f18d40509d3355123",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_literals::MQC_RULE_cod_preserves_literals",
-    "duration_ms": 870,
+    "duration_ms": 1141,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 94,
     "mode": "live",
     "output_tokens": 36,
-    "raw_reference": "chatcmpl-EgIDmAKLHMhGz7wxGGzj0lW14TYZr",
+    "raw_reference": "chatcmpl-EgbqL56b72V8Aq3Us3htoIwf3Hz7E",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
     "text": "```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",

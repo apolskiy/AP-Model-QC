@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "Summarise the release note below in two sentences.\n\nDo not use em dashes or en dashes anywhere in your answer. Use a colon,\na semicolon or a comma instead, or split the sentence.",
+        "content": "Summarise the release note above in two sentences.\n\nDo not use em dashes or en dashes anywhere in your answer. Use a colon,\na semicolon or a comma instead, or split the sentence.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "5054d7b27e4bd6cc00973bf51cc31a2335c24340325f7fc76c852df0604b66ad",
+  "request_hash": "12dd3c9385bc5da266af8432132dabb5b2643d7ba096cf005aaef1b267670758",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_ins_prohibition::MQC_RULE_ins_prohibition",
-    "duration_ms": 2723,
+    "duration_ms": 5565,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1346,
     "mode": "live",
-    "output_tokens": 49,
-    "raw_reference": "714cf52b-ebd4-95cb-8add-cba4424669bb",
+    "output_tokens": 47,
+    "raw_reference": "4b36c3d9-0e0d-9357-8329-1f3753774344",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Release 4.2 closes three reported defects. The importer no longer drops a trailing column when a file ends without a newline, the scheduler retries a failed job twice before reporting it, and the audit log records the account that performed a deletion.",
-    "thinking_tokens": 249,
+    "text": "Release 4.2 closes three reported defects. The importer keeps a trailing column when a file ends without a newline, the scheduler retries a failed job twice before reporting it, and the audit log records the account that performed a deletion.",
+    "thinking_tokens": 405,
     "tool_calls": []
   }
 }

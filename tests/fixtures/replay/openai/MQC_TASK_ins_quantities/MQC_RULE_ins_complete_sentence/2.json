@@ -6,29 +6,29 @@
         "role": "user"
       },
       {
-        "content": "Summarise the release note below as a bulleted list.\n\nUse at most three bullets. Keep every sentence to at most twelve words.\nBegin each bullet with a capital letter and write it as a complete\nsentence with a subject and a verb.",
+        "content": "Summarise the release note above as a bulleted list.\n\nUse at most three bullets. Keep every sentence to at most twelve words.\nBegin each bullet with a capital letter and write it as a complete\nsentence with a subject and a verb.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "d859860e36f7c5a4554d46066af0e4a0f56247349aa45cd37a475362472abb27",
+  "request_hash": "9cdb1a66d07e8f120ffe13139d250995c6db5aa3a7da2aa3aa98cc8618bcfbf8",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_complete_sentence",
-    "duration_ms": 907,
+    "duration_ms": 1310,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 123,
     "mode": "live",
     "output_tokens": 41,
-    "raw_reference": "chatcmpl-EgINVGN4v3bgchULpg2qpenR1fj2w",
+    "raw_reference": "chatcmpl-Egc0QQbd5e2Vo185Zdrh45TMM2B4L",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "- The importer keeps the last column even if no newline exists.  \n- The scheduler retries a failed job two times before reporting failure.  \n- The audit log now records the account responsible for a deletion.",
+    "text": "- The importer now keeps the trailing column if a file lacks a newline.  \n- The scheduler now retries each failed job two additional times.  \n- The audit log now records who performed each account deletion.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

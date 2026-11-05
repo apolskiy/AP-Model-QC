@@ -62,15 +62,19 @@ modules:
   # The corpus the graded cases read, and whether it is sound.
   tests/cases/mqc_uni_corpus.py: Corpus
   tests/cases/mqc_uni_declared_sources.py: Corpus
+  tests/cases/mqc_uni_declared_lists.py: Corpus
   tests/cases/mqc_uni_excerpts.py: Corpus
   tests/cases/mqc_uni_families.py: Corpus
   tests/cases/mqc_uni_instrument.py: Corpus
   tests/cases/mqc_uni_rule_reading.py: Corpus
+  tests/cases/mqc_uni_rubric_anchors.py: Premise discrimination
+  tests/cases/mqc_uni_list_item_gates.py: Corpus
   tests/cases/mqc_uni_instruction_checks.py: Instruction following
 
   # Whether a recorded run can be replayed and judged as it was.
   tests/cases/mqc_uni_recording_coverage.py: Recording coverage
   tests/cases/mqc_uni_withheld_judge.py: Recording coverage
+  tests/cases/mqc_uni_judge_material.py: Recording coverage
 
   # This repository's own pipeline: the bands, the jobs and the pin.
   tests/cases/mqc_uni_band_carry.py: Consumer CI
@@ -104,6 +108,7 @@ modules:
   tests/cases/mqc_uni_finding_retirement.py: Findings
   tests/cases/mqc_uni_ticket_reasons.py: Findings
   tests/cases/mqc_uni_ticket_report.py: Findings
+  tests/cases/mqc_uni_ticket_reproduction.py: Findings
 
   # The tree this file declares, which is its own subject.
   tests/cases/mqc_uni_grouping.py: The readiness view

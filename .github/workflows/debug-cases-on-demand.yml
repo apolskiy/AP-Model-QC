@@ -39,7 +39,7 @@ on:
       max_spend:
         description: "USD ceiling for this run. The monthly cap is $20 per provider"
         required: false
-        default: "2.00"
+        default: "4.00"
         type: string
       engine:
         description: "Engine to run against"

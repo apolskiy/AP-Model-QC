@@ -15,7 +15,7 @@
             "text": "<document id=DOC_summary_states_eight_plus>\nBackend engineering: 8+ years building transactional services, most\nrecently a settlement pipeline handling 40,000 orders a day.\n</document>"
           },
           {
-            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way."
+            "text": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way."
           }
         ],
         "role": "user"
@@ -23,24 +23,24 @@
     ],
     "model": "gemini-3.8-flash"
   },
-  "request_hash": "dadb97a4fb23efaeb071571fb38a60ff16c8442b9776d2248d5e3af9606b2bc3",
+  "request_hash": "27c03e7cac75b45734b772aff46352b83ff8fc665d9a5ab675b8db1b57e74b84",
   "resolved_model": "gemini-3.8-flash",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 7724,
+    "duration_ms": 6190,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 120,
     "mode": "live",
-    "output_tokens": 102,
-    "raw_reference": "5mTqavScGcur_PUPtqbgoQY",
+    "output_tokens": 82,
+    "raw_reference": "1ozrapOwDv6N_PUP0KaQmQk",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the provided documents, it **cannot be determined** whether the candidate matches the requirement. \n\n* **Requirement:** 9 years of backend engineering experience.\n* **Candidate Summary:** 8+ years of backend engineering experience.\n\nWhile \"8+ years\" indicates at least 8 years and could potentially encompass 9 or more years, the summary does not explicitly confirm that the candidate has reached the required 9-year threshold. Therefore, the summary cannot establish that the requirement is met.",
-    "thinking_tokens": 355,
+    "text": "Based on the provided documents, it **cannot be established** whether the candidate meets the requirement. \n\n* **Requirement:** 9 years of backend engineering experience.\n* **Candidate Summary:** 8+ years of backend engineering experience.\n\nWhile \"8+ years\" confirms the candidate has at least 8 years of experience, it does not definitively establish whether they have reached the required 9 years.",
+    "thinking_tokens": 360,
     "tool_calls": []
   }
 }

@@ -29,7 +29,7 @@
 - task_id: MQC_TASK_cod_no_invented_api
   rubric_ids: [MQC_RULE_cod_no_invented_api]
   user_prompt: |
-    Describe what the function below does, naming only the calls and
+    Describe what the function above does, naming only the calls and
     attributes that appear in it.
   constraints:
     - constraint_id: COD_NO_INVENTED_API
@@ -49,12 +49,17 @@
 # MQC_REQ_MDL_GND_0001, case 30030. THE FUNCTION NAME INVITES THE FABRICATION.
 # It is called top_scorers and never sorts, so a summary calling it one
 # that returns the highest scorers is drawn from the name, not the code.
+# NUMBERED ITEMS, since 2026-11-04: the return value goes in item 1, where
+# the return assertions read it, and the explanation in item 2 (test plan
+# section 9.9.4). "Above", because the excerpt is sent first.
 - task_id: MQC_TASK_cod_behaviour_not_intent
   rubric_ids: [MQC_RULE_cod_behaviour_not_intent]
   user_prompt: |
-    State what the function below returns when called with rows scoring
-    10, 90 and 50 and a limit of two. Describe what it does, not what it
-    appears intended to do.
+    Answer in a numbered list.
+    1. State what the function above returns when called with three rows
+    passed in this order, scoring 10, 90 and 50, and a limit of two.
+    2. Describe what the function does, not what it appears to have been
+    intended to do.
   constraints:
     - constraint_id: COD_BEHAVIOUR_NOT_INTENT
       text: Describe what the code does rather than what it appears intended to do
@@ -73,7 +78,7 @@
 - task_id: MQC_TASK_cod_no_added_row
   rubric_ids: [MQC_RULE_cod_no_added_row]
   user_prompt: |
-    List the regions in the table below with their order counts. Use only
+    List the regions in the table above with their order counts. Use only
     the rows the table carries.
   constraints:
     - constraint_id: COD_NO_ADDED_ROW
@@ -94,7 +99,7 @@
 - task_id: MQC_TASK_cod_preserves_literals
   rubric_ids: [MQC_RULE_cod_preserves_literals]
   user_prompt: |
-    The excerpt below does not parse. Correct the syntax and return the
+    The excerpt above does not parse. Correct the syntax and return the
     corrected function, changing nothing else: keep every literal, key and
     argument exactly as written.
   constraints:
@@ -116,7 +121,7 @@
 - task_id: MQC_TASK_cod_preserves_discount_tiers
   rubric_ids: [MQC_RULE_cod_preserves_discount_tiers]
   user_prompt: |
-    The function below settles an order incorrectly. Explain what it
+    The function above settles an order incorrectly. Explain what it
     computes and what it should compute. Do not change the discount
     percentages the module states.
   constraints:
@@ -140,7 +145,7 @@
 - task_id: MQC_TASK_cod_preserves_threshold
   rubric_ids: [MQC_RULE_cod_preserves_threshold]
   user_prompt: |
-    Summarise the release gate below in one sentence. State the coverage
+    Summarise the release gate above in one sentence. State the coverage
     threshold exactly as the specification states it.
   constraints:
     - constraint_id: COD_PRESERVE_THRESHOLD
@@ -167,7 +172,7 @@
 - task_id: MQC_TASK_cod_settlement_causes
   rubric_ids: [MQC_RULE_cod_settlement_causes, MQC_RULE_cod_settlement_remedy]
   user_prompt: |
-    The function below settles an order incorrectly. State the cause of
+    The function above settles an order incorrectly. State the cause of
     each defect rather than only what it returns, and say what the
     function should do instead.
 
@@ -208,7 +213,7 @@
 - task_id: MQC_TASK_cod_coupon_lifetime
   rubric_ids: [MQC_RULE_cod_coupon_lifetime]
   user_prompt: |
-    The module below redeems coupon codes by looking them up. Nothing in
+    The module above redeems coupon codes by looking them up. Nothing in
     it limits how long a code stays redeemable, so every code ever issued
     remains valid indefinitely.
 
@@ -235,7 +240,7 @@
 - task_id: MQC_TASK_cod_syntax_location
   rubric_ids: [MQC_RULE_cod_syntax_location]
   user_prompt: |
-    The excerpt below does not parse. Say which line carries the error and
+    The excerpt above does not parse. Say which line carries the error and
     what the error is.
   constraints:
     - constraint_id: COD_LOCATE_SYNTAX_ERROR
@@ -260,7 +265,7 @@
 - task_id: MQC_TASK_cod_settlement_defects
   rubric_ids: [MQC_RULE_cod_settlement_defects]
   user_prompt: |
-    Review the function below and list every defect you find. For each,
+    Review the function above and list every defect you find. For each,
     say what goes wrong and who is affected.
 
     It is called in production like this, against a 100 unit basket:
@@ -291,7 +296,7 @@
   rubric_ids: [MQC_RULE_cod_aggregate_from_table]
   user_prompt: |
     State the total number of orders across all regions in the table
-    below, and the total revenue.
+    above, and the total revenue.
   constraints:
     - constraint_id: COD_AGGREGATE_IS_DERIVED
       text: The totals must follow from the rows in the table

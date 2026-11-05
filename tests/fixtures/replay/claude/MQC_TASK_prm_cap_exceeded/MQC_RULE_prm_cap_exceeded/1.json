@@ -13,7 +13,7 @@
             "type": "text"
           },
           {
-            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
+            "text": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
             "type": "text"
           }
         ],
@@ -25,23 +25,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "7097421ba2e98bb196d941ce1a09d056efb715dbfacb90d9e87d71641bb7fc83",
+  "request_hash": "e6ed73871888546a1bc79b717742da8d9822f70f20f5241a390428fafc214db1",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_cap_exceeded::MQC_RULE_prm_cap_exceeded",
-    "duration_ms": 6044,
+    "duration_ms": 7401,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 183,
     "mode": "live",
-    "output_tokens": 506,
-    "raw_reference": "msg_011Cggzm2ine2a8FZ4WFcUUM",
+    "output_tokens": 560,
+    "raw_reference": "msg_011CgiejwALERrwRcMkS3Bcn",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "**Result: Does not match the stated requirement.**\n\n| | Value |\n|---|---|\n| Posting requirement (DOC_req_years_five_to_nine) | Between **5 and 9** years of backend engineering experience |\n| Candidate summary (DOC_summary_states_fifteen) | **15+** years of backend engineering experience |\n\nThe requirement is a bounded range with both a minimum and a maximum. The candidate's 15+ years exceeds the 9-year ceiling by at least 6 years, so the candidate falls outside the range.\n\nThe candidate does satisfy the 5-year minimum, but that alone isn't a match. The posting asks for 5\u20139 years, not \"at least 5,\" and treating 15+ as fitting would change what the requirement says.\n\n**Notes for the reviewer:**\n- The candidate's experience is directly relevant: transactional services, most recently a settlement pipeline handling 40,000 orders a day. The mismatch is about the stated range, not the type of experience.\n- Whether the 9-year upper bound is a firm cutoff or an approximate level indicator (for example, signaling seniority or pay band) is a decision for the hiring team. Based on the requirement as written, this candidate does not match.",
+    "text": "## Assessment: Does Not Match\n\n**Requirement:** 5 to 9 years of backend engineering experience\n**Candidate:** 15+ years of backend engineering experience\n\nThe posting sets both a lower bound (5) and an upper bound (9). The candidate's 15+ years is above the upper bound, so they fall **outside the stated range**.\n\n### Why this isn't counted as a match\nIt would be inaccurate to say the candidate \"meets or exceeds\" the requirement or \"has at least 9 years.\" The requirement is a bounded range, not a minimum. Having more than 15 years does not place someone within 5\u20139.\n\n### Context worth flagging\n- **Relevance of experience:** The background is directly on-domain (transactional services, a settlement pipeline handling 40,000 orders/day). The mismatch is only in tenure, not in type of work.\n- **Intent of the upper bound is unknown:** Ranges like this sometimes reflect a target seniority level or salary band rather than a hard exclusion. If so, the hiring team may choose to consider the candidate anyway. That decision belongs to them. On the requirement as written, the candidate does not fit.\n\n**Bottom line:** Relevant experience, but the 15+ years exceeds the 9-year maximum, so the candidate does not match the stated requirement.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

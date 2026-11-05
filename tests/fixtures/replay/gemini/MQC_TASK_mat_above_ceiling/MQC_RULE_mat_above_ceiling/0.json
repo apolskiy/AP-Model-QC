@@ -15,7 +15,7 @@
             "text": "<document id=DOC_resume_ninety>\nLanguages: Python, SQL.\nPlatform: Linux administration, Git.\nServices: REST API design, unit testing, CI pipelines.\nInfrastructure: Docker, Kubernetes, Terraform, Ansible, Helm.\nStreaming: Kafka.\n</document>"
           },
           {
-            "text": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome."
+            "text": "Assess the candidate against the posting above. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome."
           }
         ],
         "role": "user"
@@ -23,24 +23,24 @@
     ],
     "model": "gemini-3.8-flash"
   },
-  "request_hash": "3ab496a29aadfd778dd2696d2646731847dae2210464d426b4544ebfc7ac40fc",
+  "request_hash": "567331cf0fc3daec9feb276a6f95a007765b183f1aa2d5adb24f851b2eb6cef5",
   "resolved_model": "gemini-3.8-flash",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 4089,
+    "duration_ms": 5238,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 225,
     "mode": "live",
-    "output_tokens": 219,
-    "raw_reference": "gWXqaqHOCNb8-sAPq_CngAM",
+    "output_tokens": 224,
+    "raw_reference": "W43rasPtBoXR-8YP5vPA2AE",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "### Mandatory Requirements Assessment\n\n1. **Python:** Met (listed under Languages)\n2. **SQL:** Met (listed under Languages)\n3. **Linux administration:** Met (listed under Platform)\n4. **Git:** Met (listed under Platform)\n5. **REST API design:** Met (listed under Services)\n6. **Unit testing:** Met (listed under Services)\n7. **CI pipelines:** Met (listed under Services)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met (listed under Infrastructure)\n9. **Kafka:** Met (listed under Streaming)\n10. **GraphQL:** Not met (not mentioned)\n\n---\n\n### Match Summary\n- **Mandatory Requirements Met:** 9 / 10\n- **Mandatory Match Percentage:** **90%**\n\n### Outcome\nThe mandatory match percentage is **90%**, which exceeds the 85% threshold. Therefore, the candidate **proceeds** to the next stage (nice-to-have qualifications do not affect this outcome).",
-    "thinking_tokens": 330,
+    "text": "### Assessment Against Mandatory Requirements\n\n1. **Python:** Met (listed under Languages)\n2. **SQL:** Met (listed under Languages)\n3. **Linux administration:** Met (listed under Platform)\n4. **Git:** Met (listed under Platform)\n5. **REST API design:** Met (listed under Services)\n6. **Unit testing:** Met (listed under Services)\n7. **CI pipelines:** Met (listed under Services)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met (listed under Infrastructure)\n9. **Kafka:** Met (listed under Streaming)\n10. **GraphQL:** Not met (not listed on resume)\n\n---\n\n### Results\n\n* **Mandatory Requirements Met:** 9 / 10\n* **Mandatory Match Percentage:** **90%**\n\n### Decision\nThe candidate achieves a **90%** mandatory match, exceeding the required 85% threshold. Per instructions, the candidate **proceeds** to the next stage (nice-to-have qualifications do not affect this outcome).",
+    "thinking_tokens": 327,
     "tool_calls": []
   }
 }

@@ -12,7 +12,7 @@
             "text": "<document id=DOC_posting_odd_headers>\nWhat you will need on day one.\n1. Python.\n2. SQL.\n\nWhat would make you stand out.\n3. Grafana.\n4. Technical writing.\n</document>"
           },
           {
-            "text": "The posting below groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you."
+            "text": "The posting above groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you."
           }
         ],
         "role": "user"
@@ -20,24 +20,24 @@
     ],
     "model": "gemini-3.8-flash"
   },
-  "request_hash": "7a0c06a79fcee871e4f6c2aceff21c83e752c26829410dd3cfcf10fc26cce1b9",
+  "request_hash": "e762408e6489f010068f829127944beb00230ff5f22530c1a6fd4c6e1e444e9e",
   "resolved_model": "gemini-3.8-flash",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 5911,
+    "duration_ms": 6340,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 90,
     "mode": "live",
-    "output_tokens": 147,
-    "raw_reference": "92bqat_KC-TUjMcP2ebUmAE",
+    "output_tokens": 143,
+    "raw_reference": "sI7rapTZKt2O1MkPtrC58QY",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the headers in the posting:\n\n1. **\"What you will need on day one.\"**\n   * **Status:** Mandatory.\n   * **What told you:** The phrasing **\"will need\"** expresses a strict necessity, and **\"on day one\"** indicates that these skills are essential from the very start of the job.\n\n2. **\"What would make you stand out.\"**\n   * **Status:** Optional (preferred / \"nice-to-have\").\n   * **What told you:** The phrase **\"would make you stand out\"** uses conditional language (\"would\") and implies these skills are differentiators that give a candidate an advantage, rather than baseline requirements.",
-    "thinking_tokens": 417,
+    "text": "Based on the headers in the posting:\n\n1. **\"What you will need on day one.\"**\n   * **Status:** **Mandatory**\n   * **Why:** The phrase **\"will need\"** indicates an absolute requirement or necessity, and specifying **\"on day one\"** implies these skills are essential from the very start of the job.\n\n2. **\"What would make you stand out.\"**\n   * **Status:** **Optional** (preferred/nice-to-have)\n   * **Why:** The conditional phrasing **\"would make you stand out\"** signifies bonus qualifications that give an applicant a competitive edge, rather than baseline requirements for the role.",
+    "thinking_tokens": 316,
     "tool_calls": []
   }
 }

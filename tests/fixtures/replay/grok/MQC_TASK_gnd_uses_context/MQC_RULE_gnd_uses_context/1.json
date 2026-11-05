@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "According to the glossary below, what does the status code AMBER mean,\nand who is notified when it is raised?",
+        "content": "According to the glossary above, what does the status code AMBER mean,\nand who is notified when it is raised?",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "47d3c562fdb188fcd9aff2de94aa97ce1e178be96e705c2fe523b47a6b2e9090",
+  "request_hash": "b18075ef7e02f9b64b3f2754c39e2d638ad645a5c9e5c459d1f9e396407cb5b3",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 2667,
+    "duration_ms": 2892,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1338,
     "mode": "live",
-    "output_tokens": 53,
-    "raw_reference": "a469614e-6c33-975a-b702-5c156bb6f3b9",
+    "output_tokens": 47,
+    "raw_reference": "4210a26f-098e-9e93-90f6-babf3a15413c",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**AMBER** means a record completed successfully and has been archived. It is raised only after a successful run. It is **not** a warning.\n\nThe on-call rota is deliberately **not** notified. The change advisory board receives a weekly digest instead.",
-    "thinking_tokens": 138,
+    "text": "AMBER means a record completed successfully and has been archived. It is not a warning, and it is raised only after a successful run. The on-call rota is not notified; the change advisory board gets a weekly digest instead.",
+    "thinking_tokens": 208,
     "tool_calls": []
   }
 }

@@ -6,29 +6,29 @@
         "role": "user"
       },
       {
-        "content": "Using the readings below, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much.",
+        "content": "Using the readings above, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "2e0f0b24b82ab54e17323b4109628ace5f47da2e2a8aee1af1f4dc79f3d1bd21",
+  "request_hash": "77a38f5b4d308ef7e695d377a3016bac55dbe91a08f2234a77cfe6fcdef5e6c0",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 1924,
+    "duration_ms": 1499,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 110,
     "mode": "live",
-    "output_tokens": 102,
-    "raw_reference": "chatcmpl-EgIAbmZh3NQsDbS8EMo9byh63G9cX",
+    "output_tokens": 109,
+    "raw_reference": "chatcmpl-Egbnegfl1rMvLnDScgdTFdJKe2MGj",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Warning: The measured availability was 99.1 percent, which is below the required threshold of 99.5 percent by 0.4 percent.  \n\n**Gate failed:** Minimum availability not met.\n\n---\n\n**Weekly Availability Summary:**\n\n- **Measured availability:** 99.1%\n- **Incidents:**  \n  - 1 incident lasting 12 minutes  \n  - 1 incident lasting 41 minutes\n- **Note:** Availablility for this week did not meet the required threshold.",
+    "text": "Warning: One or more gates were not met.\n\n- **Gate 1 (Availability \u2265 99.5%) failed:** Measured availability was **99.1%**, which is **0.4% below** the threshold.\n- **Gate 2 (No single incident > 60 minutes) passed:** The longest incident lasted **41 minutes**.\n\n---\n\n**Weekly Availability Summary**  \n- Measured availability: 99.1%  \n- Number of incidents: 2  \n- Incident durations: 12 minutes, 41 minutes",
     "thinking_tokens": 0,
     "tool_calls": []
   }

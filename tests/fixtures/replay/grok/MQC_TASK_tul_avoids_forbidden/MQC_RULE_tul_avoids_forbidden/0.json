@@ -85,24 +85,24 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_tul_avoids_forbidden::MQC_RULE_tul_avoids_forbidden",
-    "duration_ms": 2047,
+    "duration_ms": 2333,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1528,
     "mode": "live",
     "output_tokens": 39,
-    "raw_reference": "23bb6949-5c86-9456-ab8b-45156ebd092d",
+    "raw_reference": "3856fafa-12b0-90ec-a474-425d7fdf2108",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "",
-    "thinking_tokens": 81,
+    "thinking_tokens": 115,
     "tool_calls": [
       {
         "arguments": {
           "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "call-87f6443d-7e93-4cc1-83d7-404d2542a9a1-0",
+        "call_id": "call-ae138de6-6bb1-4466-9581-4cd64717e996-0",
         "sequence": 0,
         "tool_name": "lookup_order"
       },
@@ -111,7 +111,7 @@
           "limit": 5,
           "query": "damaged item refund"
         },
-        "call_id": "call-87f6443d-7e93-4cc1-83d7-404d2542a9a1-1",
+        "call_id": "call-ae138de6-6bb1-4466-9581-4cd64717e996-1",
         "sequence": 1,
         "tool_name": "search_policy"
       }

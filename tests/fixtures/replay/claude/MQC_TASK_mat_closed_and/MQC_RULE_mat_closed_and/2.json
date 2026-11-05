@@ -13,7 +13,7 @@
             "type": "text"
           },
           {
-            "text": "State what percentage of the requirement below the candidate meets, and\nshow how you arrived at it.",
+            "text": "State what percentage of the requirement above the candidate meets, and\nshow how you arrived at it.",
             "type": "text"
           }
         ],
@@ -25,23 +25,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "17b60773051abcad1cb19791d87533bd9a916f5570c94edbe4a83ab1466780b6",
+  "request_hash": "3d2c11516a9378c418fb6259036dfa03f21f0fbee0675238e7d9e3f2a23561d3",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 7731,
+    "duration_ms": 5698,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 103,
     "mode": "live",
-    "output_tokens": 596,
-    "raw_reference": "msg_011Cgh11CypQN8A8RaNjy1az",
+    "output_tokens": 533,
+    "raw_reference": "msg_011Cgif3H6c4fdHdWriFc8M1",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "# Candidate Match: **50%** (1 of 2 required skills)\n\n## Step 1: Break down the requirement\nDOC_req_closed_and lists two skills, both marked **Required**:\n1. Docker\n2. Kubernetes\n\n## Step 2: Check each against the candidate\nDOC_candidate_docker states: *\"Containers and orchestration: Docker.\"*\n\n| Required skill | Evidence in candidate document | Met? |\n|---|---|---|\n| Docker | \"Docker\" is explicitly listed | \u2705 Yes |\n| Kubernetes | Not mentioned anywhere | \u274c No |\n\nThe candidate lists Docker under \"orchestration,\" but that does not show Kubernetes experience. Docker and Kubernetes are separate tools, so I did not infer Kubernetes from it.\n\n## Step 3: Calculate\nTreating each skill as equally weighted:\n\n**1 met \u00f7 2 required = 50%**\n\n## Caveat: Pass/fail view\nThe requirement joins the skills with \"and,\" and both are mandatory. If it is applied as a strict gate, where all required skills must be present, the candidate **does not meet the requirement**, even though they cover half of it by count. The 50% figure shows partial coverage. It does not mean the candidate qualifies.",
+    "text": "# The candidate meets **50%** of the requirement\n\n## How I got there\n\n**1. List the required items** (DOC_req_closed_and)\n- Docker\n- Kubernetes\n\nThat's 2 items. Both are required (\"Docker, Kubernetes\"), so the requirement is a closed AND list.\n\n**2. Check each item against the candidate** (DOC_candidate_docker: *\"Containers and orchestration: Docker.\"*)\n\n| Required item | Candidate evidence | Met? |\n|---|---|---|\n| Docker | \"Docker\" is listed explicitly | \u2705 Yes |\n| Kubernetes | Not mentioned anywhere | \u274c No |\n\n**3. Calculate**\n1 met \u00f7 2 required = **50%**\n\n## Notes on interpretation\n\n- **Equal weighting is assumed.** The requirement gives no indication that one skill matters more than the other.\n- **\"Orchestration\" doesn't count as Kubernetes.** The candidate's heading mentions orchestration, but the only tool listed under it is Docker. Without naming Kubernetes, there's no evidence of it.\n- **On a strict pass/fail reading, the requirement is not met.** Both skills are required, so meeting one is still a failure overall. The 50% figure measures partial coverage, not whether the candidate qualifies.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

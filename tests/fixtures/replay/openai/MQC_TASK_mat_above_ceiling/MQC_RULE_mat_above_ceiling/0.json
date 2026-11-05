@@ -10,29 +10,29 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
+        "content": "Assess the candidate against the posting above. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "2f8971019359432c1015b3e2a29e04899f955c1451bcc649eda6839f3ea2d7e9",
+  "request_hash": "1ede0f03a982737206dbc5dd205c5fe7d15e9a91879949f3cbbebcc1bc0147d2",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 2125,
+    "duration_ms": 3205,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 208,
     "mode": "live",
-    "output_tokens": 266,
-    "raw_reference": "chatcmpl-EgITG6PZRUoGXmFNO48awkdtfoDPQ",
+    "output_tokens": 270,
+    "raw_reference": "chatcmpl-Egc56OTueMpZKhd89erhO4Dx0v1Nb",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Mandatory Requirements List (from posting):  \n1. Python  \n2. SQL  \n3. Linux administration  \n4. Git  \n5. REST API design  \n6. Unit testing  \n7. CI pipelines  \n8. Docker, Kubernetes, Terraform, Ansible, Helm  \n9. Kafka  \n10. GraphQL  \n\nCandidate Skills List (from resume):  \n- Python  \n- SQL  \n- Linux administration  \n- Git  \n- REST API design  \n- unit testing  \n- CI pipelines  \n- Docker, Kubernetes, Terraform, Ansible, Helm  \n- Kafka  \n\n**Assessment:**  \n\nLet's check each mandatory requirement against the resume:\n\n1. Python: Yes  \n2. SQL: Yes  \n3. Linux administration: Yes  \n4. Git: Yes  \n5. REST API design: Yes  \n6. Unit testing: Yes  \n7. CI pipelines: Yes  \n8. Docker, Kubernetes, Terraform, Ansible, Helm: Yes  \n9. Kafka: Yes  \n10. GraphQL: **No**  \n\nTotal matches: 9 out of 10 mandatory requirements.\n\n**Mandatory Match Percentage:**  \n(9 / 10) \u00d7 100% = **90%**\n\n**Outcome:**  \n90% \u2265 85%. The candidate meets the threshold.  \nProceeding: The nice-to-have set does not affect the outcome.",
+    "text": "**Mandatory Requirements Assessment**\n\n**Job Posting Mandatory Requirements:**\n\n1. Python\n2. SQL\n3. Linux administration\n4. Git\n5. REST API design\n6. Unit testing\n7. CI pipelines\n8. Docker, Kubernetes, Terraform, Ansible, Helm\n9. Kafka\n10. GraphQL\n\n**Candidate Resume:**\n\n- Python\n- SQL\n- Linux administration\n- Git\n- REST API design\n- Unit testing\n- CI pipelines\n- Docker, Kubernetes, Terraform, Ansible, Helm\n- Kafka\n\n**Matching Mandatory Requirements:**\n\n1. Python\u00a0\u2714\ufe0f\n2. SQL\u00a0\u2714\ufe0f\n3. Linux administration\u00a0\u2714\ufe0f\n4. Git\u00a0\u2714\ufe0f\n5. REST API design\u00a0\u2714\ufe0f\n6. Unit testing\u00a0\u2714\ufe0f\n7. CI pipelines\u00a0\u2714\ufe0f\n8. Docker, Kubernetes, Terraform, Ansible, Helm\u00a0\u2714\ufe0f\n9. Kafka\u00a0\u2714\ufe0f\n10. GraphQL\u00a0\u274c **(Not mentioned in the resume)**\n\n**Total matches:** 9/10\n\n**Match Percentage Calculation:**\n- (9 / 10) \u00d7 100% = **90%**\n\n**Conclusion:**  \nThe candidate matches **90%** of the mandatory requirements, which is above the 85% threshold. Proceed.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

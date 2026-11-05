@@ -3,7 +3,7 @@
 """The ticket report, which writes each engine's filed findings as pages ready to submit.
 
 Created: 2026-10-05
-Last updated: 2026-11-01
+Last updated: 2026-11-05
 
 This file contains ``page_for``, which builds one engine's findings page,
 ``finding_section``, which writes one finding's defect report with its problem,
@@ -63,7 +63,6 @@ import yaml
 
 from cmn.project_clock import project_today
 from evaluation.aggregation import CriterionScore, aggregate
-from execution.adapters.registry import reproduction_curl, reproduction_snippet
 from tests.cases.graded_support import case_for
 from tests.cases.suite_support import case_rules_from_suite
 from tools.register_files import to_file
@@ -84,7 +83,13 @@ from tools.ticket_files import (
     write_tickets,
 )
 from tools.ticket_framing import framed_problem
-from tools.ticket_reasons import failure_reasons, rule_lines
+from tools.ticket_reasons import failure_reasons, measured_population, rule_lines
+from tools.ticket_reproduction import (
+    case_steps,
+    reproduce_outside,
+    reproduce_through_repository,
+)
+from tools.ticket_responses import failing_count, responses_block
 
 _DEFAULT_OUT: Final[Path] = Path("reports") / "tickets"
 _ENGINES: Final[tuple[str, ...]] = ("gemini", "openai", "claude", "grok")
@@ -94,7 +99,7 @@ _BACKTICKS: Final[re.Pattern[str]] = re.compile("`+")
 # WHAT EACH CODE MEANS TO SOMEONE WHO DOES NOT WORK HERE. The register's
 # `actual` field is generated from the assertion that fired and reads like
 # instrumentation: "A_GND_STATES_SOURCED_FIGURE (QC_LLM_SOURCE_ALTERATION):
-# required substring absent". That belongs under Diagnosis. **The problem
+# required substring absent". That stays in the register. **The problem
 # statement is what the reader is being asked to accept**, so it is written in
 # the words they would use.
 #
@@ -379,36 +384,6 @@ def _scenario(task: Optional[dict[str, Any]]) -> str:
 
 
 
-def _diagnosis(entry: dict[str, Any]) -> str:
-    """Return what the check found, or nothing when there is nothing to add.
-
-    **A canary case has no diagnosis worth printing.** The response either
-    carried the token or did not, and the problem statement already said so. A
-    `claim` assertion has one worth reading: it quotes the sentence it read,
-    which is what makes the finding checkable rather than assertable.
-
-    Args:
-        entry (dict): The register entry.
-
-    Returns:
-        str: The diagnosis, or an empty string.
-    """
-    actual = str(entry.get("actual") or "").strip()
-    if not actual:
-        return ""
-    code = str(entry.get("taxonomy_code") or "")
-    # THE PROBLEM STATEMENT ALREADY CARRIES A BARE CANARY RESULT, and repeating
-    # it would be the old layout's defect in a new place.
-    if actual == f"{code}: pattern found" or actual.endswith("required substring present"):
-        return ""
-    # "NO ASSERTION FAILED" ON A FAILING FINDING reads as the opposite of the
-    # claim: the screen or the judge decided it, and Why it fails says which
-    # (section 9.5.5.6).
-    if actual.rstrip(".") == "no assertion failed":
-        return ""
-    return _sentence(actual)
-
-
 def _input_block(
     task: Optional[dict[str, Any]],
     request: Optional[dict[str, Any]] = None,
@@ -430,7 +405,7 @@ def _input_block(
         request, and those are two different needs.
     """
     if request is not None:
-        out = ["**Input**", "", "_As recorded, the call the provider received._", ""]
+        out = ["**Request as sent**", "", "_As recorded, the call the provider received._", ""]
         model = request.get("model")
         if model:
             out.extend([f"*Model requested:* `{model}`", ""])
@@ -439,10 +414,10 @@ def _input_block(
         return out
 
     if task is None:
-        return ["**Input**", "", "_The task could not be resolved._", ""]
+        return ["**Request as sent**", "", "_The task could not be resolved._", ""]
 
     out = [
-        "**Input**", "",
+        "**Request as sent**", "",
         "_This recording predates the stored request, so the text below is the "
         "corpus the run dispatched rather than the call itself. Re-record to "
         "replace it (`tier2_execution.md` section 7.13.2)._", "",
@@ -471,96 +446,6 @@ def _input_block(
     return out
 
 
-def _reproduce_block(
-    engine: str, request: Optional[dict[str, Any]], case: str
-) -> list[str]:
-    """Return every way to re-issue the call, the exact ones first.
-
-    Args:
-        engine (str): The engine the call was made against.
-        request (Optional[dict]): The composed request the recording stored.
-        case (str): The full case name, for the replay command.
-
-    Returns:
-        list[str]: Markdown lines: a ``curl`` where the recording is the wire
-        body, the SDK call with every recorded parameter, then the replay
-        command, which needs no credential (``consumer_ci.md`` section 9.5.5).
-    """
-    out = ["**Reproduce**", ""]
-    if request is not None:
-        command = reproduction_curl(engine, request)
-        if command:
-            out.extend(["The recorded request, posted unchanged:", "",
-                        *fenced(command, "bash"), ""])
-        snippet = reproduction_snippet(engine, request)
-        if snippet:
-            out.extend(["The same call through the provider's SDK:", "",
-                        *fenced(snippet, "python"), ""])
-    out.extend([
-        "From this repository, replaying the committed recordings, with no "
-        "credential and no cost:", "",
-        *fenced(reproduce_command(engine, case)), "",
-    ])
-    return out
-
-
-def _output_block(
-    engine: str,
-    responses: list[str],
-    outcomes: list[tuple[int, bool, str]],
-    judged: Optional[list[Optional[tuple[bool, float, str]]]] = None,
-    prompts: Optional[list[str]] = None,
-) -> list[str]:
-    """Return every observation, each labelled by its checks and its judgement.
-
-    Args:
-        engine (str): The engine under test.
-        responses (list): Each recorded observation's text.
-        outcomes (list): Per-observation assertion outcomes, possibly empty
-            when the case could not be resolved.
-        judged (Optional[list]): Per-observation judgement outcomes from
-            :func:`judged_outcome`, None where the judge was not called.
-        prompts (Optional[list]): Each observation's judge prompt, empty where
-            the judge never saw it, shown collapsed beneath the response
-            (``consumer_ci.md`` section 9.5.5.8).
-
-    Returns:
-        list[str]: Markdown lines. **Every observation is shown**, passing ones
-        included, because an inconsistency is a claim about all of them
-        (``consumer_ci.md`` section 9.5.5).
-    """
-    # EVERY RECORDING KEEPS ITS PLACE. Dropping an empty body shifted the
-    # numbering against the per-observation verdicts (section 9.5.5.4).
-    bodies = list(responses)
-    if not any(body.strip() for body in bodies):
-        return [
-            "**Responses**", "",
-            f"_No recording at `tests/fixtures/replay/{engine}/`, so this "
-            f"finding cannot show what was returned._", "",
-        ]
-    verdicts = {index: (passed, detail) for index, passed, detail in outcomes}
-    judgements = list(judged or [])
-    labelled = [
-        _label(verdicts.get(index, (True, "")),
-               judgements[index] if index < len(judgements) else None)
-        for index in range(len(bodies))
-    ]
-    failing = sum(1 for failed, _ in labelled if failed)
-    out = [f"**Responses.** The problem appeared on {failing} of {len(bodies)} "
-           f"observations, every one shown.", ""]
-    shown = list(prompts or [])
-    for index, body in enumerate(bodies):
-        label = labelled[index][1]
-        out.extend([f"*Observation {index + 1} of {len(bodies)}.* "
-                    f"{label[:1].upper()}{label[1:]}", "",
-                    *fenced(body or "[no text and no tool call]"), ""])
-        if index < len(shown) and shown[index]:
-            out.extend(["<details>",
-                        f"<summary>Judge prompt, observation {index + 1} of {len(bodies)}"
-                        f"</summary>", "", *fenced(shown[index]), "", "</details>", ""])
-    return out
-
-
 def fenced(text: str, info: str = "") -> list[str]:
     """Return text inside a code fence.
 
@@ -579,28 +464,6 @@ def fenced(text: str, info: str = "") -> list[str]:
     return [f"{fence}{info}", text.rstrip(), fence]
 
 
-def _label(
-    checks: tuple[bool, str], judgement: Optional[tuple[bool, float, str]]
-) -> tuple[bool, str]:
-    """Return whether one observation failed, and its label.
-
-    Args:
-        checks (tuple): Whether its checks passed, and what failed if not.
-        judgement (Optional[tuple]): Its judged outcome, None when unjudged.
-
-    Returns:
-        tuple: Whether it failed, and the label naming its checks and judgement.
-    """
-    passed, detail = checks
-    if not passed:
-        return True, f"failed its checks, so the judge was not called (not judged): {detail}"
-    if judgement is None:
-        return False, "passed its checks"
-    if not judgement[0]:
-        return True, f"failed: the judge scored it {judgement[1]:g}. {judgement[2]}"
-    return False, f"passed its checks and the judge, scoring {judgement[1]:g}. {judgement[2]}"
-
-
 def finding_section(
     root: Path,
     engine: str,
@@ -610,10 +473,11 @@ def finding_section(
 ) -> list[str]:
     """Return the defect report for one finding.
 
-    **Case, problem, diagnosis, input, output**, per section 9.5.2. The shape
-    is the one the project owner set for the feedback this repository files
-    about its own tooling, and it is the order a reader needs: what failed,
-    what the model did, how we know, then the evidence.
+    In order: the problem and why it fails, the test case step by step, the
+    request as sent with its system instruction first, every response quoted
+    whole, what was expected, the reproduction without this repository, the
+    reproduction through it, the facts table, and the appendix holding what
+    the judge was given. Section 9.5.5.13.
 
     Args:
         root (Path): The repository root.
@@ -636,12 +500,19 @@ def finding_section(
     except (KeyError, ValueError):
         rules = None
     observed = _observed(root, engine, (task_id, rule_id), rules, len(responses))
-
-    out = [heading(case), "", *_claim_lines(entry, task, rules, observed[:2])]
+    shown = responses_block(engine, responses, *observed)
+    out = [heading(case), "", *_claim_lines(
+        entry, task, rules, observed[:2], _stamp_population(entry, rules, observed[:2]))]
+    out.extend(case_steps(task, rules, request, len(responses)))
     out.extend(_input_block(task, request))
-    out.extend(_output_block(engine, responses, *observed))
+    if entry.get("observed_model"):
+        out.extend([f"*Model that served it:* `{entry.get('observed_model')}`", ""])
+    out.extend(shown[0])
     out.extend(["**Expected**", "", expected_block(task_id, rule_id, task), ""])
-    out.extend(_reproduce_block(engine, request, case))
+    out.extend(reproduce_outside(
+        engine, request, failing_count(len(responses), *observed[:2]), len(responses)))
+    out.extend(reproduce_through_repository(
+        engine, case, _judge_engine(root, engine, task_id, rule_id)))
     out.extend([
         "| | |",
         "|---|---|",
@@ -652,8 +523,54 @@ def finding_section(
     ])
     if str(entry.get("observations") or "").strip():
         out.append(f"| Population | {entry.get('observations')} |")
-    out.extend([f"| Task | `{task_id}` |", "", "---", ""])
+    out.extend([f"| Task | `{task_id}` |", "", *shown[1], "---", ""])
     return out
+
+
+def _stamp_population(
+    entry: dict[str, Any],
+    rules: Any,
+    observed: tuple[list[tuple[int, bool, str]], list[Optional[tuple[bool, float, str]]]],
+) -> tuple[int, int]:
+    """Return the measured population, written onto the entry in place of the register's.
+
+    The filing sheet reads the entry, so the sheet, the problem and the
+    Population row state the count of the responses quoted (section 9.5.5.13).
+
+    Args:
+        entry (dict): The register entry, updated in place.
+        rules (Any): The case's golden rule set, or None.
+        observed (tuple): Each observation's check outcome, and its judged
+            outcome.
+
+    Returns:
+        tuple: How many measured observations passed, and how many were measured.
+    """
+    population = measured_population(rules, *observed)
+    entry["observations"] = f"{population[0]} of {population[1]} passed" if population[1] else ""
+    return population
+
+
+def _judge_engine(root: Path, engine: str, task_id: str, rule_id: str) -> str:
+    """Return the engine whose stored judgements score this pair, empty where none does.
+
+    Args:
+        root (Path): The repository root.
+        engine (str): The engine whose responses were judged.
+        task_id (str): The task identifier.
+        rule_id (str): The rule set identifier.
+
+    Returns:
+        str: The judge's folder name under the engine's judgements, which is
+        the judge engine's name.
+    """
+    folder = root / "tests" / "fixtures" / "replay" / "judgements" / engine
+    if not folder.is_dir():
+        return ""
+    for judge in sorted(path for path in folder.iterdir() if path.is_dir()):
+        if (judge / task_id / rule_id).is_dir():
+            return judge.name
+    return ""
 
 
 def _observed(
@@ -695,8 +612,12 @@ def _claim_lines(
     task: Optional[dict[str, Any]],
     rules: Any,
     observed: tuple[list[tuple[int, bool, str]], list[Optional[tuple[bool, float, str]]]],
+    population: tuple[int, int],
 ) -> list[str]:
-    """Return a finding's problem, why it fails, and its diagnosis.
+    """Return a finding's problem and why it fails.
+
+    The register's ``actual`` field, generated from the assertion that fired,
+    is not printed (section 9.5.5.13).
 
     Args:
         entry (dict): The register entry.
@@ -704,35 +625,39 @@ def _claim_lines(
         rules (Any): The case's golden rule set, or None when unresolved.
         observed (tuple): Each observation's check outcome, and its judged
             outcome.
+        population (tuple): How many measured observations passed, and how
+            many were measured.
 
     Returns:
         list[str]: Markdown lines. **Why it fails** sits between the problem
         and the evidence, since a check firing is not yet a reason
         (section 9.5.5.6).
     """
-    out = [f"**Problem:** {_issue_sentence(entry, task)}", ""]
+    out = [f"**Problem:** {_issue_sentence(entry, task, population)}", ""]
     reasons = failure_reasons(rules, task, *observed) if rules is not None else []
     if reasons:
         out.extend(["**Why it fails:**", "", *(f"- {reason}" for reason in reasons), ""])
-    diagnosis = _diagnosis(entry)
-    if diagnosis:
-        out.extend([f"**Diagnosis:** {diagnosis}", ""])
     return out
 
 
-def _issue_sentence(entry: dict[str, Any], task: Optional[dict[str, Any]]) -> str:
+def _issue_sentence(
+    entry: dict[str, Any], task: Optional[dict[str, Any]], population: tuple[int, int]
+) -> str:
     """Return the problem in the words a reader outside this project would use.
 
-    **Not the assertion text.** That reads like instrumentation and belongs
-    under Diagnosis; this is the claim the reader is being asked to accept.
+    **Not the assertion text.** That reads like instrumentation and stays in
+    the register; this is the claim the reader is being asked to accept.
 
     Args:
         entry (dict): The register entry.
         task (Optional[dict]): The task, for the requirement it was measured
             against.
+        population (tuple): How many measured observations passed, and how
+            many were measured.
 
     Returns:
-        str: The sentence.
+        str: The sentence, saying the failure was intermittent only where some
+        measured observations passed and some failed.
     """
     code = str(entry.get("taxonomy_code") or "")
     # WHERE THE PAYLOAD SITS DECIDES THE CLAIM (section 9.5.5.3).
@@ -752,12 +677,12 @@ def _issue_sentence(entry: dict[str, Any], task: Optional[dict[str, Any]]) -> st
             f" It was measured against: {constraints[0].get('text')}."
         )
 
-    population = str(entry.get("observations") or "").strip()
+    passed, measured_count = population
     frequency = ""
-    if population:
+    if 0 < passed < measured_count:
         frequency = (
-            f" This happened on some attempts and not others ({population}), "
-            f"so a single sample would not have shown it."
+            f" This happened on some attempts and not others ({passed} of "
+            f"{measured_count} passed), so a single sample would not have shown it."
         )
     return f"{_sentence(stated)}{measured}{frequency}"
 

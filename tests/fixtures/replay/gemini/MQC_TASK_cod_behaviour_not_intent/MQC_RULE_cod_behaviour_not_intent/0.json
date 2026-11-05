@@ -12,7 +12,7 @@
             "text": "<document id=DOC_excerpt_top_scorers_logical>\ndef top_scorers(entries, limit):\n    sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return entries[:limit]\n</document>"
           },
           {
-            "text": "State what the function below returns when called with rows scoring\n10, 90 and 50 and a limit of two. Describe what it does, not what it\nappears intended to do."
+            "text": "Answer in a numbered list.\n1. State what the function above returns when called with three rows\npassed in this order, scoring 10, 90 and 50, and a limit of two.\n2. Describe what the function does, not what it appears to have been\nintended to do."
           }
         ],
         "role": "user"
@@ -20,24 +20,24 @@
     ],
     "model": "gemini-3.8-flash"
   },
-  "request_hash": "3645e7639a29b17e9a68a292c633822ee0516998aa181350ee524b2e11af0646",
+  "request_hash": "f79b13ef2b236be6f27220190bcf9bd1445bc089a6bc913e844450d1054ca680",
   "resolved_model": "gemini-3.8-flash",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
-    "duration_ms": 6846,
+    "duration_ms": 6167,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 99,
+    "input_tokens": 123,
     "mode": "live",
-    "output_tokens": 138,
-    "raw_reference": "11_qavK5LYvD-sAP9fXI-AE",
+    "output_tokens": 103,
+    "raw_reference": "FMPrapycGMzQ_uMPwaqv2Ag",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "When called with rows scoring 10, 90, and 50 and a limit of 2, the function returns the first two rows from the original list: **the rows with scores 10 and 90**.\n\n### What the function does:\nThe function calls Python's built-in `sorted()` function on `entries`, but `sorted()` returns a new list without modifying the original list in place. Because the return value of `sorted()` is discarded and never assigned to a variable, `entries` remains completely unchanged. The function then simply slices and returns the first `limit` items of the original, unsorted `entries` list.",
-    "thinking_tokens": 445,
+    "text": "1. It returns the first two rows as they were originally passed\u2014the row scoring 10 and the row scoring 90.\n2. The function calls Python's built-in `sorted()` function on `entries`, which returns a new sorted list without modifying the original `entries` in place. Because the result of `sorted()` is discarded and not assigned to a variable, the function simply slices and returns the first `limit` items of the original, unsorted `entries` list.",
+    "thinking_tokens": 465,
     "tool_calls": []
   }
 }

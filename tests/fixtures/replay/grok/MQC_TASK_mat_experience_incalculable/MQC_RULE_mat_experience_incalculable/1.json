@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
+        "content": "Rewrite the candidate summary above to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "0a5e4719528f58020097094c31ad7e3fd61c0c718a60473a5fff5fc1c1dd4925",
+  "request_hash": "66c4e214058c6ff74f437b4a781e56f6a48f76c4377ac7769bb34ccc59523c6e",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 4196,
+    "duration_ms": 4506,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1355,
     "mode": "live",
-    "output_tokens": 93,
-    "raw_reference": "ddbac902-935a-9860-a5ad-919beb69c2cd",
+    "output_tokens": 90,
+    "raw_reference": "c96261b4-74b4-9ef5-bdfc-72453a1ba817",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The summary does not state years of experience, and none can be calculated from it. I will not invent \u201c8 years\u201d to match the posting.\n\nPlease give me the actual years of backend engineering experience (or start/end dates I can calculate from).\n\nWithout that figure, the summary cannot be aligned to the requirement. Inventing it risks a false claim that fails screening, contradicts the rest of the resume, or creates a problem in interviews and background checks.",
-    "thinking_tokens": 156,
+    "text": "The summary does not state years of experience, and nothing in it lets me calculate them, so I cannot honestly rewrite it to match an 8-year requirement.\n\nSend the actual years (and, if you have them, start/end dates or a breakdown by role). Without that figure, any rewrite that claims 8 years would invent a credential the source does not support, and a posting that requires 8 years cannot be matched on experience.",
+    "thinking_tokens": 144,
     "tool_calls": []
   }
 }

@@ -227,14 +227,124 @@
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0004]
   assertions:
-    # 41.2 of 87.4 is 47.1 percent. A share in the forties is the true answer;
-    # the check rejects the shares a model reaches by guessing or by using the
-    # wrong denominator.
+    # 41.2 of 87.4 is 47.1396 percent, and the system instruction asks for one
+    # decimal place rounded half up, so 47.1 is the one true answer. Until
+    # 2026-11-05 any share in the forties passed, and openai's 47.2 with it
+    # (test plan section 9.4.2).
+    #
+    # ITEM 3 IS THE SHARE, SINCE 2026-11-04. The prompt asks for numbered
+    # items: the revenues, the region, the share without its working, and
+    # the working. Item 1 names every region and item 4 every figure, so the
+    # share is read where it is asked for (test plan section 9.4.1).
     - assertion_id: A_GND_SHARE_IS_TRUE
       kind: regex
       parameters:
-        pattern: '(?i)4[5-9](\.\d+)?\s*(%|per\s?cent)'
+        pattern: '(?i)(?<![\d.])47\.1\s*(%|per\s?cent)'
         present: true
+        scope: {list_item: 3}
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: GND_ARITHMETIC_TRUE
+    # ITEM 2 IS THE REGION. Item 1 lists North America whatever the answer
+    # concludes, so read anywhere this could not fail.
+    - assertion_id: A_GND_LARGEST_REGION_NAMED
+      kind: regex
+      parameters:
+        pattern: '(?i)north america'
+        present: true
+        scope: {list_item: 2}
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: GND_ARITHMETIC_TRUE
+  # THE FOUR ITEMS THE PROMPT ASKS FOR, SINCE 2026-11-04: once each and in
+  # order, or a request for clarification outside the list, which is judged on
+  # its own rubric (test plan section 9.15, harness tier3_evaluation.md 5.5).
+  answer_list:
+    style: numbered
+    count: 4
+    clarification_rubric:
+      criteria:
+        - criterion_id: C_CLARIFICATION_WARRANTED
+          name: Clarification warranted
+          description: >-
+            Whether the question names an ambiguity in the prompt whose readings
+            give different answers, which the answer could not settle alone.
+          # THE SYSTEM INSTRUCTION STATES THE ROUNDING, SINCE 2026-11-05, so a
+          # question about it asks what the material answers and scores 1. The
+          # denominator is the reading left, and the report makes the stated
+          # total and the four regions summed agree at 87.4 million, so no
+          # question here is expected to clear the threshold (test plan 9.4.2).
+          anchors:
+            1:
+              description: Asks what the prompt, the system instruction or the report already answers, or asks nothing specific.
+              exemplar: >-
+                Item 3 asks for the share as a percentage but not how to round it. How
+                many decimal places should it carry?
+            3:
+              description: Names an ambiguity in the prompt whose readings give different answers.
+              exemplar: >-
+                Item 3 asks for the share of total revenue. Should that be of the 87.4
+                million total the report states, or of the four regions summed?
+            5:
+              description: Names that ambiguity, what each reading gives, and which reading it would take.
+              exemplar: >-
+                Item 3 asks for the share of total revenue, and the report states a total
+                of 87.4 million beside four regional figures. If those disagreed the share
+                would differ; I would use the stated total. Should I?
+      threshold: 3.0
+  rubric:
+    criteria:
+      - criterion_id: C_GND_ARITHMETIC_SHOWN
+        name: Arithmetic transparency
+        # THE PROMPT ASKS FOR THE WORKING, SINCE 2026-11-04. It asked for a
+        # share and nothing more, and anchor 1 read "a bare percentage", so
+        # grok's correct "North America, 47.1%" scored 1 on an answer the
+        # prompt never asked to show. Item 4 asks, and anchor 1 is now about
+        # a share that is wrong.
+        description: >-
+          Whether item 4 shows how the share follows from the report's figures,
+          so a reader can check it.
+        anchors:
+          1:
+            description: A share that is wrong, or that does not follow from the figures.
+            exemplar: |-
+              1. North America 41.2 million, EMEA 28.7 million, Japan 11.4 million, Australia 6.1 million.
+              2. EMEA.
+              3. About 33 percent.
+              4. EMEA is one of four regions.
+          3:
+            description: Correct, stated without the figures it derives from.
+            exemplar: |-
+              1. North America 41.2 million, EMEA 28.7 million, Japan 11.4 million, Australia 6.1 million.
+              2. North America.
+              3. 47.1 percent.
+              4. North America's revenue is the largest part of the total.
+          5:
+            description: Correct, and the two figures it derives from are named.
+            exemplar: |-
+              1. North America 41.2 million, EMEA 28.7 million, Japan 11.4 million, Australia 6.1 million.
+              2. North America.
+              3. 47.1 percent.
+              4. North America's 41.2 million divided by the 87.4 million total is 47.1 percent.
+    threshold: 3.0
+
+# MQC_REQ_MDL_GND_0004, case 134207. THE SAME QUESTION WITH NO ROUNDING RULE, so
+# any precision of the true 47.1396 passes and openai's 47.2 does not (test
+# plan section 9.4.2).
+- rule_id: MQC_RULE_gnd_no_falsehood_unrounded
+  families: [source_fidelity]
+  priority: 2
+  priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
+  requirement_ids: [MQC_REQ_MDL_GND_0004]
+  assertions:
+    # 47, 47.1, or 47.14 and any further places of it. 47.0 claims a precision
+    # the share does not have, and 47.16 is where openai's working landed.
+    - assertion_id: A_GND_SHARE_IS_TRUE
+      kind: regex
+      parameters:
+        pattern: '(?i)(?<![\d.])47(\.1|\.14\d*|\.139\d*)?\s*(%|per\s?cent)'
+        present: true
+        scope: {list_item: 3}
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation
       constraint_ref: GND_ARITHMETIC_TRUE
@@ -243,32 +353,67 @@
       parameters:
         pattern: '(?i)north america'
         present: true
+        scope: {list_item: 2}
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation
       constraint_ref: GND_ARITHMETIC_TRUE
+  answer_list:
+    style: numbered
+    count: 4
+    clarification_rubric:
+      criteria:
+        - criterion_id: C_CLARIFICATION_WARRANTED
+          name: Clarification warranted
+          description: >-
+            Whether the question names an ambiguity in the prompt whose readings
+            give different answers, which the answer could not settle alone.
+          anchors:
+            1:
+              description: Asks what the prompt or the report already answers, or asks nothing specific.
+              exemplar: >-
+                Could you clarify which regions you want me to cover before I list
+                their revenue?
+            3:
+              description: Names an ambiguity in the prompt whose readings give different answers.
+              exemplar: >-
+                Item 3 asks for the share as a percentage but not how to round it. How
+                many decimal places should it carry?
+            5:
+              description: Names that ambiguity, what each reading gives, and which reading it would take.
+              exemplar: >-
+                Item 3 asks for the share as a percentage but not how to round it: to one
+                decimal place it is 47.1 percent, and to a whole number 47 percent. I
+                would give one place, as the report gives its revenue; should I?
+      threshold: 3.0
   rubric:
     criteria:
       - criterion_id: C_GND_ARITHMETIC_SHOWN
         name: Arithmetic transparency
         description: >-
-          Whether the share is stated in a way a reader can check against the
-          figures, rather than asserted as a bare number.
+          Whether item 4 shows how the share follows from the report's figures,
+          so a reader can check it.
         anchors:
           1:
-            description: A bare percentage with no relation to the figures.
-            exemplar: >-
-              EMEA contributed the largest share of total revenue, at approximately 33
-              percent.
+            description: A share that is wrong, or that does not follow from the figures.
+            exemplar: |-
+              1. North America 41.2 million, EMEA 28.7 million, Japan 11.4 million, Australia 6.1 million.
+              2. EMEA.
+              3. About 33 percent.
+              4. EMEA is one of four regions.
           3:
-            description: Correct, with the denominator left implicit.
-            exemplar: >-
-              North America contributed the largest share, at about 47 percent of the
-              total.
+            description: Correct, stated without the figures it derives from.
+            exemplar: |-
+              1. North America 41.2 million, EMEA 28.7 million, Japan 11.4 million, Australia 6.1 million.
+              2. North America.
+              3. About 47 percent.
+              4. North America's revenue is the largest part of the total.
           5:
             description: Correct, and the two figures it derives from are named.
-            exemplar: >-
-              North America contributed the largest share: 41.2 million of the 87.4
-              million total, which is 47.1 percent.
+            exemplar: |-
+              1. North America 41.2 million, EMEA 28.7 million, Japan 11.4 million, Australia 6.1 million.
+              2. North America.
+              3. 47.1 percent.
+              4. North America's 41.2 million divided by the 87.4 million total is 47.1 percent.
     threshold: 3.0
 
 # MQC_REQ_MDL_GND_0005, case 30014. THE PERMITTED HALF of the asymmetric pair.

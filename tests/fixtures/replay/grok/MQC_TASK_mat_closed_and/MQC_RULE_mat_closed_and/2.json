@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "State what percentage of the requirement below the candidate meets, and\nshow how you arrived at it.",
+        "content": "State what percentage of the requirement above the candidate meets, and\nshow how you arrived at it.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "6a0b8f475aba09567607d4173e08ecc41e198e6659181df0529a5eb2a85c5ec4",
+  "request_hash": "f03e62ddaf5bc632216def4e77a6618f03a28b5cf7dccd63a7d6e5f265a4e238",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 5902,
+    "duration_ms": 3302,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1304,
     "mode": "live",
-    "output_tokens": 85,
-    "raw_reference": "c2e62318-b923-9430-a920-eab14909719a",
+    "output_tokens": 46,
+    "raw_reference": "0060310b-6782-946d-b278-e97e498c3dbf",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**50%**\n\nThe requirement lists two specific items: Docker and Kubernetes.\n\n- **Docker:** met. The candidate names Docker explicitly. That is 1 of 2 items \u2192 **50%**.\n- **Kubernetes:** not met. \u201cContainers and orchestration\u201d describes the category Kubernetes belongs to, but it does not name Kubernetes, so it does not satisfy that requirement.\n\n1 \u00f7 2 = **50%**.",
-    "thinking_tokens": 317,
+    "text": "**50%**\n\nThe requirement names two items: Docker and Kubernetes. The candidate explicitly covers Docker and only gestures at orchestration in general, without naming Kubernetes. That is 1 of 2 required items, so 50%.",
+    "thinking_tokens": 169,
     "tool_calls": []
   }
 }

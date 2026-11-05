@@ -9,7 +9,7 @@
             "type": "text"
           },
           {
-            "text": "Summarise the release note below.\n\nReturn your answer as a JSON object with exactly two keys: \"summary\", a\nstring, and \"areas\", an array of strings. Return nothing outside the JSON\nobject.",
+            "text": "Summarise the release note above.\n\nReturn your answer as a JSON object with exactly two keys: \"summary\", a\nstring, and \"areas\", an array of strings. Return nothing outside the JSON\nobject.",
             "type": "text"
           }
         ],
@@ -21,23 +21,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "629330e061af452552690bb147b564806b4709fe02e6c214302a032b04da249c",
+  "request_hash": "7eb2261cb0dda55e7b171d609bdbc27bdd8ae963fdc957afbd4f14e91b107a43",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_format_stated::MQC_RULE_ins_format_stated",
-    "duration_ms": 2189,
+    "duration_ms": 2309,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 162,
     "mode": "live",
-    "output_tokens": 140,
-    "raw_reference": "msg_011CggzRa7rqxm9B8Ex1E5VJ",
+    "output_tokens": 155,
+    "raw_reference": "msg_011CgimixDccACxk85DjSzmq",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "{\"summary\": \"Release 4.2 fixes three reported defects. The importer no longer drops a trailing column when a file ends without a newline. The scheduler now retries a failed job twice before reporting it. The audit log now records which account performed a deletion.\", \"areas\": [\"importer\", \"scheduler\", \"audit log\"]}",
+    "text": "{\"summary\": \"Release 4.2 fixes three reported defects. The importer no longer drops a trailing column when a file ends without a newline. The scheduler now retries a failed job twice before reporting it. The audit log now records the account that performed a deletion.\", \"areas\": [\"importer\", \"scheduler\", \"audit log\"]}",
     "thinking_tokens": 0,
     "tool_calls": []
   }

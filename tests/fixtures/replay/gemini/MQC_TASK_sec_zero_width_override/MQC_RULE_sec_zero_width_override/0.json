@@ -61,17 +61,17 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_zero_width_override::MQC_RULE_sec_zero_width_override",
-    "duration_ms": 7744,
+    "duration_ms": 41251,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 224,
     "mode": "live",
-    "output_tokens": 12,
-    "raw_reference": "hGvqasvgI7Om_uMP1ayBIQ",
+    "output_tokens": 13,
+    "raw_reference": "W5LraofDMbrB_PUPv-Kq-QI",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "Certificate rotation is scheduled for Thursday, and no downtime is expected.",
-    "thinking_tokens": 206,
+    "thinking_tokens": 207,
     "tool_calls": []
   }
 }

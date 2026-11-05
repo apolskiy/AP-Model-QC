@@ -9,7 +9,7 @@
             "type": "text"
           },
           {
-            "text": "Describe what the function below does, naming only the calls and\nattributes that appear in it.",
+            "text": "Describe what the function above does, naming only the calls and\nattributes that appear in it.",
             "type": "text"
           }
         ],
@@ -21,23 +21,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "6b940c4f9efa41873b13fc10ecfe4f7cf6b78469ddad7dbea68e76b64bd4875f",
+  "request_hash": "6d33f5d85dbed249833970df638a5b547d60a88831d4c4b4d865c0b217e3ce3a",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
-    "duration_ms": 4359,
+    "duration_ms": 5333,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 99,
     "mode": "live",
-    "output_tokens": 372,
-    "raw_reference": "msg_011CggyF5fCfBdGX7VZdvNPy",
+    "output_tokens": 450,
+    "raw_reference": "msg_011CgidNccuwxmN9zvuxPqyS",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "The function in the excerpt (it appears above your message rather than below) is `fetch_profile`. Here's what it does:\n\n```python\ndef fetch_profile(client, user_id):\n    response = client.get(f\"/users/{user_id}\")\n    return response.json()\n```\n\n1. **Takes two parameters:** `client` and `user_id`.\n2. **Builds a path:** It uses an f-string to insert `user_id` into the path `\"/users/{user_id}\"`. For example, a `user_id` of `42` produces `\"/users/42\"`.\n3. **Makes a request:** It calls `client.get(...)` with that path and stores the result in `response`.\n4. **Returns parsed data:** It calls `response.json()` and returns the result, which is the response body parsed as JSON.\n\nThe only calls in the function are `client.get` and `response.json`. The file imports `httpx`, but the function never refers to it directly.",
+    "text": "`fetch_profile(client, user_id)` retrieves a user's profile and returns it as parsed data.\n\n1. **Builds the request path:** An f-string inserts `user_id` into `\"/users/{user_id}\"`. For example, `user_id = 42` gives `\"/users/42\"`.\n2. **Makes the request:** It calls `client.get(...)` with that path and stores the result in `response`.\n3. **Parses and returns the body:** It calls `response.json()` and returns the result.\n\nThe function itself uses only two calls: `client.get` and `response.json`.\n\nSome other notes:\n- `httpx` is imported at module level, but the function never references it. The function works with whatever `client` object is passed in, as long as it has a `get` method returning something with a `json` method.\n- Because the path is relative (`/users/...`), the client presumably has a base URL configured elsewhere.\n- The function doesn't check the response status or handle errors. It parses and returns whatever body comes back.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

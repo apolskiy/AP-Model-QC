@@ -10,26 +10,28 @@ dependency rather than vendored here.
 
 ## Status
 
-**Phase 3, and iterating.** The harness is complete, all 94 graded cases are
-written, and every one is recorded for all four engines.
+**Phase 3, and iterating.** The harness is complete and all 95 graded cases are
+written. Every one is recorded for all four engines except `134207`, written on
+2026-11-05 and not yet recorded, and `134203` and `134402`, whose prompts
+changed that day and whose recordings answer the old ones.
 
 | Piece | State |
 |---|---|
-| `docs/testing/model_evaluation_test_plan.md` | 94 graded cases specified |
-| `docs/testing/rtm_model.csv` | 200 requirements, traced |
-| `data/tasks/`, `data/rules/` | **8 corpora, 82 tasks**, loading with zero integrity violations |
+| `docs/testing/model_evaluation_test_plan.md` | 95 graded cases specified |
+| `docs/testing/rtm_model.csv` | 215 requirements, traced |
+| `data/tasks/`, `data/rules/` | **8 corpora, 83 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **192 cases, all passing**, each recording its numbered steps |
+| Preconditions (`CAS`, `UNI`) | **210 cases, 209 passing**, each recording its numbered steps. **`115804` is red** until the 222 stored judgements made without the system instruction are judged again |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
-| Graded cases (`EVAL`, `TOOL`, `SEC`) | **94 written**: 45 evaluator, 41 security, 8 tool |
-| Recorded responses | **1238 candidate responses** and **786 judgements**, complete for all four engines, with gemini judging. Two assertions were repaired on 2026-11-03, and a rule change invalidates every recording the rule scored, so the whole graded suite was re-recorded live against all four: gemini, openai and grok that day, and claude across 2026-11-03 and 2026-11-04, its sweep having been interrupted at 63 of 94 cases with the remaining 31 recorded by name. **Every case on every engine holds a recording from 2026-11-03 or later.** Replays in seconds and costs nothing |
-| Model findings | **19 findings**: claude 9, openai 7, gemini 1, grok 2, in `config/findings/` with a reproduction, an expected result and an observed one. **Reconciled against the re-record of 2026-11-04**, which held 5 that no longer reproduce and recorded 5 the register did not describe. **49 were withdrawn** as ours and **22 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8). **21 of the withdrawals are from 2026-10-24**, when a screen that aborted a quote no prompt had forbidden, a rubric that failed a correct uninfluenced screening, and four missing judgements were each corrected: grok went from 8 findings to none. **Two more are from 2026-10-28**, where the same guard survived in an assertion and read a model's report of the attack as its adoption. **Three withdrawn findings reproduced again on the 2026-11-01 run** and are awaiting review, each being either an assertion that was repaired and now fires correctly or the same false positive returning |
+| Graded cases (`EVAL`, `TOOL`, `SEC`) | **95 written**: 46 evaluator, 41 security, 8 tool |
+| Recorded responses | **1170 candidate responses** and **728 judgements**, complete for all four engines, with gemini judging. **The whole graded suite was re-recorded live against all four engines on 2026-11-04**, after a prompt asking for a list began being checked for that list, and the cases whose prompt or rule changed during the review that followed were recorded again, with the cases depending on them. **Every case on every engine holds a recording made on or after 2026-11-04, except openai `134106` to `134108`**, recorded on 2026-11-03 and skipped behind `134203` in every openai run since. **Held for re-recording since 2026-11-05**: `134203` and `134402`, whose prompts changed, and `134207`, which has no recording; and the 222 judgements of tasks carrying a system instruction, 208 of the hidden-passage cases and 14 of `gnd_no_falsehood`, invalid because their judge was not shown it. Replays in seconds and costs nothing |
+| Model findings | **13 findings**: openai 8, grok 3, claude 2, gemini 0, in `config/findings/` with a reproduction, an expected result and an observed one. **Reconciled against the sweep of 2026-11-04** and the reruns after it. **48 are withdrawn** as ours, one withdrawal having been reopened on 2026-11-04 and since held, and **33 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8). **21 of the withdrawals are from 2026-10-24**, when a screen that aborted a quote no prompt had forbidden, a rubric that failed a correct uninfluenced screening, and four missing judgements were each corrected: grok went from 8 findings to none. **Two more are from 2026-10-28**, where the same guard survived in an assertion and read a model's report of the attack as its adoption. **No withdrawn finding is awaiting review**: openai's `134400` reproduced in the sweep of 2026-11-04 and passed when recorded again the same day, which clears the mark (`consumer_ci.md` section 9.5.5.12) |
 | Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
 ## What Is Measured Against Each Model
 
-**94 graded cases against each model**, and the same 94 whether the run is live
+**95 graded cases against each model**, and the same 95 whether the run is live
 or replayed, which holds only while every case is recorded: a case written and
 not yet recorded is skipped in replay, and `premise_discrimination` spent a day
 in that state. Selection is transport-independent: `--mode live` and
@@ -38,20 +40,20 @@ differs. **A replay is therefore the same test, not a reduced one.**
 
 | | |
 |---|---|
-| Graded cases per model | **94**: 45 evaluator, 41 security, 8 tool |
+| Graded cases per model | **95**: 46 evaluator, 41 security, 8 tool |
 | Models measured | **4**: gemini, openai, claude, grok |
 | Case executions per full sweep | **344** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
-| Recorded candidate responses | 1238, which is 296 to 324 per engine: **a model that answers inconsistently is sampled more, so it is recorded more** |
-| Recorded judge responses | 786, which is 186 to 208 per engine: a rule that authors no rubric is judged by nobody, and an observation that fails an assertion never reaches the judge |
+| Recorded candidate responses | 1170, which is 284 to 302 per engine: **a model that answers inconsistently is sampled more, so it is recorded more** |
+| Recorded judge responses | 728, which is 176 to 190 per engine: a rule that authors no rubric is judged by nobody, and an observation that fails an assertion never reaches the judge |
 
 **Three observations per case, not one, and that is a method rather than a
 margin.** A single sample cannot distinguish a model that fails from a model
 that is inconsistent, and inconsistency is itself a finding: a case that passes
 twice and fails once is reported, not rounded to a pass.
-**13 of the 19 findings carry a disagreement population**: the model answered
+**9 of the 13 findings carry a disagreement population**: the model answered
 the same question two ways, so a single-sample run could have drawn the passing
-answer and reported nothing. Only **4 are classified as inconsistency**, because
+answer and reported nothing. Only **5 are classified as inconsistency**, because
 a finding is named by the most critical thing that fired: a model that obeyed an
 injected instruction on two of five attempts is an injection finding that
 happens to be intermittent, not an inconsistency finding.
@@ -61,7 +63,7 @@ happens to be intermittent, not an inconsistency finding.
 | | Live | Replay |
 |---|---|---|
 | Where the response comes from | The provider's endpoint | `tests/fixtures/replay/` |
-| Cases collected | 94 per model | 94 per model |
+| Cases collected | 95 per model | 95 per model |
 | Cost | Real, and measured per engine over every observation a full run dispatches: about **$0.57** on openai, **$0.74** on gemini, **$1.31** on grok and **$3.32** on claude, or **$5.93** for all four | **Nothing** |
 | What it establishes | How the model behaves **now** | That a finding still reproduces from the evidence |
 | Credential needed | Yes | **None** |
@@ -109,7 +111,7 @@ is the one thing not in question.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 1018 harness test cases, each executed once per run, and 192 preconditions pass;
+separately from what it measures. 1056 harness test cases, each executed once per run, and 209 of 210 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate

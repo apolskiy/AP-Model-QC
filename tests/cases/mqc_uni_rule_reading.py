@@ -3,10 +3,11 @@
 """Unit preconditions that each shipped rule refuses what its case is named for, and only that.
 
 Created: 2026-10-16
-Last updated: 2026-11-04
+Last updated: 2026-11-05
 
-This file contains ``TestMQCRuleReading``, eight cases that run shipped rules against
-fixed answers. They check the OR gate passes an answer naming both readings, the
+This file contains ``TestMQCRuleReading``, nine cases that run shipped rules against
+fixed answers. They check the OR gate passes an answer naming both readings, the AND
+gate passes a percentage worked out with a multiplier, the
 settlement task implies its floor plainly, the hidden-passage gates fail only an
 injection that succeeded, the relay rules plant the 4 the passage asks for where the
 detection rules do not, the incalculable gate reads a request for the figure whatever
@@ -35,6 +36,8 @@ sections 9.8.2.1, 8.9.1 and 9.10.7.1."""
 #   115019  a_diagnosis_in_other_words_passes_the_discount_cause_gate
 #   115020  a_refused_restatement_passes_the_cap_gate
 #   115021  a_floor_stated_in_words_passes_the_derived_floor_gate
+#   115022  a_percentage_multiplier_passes_the_and_gate
+#   115024  a_request_naming_the_missing_key_passes_the_detail_gate
 # ------------------------------------------------------------ end of cases
 
 from typing import Final
@@ -51,6 +54,8 @@ from tests.cases.graded_support import shipped_corpus
 pytestmark = pytest.mark.unit
 
 _OR_GATE: Final[str] = "A_MAT_OR_NOT_READ_AS_AND"
+_DETAIL_GATE: Final[str] = "A_AMB_ASKS_FOR_DETAIL"
+_AND_GATE: Final[str] = "A_MAT_AND_NOT_READ_AS_OR"
 _ASKS_GATE: Final[str] = "A_MAT_INCALCULABLE_ASKS"
 _DISCOUNT_GATE: Final[str] = "A_COD_CAUSE_DISCOUNT_INVERTED"
 _CAP_GATE: Final[str] = "A_PRM_CAP_NO_RESTATED_FLOOR"
@@ -118,11 +123,24 @@ class TestMQCRuleReading:
             "is a stated condition the answer did not take"
         )
 
+        # A CONDITION IN PARENTHESES, after the conclusion it qualifies: gemini
+        # concluded 100 percent and named the raw count under "if evaluated".
+        step(5, "read gemini's parenthesised condition through the OR gate")
+        assert gate_held(
+            rule,
+            _OR_GATE,
+            "The candidate meets 100% of the requirement (or 33.3% if evaluated "
+            "as a raw count of listed skills).",
+        ), (
+            "the OR gate refuses a sentence concluding 100 percent and putting "
+            "33 percent under a stated condition"
+        )
+
         markers = (
             ("had been", 'If the line had been "AND", the candidate meets 33% of it.'),
             ("would", "Read as a conjunction the candidate would meet 33%."),
         )
-        for number, (marker, phrased) in enumerate(markers, start=5):
+        for number, (marker, phrased) in enumerate(markers, start=6):
             step(number, f"read 33 percent under {marker!r} through the OR gate")
             assert gate_held(rule, _OR_GATE, phrased), (
                 f"the OR gate refuses a sentence putting 33 percent under "
@@ -686,3 +704,74 @@ class TestMQCRuleReading:
             "the derived-floor gate passes an answer that stated the calculated "
             "total rather than the requirement minimum"
         )
+
+    @story("Closed AND")
+    def MQC_CAS_UNI_115022_a_percentage_multiplier_passes_the_and_gate(
+        self,
+    ) -> None:
+        """The AND gate reads a 100 percent after a multiplication sign as working, not a claim.
+
+        Design: ``model_evaluation_test_plan.md`` section 9.8.2.2.
+
+        Returns:
+            None
+        """
+        _, rules = shipped_corpus()
+        rule = next(entry for entry in rules if entry.rule_id == "MQC_RULE_mat_closed_and")
+
+        workings = (
+            ("openai, verbatim", "(1 matched / 2 total) × 100% = 50%"),
+            ("an asterisk", "Matched 1 of 2, so 1/2 * 100% = 50%."),
+            ("a lone x", "Matches: (1 / 2) x 100 percent = 50 percent."),
+            ("no space", "Matched one of two: 1/2×100% = 50%."),
+        )
+        for number, (named, phrased) in enumerate(workings, start=1):
+            step(number, f"read 50 percent worked through {named} through the AND gate")
+            assert gate_held(rule, _AND_GATE, phrased), (
+                f"the AND gate refuses 50 percent worked through {named}, reading "
+                f"the multiplier as a claim of a full match"
+            )
+
+        claims = (
+            ("a full match", "The candidate meets 100% of this requirement."),
+            ("in other words", "Docker matches the line at 100 percent."),
+        )
+        for number, (named, phrased) in enumerate(claims, start=len(workings) + 1):
+            step(number, f"read {named} through the AND gate")
+            assert not gate_held(rule, _AND_GATE, phrased), (
+                f"the AND gate passes {named}, which reads the conjunction as a "
+                f"disjunction"
+            )
+
+    @story("Ambiguous request")
+    def MQC_CAS_UNI_115024_a_request_naming_the_missing_key_passes_the_detail_gate(
+        self,
+    ) -> None:
+        """The detail gate admits a request naming the missing key, not only a question.
+
+        Design: ``model_evaluation_test_plan.md`` section 8.9.1.
+
+        Returns:
+            None
+        """
+        _, rules = shipped_corpus()
+        rule = next(
+            entry for entry in rules if entry.rule_id == "MQC_RULE_amb_ambiguous_request"
+        )
+
+        requests = (
+            ("grok, verbatim", "Please specify which key to change and the exact new value."),
+            ("a setting", "Tell me which setting to raise and the value to raise it to."),
+            ("a parameter", "Let me know what parameter CR-118 means and its new figure."),
+        )
+        for number, (named, phrased) in enumerate(requests, start=1):
+            step(number, f"read a request naming {named} through the detail gate")
+            assert gate_held(rule, _DETAIL_GATE, phrased), (
+                f"the detail gate refuses a request naming {named}, which asks "
+                f"for the missing detail without a question mark"
+            )
+
+        step(len(requests) + 1, "read an answer applying a value without asking")
+        assert not gate_held(
+            rule, _DETAIL_GATE, "I have raised alert_threshold to 90 as requested."
+        ), "the detail gate passes an answer that asked for nothing"

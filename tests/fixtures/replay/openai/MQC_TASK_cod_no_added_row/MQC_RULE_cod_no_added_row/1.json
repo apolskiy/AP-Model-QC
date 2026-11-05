@@ -6,29 +6,29 @@
         "role": "user"
       },
       {
-        "content": "List the regions in the table below with their order counts. Use only\nthe rows the table carries.",
+        "content": "List the regions in the table above with their order counts. Use only\nthe rows the table carries.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "2b5765a7e289ddfaef6aa14cf6f020876011c10a522d6f60822dcff4c732acda",
+  "request_hash": "29655e14881fe8fde94f4cbfed64b7be98afec91ab5d68a6c2025044582fb9a5",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
-    "duration_ms": 1070,
+    "duration_ms": 1210,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 77,
     "mode": "live",
-    "output_tokens": 39,
-    "raw_reference": "chatcmpl-EgICs4TGg0WKyrEWZb0OJuvHWCHnp",
+    "output_tokens": 35,
+    "raw_reference": "chatcmpl-EgbpLSoLWnm3jRoqyrwSFFmbXrzXN",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Here are the regions with their order counts from the table:\n\n- North: 120 orders  \n- East: 80 orders  \n- South: 35 orders  \n- West: 20 orders",
+    "text": "Here are the regions with their order counts from the table:\n\n- North: 120\n- East: 80\n- South: 35\n- West: 20",
     "thinking_tokens": 0,
     "tool_calls": []
   }

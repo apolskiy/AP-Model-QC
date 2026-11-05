@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
+        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "e09e55f81cd8a95834f9318dc8c0b4eddafad613207a4db2a389f058ea954cf2",
+  "request_hash": "3b0819b4b0344de978b67bc399abd06848eac52f999fa4584a708eb4b918a069",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_prm_cap_satisfied::MQC_RULE_prm_cap_satisfied",
-    "duration_ms": 2723,
+    "duration_ms": 2696,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1362,
     "mode": "live",
-    "output_tokens": 28,
-    "raw_reference": "76882971-98e3-9d82-a51c-971f37742dec",
+    "output_tokens": 27,
+    "raw_reference": "a8dc6be5-5b14-9727-9271-23783918af16",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The candidate matches the requirement. Their stated 7 years of backend engineering experience falls within the required range of 5 to 9 years.",
-    "thinking_tokens": 188,
+    "text": "Yes, the candidate matches. The requirement is 5\u20139 years of backend engineering experience, and the summary states 7 years.",
+    "thinking_tokens": 145,
     "tool_calls": []
   }
 }

@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it falls below 78 percent, warn me and name that cutoff, and\ndo not evaluate the nice-to-have requirements at all.",
+        "content": "Assess the candidate against the posting above. Report the mandatory match\npercentage. If it falls below 78 percent, warn me and name that cutoff, and\ndo not evaluate the nice-to-have requirements at all.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "3dbbc0d643314bf13eb285a282966ece30b02f86bcce4c085bb566d0e151edf2",
+  "request_hash": "e7bd776cdd208a723f8aa65849e57f588be59b5b2eed865ae50dfc171e53de5c",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 5673,
+    "duration_ms": 6177,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1444,
     "mode": "live",
-    "output_tokens": 34,
-    "raw_reference": "817f4a4b-9cf3-9919-8d87-34776886252b",
+    "output_tokens": 54,
+    "raw_reference": "0f1113e1-e2cc-9aad-beda-c32eaffbb539",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 70% (7 of 10).**\n\nThat is below the **78 percent** cutoff. Nice-to-have requirements were not evaluated.",
-    "thinking_tokens": 501,
+    "text": "**Mandatory match: 70% (7 of 10).**\n\nThat is below the **78 percent** cutoff. The candidate is missing Docker, Kubernetes, Terraform, Ansible, Helm, Kafka, and GraphQL.\n\nNice-to-have requirements were not evaluated.",
+    "thinking_tokens": 505,
     "tool_calls": []
   }
 }

@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "ef15704ab3a641687dcfabbfbf0b9431d97c70652ea8bda8af1da933c833377d",
+  "request_hash": "c648d6df0c3c2853041cd6b3a391c9b51fe0a2a12f6806011e234ee08dd501c9",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 3451,
+    "duration_ms": 3720,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1356,
     "mode": "live",
-    "output_tokens": 61,
-    "raw_reference": "c3e081cf-243f-9e4a-962b-089a306755a1",
+    "output_tokens": 63,
+    "raw_reference": "43c26082-7a31-9623-94d3-9f59ef82ae03",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The candidate does not match the requirement on the evidence given. The posting requires 9 years of backend engineering experience. The summary states only \u201c8+ years,\u201d which establishes at least 8 years but does not establish 9. Whether the total is 9 or more cannot be determined from the summary.",
-    "thinking_tokens": 213,
+    "text": "The candidate does not match the requirement on the evidence given. The posting requires 9 years of backend engineering experience. The summary only states \u201c8+ years,\u201d which establishes a floor of 8 years and does not show that the total reaches 9. The settlement-pipeline detail does not add years of experience.",
+    "thinking_tokens": 170,
     "tool_calls": []
   }
 }

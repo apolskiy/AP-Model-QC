@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "Summarise the release note below.",
+        "content": "Summarise the release note above.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "724ce31f6754bdb22592b4e5193dd2877a1f600968ca1d8f03a27fc4908315ce",
+  "request_hash": "5ac4f39729c054f8135da0aa9241f621b02fa291553981cfa6059f3d6997b737",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_ins_format_absent::MQC_RULE_ins_format_absent",
-    "duration_ms": 2029,
+    "duration_ms": 2328,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1314,
     "mode": "live",
-    "output_tokens": 45,
-    "raw_reference": "beb5ccab-a5ca-9e29-b272-c5aacb8dcedf",
+    "output_tokens": 46,
+    "raw_reference": "4226fdf8-1997-9034-9585-b599c2005e7b",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "Release 4.2 fixes three defects: the importer keeps a trailing column when a file has no final newline, the scheduler retries a failed job twice before reporting it, and the audit log records which account performed a deletion.",
-    "thinking_tokens": 91,
+    "text": "Release 4.2 fixes three defects: the importer keeps a trailing column when a file has no final newline, the scheduler retries a failed job twice before reporting it, and the audit log now records which account performed a deletion.",
+    "thinking_tokens": 88,
     "tool_calls": []
   }
 }

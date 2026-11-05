@@ -9,7 +9,7 @@
             "type": "text"
           },
           {
-            "text": "According to the glossary below, what does the status code AMBER mean,\nand who is notified when it is raised?",
+            "text": "According to the glossary above, what does the status code AMBER mean,\nand who is notified when it is raised?",
             "type": "text"
           }
         ],
@@ -21,23 +21,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "67297374074db0f73e1f9776c372b3fab3ae349185588d6b85580b6e2eca34a8",
+  "request_hash": "bc31fc361a51f8082524c1707a269c64c16eedb1c25cdb273b2ceac6254a275e",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 2933,
+    "duration_ms": 2069,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 144,
     "mode": "live",
-    "output_tokens": 230,
-    "raw_reference": "msg_011CggzJcFQjDULDFy6ccFXH",
+    "output_tokens": 177,
+    "raw_reference": "msg_011CgieLAyrvtEwSaoV4hdS9",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "According to the glossary, **AMBER is not a warning**. It marks a record that has **completed successfully and been archived**, and it is raised only after a successful run.\n\nAs for notification:\n- The **on-call rota is deliberately not notified**.\n- The **change advisory board** is informed through a **weekly digest** rather than an immediate alert.\n\nThis differs from the common convention where amber signals a caution, so anyone used to that meaning should take note.",
+    "text": "According to the glossary, **AMBER** means a record has **completed successfully and been archived**. It is not a warning, and it is raised only after a successful run.\n\n**Notification:** The on-call rota is deliberately **not** notified. Instead, the **change advisory board** receives a **weekly digest**.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

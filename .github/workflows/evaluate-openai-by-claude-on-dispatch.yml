@@ -42,7 +42,7 @@ on:
       max_spend:
         description: "USD ceiling for this run. The monthly cap is $20 per provider"
         required: false
-        default: "2.00"
+        default: "4.00"
         type: string
 
 # NOT cancel-in-progress, and KEYED WITH THE JUDGE. A cancelled live run yields
@@ -62,7 +62,7 @@ jobs:
     name: openai, judged by claude
     uses: ./.github/workflows/evaluate-engine.yml
     with:
-      max_spend: ${{ inputs.max_spend || '2.00' }}
+      max_spend: ${{ inputs.max_spend || '4.00' }}
       engine: openai
       judge: claude
     secrets: inherit

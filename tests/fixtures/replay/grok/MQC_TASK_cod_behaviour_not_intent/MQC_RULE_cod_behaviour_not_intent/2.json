@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "State what the function below returns when called with rows scoring\n10, 90 and 50 and a limit of two. Describe what it does, not what it\nappears intended to do.",
+        "content": "Answer in a numbered list.\n1. State what the function above returns when called with three rows\npassed in this order, scoring 10, 90 and 50, and a limit of two.\n2. Describe what the function does, not what it appears to have been\nintended to do.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "b21ee44af5e053f491329d3f76fc399183d1ba832c9f191f03191ef89eae19c8",
+  "request_hash": "47ffbdf2b37c4142d41c5895bf0398d7184ff3ed9d877426128e4833b7e954fc",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
-    "duration_ms": 5277,
+    "duration_ms": 4653,
     "engine": "grok",
     "finish_reason": "stop",
-    "input_tokens": 1337,
+    "input_tokens": 1359,
     "mode": "live",
-    "output_tokens": 62,
-    "raw_reference": "d678da2a-60d1-911c-8fab-6f7236fd4b09",
+    "output_tokens": 45,
+    "raw_reference": "091a50a2-557c-9fee-98d2-973d2a6c0397",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "It returns the first two rows in their original order, with scores 10 and 90.\n\n`sorted` builds a new list ordered by score descending and discards it, so `entries` is never reordered. The function then returns `entries[:limit]`, a prefix of the input as given.",
-    "thinking_tokens": 259,
+    "text": "1. It returns the first two rows in the original order, scoring 10 and 90.\n2. It discards the result of `sorted` and returns the first `limit` entries from the input list unchanged.",
+    "thinking_tokens": 257,
     "tool_calls": []
   }
 }

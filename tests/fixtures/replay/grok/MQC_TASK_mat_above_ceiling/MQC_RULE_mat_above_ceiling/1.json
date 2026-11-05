@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
+        "content": "Assess the candidate against the posting above. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "7c4b695103636fe8e31aa3a552e4fcf2bf2acfa4e7183585f49cb04a279f4c4b",
+  "request_hash": "af6d7157bb7b90cf72c7cc065b5d4e3af4cfbed43d7d7d76d7edbf5c6ccb6b64",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 9363,
+    "duration_ms": 7472,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1436,
     "mode": "live",
-    "output_tokens": 81,
-    "raw_reference": "86598ea0-0900-92b9-a113-a5dff12f248a",
+    "output_tokens": 87,
+    "raw_reference": "86dc3d9e-a0a2-994c-8def-b986a311e191",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 90% (9/10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.  \nMissing: GraphQL.\n\nThat is at or above 85%, so the candidate meets the bar. Nice-to-haves do not change the outcome.",
-    "thinking_tokens": 806,
+    "text": "**Mandatory match: 90% (9/10).**\n\nThat is at or above 85%, so the candidate clears the bar on mandatory requirements alone. The nice-to-have set does not change the outcome.\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.  \nMissing mandatory: GraphQL.",
+    "thinking_tokens": 634,
     "tool_calls": []
   }
 }

@@ -56,9 +56,14 @@
         # was written. A sentence claiming 33 percent under a modal now
         # passes, and C_MAT_OR_REASONING scores whether the working commits to
         # the OR reading (test plan 8.9.1, consumer_ci.md section 9.4.10).
+        #
+        # "IF EVALUATED", SINCE 2026-11-04. gemini concluded "meets 100% of
+        # the requirement (or 33.3% if evaluated as a raw count of listed
+        # skills)", a stated condition in a fourth wording (test plan section
+        # 9.8.2.1).
         pattern: '(?i)\b(meets?|satisfies|fulfil\w*|achieves?)\b[^.]{0,30}\b33(\.3+)?\s*(%|per\s?cent)'
         present: false
-        unless: ["of the listed", "if asking", "if interpreted", "if read", "had been", "would"]
+        unless: ["of the listed", "if asking", "if interpreted", "if read", "if evaluated", "had been", "would"]
       taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
       severity: violation
       constraint_ref: MAT_OR_IS_DISJUNCTION
@@ -118,7 +123,13 @@
         # forbids "meets ... 33%" and passes a compliant answer. The kind is
         # claim so a denial is excluded as well
         # (harness tier3_evaluation.md section 5.3).
-        pattern: '(?i)\b(meets?|match\w*|satisfies|fulfil\w*|achieves?)\b[^.]{0,30}\b100\s*(%|per\s?cent)'
+        #
+        # A MULTIPLIER IS NOT A FIGURE, SINCE 2026-11-04. openai wrote
+        # "(1 matched / 2 total) × 100% = 50%", and proximity reached the
+        # participle inside the fraction. A 100 directly after a
+        # multiplication sign, an asterisk or a lone x is the factor that
+        # turns a fraction into a percentage (test plan section 9.8.2.2).
+        pattern: '(?i)\b(meets?|match\w*|satisfies|fulfil\w*|achieves?)\b[^.]{0,30}(?<![×*]\s)(?<![×*])(?<!\bx\s)\b100\s*(%|per\s?cent)'
         present: false
         unless:
         - not
@@ -162,24 +173,45 @@
   priority_conditions: [P3_EDGE_PATH]
   requirement_ids: [MQC_REQ_MDL_MAT_0001]
   assertions:
+    # ITEM 1 IS THE PERCENTAGE, SINCE 2026-11-05. The enumeration is one slot,
+    # filled by either named item or an equivalent of one, so MySQL meets it
+    # in full; 50 percent reads it as two slots and is the pass floor. Anything
+    # else, 0 percent above all, refuses the third slot (test plan 9.8.2.3).
+    - assertion_id: A_MAT_OPEN_STATES_A_PERCENTAGE
+      kind: regex
+      parameters:
+        pattern: '(?i)(?<![\d.])(100|50)(\.0+)?\s*(%|per\s?cent)'
+        present: true
+        scope: {list_item: 1}
+      taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+      severity: violation
+      constraint_ref: MAT_OPEN_THIRD_SLOT
     # THE DISCLOSURE IS THE REQUIREMENT HERE. A report reading "matched" without
     # saying it was judged makes a soft gate look hard, which section 7.1.4.1
-    # exists to prevent.
+    # exists to prevent. Item 2 is where the prompt asks for it.
     - assertion_id: A_MAT_OPEN_DECLARES_JUDGEMENT
       kind: regex
       parameters:
         pattern: '(?i)(similar|equivalent|judg|not\s+named|category)'
         present: true
+        scope: {list_item: 2}
       taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
       severity: violation
       constraint_ref: MAT_OPEN_THIRD_SLOT
     # Claiming a named match would be a fabrication: neither PostgreSQL nor
-    # Redis appears in the candidate's summary.
+    # Redis appears in the candidate's summary. Read in item 2, where the
+    # prompt asks which kind of match it was; item 3's working names both
+    # items as the requirement's.
+    #
+    # POSTGRESQL IS READ WHOLE, SINCE 2026-11-05. The pattern read `postgres`
+    # and a word boundary, which "PostgreSQL" never has after its eighth
+    # letter, so a claimed PostgreSQL match passed.
     - assertion_id: A_MAT_OPEN_CLAIMS_NO_NAMED_MATCH
       kind: claim
       parameters:
-        pattern: '(?i)(postgres|redis)\b[^.]{0,30}\b(match|present|held|listed)'
+        pattern: '(?i)(postgres(ql)?|redis)\b[^.]{0,30}\b(match|present|held|listed)'
         present: false
+        scope: {list_item: 2}
         # A DENIAL IS NOT A CLAIM. Converted from `regex` to `claim` on
         # 2026-10-12: gemini answered "MySQL was judged to be a similar
         # database ... rather than matching one of the named items directly",
@@ -187,41 +219,90 @@
         # rather than matching" and read it as claiming a named match. The
         # 2026-10-06 audit converted nine assertions for exactly this and
         # left this one (harness tier3_evaluation.md section 5.3).
+        # A NEGATION IS NOT A CLAIM EITHER, since 2026-11-05: "PostgreSQL is
+        # not listed" is the correct premise of a judged match.
         unless:
         - rather than
         - instead
         - not a named
         - no named
         - equivalent
+        - neither
+        - not listed
+        - not present
+        - not held
+        - absent
       taxonomy_code: QC_LLM_UNSOURCED_CLAIM
       severity: violation
       constraint_ref: MAT_OPEN_THIRD_SLOT
+  # THE THREE ITEMS THE PROMPT ASKS FOR, SINCE 2026-11-05 (test plan 9.15).
+  answer_list:
+    style: numbered
+    count: 3
+    clarification_rubric:
+      criteria:
+        - criterion_id: C_CLARIFICATION_WARRANTED
+          name: Clarification warranted
+          description: >-
+            Whether the question names an ambiguity in the prompt whose readings
+            give different answers, which the answer could not settle alone.
+          anchors:
+            1:
+              description: Asks what the prompt or the material already answers, or asks nothing specific.
+              exemplar: >-
+                Could you tell me which databases the candidate lists before I work out
+                the percentage?
+            3:
+              description: Names an ambiguity in the prompt whose readings give different answers.
+              exemplar: >-
+                "Similar databases" could mean similar to one of PostgreSQL and Redis, or
+                to both. Which reading should I take?
+            5:
+              description: Names that ambiguity, what each reading gives, and which reading it would take.
+              exemplar: >-
+                "Similar databases" could mean similar to either named item, which gives
+                100 percent since MySQL is relational like PostgreSQL, or a database
+                covering both, which gives 50 percent. I would take the first, since
+                PostgreSQL and Redis are different kinds of store; should I?
+      threshold: 3.0
   rubric:
     criteria:
       - criterion_id: C_MAT_OPEN_EQUIVALENCE
         name: Quality of the equivalence
+        # ONE SLOT, AT THE PROJECT OWNER'S RULING OF 2026-11-05. PostgreSQL is
+        # relational and Redis a key-value store, so they are not equivalent to
+        # each other and the requirement cannot be read as asking for both.
+        # The contradiction rule is this rubric's alone, not the harness
+        # preamble's (test plan section 9.8.2.3).
         description: >-
-          Whether MySQL is accepted as a database category equivalent and the
-          reasoning says why. Refusing it entirely is as wrong as accepting it
-          silently.
+          The requirement "PostgreSQL, Redis or similar databases" asks for one
+          database: PostgreSQL, or Redis, or a database equivalent to one of the
+          two. PostgreSQL and Redis are not equivalent to each other, so the
+          requirement cannot be read as asking for both. MySQL is a relational
+          database equivalent to PostgreSQL, so the candidate meets 100 percent,
+          by a judged match and not a named one. An answer of 50 percent reads the
+          enumeration as two slots and is the lowest acceptable answer. Where an
+          answer states two verdicts that contradict each other, score it on the
+          one that refuses the equivalence.
         anchors:
           1:
-            description: Refuses the equivalence, or accepts it as a named match.
-            exemplar: >-
-              The candidate does not list PostgreSQL or Redis, so this requirement is
-              unmet.
+            description: States 0 percent or refuses the equivalence, claims PostgreSQL or Redis as a named match, or contradicts itself with one verdict refusing.
+            exemplar: |-
+              1. 0%
+              2. Matched no named item; PostgreSQL and Redis are both absent.
+              3. The candidate lists MySQL, which is neither named item.
           3:
-            description: Accepts it, reasoning is thin.
-            exemplar: >-
-              Met. MySQL is similar enough to the named databases to satisfy the
-              requirement.
+            description: States 50 percent, reading the enumeration as two slots, or 100 percent without naming which item MySQL is equivalent to.
+            exemplar: |-
+              1. 50%
+              2. Judged equivalent: MySQL is similar to PostgreSQL, and nothing covers Redis.
+              3. One of the two databases is covered by an equivalent, so half.
           5:
-            description: Accepts it, names the category, flags it as judged.
-            exemplar: >-
-              Met, by similarity judgement rather than a named match. Neither PostgreSQL
-              nor Redis appears in the candidate summary. MySQL is a relational database
-              of the same category, which fills the third slot of the open enumeration.
-              Recorded as judged, not named.
+            description: States 100 percent, names PostgreSQL as the item MySQL is equivalent to, and flags the match as judged.
+            exemplar: |-
+              1. 100%
+              2. Judged equivalent, not a named match: MySQL is equivalent to PostgreSQL.
+              3. The requirement asks for one database, PostgreSQL, Redis or one similar to either. Neither is listed; MySQL is a relational database like PostgreSQL, so the slot is filled.
     threshold: 3.0
 
 # MQC_REQ_MDL_MAT_0002, case 30022. 70.0% mandatory, below the 78 floor.

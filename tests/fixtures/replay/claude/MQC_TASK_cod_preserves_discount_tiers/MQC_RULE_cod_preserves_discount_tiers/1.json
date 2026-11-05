@@ -9,7 +9,7 @@
             "type": "text"
           },
           {
-            "text": "The function below settles an order incorrectly. Explain what it\ncomputes and what it should compute. Do not change the discount\npercentages the module states.",
+            "text": "The function above settles an order incorrectly. Explain what it\ncomputes and what it should compute. Do not change the discount\npercentages the module states.",
             "type": "text"
           }
         ],
@@ -21,23 +21,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "a73b9d4526e5deee0c5d97374480962b20f415a844b2acad43db66a3bc52ab6b",
+  "request_hash": "28fc01945e66bf543158e8b35775e2729b095c4ec32de96ad9d215f3824bcee0",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_discount_tiers::MQC_RULE_cod_preserves_discount_tiers",
-    "duration_ms": 12068,
+    "duration_ms": 14008,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 222,
     "mode": "live",
-    "output_tokens": 1269,
-    "raw_reference": "msg_011CggyZtciE6frUXVA9UKQM",
+    "output_tokens": 1437,
+    "raw_reference": "msg_011CgidaRR3n2BEkMn6VEgPu",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "# What `settle_order` computes vs. what it should compute\n\n## What it currently computes\n\n```python\namount_owed = total_amount * discount / 100 - coupon_sum\n```\n\nFor a standard account with a $100 order and one $5 coupon:\n\n- `discount = 20`\n- `total_amount * discount / 100` = 100 \u00d7 20 / 100 = **20**\n- `coupon_sum` = 5\n- Result: **15**\n\nThe expression `total_amount * discount / 100` is the **size of the discount** (20% of the order), not the price after the discount. The function therefore charges the customer only the discount portion, minus the coupon. A premium customer gets charged *more* than a standard one (30% vs. 20% of the total), which inverts the intent of the tiers.\n\nThere are also problems with the coupons:\n\n1. **Only the first coupon is used.** `coupon_lookup[coupon_codes[0]]` ignores every code after index 0, even though the variable is named `coupon_sum`.\n2. **No coupons crashes it.** An empty `coupon_codes` list raises `IndexError` instead of applying zero coupon value.\n3. **The result can go negative.** Large coupons can produce a negative amount owed.\n\n## What it should compute\n\nThe customer should pay the total minus the tier discount, minus the value of *all* coupons:\n\n```\namount_owed = total_amount \u00d7 (1 \u2212 discount / 100) \u2212 sum of all coupon values\n```\n\nFor the same example: 100 \u00d7 (1 \u2212 0.20) \u2212 5 = 80 \u2212 5 = **75**.\n\n## Corrected version (discount percentages unchanged)\n\n```python\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = sum(coupon_lookup[code] for code in coupon_codes)\n    amount_owed = total_amount * (100 - discount) / 100 - coupon_sum\n    return max(amount_owed, 0)\n```\n\nChanges:\n\n- `total_amount * (100 - discount) / 100` gives the price *after* the 20%/30% discount. The `DISCOUNT_BY_TIER` values are untouched.\n- `sum(...)` over all codes applies every coupon and returns 0 for an empty list.\n- `max(..., 0)` stops the amount owed from going below zero.\n\n## Assumptions to confirm against business rules\n\n- **Order of application.** I applied the percentage discount first, then subtracted coupons. If coupons should come off before the percentage, use `(total_amount - coupon_sum) * (100 - discount) / 100`. This changes the result: 75 vs. 76 in the example.\n- **Clamping at zero.** If overpayment should be tracked as a credit, remove the `max`.\n- **Invalid input.** An unknown tier or coupon code still raises `KeyError`. That may be the behavior you want, or you may prefer to validate and reject with a clearer error.\n- **Money precision.** For real currency, consider `decimal.Decimal` instead of floats to avoid rounding errors.",
+    "text": "# What `settle_order` computes vs. what it should compute\n\n## What it computes now\n\n```python\ndiscount = DISCOUNT_BY_TIER[account_tier]                  # 20 or 30\ncoupon_sum = coupon_lookup[coupon_codes[0]]                # first coupon only\namount_owed = total_amount * discount / 100 - coupon_sum\n```\n\n### 1. It charges the discount instead of applying it\n\n`total_amount * discount / 100` is the **size of the discount**, not the price after the discount. A standard customer with a 100.00 order gets `100 * 20 / 100 = 20.00`. That 20.00 is the amount that should come *off* the bill, but the function bills it as the full charge.\n\nThe tiers also come out backwards. Premium customers (30) are charged more than standard customers (20), even though they are meant to receive the larger discount.\n\n### 2. Only the first coupon counts\n\n`coupon_lookup[coupon_codes[0]]` reads one element. Any further codes in `coupon_codes` are silently ignored, even though the variable name `coupon_sum` implies a total.\n\n### 3. Fragile edge cases\n\n- **No coupons:** an empty `coupon_codes` raises `IndexError`, so an order with no coupons cannot be settled.\n- **Unknown codes:** an unrecognized code raises `KeyError`.\n- **Unknown tier:** an unrecognized `account_tier` raises `KeyError`.\n- **Negative totals:** the result can go below zero if coupons exceed the discounted price.\n\n### Worked example\n\nStandard tier, total 100.00, one 5.00 coupon:\n\n| | Calculation | Result |\n|---|---|---|\n| **Current** | 100 \u00d7 20/100 \u2212 5 | **15.00** |\n| **Intended** | 100 \u00d7 (100 \u2212 20)/100 \u2212 5 | **75.00** |\n\n## What it should compute\n\n**amount owed = total \u00d7 (100 \u2212 tier discount %) / 100 \u2212 sum of all coupon values**, never below zero.\n\nThe percentages in `DISCOUNT_BY_TIER` (standard 20, premium 30) stay exactly as stated. Only the way they are applied changes.\n\n```python\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount_pct = DISCOUNT_BY_TIER[account_tier]\n    discounted_total = total_amount * (100 - discount_pct) / 100\n    coupon_sum = sum(coupon_lookup[code] for code in coupon_codes)\n    return max(discounted_total - coupon_sum, 0)\n```\n\nWith this version:\n- Standard, 100.00, 5.00 coupon \u2192 **75.00**\n- Premium, 100.00, 5.00 coupon \u2192 **65.00**\n- No coupons \u2192 no crash, `sum` of nothing is 0\n\n## Assumptions to confirm\n\n- **Coupon order:** I subtract coupons *after* the tier discount, as the original code does. If coupons should reduce the total *before* the percentage is applied, the formula becomes `(total - coupon_sum) * (100 - pct) / 100`, which gives a different result.\n- **Clamping at zero:** this is a business choice. Keep negative results if credits or refunds are intended.\n- **Invalid codes:** decide whether unknown coupon codes should raise an error (current behavior) or be skipped, e.g. with `coupon_lookup.get(code, 0)`.\n- **Money precision:** for real currency, consider `Decimal` to avoid floating-point rounding errors.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

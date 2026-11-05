@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
+        "content": "Assess the candidate against the posting above. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "7c4b695103636fe8e31aa3a552e4fcf2bf2acfa4e7183585f49cb04a279f4c4b",
+  "request_hash": "af6d7157bb7b90cf72c7cc065b5d4e3af4cfbed43d7d7d76d7edbf5c6ccb6b64",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 9697,
+    "duration_ms": 9732,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1436,
     "mode": "live",
-    "output_tokens": 75,
-    "raw_reference": "94439ebc-d10c-9300-8c64-33d2bb5d43f5",
+    "output_tokens": 79,
+    "raw_reference": "c4ce859a-c449-9eab-adff-55021471a361",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Mandatory match: 90% (9/10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nMissing: GraphQL.\n\nThat is at or above 85%, so the nice-to-have set does not change the outcome.",
-    "thinking_tokens": 825,
+    "text": "**Mandatory match: 90% (9/10).**\n\nMatched: Python, SQL, Linux administration, Git, REST API design, unit testing, CI pipelines, Docker/Kubernetes/Terraform/Ansible/Helm, Kafka.\n\nMissing: GraphQL.\n\n90% is at or above 85%, so the candidate proceeds. Nice-to-haves do not change that outcome.",
+    "thinking_tokens": 884,
     "tool_calls": []
   }
 }

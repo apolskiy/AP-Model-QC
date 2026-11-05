@@ -6,29 +6,29 @@
         "role": "user"
       },
       {
-        "content": "According to the glossary below, what does the status code AMBER mean,\nand who is notified when it is raised?",
+        "content": "According to the glossary above, what does the status code AMBER mean,\nand who is notified when it is raised?",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "62b233a5694ae368fc1a45acda338291c96d0650f6899a91b14dbb10373a8b69",
+  "request_hash": "676a7131217c19dec71e1c4120473a47d5c66d0f90fc0b11ea406752be889da6",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 1429,
+    "duration_ms": 1264,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 105,
     "mode": "live",
-    "output_tokens": 71,
-    "raw_reference": "chatcmpl-EgIJylGgm59jrtm683hTqiwuMlHEl",
+    "output_tokens": 52,
+    "raw_reference": "chatcmpl-EgbwwEZUk13IjiLblfLmMsAAMIZse",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "According to the glossary, the status code **AMBER** means that a record has **completed successfully and been archived**. It is **not a warning**; it is only raised after a successful run. When AMBER is raised, the **on-call rota is not notified**; instead, the **change advisory board receives a weekly digest**.",
+    "text": "According to the glossary, the status code **AMBER** means that a record has completed successfully and been archived. When AMBER is raised, the **on-call rota is not notified**; instead, the **change advisory board receives a weekly digest**.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

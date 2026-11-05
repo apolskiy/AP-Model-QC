@@ -14,30 +14,30 @@
         "role": "user"
       },
       {
-        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nThe summary does not state years of experience. Where you derive the figure\nfrom employment dates, state the requirement minimum with a plus rather than\nthe full calculated total.",
+        "content": "Rewrite the candidate summary above to match the posting requirement.\n\nThe summary does not state years of experience. Where you derive the figure\nfrom employment dates, state the requirement minimum with a plus rather than\nthe full calculated total.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "5ed7ff1a73634632529bb0ad1e65e023252c93a58dfd2155a5c85416c8b4535b",
+  "request_hash": "5024af6b940cb8353216c37b750f1b52c759ee9fd88161a7276085eba2a3f44b",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
-    "duration_ms": 5517,
+    "duration_ms": 4547,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1394,
     "mode": "live",
     "output_tokens": 24,
-    "raw_reference": "a193c3f4-b88d-9b8d-af7e-d1959ce142a1",
+    "raw_reference": "6c9bec2c-7c7e-946b-b155-01e53fb5d531",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "8+ years of backend engineering across transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
-    "thinking_tokens": 475,
+    "thinking_tokens": 378,
     "tool_calls": []
   }
 }

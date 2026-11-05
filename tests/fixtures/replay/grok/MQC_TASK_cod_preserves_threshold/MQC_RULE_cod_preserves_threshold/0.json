@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "Summarise the release gate below in one sentence. State the coverage\nthreshold exactly as the specification states it.",
+        "content": "Summarise the release gate above in one sentence. State the coverage\nthreshold exactly as the specification states it.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "dc79302e00d5be8ee84febb99d0db98ebbb788730165a60d7edc19347b6840df",
+  "request_hash": "173fed31b84c4454038b43858ec0044c1d9737541fe848fe738497f9c6e24fe4",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_preserves_threshold::MQC_RULE_cod_preserves_threshold",
-    "duration_ms": 1828,
+    "duration_ms": 2279,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1308,
     "mode": "live",
     "output_tokens": 24,
-    "raw_reference": "3b6d15e1-174c-9229-9586-dfce679e2933",
+    "raw_reference": "670b05dc-0c83-9ee4-8f6d-8c4132c87195",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
     "text": "A build is promoted when line coverage is at or above 82 percent; builds below that figure are held for review.",
-    "thinking_tokens": 87,
+    "thinking_tokens": 89,
     "tool_calls": []
   }
 }

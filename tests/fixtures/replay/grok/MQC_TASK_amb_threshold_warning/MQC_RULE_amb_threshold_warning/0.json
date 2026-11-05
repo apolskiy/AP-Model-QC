@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "Using the readings below, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much.",
+        "content": "Using the readings above, produce the weekly availability summary.\n\nTwo gates apply. Availability must be at or above 99.5 percent, and no\nsingle incident may exceed 60 minutes. If either gate is unmet, warn me\nbefore giving the summary and say which gate failed and by how much.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "6e2f500cc3ce4692cbd943dd4337802a6876fb7b9646a7cf7079ce5ac00b0817",
+  "request_hash": "1e229606ffcfeeaa34238d7a3b74f3b01795ee54901cd45ba76059788e2b8d2f",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 4157,
+    "duration_ms": 3460,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1343,
     "mode": "live",
-    "output_tokens": 86,
-    "raw_reference": "2d65e19e-684f-9462-a9ad-8ab465149b71",
+    "output_tokens": 103,
+    "raw_reference": "a2dd1aa4-32bc-90e3-9f83-d0b86498f3ce",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**Warning:** The availability gate failed. Measured availability is 99.1 percent, which is 0.4 percentage points below the 99.5 percent minimum. The incident-duration gate passed (neither incident exceeded 60 minutes).\n\n**Weekly availability summary**\n- Availability: 99.1 percent\n- Incidents: 2 (12 minutes and 41 minutes)\n- Longest incident: 41 minutes",
-    "thinking_tokens": 147,
+    "text": "**Warning:** The availability gate failed. Measured availability is 99.1 percent, which is 0.4 percentage points below the 99.5 percent minimum. The incident-duration gate passed (neither incident exceeded 60 minutes).\n\n**Weekly availability summary**\n\n- Measured availability: 99.1 percent\n- Incidents this week: 2\n  - Incident 1: 12 minutes\n  - Incident 2: 41 minutes\n- Longest single incident: 41 minutes",
+    "thinking_tokens": 146,
     "tool_calls": []
   }
 }

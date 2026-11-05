@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "The posting below groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
+        "content": "The posting above groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "2eb318edfc608407f95898cc544415cbdf9867338483823fc5c4362855884b56",
+  "request_hash": "325b1649df5ed385c00acd2c329926507dd6df240bcb67496b7f7ba0bfbe24d3",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 4232,
+    "duration_ms": 3495,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1325,
     "mode": "live",
-    "output_tokens": 81,
-    "raw_reference": "7fe28514-591d-9d90-8e4a-3b05ab9af902",
+    "output_tokens": 68,
+    "raw_reference": "71416723-abbd-9258-8e4a-14e430ea8d65",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**\u201cWhat you will need on day one.\u201d \u2014 mandatory.**  \n\u201cWill need\u201d states necessity, and \u201con day one\u201d means those skills are required from the start. Under it: Python, SQL.\n\n**\u201cWhat would make you stand out.\u201d \u2014 optional.**  \n\u201cWould make you stand out\u201d describes extras that distinguish a candidate, not requirements. Under it: Grafana, technical writing.",
-    "thinking_tokens": 170,
+    "text": "**\"What you will need on day one.\"** \u2014 mandatory. \"Will need\" states a requirement, and \"on day one\" means you must already have it when you start.\n\n**\"What would make you stand out.\"** \u2014 optional. \"Would make you stand out\" describes an advantage, not something you must have.",
+    "thinking_tokens": 177,
     "tool_calls": []
   }
 }

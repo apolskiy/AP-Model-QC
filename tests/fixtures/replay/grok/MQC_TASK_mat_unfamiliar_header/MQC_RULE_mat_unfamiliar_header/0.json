@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "The posting below groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
+        "content": "The posting above groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "2eb318edfc608407f95898cc544415cbdf9867338483823fc5c4362855884b56",
+  "request_hash": "325b1649df5ed385c00acd2c329926507dd6df240bcb67496b7f7ba0bfbe24d3",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 3670,
+    "duration_ms": 4031,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1325,
     "mode": "live",
-    "output_tokens": 71,
-    "raw_reference": "fdc09044-0e75-9fe8-984c-a7bd23ab3f85",
+    "output_tokens": 78,
+    "raw_reference": "faadfe58-734e-96ad-b2cd-a04a1745de17",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**\"What you will need on day one.\"** \u2014 mandatory. \u201cWill need\u201d states a requirement, and \u201con day one\u201d means you must already have it when you start.\n\n**\"What would make you stand out.\"** \u2014 optional. \u201cWould make you stand out\u201d describes an advantage over other candidates, not something you must have.",
-    "thinking_tokens": 180,
+    "text": "**\u201cWhat you will need on day one.\u201d \u2014 mandatory.**  \n\u201cWill need\u201d states necessity, and \u201con day one\u201d means these are baseline requirements from the start (Python, SQL).\n\n**\u201cWhat would make you stand out.\u201d \u2014 optional.**  \n\u201cWould make you stand out\u201d frames these as differentiators, not requirements everyone must have (Grafana, technical writing).",
+    "thinking_tokens": 188,
     "tool_calls": []
   }
 }

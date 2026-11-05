@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
+        "content": "Rewrite the candidate summary above to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "0a5e4719528f58020097094c31ad7e3fd61c0c718a60473a5fff5fc1c1dd4925",
+  "request_hash": "66c4e214058c6ff74f437b4a781e56f6a48f76c4377ac7769bb34ccc59523c6e",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 4433,
+    "duration_ms": 5136,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1355,
     "mode": "live",
-    "output_tokens": 70,
-    "raw_reference": "d28dcb96-8474-9a6b-9f44-0c3129c7ebf8",
+    "output_tokens": 75,
+    "raw_reference": "67c12553-d1bb-9782-a8fd-d3e58ab68e61",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The summary does not state years of experience, and none can be calculated from the roles described. I need the actual figure before I can rewrite it to match an 8-year requirement.\n\nWithout that number, the rewrite cannot truthfully show that the candidate meets the posting. Claiming 8 years, or implying it, would misstate the record.",
-    "thinking_tokens": 208,
+    "text": "The summary does not state years of experience, and there are no dates to calculate them from, so I will not invent an \u201c8 years\u201d claim.\n\nSend the real figure (or start/end dates for the backend roles). Without it, the summary cannot be aligned to the posting\u2019s 8-year requirement, and any rewrite that asserts that number would be unsupported.",
+    "thinking_tokens": 305,
     "tool_calls": []
   }
 }

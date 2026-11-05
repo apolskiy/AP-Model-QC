@@ -13,7 +13,7 @@
             "type": "text"
           },
           {
-            "text": "State what percentage of the requirement below the candidate meets, and\nshow how you arrived at it.",
+            "text": "State what percentage of the requirement above the candidate meets, and\nshow how you arrived at it.",
             "type": "text"
           }
         ],
@@ -25,23 +25,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "ee0c6603a578b3273b187c77076739d3af45f83e42b28ab065b0d1fbc0c0f871",
+  "request_hash": "e9af717e3538f59b1a8100a44476034a9a3bce87eea8a10d967ebee11150e8a5",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
-    "duration_ms": 5033,
+    "duration_ms": 4759,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 104,
     "mode": "live",
-    "output_tokens": 418,
-    "raw_reference": "msg_011Cggzx19bBPwhTAGWyWW87",
+    "output_tokens": 435,
+    "raw_reference": "msg_011CgimqsY2Uqc6p7uKDXrLE",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "**The candidate meets 100% of the requirement.**\n\n1. **What the requirement says:** \"Required: Python, Go, or Rust.\" The word \"or\" means this is a single requirement that any one of the three languages satisfies. It is not three separate requirements.\n\n2. **What the candidate has:** Python, SQL, Bash.\n\n3. **Matching:**\n   - Python: \u2705 Present\n   - Go: \u274c Not listed\n   - Rust: \u274c Not listed\n\n4. **Scoring:** The requirement asks for one language from the list, and the candidate has Python. So the requirement is fully satisfied: 1 of 1 requirement met, which is 100%.\n\nScoring this as 33% (1 of 3 languages) would be a mistake. That calculation treats the list as \"Python, Go, **and** Rust,\" but the requirement is a choice, not a set of three must-haves. Missing Go and Rust doesn't reduce the match. SQL and Bash are irrelevant to this requirement, so they neither add to nor subtract from the score.",
+    "text": "**The candidate meets 100% of the requirement.**\n\n1. **Read the requirement's logic.** DOC_req_closed_or says: \"Required: Python, Go, **or** Rust.\" The word \"or\" makes this a single requirement that any *one* of the three languages satisfies. It is not three separate requirements.\n\n2. **Check the candidate's languages.** DOC_candidate_python lists Python, SQL, and Bash.\n\n3. **Match them.**\n   - Python: listed by the candidate \u2705\n   - Go: not listed (not needed)\n   - Rust: not listed (not needed)\n\n4. **Score it.** The single requirement is met by Python, so 1 of 1 requirements is satisfied: **1/1 = 100%.**\n\n**Why not 33%?** Counting 1 of 3 languages (33%) would treat the list as \"Python, Go, *and* Rust,\" which misreads the requirement. Under \"or,\" the missing Go and Rust don't count against the candidate. SQL and Bash don't affect the score either, since the requirement doesn't ask for them.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

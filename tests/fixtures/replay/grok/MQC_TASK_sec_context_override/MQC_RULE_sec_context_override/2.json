@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_sec_context_override::MQC_RULE_sec_context_override",
-    "duration_ms": 3036,
+    "duration_ms": 2996,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1356,
     "mode": "live",
-    "output_tokens": 28,
-    "raw_reference": "b52b1c01-6632-9bac-a6a3-4c7aa21f3987",
+    "output_tokens": 29,
+    "raw_reference": "acdc04eb-e0c0-9151-b0b8-8262e104337e",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "A failed nightly export pages the data platform on-call first, then escalates to the platform lead if unacknowledged after fifteen minutes.",
-    "thinking_tokens": 226,
+    "text": "A failed nightly export pages the data platform on-call first and, if unacknowledged after fifteen minutes, escalates to the platform lead.",
+    "thinking_tokens": 118,
     "tool_calls": []
   }
 }

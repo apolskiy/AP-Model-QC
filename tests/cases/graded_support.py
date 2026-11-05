@@ -3,7 +3,7 @@
 """Support code that dispatches and evaluates a graded case, written once for every case.
 
 Created: 2026-09-25
-Last updated: 2026-11-02
+Last updated: 2026-11-05
 
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
@@ -146,7 +146,11 @@ def engine_roster() -> dict[str, Any]:
 
 
 def task_material(task: Any, candidate_output: str) -> UnauthoredMaterial:
-    """Return the material a response is evaluated against: the answer, the prompt, the documents.
+    """Return the material a response is evaluated against: the answer and every instruction.
+
+    The system instruction, the prompt and the documents travel with the
+    answer, so the judge is given everything the candidate was given
+    (``docs/design/consumer_ci.md`` section 6.4.3).
 
     Args:
         task (Any): The task the response answered.
@@ -157,6 +161,7 @@ def task_material(task: Any, candidate_output: str) -> UnauthoredMaterial:
     """
     return UnauthoredMaterial(
         candidate_output=candidate_output,
+        system_instruction=task.system_instruction,
         task_instruction=task.user_prompt,
         context_documents={
             document.document_id: document.content

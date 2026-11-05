@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "Review the function below and list every defect you find. For each,\nsay what goes wrong and who is affected.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})",
+        "content": "Review the function above and list every defect you find. For each,\nsay what goes wrong and who is affected.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\"], {\"SAVE20\": 20})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "8a1c0ff1c4617e0b4cade7c6d53a84b2c53968ca375da60fd0abee3fde996800",
+  "request_hash": "9abdc840fe3668a41ec936ccae55723d39b81a8a299cac0c503724613c177fe2",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1408,
     "case_id": "MQC_TASK_cod_settlement_defects::MQC_RULE_cod_settlement_defects",
-    "duration_ms": 44067,
+    "duration_ms": 61300,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1455,
     "mode": "live",
-    "output_tokens": 498,
-    "raw_reference": "11980d8d-9730-9222-8c46-f1f82135e0bd",
+    "output_tokens": 551,
+    "raw_reference": "4076b95a-9775-9976-9a88-7acacd643881",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The function does not compute a payable balance. On the two calls that return, it undercharges; the third call crashes.\n\n1. **Discount is applied as the amount due, not as a reduction.** `total_amount * discount / 100` is the discount itself ($20 on a $100 standard basket), and that value is then used as the balance. A 20% tier discount should leave about $80 before coupons, not $20. Every settled order is undercharged. The merchant loses revenue; standard and premium customers are underbilled. Against the 100-unit basket, `[\"SAVE30\"]` returns `-10.0` instead of `50.0`, and `[\"SAVE20\"]` returns `0.0` instead of `60.0` (20% off, then the coupon).\n\n2. **The result is not floored at zero.** Call 1 returns `-10.0`. A payment capture can fail, or the gateway can treat it as a refund. The merchant funds an erroneous credit; accounting and the customer both see a negative sale.\n\n3. **Only `coupon_codes[0]` is read, despite `coupon_sum`.** Later codes are ignored, so stacked coupons are silently dropped. Customers who pass more than one code pay more than the function\u2019s own name implies; nothing signals that the rest were discarded.\n\n4. **Unknown coupon codes raise `KeyError`.** `[\"NOPE\"]` with lookup `{\"SAVE30\": 30}` crashes before any return. That customer cannot check out; checkout and support take the exception.\n\n5. **Unknown tiers raise `KeyError`.** Anything other than `\"standard\"` or `\"premium\"` aborts settlement. Those accounts cannot pay.\n\n6. **No coupons crash too.** `coupon_codes[0]` raises `IndexError` on an empty list. Customers who are not redeeming a code cannot settle.\n\n7. **Money is computed with binary floats.** ` / 100` yields a float. Non-dyadic amounts will not reconcile to the cent. Finance and downstream ledgers are affected.\n\n8. **No validation of sign or type.** A negative `total_amount`, a negative coupon value, or a non-sequence `coupon_codes` either inflates what is owed, issues a credit, or throws `TypeError`. Bad catalog or client data hits the merchant and the payer with no controlled error.",
-    "thinking_tokens": 2641,
+    "text": "The function charges the discount slice, then subtracts a coupon from that, and it crashes on bad inputs. Against the 100-unit basket it does not settle a 20% off order.\n\n**1. Tier \u201cdiscount\u201d is used as the amount due, not as a reduction.**  \n`total_amount * discount / 100` treats 20 as \u201ccharge 20%,\u201d not \u201ctake 20% off.\u201d A standard 100-unit basket becomes 20 before the coupon, not 80.  \nAffected: the customer is undercharged; the merchant loses most of the sale. First call returns `-10`; second returns `0`. A correct 20% off then coupon would be `50` and `60`.\n\n**2. The coupon is subtracted from that already-wrong base, and the result is not floored at 0.**  \n`SAVE30` on the miscomputed 20 yields `-10`. The customer is credited, and a payment or ledger API may reject a negative total. Even with a fixed percentage, a coupon larger than the discounted total would still go negative.  \nAffected: merchant (pays the customer), finance, and the payment path.\n\n**3. Only `coupon_codes[0]` is read, despite the name `coupon_sum`.**  \nLater codes are silently ignored, so stacked coupons never apply.  \nAffected: customers who pass more than one code, and support when those orders look fully discounted but are not.\n\n**4. A missing coupon code raises `KeyError`.**  \nThe third call, `[\"NOPE\"]` with lookup `{\"SAVE30\": 30}`, aborts before returning. There is no \u201cinvalid coupon\u201d result.  \nAffected: the customer (checkout dies) and ops (raw exception instead of a rejected coupon).\n\n**5. No coupon list crashes the same way.**  \n`coupon_codes[0]` on `[]` raises `IndexError`. An order with no coupon cannot settle.  \nAffected: any customer checking out without a code.\n\n**6. An unknown tier raises `KeyError`.**  \nOnly `\"standard\"` and `\"premium\"` exist. Anything else (`None`, a new tier, a typo) fails closed with an exception, not a handled decline.  \nAffected: customers whose tier is missing or not in that map, and the caller that has to catch a bare `KeyError`.\n\n**7. Money is computed with binary floats.**  \n`/` yields a float. Values that are not dyadic fractions (typical prices and percent-off) will not round to the cent.  \nAffected: customers (off-by-fraction charges) and finance (reconciliation drift).",
+    "thinking_tokens": 3047,
     "tool_calls": []
   }
 }

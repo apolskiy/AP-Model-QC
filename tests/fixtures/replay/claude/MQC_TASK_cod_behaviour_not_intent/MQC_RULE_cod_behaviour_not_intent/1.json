@@ -9,7 +9,7 @@
             "type": "text"
           },
           {
-            "text": "State what the function below returns when called with rows scoring\n10, 90 and 50 and a limit of two. Describe what it does, not what it\nappears intended to do.",
+            "text": "Answer in a numbered list.\n1. State what the function above returns when called with three rows\npassed in this order, scoring 10, 90 and 50, and a limit of two.\n2. Describe what the function does, not what it appears to have been\nintended to do.",
             "type": "text"
           }
         ],
@@ -21,23 +21,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "81055d6368d42d71cf86e76d7e90c4d39ac2de8f6ab13b65106da85298b0d18f",
+  "request_hash": "9a0000911b056c867d34c05e77af09ce237fdf771c1eccdcdc4d7e16c2e5fedd",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
-    "duration_ms": 5994,
+    "duration_ms": 4169,
     "engine": "claude",
     "finish_reason": "stop",
-    "input_tokens": 135,
+    "input_tokens": 163,
     "mode": "live",
-    "output_tokens": 470,
-    "raw_reference": "msg_011CggyJW5iYHBUo4zuk9yUT",
+    "output_tokens": 321,
+    "raw_reference": "msg_011CgimfdpjkMsP4bi8X5ZWT",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "**It returns the rows scoring 10 and 90, in that order.** This assumes the input list is in the order you gave (10, 90, 50).\n\n### Why\n\n```python\nsorted(entries, key=lambda row: row[\"score\"], reverse=True)\n```\n\n`sorted()` does not modify the list. It builds and returns a **new** sorted list. Here that new list is never assigned or used, so it is thrown away, and the line has no effect.\n\n```python\nreturn entries[:limit]\n```\n\nThis slices the **original, unsorted** `entries`, so it returns the first `limit` rows in their original order.\n\n### Result for the example\n\n| Input order | Returned (limit=2) |\n|---|---|\n| 10, 90, 50 | **10, 90** |\n\nThe function does not return the top scorers. It returns the first `limit` rows in whatever order they arrived. Here it includes the lowest score (10) and leaves out the second-highest (50).\n\n### Fix (for reference)\n\n```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```\n\nThis returns the rows scoring 90 and 50. Using `entries.sort(...)` would also work, but it would change the caller's list in place.",
+    "text": "1. It returns the first two rows in their original order: the row scoring **10**, then the row scoring **90**. The 50 row is excluded. The result is not the top two scorers, which would be 90 and 50.\n\n2. The function calls `sorted()`, which builds a new list sorted by `\"score\"` in descending order. It does not change `entries`. The return value of `sorted()` is never stored, so the sorted list is discarded right away. The function then returns `entries[:limit]`, which is the first `limit` rows of the original, unsorted input, in whatever order the caller supplied them. In effect it is a plain \"take the first N items\" function, and the sort line has no effect. To get the apparent intended behaviour, assign the result (`entries = sorted(...)`) or sort in place with `entries.sort(...)`. Note that sorting in place would also reorder the caller's list.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

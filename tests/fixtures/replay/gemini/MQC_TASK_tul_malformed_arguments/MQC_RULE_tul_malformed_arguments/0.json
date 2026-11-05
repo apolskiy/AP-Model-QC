@@ -86,24 +86,24 @@
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_malformed_arguments::MQC_RULE_tul_malformed_arguments",
-    "duration_ms": 2908,
+    "duration_ms": 3975,
     "engine": "gemini",
     "finish_reason": "tool_calls",
     "input_tokens": 216,
     "mode": "live",
     "output_tokens": 22,
-    "raw_reference": "vGzqavDoA7KN_PUP6MKUSQ",
+    "raw_reference": "mZPravT-FpDk-sAPnuXk2Q0",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
     "text": "",
-    "thinking_tokens": 88,
+    "thinking_tokens": 68,
     "tool_calls": [
       {
         "arguments": {
           "limit": 5,
           "query": "damaged on arrival"
         },
-        "call_id": "call_160787",
+        "call_id": "call_14546143904113702940",
         "sequence": 0,
         "tool_name": "search_policy"
       }

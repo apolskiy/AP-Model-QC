@@ -13,7 +13,7 @@
             "type": "text"
           },
           {
-            "text": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
+            "text": "Assess the candidate against the posting above. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
             "type": "text"
           }
         ],
@@ -25,23 +25,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "1c919e3afbd9bdccdfd36240589badae488f4796cb3e1c072792a4f70ab053bf",
+  "request_hash": "5a012dc1180b37af5d1e6d7b68d9ff19bd2a87d88785eaa40ae260c73f16865a",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 8503,
+    "duration_ms": 7245,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 357,
     "mode": "live",
-    "output_tokens": 853,
-    "raw_reference": "msg_011Cgh15HiCJ44S6ua9JuTyx",
+    "output_tokens": 734,
+    "raw_reference": "msg_011Cgif7Jng6GGCfwDsNb3Vz",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "# Candidate Assessment: DOC_resume_ninety vs. DOC_posting_ten_five\n\n## Mandatory Requirements\n\n| # | Requirement | Candidate | Match |\n|---|---|---|---|\n| 1 | Python | Languages: Python | \u2705 |\n| 2 | SQL | Languages: SQL | \u2705 |\n| 3 | Linux administration | Platform: Linux administration | \u2705 |\n| 4 | Git | Platform: Git | \u2705 |\n| 5 | REST API design | Services: REST API design | \u2705 |\n| 6 | Unit testing | Services: unit testing | \u2705 |\n| 7 | CI pipelines | Services: CI pipelines | \u2705 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Infrastructure: all five listed | \u2705 |\n| 9 | Kafka | Streaming: Kafka | \u2705 |\n| 10 | GraphQL | Not listed | \u274c |\n\n**Mandatory match: 9 of 10 = 90%**\n\nItem 8 bundles five technologies. If each is counted separately, the total is 14 requirements, and the candidate meets 13 of them (**\u224892.9%**). Both methods exceed the threshold, so the result is the same either way.\n\n## Threshold Decision\n\n- Threshold: 85%\n- Result: 90% (or 92.9% if counted per technology)\n- **Outcome: PROCEED \u2705**\n\n## Nice-to-Have (does not affect the outcome)\n\nThe r\u00e9sum\u00e9 lists none of these: Grafana, Prometheus, technical writing, mentoring, public speaking (0 of 5). They may still be worth asking about in the interview, since soft skills like mentoring are often left off skills-only r\u00e9sum\u00e9s.\n\n## Gap to Explore\n\n- **GraphQL** is the only missing mandatory requirement. The candidate's REST API design experience is closely related, so this gap may be easy to close. It's worth confirming during screening.",
+    "text": "# Candidate Assessment\n\n**Mandatory match: 90% (9 of 10). This meets the 85% threshold, so the candidate proceeds.**\n\n## Mandatory Requirements\n\n| # | Requirement | R\u00e9sum\u00e9 | Match |\n|---|---|---|---|\n| 1 | Python | Languages | \u2705 |\n| 2 | SQL | Languages | \u2705 |\n| 3 | Linux administration | Platform | \u2705 |\n| 4 | Git | Platform | \u2705 |\n| 5 | REST API design | Services | \u2705 |\n| 6 | Unit testing | Services | \u2705 |\n| 7 | CI pipelines | Services | \u2705 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm | Infrastructure (all five) | \u2705 |\n| 9 | Kafka | Streaming | \u2705 |\n| 10 | GraphQL | Not listed | \u274c |\n\n**Counting note:** Item 8 bundles five tools into one numbered requirement. I counted it as one item, following the posting's numbering. If each tool counts separately, the match is 13 of 14, or about 92.9%. The outcome is the same either way.\n\n## Gap\n- **GraphQL** is the only missing mandatory skill. You could ask about it in the interview, since it's a common skill for someone who already does REST API design.\n\n## Nice-to-Have\nThe r\u00e9sum\u00e9 lists none of these: Grafana, Prometheus, technical writing, mentoring, or public speaking. As instructed, this doesn't affect the outcome.\n\n## Outcome\n**Proceed.** The candidate meets 90% of the mandatory requirements.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -6,29 +6,29 @@
         "role": "user"
       },
       {
-        "content": "The module below redeems coupon codes by looking them up. Nothing in\nit limits how long a code stays redeemable, so every code ever issued\nremains valid indefinitely.\n\nRecommend how the design should bound a code's lifetime, and say what\nthe lookup would have to carry for that bound to be enforceable.",
+        "content": "The module above redeems coupon codes by looking them up. Nothing in\nit limits how long a code stays redeemable, so every code ever issued\nremains valid indefinitely.\n\nRecommend how the design should bound a code's lifetime, and say what\nthe lookup would have to carry for that bound to be enforceable.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "a5b5aa841b8de182823ea16da5cacc3fafe6cb8576c2ba263277c54d759ec801",
+  "request_hash": "54b3c9cb999786a2ffb6ed11c01bc63a3c9511dffaac945082aca859cfb591c4",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 2233,
+    "duration_ms": 2057,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 170,
     "mode": "live",
-    "output_tokens": 260,
-    "raw_reference": "chatcmpl-EgIJP6GriU4TKxqndCjPo3BzBN6ug",
+    "output_tokens": 213,
+    "raw_reference": "chatcmpl-EgbwMzOPdyIL3JOAWyvB0Dke0diGr",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Recommendation:**  \nTo prevent coupon codes from remaining redeemable forever, each coupon code should have an **explicit expiration date** (or \"valid from\" and \"valid through\" timestamps) attached to it.\n\n**For the lookup:**  \n- Change the value for each coupon code from just the discount value (e.g., `{\"SAVE10\": 10}`) to a structure that includes at least:\n  - the coupon value (e.g., amount or percent off)\n  - the expiration date (e.g., as a datetime object or timestamp)\n\n**Example data structure:**\n```python\ncoupon_lookup = {\n    \"SAVE10\": {\"value\": 10, \"expires\": datetime(2024, 7, 31)},\n    \"WELCOME5\": {\"value\": 5, \"expires\": datetime(2024, 12, 31)},\n}\n```\n\n**In enforceable code:**\n- At redemption, check that the current date is before (or within) the expiration date for the coupon.\n- Reject the coupon if it is expired.\n\n**Summary:**  \n*To bound a code's lifetime, each code's lookup entry must carry an expiration date (or active time window), and the redemption logic must verify the code is still valid before applying its value.*",
+    "text": "**Recommendation:**  \nTo **bound the lifetime** of a coupon code, each code should have an **expiration timestamp** (or date) associated with it. The code should be redeemable only up until that time.\n\n**Changes to lookup:**  \n- The `coupon_lookup` must, for each code, carry **both** the value (discount) **and** the expiration time.\n    - For example:  \n      ```python\n      coupon_lookup = {\n        \"SUMMER2024\": {\"value\": 10, \"expires\": datetime(2024, 9, 1)},\n        ...\n      }\n      ```\n- In the `settle_order` function:\n  - On lookup, check if the coupon is present **and** if the current time is before its `expires` timestamp.\n  - Only then apply the coupon discount.\n\n**Summary:**  \nAdd an **expiration timestamp** to each coupon\u2019s data. The lookup must return both the discount and its expiration; the code must check current time vs. expiration before redeeming the coupon.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

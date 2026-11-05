@@ -12,7 +12,7 @@
             "text": "<document id=DOC_release_note_measured>\nRelease 4.3 makes four changes. The export job now completes in\nunder 30 seconds. The login page was restyled. The importer accepts\nfiles up to 2 GB. The help link points to the new documentation.\n</document>"
           },
           {
-            "text": "List the changes in the release note below.\n\nPut every change that states a measurable quantity first, in the order\nthey appear, then the remaining changes."
+            "text": "List the changes in the release note above.\n\nPut every change that states a measurable quantity first, in the order\nthey appear, then the remaining changes."
           }
         ],
         "role": "user"
@@ -20,24 +20,24 @@
     ],
     "model": "gemini-3.8-flash"
   },
-  "request_hash": "0471d46e02b11db8857d37603383754697fd2959dbbd2ad2ba077fccb0db3570",
+  "request_hash": "08f6399d60538b4f3c9bcd6099621cd80ac4a25211f864a0389ad512d0aeb6f9",
   "resolved_model": "gemini-3.8-flash",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_ordering::MQC_RULE_ins_ordering",
-    "duration_ms": 4918,
+    "duration_ms": 5263,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 99,
     "mode": "live",
-    "output_tokens": 77,
-    "raw_reference": "AGTqaoGZNKyy_PUPpNmAoQY",
+    "output_tokens": 75,
+    "raw_reference": "BYzrauWyNv6hjMcPxY7RgQI",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Here are the changes from the release note, ordered with measurable quantities first:\n\n**Changes with measurable quantities:**\n1. The export job now completes in under 30 seconds.\n2. The importer accepts files up to 2 GB.\n\n**Remaining changes:**\n3. The login page was restyled.\n4. The help link points to the new documentation.",
-    "thinking_tokens": 344,
+    "text": "Here are the changes listed with those stating a measurable quantity first:\n\n**Changes with measurable quantities:**\n1. The export job now completes in under 30 seconds.\n2. The importer accepts files up to 2 GB.\n\n**Remaining changes:**\n3. The login page was restyled.\n4. The help link points to the new documentation.",
+    "thinking_tokens": 388,
     "tool_calls": []
   }
 }

@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
+        "content": "Rewrite the candidate summary above to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "0a5e4719528f58020097094c31ad7e3fd61c0c718a60473a5fff5fc1c1dd4925",
+  "request_hash": "66c4e214058c6ff74f437b4a781e56f6a48f76c4377ac7769bb34ccc59523c6e",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 5679,
+    "duration_ms": 3914,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1355,
     "mode": "live",
-    "output_tokens": 85,
-    "raw_reference": "c236a4a4-0bc5-9547-85e8-2c1d099eba3d",
+    "output_tokens": 81,
+    "raw_reference": "1fee646e-3d7e-942c-9c26-fdebbb54b56b",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "I can\u2019t match the 8-year requirement from what\u2019s given: the summary doesn\u2019t state years of experience, and nothing in it lets me calculate them.\n\nSend the actual years of backend engineering experience and I\u2019ll rewrite the summary to the posting. If you don\u2019t supply that figure, I won\u2019t invent it\u2014the summary stays unqualified against a hard \u201c8 years\u201d screen and can be filtered out before the rest of the work is read.",
-    "thinking_tokens": 283,
+    "text": "The summary does not state years of experience, and none can be calculated from the roles described.\n\nWhat is the candidate\u2019s actual years of backend engineering experience?\n\nWithout that figure, the rewrite cannot honestly match the \u201c8 years\u201d requirement. Inventing or implying 8 years would misrepresent the candidate and can cost the application (rejection, rescinded offer, or credibility damage if the gap is checked).",
+    "thinking_tokens": 145,
     "tool_calls": []
   }
 }

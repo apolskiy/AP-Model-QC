@@ -10,29 +10,29 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
+        "content": "Assess the candidate against the posting above. Report the mandatory match\npercentage. If it reaches 85 percent, proceed: the nice-to-have set does\nnot affect the outcome.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "2f8971019359432c1015b3e2a29e04899f955c1451bcc649eda6839f3ea2d7e9",
+  "request_hash": "1ede0f03a982737206dbc5dd205c5fe7d15e9a91879949f3cbbebcc1bc0147d2",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 2267,
+    "duration_ms": 3365,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 208,
     "mode": "live",
-    "output_tokens": 327,
-    "raw_reference": "chatcmpl-EgITOUKMgiPKCt97vUYGx35h0yihd",
+    "output_tokens": 360,
+    "raw_reference": "chatcmpl-Egc5LmQD4gHXG1piEQwIktacLnmCI",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Assessment of Candidate Against Posting**\n\n**Mandatory Requirements (from DOC_posting_ten_five):**\n1. Python.  \n2. SQL.  \n3. Linux administration.  \n4. Git.  \n5. REST API design.  \n6. Unit testing.  \n7. CI pipelines.  \n8. Docker, Kubernetes, Terraform, Ansible, Helm.  \n9. Kafka.  \n10. GraphQL.\n\n**Candidate Skills (from DOC_resume_ninety):**\n- Python, SQL  \n- Linux administration, Git  \n- REST API design, unit testing, CI pipelines  \n- Docker, Kubernetes, Terraform, Ansible, Helm  \n- Kafka\n\n**Matching Mandatory Requirements:**  \n1. Python (**matched**)  \n2. SQL (**matched**)  \n3. Linux administration (**matched**)  \n4. Git (**matched**)  \n5. REST API design (**matched**)  \n6. Unit testing (**matched**)  \n7. CI pipelines (**matched**)  \n8. Docker, Kubernetes, Terraform, Ansible, Helm (**matched**)  \n9. Kafka (**matched**)  \n10. GraphQL (**not matched**)\n\n**Summary:**  \n- Mandatory requirements met: 9 out of 10  \n- Mandatory requirements not met: 1 (GraphQL)\n\n**Mandatory Match Percentage:**  \n= (Number matched / Total mandatory) * 100  \n= (9 / 10) * 100  \n= **90%**\n\n**Conclusion:**  \nThe candidate matches **90%** of the mandatory requirements, which meets the 85% threshold.  \nYou may proceed; nice-to-have requirements do not affect the outcome.",
+    "text": "Let\u2019s break down the evaluation:\n\n**Mandatory requirements (from the posting):**\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\n**Resume supplies:**\n- Python, SQL\n- Linux administration, Git\n- REST API design, unit testing, CI pipelines\n- Docker, Kubernetes, Terraform, Ansible, Helm\n- Kafka\n\nLet\u2019s check each requirement for a match, one by one:\n\n| # | Requirement                                  | Found in Resume?   |\n|---|----------------------------------------------|--------------------|\n| 1 | Python                                      | \u2714\ufe0f                 |\n| 2 | SQL                                         | \u2714\ufe0f                 |\n| 3 | Linux administration                        | \u2714\ufe0f                 |\n| 4 | Git                                         | \u2714\ufe0f                 |\n| 5 | REST API design                             | \u2714\ufe0f                 |\n| 6 | Unit testing                                | \u2714\ufe0f                 |\n| 7 | CI pipelines                                | \u2714\ufe0f                 |\n| 8 | Docker, Kubernetes, Terraform, Ansible, Helm| \u2714\ufe0f                 |\n| 9 | Kafka                                       | \u2714\ufe0f                 |\n|10 | GraphQL                                     | \u2716\ufe0f (Not listed)    |\n\n**Score:**\n- Matches: 9 out of 10\n\n**Mandatory match percentage:**\n\\[\n\\text{Percentage} = \\frac{9}{10} \\times 100\\% = 90\\%\n\\]\n\n**Outcome:**\n- **Mandatory match percentage: 90%.**\n- **Threshold is 85%. Resume proceeds.**\n- Nice-to-have requirements are not considered for the outcome.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

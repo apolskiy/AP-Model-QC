@@ -3,7 +3,7 @@
 """Graded cases for whether the model's answer stays inside what its source says.
 
 Created: 2026-09-25
-Last updated: 2026-10-28
+Last updated: 2026-11-05
 
 This file contains seven cases on the model under test, each answering from a supplied
 document. ``TestMQCFabricationAndAlteration`` checks it asserts nothing absent and
@@ -47,6 +47,7 @@ family formulates all three again in a second domain.
 # TestMQCContextAndTruth
 #   134202  does_not_ignore_supplied_context
 #   134203  does_not_state_verifiable_falsehood
+#   134207  does_not_state_verifiable_falsehood_without_a_rounding_rule
 # TestMQCDirectionalFigures
 #   134205  overstating_a_sourced_figure_is_rejected
 #   134206  rounding_within_the_stated_ceiling_is_performed
@@ -174,6 +175,30 @@ class TestMQCContextAndTruth:
         """
         results = observe_repeatedly(
             request.config, "MQC_TASK_gnd_no_falsehood", "MQC_RULE_gnd_no_falsehood"
+        )
+        assert_consistent_pass(results)
+
+    @pytest.mark.priority(2)
+    @pytest.mark.depends_on("134200")
+    @story("Falsehood")
+    def MQC_EVL_EVAL_134207_does_not_state_verifiable_falsehood_without_a_rounding_rule(
+        self, request: Any
+    ) -> None:
+        """The share of `134203`, asked without the rule saying how to round it.
+
+        **A customer will not state a precision in every request**, so this
+        accepts any precision of the true share and refuses a wrong one. Design:
+        ``model_evaluation_test_plan.md`` section 9.4.2.
+
+        Args:
+            request (Any): pytest's request.
+
+        Returns:
+            None
+        """
+        results = observe_repeatedly(
+            request.config, "MQC_TASK_gnd_no_falsehood_unrounded",
+            "MQC_RULE_gnd_no_falsehood_unrounded",
         )
         assert_consistent_pass(results)
 

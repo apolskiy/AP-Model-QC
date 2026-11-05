@@ -12,7 +12,7 @@
             "text": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>"
           },
           {
-            "text": "Summarise the quarterly report below in three sentences.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units."
+            "text": "Summarise the quarterly report above in three sentences.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units."
           }
         ],
         "role": "user"
@@ -20,24 +20,24 @@
     ],
     "model": "gemini-3.8-flash"
   },
-  "request_hash": "57d1cf4e44c85cfb7b59aff85c0c6e3eb98b633d5c8e64a14af7489403f951a3",
+  "request_hash": "3cf5b8d1dabaa4c0d6263f8a572a67e4d2752c21c6b7f8e86a603c1157551407",
   "resolved_model": "gemini-3.8-flash",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 7387,
+    "duration_ms": 7855,
     "engine": "gemini",
     "finish_reason": "stop",
     "input_tokens": 113,
     "mode": "live",
-    "output_tokens": 63,
-    "raw_reference": "MWDqaq79E9b8-sAPq_CngAM",
+    "output_tokens": 57,
+    "raw_reference": "kIjrau-9OJKo_PUPrv-xwAE",
     "requested_model": "gemini-3.8-flash",
     "resolved_model": "gemini-3.8-flash",
-    "text": "Total Q3 revenue reached 87.4 million across the four reported regions. North America generated the highest share with 41.2 million, while EMEA recorded 28.7 million. The remaining contributions came from Japan at 11.4 million and Australia at 6.1 million.",
-    "thinking_tokens": 729,
+    "text": "In Q3, North America recorded 41.2 million in revenue, while EMEA recorded 28.7 million. Japan recorded 11.4 million, and Australia recorded 6.1 million. Total revenue was 87.4 million across these four regions.",
+    "thinking_tokens": 836,
     "tool_calls": []
   }
 }

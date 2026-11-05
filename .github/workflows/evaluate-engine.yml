@@ -26,7 +26,7 @@ on:
       max_spend:
         description: "Abort before a request would take the run past this many USD"
         required: false
-        default: "2.00"
+        default: "4.00"
         type: string
       engine:
         description: "Which engine the ladder evaluates"

@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "Summarise the release note below as a bulleted list.\n\nUse at most three bullets. Keep every sentence to at most twelve words.\nBegin each bullet with a capital letter and write it as a complete\nsentence with a subject and a verb.",
+        "content": "Summarise the release note above as a bulleted list.\n\nUse at most three bullets. Keep every sentence to at most twelve words.\nBegin each bullet with a capital letter and write it as a complete\nsentence with a subject and a verb.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "20b7c0a27e501a601adb903674f693b49fabc3cf21d7d17c35b080aee813fbd4",
+  "request_hash": "b51c2bf1e65fa8781a36e18c35cefceb82bf25e5f43143082e16f32b8cf5a85d",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_capitalised",
-    "duration_ms": 7273,
+    "duration_ms": 12324,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1356,
     "mode": "live",
-    "output_tokens": 35,
-    "raw_reference": "33163df0-738f-9a46-a592-2be1709f75fc",
+    "output_tokens": 34,
+    "raw_reference": "dc7da099-e338-9dbe-94b5-61b189ede08c",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "- The importer preserves a trailing column without a newline.\n- The scheduler retries a failed job twice before reporting it.\n- The audit log records the account that performed a deletion.",
-    "thinking_tokens": 748,
+    "text": "- The importer keeps trailing columns when files lack newlines.\n- The scheduler retries a failed job twice before reporting it.\n- The audit log records the account performing a deletion.",
+    "thinking_tokens": 1174,
     "tool_calls": []
   }
 }

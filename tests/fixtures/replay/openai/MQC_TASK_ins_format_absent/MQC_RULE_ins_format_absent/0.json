@@ -6,29 +6,29 @@
         "role": "user"
       },
       {
-        "content": "Summarise the release note below.",
+        "content": "Summarise the release note above.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "c5829d16e3a5849e1ec8497c5181ee1187bfdddde0307c1ef3139dcacf3906bd",
+  "request_hash": "0f88f8072ca89bc534cc010ba3ebf00f17a5b795b551b56d5c50fd2c53b27b44",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_format_absent::MQC_RULE_ins_format_absent",
-    "duration_ms": 1276,
+    "duration_ms": 1355,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 81,
     "mode": "live",
-    "output_tokens": 41,
-    "raw_reference": "chatcmpl-EgIMVjmvxeifnkl4Qi5hBOm5Fmc6e",
+    "output_tokens": 42,
+    "raw_reference": "chatcmpl-EgbzEb1Z2XfGNFLK3kIm222pLTemZ",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Release 4.2 fixes three issues: the importer now handles files without a trailing newline correctly, the scheduler retries failed jobs twice before reporting, and the audit log now records which account performed deletions.",
+    "text": "Release 4.2 fixes three issues: the importer now handles files missing a final newline correctly, the scheduler retries failed jobs twice before reporting failure, and the audit log now records which account performed a deletion.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

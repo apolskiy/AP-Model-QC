@@ -6,29 +6,29 @@
         "role": "user"
       },
       {
-        "content": "Summarise the release note below in two sentences.\n\nDo not use em dashes or en dashes anywhere in your answer. Use a colon,\na semicolon or a comma instead, or split the sentence.",
+        "content": "Summarise the release note above in two sentences.\n\nDo not use em dashes or en dashes anywhere in your answer. Use a colon,\na semicolon or a comma instead, or split the sentence.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "5e5ae05b02579dac691db23c8e6bb17cf4bc3218e26a212da07018eab6418af7",
+  "request_hash": "d3bc6b9a39b982c3f3a3e75243d851fcd85a0b6ddb65bf527b74899e84f1bb94",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_prohibition::MQC_RULE_ins_prohibition",
-    "duration_ms": 1131,
+    "duration_ms": 1424,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 116,
     "mode": "live",
-    "output_tokens": 61,
-    "raw_reference": "chatcmpl-EgIO4qTjT84qkSvoGDnDx7Su6Dl7U",
+    "output_tokens": 56,
+    "raw_reference": "chatcmpl-Egc15xeqjQdGhtXwx7Q6ouoWZOdBr",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Release 4.2 addresses three reported defects: the importer now retains a trailing column even if the file lacks a final newline, the scheduler retries failed jobs twice before reporting them, and the audit log now records which account performed a deletion. These changes improve data integrity, error handling, and traceability.",
+    "text": "Release 4.2 fixes three issues: the importer keeps a trailing column even if a file lacks a final newline; the scheduler tries failed jobs two more times before reporting them; the audit log now notes which account performed deletions. These improvements address defects that were previously reported.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

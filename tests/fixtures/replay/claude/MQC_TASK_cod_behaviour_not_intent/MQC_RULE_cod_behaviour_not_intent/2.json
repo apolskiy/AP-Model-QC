@@ -9,7 +9,7 @@
             "type": "text"
           },
           {
-            "text": "State what the function below returns when called with rows scoring\n10, 90 and 50 and a limit of two. Describe what it does, not what it\nappears intended to do.",
+            "text": "Answer in a numbered list.\n1. State what the function above returns when called with three rows\npassed in this order, scoring 10, 90 and 50, and a limit of two.\n2. Describe what the function does, not what it appears to have been\nintended to do.",
             "type": "text"
           }
         ],
@@ -21,23 +21,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "81055d6368d42d71cf86e76d7e90c4d39ac2de8f6ab13b65106da85298b0d18f",
+  "request_hash": "9a0000911b056c867d34c05e77af09ce237fdf771c1eccdcdc4d7e16c2e5fedd",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_behaviour_not_intent::MQC_RULE_cod_behaviour_not_intent",
-    "duration_ms": 5421,
+    "duration_ms": 4000,
     "engine": "claude",
     "finish_reason": "stop",
-    "input_tokens": 135,
+    "input_tokens": 163,
     "mode": "live",
-    "output_tokens": 414,
-    "raw_reference": "msg_011CggyKEoV15UppEL3XX5Aa",
+    "output_tokens": 299,
+    "raw_reference": "msg_011CgimgGnEkJaYgzvx2EKXQ",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "It returns the **first two rows in their original order**: the row scoring 10, then the row scoring 90 (assuming they were passed in the order 10, 90, 50).\n\n**Why**\n\n1. `sorted(...)` builds a new sorted list (90, 50, 10), but the function never assigns that list to anything, so it is discarded. `sorted()` does not modify its input.\n2. `entries` is therefore unchanged, still in order 10, 90, 50.\n3. `entries[:limit]` slices the first two items of that unchanged list.\n\nSo the function just returns the first `limit` rows as given, ignoring scores entirely. Here that means the highest scorer (90) appears only by accident of position, and the lowest scorer (10) is included while 50 is dropped.\n\n**Fix**\n\nEither use the sorted result:\n\n```python\nreturn sorted(entries, key=lambda row: row[\"score\"], reverse=True)[:limit]\n```\n\nor sort in place, though this changes the caller's list:\n\n```python\nentries.sort(key=lambda row: row[\"score\"], reverse=True)\nreturn entries[:limit]\n```",
+    "text": "1. It returns the first two rows in their original order: the row scoring 10, then the row scoring 90. The row scoring 50 is left out, even though it outscores the row scoring 10.\n\n2. The function calls `sorted()` on `entries`, which builds a new list ordered by `\"score\"` from highest to lowest. But `sorted()` does not change the list it is given, and the function never stores the new list, so it is thrown away. The function then slices the original, unsorted `entries` and returns the first `limit` items in whatever order they arrived. In effect it returns the first `limit` rows, not the top scorers. The sort is wasted work, and `entries` is never modified. (The fix would be `entries = sorted(...)`, or calling `entries.sort(...)` to sort in place, before slicing.)",
     "thinking_tokens": 0,
     "tool_calls": []
   }

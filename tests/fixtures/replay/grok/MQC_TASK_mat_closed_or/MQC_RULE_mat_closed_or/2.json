@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "State what percentage of the requirement below the candidate meets, and\nshow how you arrived at it.",
+        "content": "State what percentage of the requirement above the candidate meets, and\nshow how you arrived at it.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "376d6826af31520c5df895e1f4e60126ea548017ebce6374cee1f6dba91d0ab9",
+  "request_hash": "402a7228a8d467b972f936fde96faeeadc4eb5920c338337efe1cd8a96e97edb",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
-    "duration_ms": 5166,
+    "duration_ms": 7000,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1309,
     "mode": "live",
-    "output_tokens": 36,
-    "raw_reference": "9bfb57e1-b1b8-907f-b094-deb028d5b860",
+    "output_tokens": 68,
+    "raw_reference": "95886a5a-58f2-99d6-bb58-c02cf7e602b4",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "**100%**\n\nThe requirement is a closed OR: any one of Python, Go, or Rust is enough. The candidate lists Python, so the requirement is fully met.",
-    "thinking_tokens": 297,
+    "text": "**100%**\n\nThe requirement is disjunctive: Python **or** Go **or** Rust. Any one of those languages satisfies it completely.\n\nThe candidate lists Python, SQL, and Bash. Python is in the required set, so the requirement is fully met. SQL and Bash are outside the requirement and do not change the result.",
+    "thinking_tokens": 414,
     "tool_calls": []
   }
 }

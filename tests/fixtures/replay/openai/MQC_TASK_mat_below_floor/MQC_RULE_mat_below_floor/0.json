@@ -10,29 +10,29 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate against the posting below. Report the mandatory match\npercentage. If it falls below 78 percent, warn me and name that cutoff, and\ndo not evaluate the nice-to-have requirements at all.",
+        "content": "Assess the candidate against the posting above. Report the mandatory match\npercentage. If it falls below 78 percent, warn me and name that cutoff, and\ndo not evaluate the nice-to-have requirements at all.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "fe25b946958e72c853aa3b263e6611e8f94d65f8cb5f4fa8077b2ccdab0e5332",
+  "request_hash": "86f498da991e6a37b39d19fdc1698dee8fc75fa400293b5d1f7d442d84f21400",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 1732,
+    "duration_ms": 2334,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 216,
     "mode": "live",
-    "output_tokens": 193,
-    "raw_reference": "chatcmpl-EgIU5uHWBbs5POPm9jSsaNbWwk0Si",
+    "output_tokens": 195,
+    "raw_reference": "chatcmpl-Egc6BXmHt6GHNGtYhl0MAbFS8Mo5F",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Mandatory requirements in posting (10 total):**  \n1. Python  \n2. SQL  \n3. Linux administration  \n4. Git  \n5. REST API design  \n6. Unit testing  \n7. CI pipelines  \n8. Docker, Kubernetes, Terraform, Ansible, Helm  \n9. Kafka  \n10. GraphQL  \n\n**Resume match:**  \n1. Python \u2705  \n2. SQL \u2705  \n3. Linux administration \u2705  \n4. Git \u2705  \n5. REST API design \u2705  \n6. Unit testing \u2705  \n7. CI pipelines \u2705  \n8. Docker, Kubernetes, Terraform, Ansible, Helm \u274c  \n9. Kafka \u274c  \n10. GraphQL \u274c  \n\n**Matches:** 7/10 = 70%\n\n---\n\n**Result:**  \n**Match percentage: 70%**\n\n**Warning:** The candidate does not meet the minimum 78% mandatory match cutoff.  \n**Action:** Nice-to-have requirements will not be evaluated.",
+    "text": "**Mandatory Requirements in Posting (10 total):**\n1. Python\n2. SQL\n3. Linux administration\n4. Git\n5. REST API design\n6. Unit testing\n7. CI pipelines\n8. Docker, Kubernetes, Terraform, Ansible, Helm\n9. Kafka\n10. GraphQL\n\n**Matched Requirements in Candidate Resume:**\n1. Python\n2. SQL\n3. Linux administration\n4. Git\n5. REST API design\n6. Unit testing\n7. CI pipelines\n\n**Missing (Not found in Resume):**\n8. Docker, Kubernetes, Terraform, Ansible, Helm\n9. Kafka\n10. GraphQL\n\n**Match Calculation:**\n- Number matched: 7/10 = 70%\n\n---\n\n**Warning:**  \nThe candidate matches **70%** of the mandatory requirements, which falls below the 78% cutoff.  \nAs a result, I will not evaluate the nice-to-have requirements.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

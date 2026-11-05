@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "The function below settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\nThe seller does not expect to give the product away for free.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})",
+        "content": "The function above settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\nThe seller does not expect to give the product away for free.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "88acba036398d7851cd0b592d367ffceace8c7e975b250f49abba41ab53a4061",
+  "request_hash": "251657c8337fb276e4e0b12957c2b2bdf8b7076b4546eeb4f96a1593e24773ab",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1536,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 56007,
+    "duration_ms": 63085,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 423,
-    "raw_reference": "f1716e4d-5097-9bff-b257-033e97b076ab",
+    "output_tokens": 398,
+    "raw_reference": "fd52ba17-a535-937f-b2aa-572e6db8f306",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement is wrong for four separate reasons, not one bad return value.\n\n1. The tier discount is treated as the amount charged. `total_amount * discount / 100` keeps 20% of a standard basket (20 on 100) instead of taking 20% off. A discount is a percentage reduction, so the charge before coupons should be `total_amount * (100 - discount) / 100` (80 on that basket).\n\n2. The coupon is subtracted from that discount slice, not from the price after the percentage. A coupon looks up to currency; a tier discount is a percent. They only become comparable after the percent has already been applied to the total. Coupons should then be subtracted from that net price.\n\n3. Only `coupon_codes[0]` is used. Every recognised code should be summed. `[\"SAVE20\", \"SAVE30\"]` should take off 50, not 20.\n\n4. A missing code is a hard lookup. `coupon_lookup[\"NOPE\"]` raises and aborts settlement. An unknown code should contribute 0 and the order should still settle.\n\n5. Nothing stops the result at or below zero. After a correct 20% off, `SAVE90` is 80 \u2212 90 = \u221210, so the seller gives the goods away and pays the buyer. Coupon currency should be capped at the post-discount total so the amount owed cannot be negative. The statement that the seller will not give the product away for free is stronger than a floor of 0: a floor of 0 still settles `SAVE90` at 0. The spec does not give a minimum price above zero, so the defect to name is the missing bound, and the function must not return a non-positive charge.\n\nOn the four production calls the intended charges are 50, a non-positive-forbidden remainder of the 80 after `SAVE90` is capped, 80, and 30. The current function yields \u221210, \u221270, a `KeyError`, and 0.",
-    "thinking_tokens": 3325,
+    "text": "The settlement math treats a rate as a price, reads only one coupon, aborts on a bad code, and can finish at or below zero.\n\n**Tier discount is applied as the amount due, not as a reduction.** `discount` is a percent of the basket (standard 20 means 20% off). `total_amount * discount / 100` keeps that slice and throws away the rest, so a 100-unit standard basket is reduced to 20 before any coupon. It should keep the complement: `total_amount * (100 - discount) / 100`.\n\n**A currency coupon is then taken off that wrong slice.** A tier value and a coupon value are different units. The percent must be turned into a currency reduction of the original total first; only then should coupon currency be subtracted from what remains. They must not be combined as if they were the same kind of number, and the coupon must not be subtracted from the discount slice.\n\n**Only `coupon_codes[0]` is used.** Later codes are ignored, so `[\"SAVE20\", \"SAVE30\"]` never applies both. Every recognised code should be summed and subtracted.\n\n**An unknown code aborts the sale.** `coupon_lookup[code]` raises `KeyError` (as with `\"NOPE\"`), so settlement never finishes. Unrecognised codes should be skipped and treated as no reduction.\n\n**Nothing stops a non-positive balance.** After a correct 20% off, `SAVE90` still drives 80 \u2212 90 below zero; the current formula goes further negative. The seller should not give the basket away or end up owing the buyer. After the percent-of-total reduction and the sum of recognised coupons, the amount owed must be kept strictly positive (a non-positive result is not a valid settlement). The snippet does not name the seller\u2019s minimum, so that floor has to be an explicit positive bound rather than an implicit zero.",
+    "thinking_tokens": 3994,
     "tool_calls": []
   }
 }

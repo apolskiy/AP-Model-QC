@@ -9,7 +9,7 @@
             "type": "text"
           },
           {
-            "text": "Summarise the release gate below in one sentence. State the coverage\nthreshold exactly as the specification states it.",
+            "text": "Summarise the release gate above in one sentence. State the coverage\nthreshold exactly as the specification states it.",
             "type": "text"
           }
         ],
@@ -21,23 +21,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "cdffc5d3d0f660de4c48e8151c805b7003751d465ce45afc1a7ff44c4689ef4a",
+  "request_hash": "b516bb5d87f1d9c244202907b10211f44b9afbbc0af32af491d3d78ce3d2628c",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_threshold::MQC_RULE_cod_preserves_threshold",
-    "duration_ms": 2009,
+    "duration_ms": 1912,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 105,
     "mode": "live",
-    "output_tokens": 60,
-    "raw_reference": "msg_011Cggye7MHFwLQhs5mJsspk",
+    "output_tokens": 61,
+    "raw_reference": "msg_011CgidfkKyZwvVTib1HaUdh",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "Builds are promoted when line coverage is at or above 82 percent and held for review when it falls below that figure.",
+    "text": "A build is promoted when its line coverage is **at or above 82 percent**; builds below that figure are held for review.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

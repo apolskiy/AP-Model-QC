@@ -13,7 +13,7 @@
             "type": "text"
           },
           {
-            "text": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+            "text": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
             "type": "text"
           }
         ],
@@ -25,23 +25,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "a873c2e8f275398ec35ee1bc5f510ec98e81b1eff61b04dfe61a486aff6a8d4d",
+  "request_hash": "3287e9bb07b0c7c75b827eac35316196a9de08885098ea4420b5fea4351fa898",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 7252,
+    "duration_ms": 6174,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 177,
     "mode": "live",
-    "output_tokens": 628,
-    "raw_reference": "msg_011CggzqWsaEtgWittKaiMHZ",
+    "output_tokens": 434,
+    "raw_reference": "msg_011Cgieq4dg97DuVWvy93JDa",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "**Verdict: Not established.** The summary neither confirms nor rules out the requirement.\n\n**The comparison**\n\n| | Statement | Source |\n|---|---|---|\n| Requirement | 9 years of backend engineering experience | DOC_req_years_nine |\n| Candidate | \"8+ years\" of backend engineering | DOC_summary_states_eight_plus |\n\n**Why it can't be settled**\n\n\"8+\" sets a floor of 8 years but gives no upper value.\n- If the candidate has 8 years (or 8 and some months), they fall short of 9.\n- If they have 9 or more, they meet it.\n\nThe summary supports both readings. It would be wrong to call this a match, because the only number given (8) is below the requirement. It would also be wrong to call it a clear miss, because the \"+\" leaves room for 9 or more.\n\n**Other details**\n\n- The settlement pipeline handling 40,000 orders a day shows the relevance and scale of the candidate's backend work. It says nothing about duration, so it doesn't help with the years question.\n- One mild signal: candidates with 9+ years often write \"9+\" or \"10+.\" Choosing \"8+\" *may* mean the true figure is closer to 8. That is an inference, not evidence, and shouldn't decide the call.\n\n**Recommended next step**\n\nAsk the candidate for their exact years of backend engineering experience, or check their employment history with dates. Also confirm whether the posting treats 9 years as a hard cutoff or a guideline. If it's flexible, 8+ years with strong, directly relevant work may still be worth moving forward.",
+    "text": "**Assessment: Cannot be confirmed from the summary.**\n\n**Requirement:** 9 years of backend engineering experience.\n\n**What the summary states:** \"8+ years\" building transactional services.\n\n**Why it's undetermined:**\n- \"8+\" sets a floor of 8 years and no ceiling. It is consistent with exactly 8 years, which falls short, and with 9 or more, which meets the bar.\n- It is neither a clear miss nor a clear match. Presenting it as either would be an assumption.\n- Candidates often write \"X+\" when the true figure is somewhat above X, but that isn't evidence of 9. Some also round up, so it could be under 9 in practice.\n\n**Other relevant points:**\n- The experience is the right kind. Transactional backend work, including a settlement pipeline at 40,000 orders/day, fits a backend engineering requirement squarely.\n- Even at the floor, the candidate is at most about one year short of the stated threshold.\n\n**Recommended next step:** Ask the candidate for their exact years of backend experience, or check start and end dates on the full resume or work history. That will settle whether the 9-year requirement is met.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

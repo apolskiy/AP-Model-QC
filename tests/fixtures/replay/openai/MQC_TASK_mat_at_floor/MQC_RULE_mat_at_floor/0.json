@@ -10,29 +10,29 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate against the posting below. A numbered requirement that\nlists several items counts as one requirement, credited in proportion to how\nmany of those items the candidate shows. Report the mandatory match\npercentage. If it lands between 78 and 84 percent, also report the combined\nfigure over all requirements and proceed only if that reaches 85 percent.",
+        "content": "Assess the candidate against the posting above. A numbered requirement that\nlists several items counts as one requirement, credited in proportion to how\nmany of those items the candidate shows. Report the mandatory match\npercentage. If it lands between 78 and 84 percent, also report the combined\nfigure over all requirements and proceed only if that reaches 85 percent.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "261982ef4aaf16a27b70125c1f1b526e75c4525903310c7d7a34c7167ed4f5dc",
+  "request_hash": "7350bb437ad1919648966ab7de45363a0871adf65b2ed220822b9770d8a90faa",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 3170,
+    "duration_ms": 4585,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 256,
     "mode": "live",
-    "output_tokens": 463,
-    "raw_reference": "chatcmpl-EgITeBQdQUWt4VhYL7VaeNH6nj32j",
+    "output_tokens": 595,
+    "raw_reference": "chatcmpl-Egc5gMdCZyXj2I3GMzRhJl28kYGxV",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Assessment of Candidate Against Posting**\n\n### Mandatory Requirements (10 total)\n\n1. **Python**  \n   **Match:** Yes\n\n2. **SQL**  \n   **Match:** Yes\n\n3. **Linux administration**  \n   **Match:** Yes\n\n4. **Git**  \n   **Match:** Yes\n\n5. **REST API design**  \n   **Match:** Yes\n\n6. **Unit testing**  \n   **Match:** Yes\n\n7. **CI pipelines**  \n   **Match:** Yes\n\n8. **Docker, Kubernetes, Terraform, Ansible, Helm** (5 items)  \n   **Candidate:** Docker, Kubernetes, Terraform, Ansible (4/5 items)  \n   **Score:** 0.8\n\n9. **Kafka**  \n   **Match:** No\n\n10. **GraphQL**  \n    **Match:** No\n\n#### Mandatory Requirement Tally:\n\n- Fully met: 1\u20137  \u2192 7  \n- Partially met: 8 \u2192 0.8  \n- Not met: 9\u201310 \u2192 0\n\n**Total score:**  \n7 (requirements 1\u20137)  \n+ 0.8 (requirement 8)  \n= 7.8\n\n**Mandatory percentage:**  \n7.8 / 10 = **78%**\n\n---\n\nSince mandatory match percentage is **78%** (within 78\u201384%), proceed to combined (all requirements) score.\n\n---\n\n### All Requirements (15 total)\n\n11. **Grafana**  \n    **Match:** Yes\n\n12. **Prometheus**  \n    **Match:** Yes\n\n13. **Technical writing**  \n    **Match:** Yes\n\n14. **Mentoring**  \n    **Match:** Yes\n\n15. **Public speaking**  \n    **Match:** Yes\n\n**Nice-to-have fully met:** 5  \n**From above (mandatory):** 7.8  \n**Total met:** 7.8 + 5 = 12.8\n\n**Combined percentage:**  \n12.8 / 15 = **85.33%**\n\n---\n\n**Final Result:**  \n- **Mandatory match:** 78%  \n- **Combined (all requirements):** 85.33%\n\n**Conclusion:** The candidate meets the threshold for further consideration.",
+    "text": "Let's assess the candidate against the posting, using the rule that a numbered requirement listing several items counts as one requirement, with credit given in proportion to the candidate's coverage.\n\n### MANDATORY REQUIREMENTS (10 total)\n\n1. **Python**  \n   - Candidate: Yes  \n   - Credit: 1\n\n2. **SQL**  \n   - Candidate: Yes  \n   - Credit: 1\n\n3. **Linux administration**  \n   - Candidate: Yes  \n   - Credit: 1\n\n4. **Git**  \n   - Candidate: Yes  \n   - Credit: 1\n\n5. **REST API design**  \n   - Candidate: Yes  \n   - Credit: 1\n\n6. **Unit testing**  \n   - Candidate: Yes  \n   - Credit: 1\n\n7. **CI pipelines**  \n   - Candidate: Yes  \n   - Credit: 1\n\n8. **Docker, Kubernetes, Terraform, Ansible, Helm** *(5 sub-requirements)*\n   - Candidate: Docker, Kubernetes, Terraform, Ansible (4/5)\n   - Credit: 4/5 = 0.8\n\n9. **Kafka**\n   - Candidate: Not shown\n   - Credit: 0\n\n10. **GraphQL**\n    - Candidate: Not shown\n    - Credit: 0\n\n**Total Mandatory Credit =** 1 + 1 + 1 + 1 + 1 + 1 + 1 + 0.8 + 0 + 0 = 7.8\n\n**Mandatory Match Percentage:**  \n= (7.8 / 10) \u00d7 100  \n= 78%\n\n---\n\nSince 78% is within the specified 78-84% range, we also calculate the combined percentage considering nice-to-have requirements.\n\n### NICE TO HAVE (5 total)\n\n11. **Grafana**  \n   - Candidate: Yes  \n   - Credit: 1\n\n12. **Prometheus**  \n    - Candidate: Yes  \n    - Credit: 1\n\n13. **Technical writing**  \n    - Candidate: Yes  \n    - Credit: 1\n\n14. **Mentoring**  \n    - Candidate: Yes  \n    - Credit: 1\n\n15. **Public speaking**  \n    - Candidate: Yes  \n    - Credit: 1\n\n**Total Nice-to-have Credit = 5**\n\n**Combined Requirements: 10 (mandatory) + 5 (nice-to-have) = 15**\n\n**Combined Match Percentage:**  \n= (7.8 (mandatory) + 5 (nice to have)) / 15 \u00d7 100  \n= 12.8 / 15 \u00d7 100  \n\u2248 85.3%\n\n---\n\n**Summary:**\n\n- **Mandatory Match Percentage:** 78%\n- **Combined Match Percentage:** \u224885.3%\n\n**Conclusion:** The candidate passes the combined threshold and qualifies for further consideration.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

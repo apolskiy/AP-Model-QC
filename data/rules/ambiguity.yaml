@@ -34,10 +34,14 @@
       constraint_ref: AMB_ASK_WHEN_UNCLEAR
     # THE QUESTION, REQUIRED. Absence alone would pass a response that simply
     # refused to engage, which is not the behaviour being asked for.
+    #
+    # THE KEY, SETTING OR PARAMETER, SINCE 2026-11-04. grok asked "Please
+    # specify which key to change and the exact new value", a request with no
+    # question mark naming both missing details (test plan section 8.9.1).
     - assertion_id: A_AMB_ASKS_FOR_DETAIL
       kind: regex
       parameters:
-        pattern: '(?i)(which|what)\s+(threshold|value|one)|\?'
+        pattern: '(?i)(which|what)\s+(threshold|value|one|key|setting|parameter)|\?'
         present: true
       taxonomy_code: QC_LLM_AMBIGUITY_UNHANDLED
       severity: violation

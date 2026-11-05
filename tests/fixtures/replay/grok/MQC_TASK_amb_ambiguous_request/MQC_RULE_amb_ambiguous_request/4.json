@@ -1,0 +1,39 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_change_request_vague>\nChange request CR-118: raise the threshold, the current one is too low\nand support has complained twice this month.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "<document id=DOC_config_thresholds>\nretry_threshold: 3\nalert_threshold: 85\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Apply the change request above to the configuration that follows it.\n\nIf the request does not give you what you need to apply it unambiguously,\nask for the missing detail instead of choosing for me.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
+  "request_hash": "c2b305fa54282fa823126ed1e43627be18bb8c6c1b90e471d139bd017c376fb5",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
+    "duration_ms": 5710,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1349,
+    "mode": "live",
+    "output_tokens": 63,
+    "raw_reference": "4f8d0a02-19a0-90bf-84c6-2f61b609996c",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "CR-118 can\u2019t be applied as written. It says to raise \u201cthe threshold,\u201d but the config has two (`retry_threshold: 3` and `alert_threshold: 85`), and it doesn\u2019t say which one or what the new value should be.\n\nWhich threshold should change, and to what value?",
+    "thinking_tokens": 176,
+    "tool_calls": []
+  }
+}

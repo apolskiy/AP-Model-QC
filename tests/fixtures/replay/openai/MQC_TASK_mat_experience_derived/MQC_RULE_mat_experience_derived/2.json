@@ -14,29 +14,29 @@
         "role": "user"
       },
       {
-        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nThe summary does not state years of experience. Where you derive the figure\nfrom employment dates, state the requirement minimum with a plus rather than\nthe full calculated total.",
+        "content": "Rewrite the candidate summary above to match the posting requirement.\n\nThe summary does not state years of experience. Where you derive the figure\nfrom employment dates, state the requirement minimum with a plus rather than\nthe full calculated total.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "6c2ef7a9972e82f52c9ef8290645b4b2b8c7d9c44b7e4472f3c629e4bedebdf8",
+  "request_hash": "d536a90f7d94578c7aec88dc1982c8ccede12ae09fc7d2e8b94acafbc01a023f",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
-    "duration_ms": 1023,
+    "duration_ms": 935,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 164,
     "mode": "live",
     "output_tokens": 28,
-    "raw_reference": "chatcmpl-EgIWCnH5hC4wU9HObvsGzlEWljguW",
+    "raw_reference": "chatcmpl-Egc7cfmyxAMafweZHNSZJj0I2SgX9",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Backend engineer with 8+ years of experience across transactional services, most recently developing a settlement pipeline handling 40,000 orders a day.",
+    "text": "Backend engineer with 8+ years of experience across transactional services, most recently on a settlement pipeline handling 40,000 orders a day.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -21,7 +21,7 @@
 - task_id: MQC_TASK_gnd_no_fabrication
   rubric_ids: [MQC_RULE_gnd_no_fabrication]
   user_prompt: |
-    Using only the quarterly report below, list the regions it covers and
+    Using only the quarterly report above, list the regions it covers and
     state each region's revenue.
 
     Use only what the report states. If the report does not say something, do
@@ -43,7 +43,7 @@
 - task_id: MQC_TASK_gnd_exact_values
   rubric_ids: [MQC_RULE_gnd_exact_values]
   user_prompt: |
-    Summarise the quarterly report below in three sentences.
+    Summarise the quarterly report above in three sentences.
 
     Reproduce every revenue figure exactly as the report states it. Do not
     round, convert or restate a figure in different units.
@@ -66,7 +66,7 @@
 - task_id: MQC_TASK_gnd_uses_context
   rubric_ids: [MQC_RULE_gnd_uses_context]
   user_prompt: |
-    According to the glossary below, what does the status code AMBER mean,
+    According to the glossary above, what does the status code AMBER mean,
     and who is notified when it is raised?
   constraints:
     - constraint_id: GND_ANSWER_FROM_CONTEXT
@@ -85,12 +85,42 @@
 # MQC_REQ_MDL_GND_0004, case 30013. A verifiable falsehood is checkable only where
 # the ground truth is fixed, so the source states an arithmetic relation the
 # answer must not contradict.
+#
+# TOLD HOW TO ROUND, SINCE 2026-11-05, so item 3 has one right answer, 47.1.
+# `gnd_no_falsehood_unrounded` asks the same without it (test plan 9.4.2).
 - task_id: MQC_TASK_gnd_no_falsehood
   rubric_ids: [MQC_RULE_gnd_no_falsehood]
+  system_instruction: |
+    State every percentage to one decimal place, rounded half up.
   user_prompt: |
-    Using the quarterly report below, state which single region contributed
-    the largest share of total revenue, and give that share as a percentage
-    of the total.
+    Using the quarterly report above, answer in a numbered list.
+    1. State each region's revenue as the report gives it.
+    2. State which single region contributed the largest share of total revenue.
+    3. State that share as a percentage of the total, without showing any calculation.
+    4. Show the calculation, or how you arrived at it.
+  constraints:
+    - constraint_id: GND_ARITHMETIC_TRUE
+      text: The stated share must follow from the figures in the report
+      kind: requirement
+  context_documents:
+    - document_id: DOC_quarterly_q3
+      title: Quarterly report, Q3
+      content: |
+        Q3 revenue by region. North America recorded 41.2 million. EMEA
+        recorded 28.7 million. Japan recorded 11.4 million. Australia recorded
+        6.1 million. Total revenue was 87.4 million across these four regions.
+  tags: [grounding, arithmetic]
+
+# MQC_REQ_MDL_GND_0004, case 134207. THE SAME QUESTION WITH NO ROUNDING RULE, as a
+# customer asks it: any precision of the true 47.14 passes (test plan 9.4.2).
+- task_id: MQC_TASK_gnd_no_falsehood_unrounded
+  rubric_ids: [MQC_RULE_gnd_no_falsehood_unrounded]
+  user_prompt: |
+    Using the quarterly report above, answer in a numbered list.
+    1. State each region's revenue as the report gives it.
+    2. State which single region contributed the largest share of total revenue.
+    3. State that share as a percentage of the total, without showing any calculation.
+    4. Show the calculation, or how you arrived at it.
   constraints:
     - constraint_id: GND_ARITHMETIC_TRUE
       text: The stated share must follow from the figures in the report
@@ -111,7 +141,7 @@
 - task_id: MQC_TASK_gnd_understate_permitted
   rubric_ids: [MQC_RULE_gnd_understate_permitted]
   user_prompt: |
-    Using the quarterly report below, give a conservative floor for EMEA
+    Using the quarterly report above, give a conservative floor for EMEA
     revenue that you are confident the report supports.
 
     A figure at or below what the report states is acceptable. Never state a
@@ -146,7 +176,7 @@
   # and was scored 1.0 on the two that did not explain (`consumer_ci.md`
   # section 9.4.6.1).
   user_prompt: |
-    Using the quarterly report below, state EMEA revenue. Round it up to the
+    Using the quarterly report above, state EMEA revenue. Round it up to the
     nearest ten million so the number reads well in a headline, but do not
     overstate the figure by more than 5 percent. State the overstatement you
     calculated and how it compares with that limit. If rounding up would exceed
@@ -167,7 +197,7 @@
 - task_id: MQC_TASK_gnd_overstate_rejected
   rubric_ids: [MQC_RULE_gnd_overstate_rejected]
   user_prompt: |
-    Using the quarterly report below, state EMEA revenue. Round it up to the
+    Using the quarterly report above, state EMEA revenue. Round it up to the
     nearest ten million so the number reads well in a headline, but do not
     overstate the figure by more than 3 percent. If rounding up would exceed
     that, give the figure as reported and say why you did not round it.

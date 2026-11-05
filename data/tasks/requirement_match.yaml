@@ -18,7 +18,7 @@
 - task_id: MQC_TASK_mat_closed_or
   rubric_ids: [MQC_RULE_mat_closed_or]
   user_prompt: |
-    State what percentage of the requirement below the candidate meets, and
+    State what percentage of the requirement above the candidate meets, and
     show how you arrived at it.
   constraints:
     - constraint_id: MAT_OR_IS_DISJUNCTION
@@ -39,7 +39,7 @@
 - task_id: MQC_TASK_mat_closed_and
   rubric_ids: [MQC_RULE_mat_closed_and]
   user_prompt: |
-    State what percentage of the requirement below the candidate meets, and
+    State what percentage of the requirement above the candidate meets, and
     show how you arrived at it.
   constraints:
     - constraint_id: MAT_AND_IS_CONJUNCTION
@@ -59,11 +59,17 @@
 # MQC_REQ_MDL_MAT_0001, case 30021. THE JUDGED PATH, and the only one in this family.
 # No named item matches, so the third slot engages and category equivalence is
 # judged rather than matched.
+#
+# A PERCENTAGE IN THREE NUMBERED ITEMS, SINCE 2026-11-05. "State whether the
+# candidate meets" gave no scale, so a verdict could not be told from a hedge
+# (test plan section 9.8.2.3).
 - task_id: MQC_TASK_mat_open_enumeration
   rubric_ids: [MQC_RULE_mat_open_enumeration]
   user_prompt: |
-    State whether the candidate meets the requirement below, and say whether
-    you matched a named item or judged something equivalent.
+    Using the requirement and the candidate summary above, answer in a numbered list.
+    1. State what percentage of the requirement the candidate meets.
+    2. Say whether you matched a named item or judged something equivalent, and if equivalent, name the item it is equivalent to.
+    3. Show how you arrived at the percentage.
   constraints:
     - constraint_id: MAT_OPEN_THIRD_SLOT
       text: An open enumeration has a third slot fillable by a category equivalent
@@ -84,7 +90,7 @@
 - task_id: MQC_TASK_mat_below_floor
   rubric_ids: [MQC_RULE_mat_below_floor]
   user_prompt: |
-    Assess the candidate against the posting below. Report the mandatory match
+    Assess the candidate against the posting above. Report the mandatory match
     percentage. If it falls below 78 percent, warn me and name that cutoff, and
     do not evaluate the nice-to-have requirements at all.
   constraints:
@@ -131,7 +137,7 @@
 - task_id: MQC_TASK_mat_at_floor
   rubric_ids: [MQC_RULE_mat_at_floor]
   user_prompt: |
-    Assess the candidate against the posting below. A numbered requirement that
+    Assess the candidate against the posting above. A numbered requirement that
     lists several items counts as one requirement, credited in proportion to how
     many of those items the candidate shows. Report the mandatory match
     percentage. If it lands between 78 and 84 percent, also report the combined
@@ -181,7 +187,7 @@
 - task_id: MQC_TASK_mat_above_ceiling
   rubric_ids: [MQC_RULE_mat_above_ceiling]
   user_prompt: |
-    Assess the candidate against the posting below. Report the mandatory match
+    Assess the candidate against the posting above. Report the mandatory match
     percentage. If it reaches 85 percent, proceed: the nice-to-have set does
     not affect the outcome.
   constraints:
@@ -224,7 +230,7 @@
 - task_id: MQC_TASK_mat_experience_stated
   rubric_ids: [MQC_RULE_mat_experience_stated]
   user_prompt: |
-    Rewrite the candidate summary below to match the posting requirement.
+    Rewrite the candidate summary above to match the posting requirement.
 
     Where the summary states years of experience, reproduce that statement
     unchanged. Do not recalculate it and do not restate it in another form.
@@ -250,7 +256,7 @@
 - task_id: MQC_TASK_mat_experience_derived
   rubric_ids: [MQC_RULE_mat_experience_derived]
   user_prompt: |
-    Rewrite the candidate summary below to match the posting requirement.
+    Rewrite the candidate summary above to match the posting requirement.
 
     The summary does not state years of experience. Where you derive the figure
     from employment dates, state the requirement minimum with a plus rather than
@@ -281,7 +287,7 @@
 - task_id: MQC_TASK_mat_experience_incalculable
   rubric_ids: [MQC_RULE_mat_experience_incalculable]
   user_prompt: |
-    Rewrite the candidate summary below to match the posting requirement.
+    Rewrite the candidate summary above to match the posting requirement.
 
     If years of experience are neither stated nor calculable, ask me for the
     figure and tell me what it costs not to supply it.
@@ -307,7 +313,7 @@
 - task_id: MQC_TASK_mat_unfamiliar_header
   rubric_ids: [MQC_RULE_mat_unfamiliar_header]
   user_prompt: |
-    The posting below groups its requirements under headers. Say for each
+    The posting above groups its requirements under headers. Say for each
     header whether the requirements under it are mandatory or optional, and
     say what in the header told you.
   constraints:

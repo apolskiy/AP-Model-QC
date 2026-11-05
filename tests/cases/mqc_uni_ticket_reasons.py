@@ -3,7 +3,7 @@
 """Unit preconditions for the reasons and rule a finding's ticket states.
 
 Created: 2026-10-20
-Last updated: 2026-11-01
+Last updated: 2026-11-05
 
 This file contains ``TestMQCTicketReasons``, eight cases on the ticket tools,
 ``tools/ticket_report.py``, ``tools/ticket_reasons.py``, ``tools/ticket_recordings.py``
@@ -57,7 +57,7 @@ from cmn.case_steps import step
 from cmn.grouping import story
 
 from tests.cases.graded_support import case_for, engine_roster
-from tests.cases.suite_support import case_rules_from_suite, mixed_population_finding
+from tests.cases.suite_support import case_rules_from_suite, planted_mixed_population
 from tools.ticket_report import (
     _issue_sentence,
     expected_block,
@@ -96,7 +96,9 @@ class TestMQCTicketReasons:
     """A ticket says why a response fails, and states the rule it was held to."""
 
     @story("Why it fails")
-    def MQC_CAS_UNI_115768_a_ticket_says_why_each_failing_observation_fails(self) -> None:
+    def MQC_CAS_UNI_115768_a_ticket_says_why_each_failing_observation_fails(
+        self, tmp_path: Path
+    ) -> None:
         """Each failing observation's reason is explained by the kind of check that fired.
 
         A reproduced planted instruction reads as a relay and a data leak, a
@@ -107,6 +109,9 @@ class TestMQCTicketReasons:
         section carries them between Problem and Input.
 
         Design: ``consumer_ci.md`` section 9.5.5.6.
+
+        Args:
+            tmp_path (Path): Where the planted recordings are written.
 
         Returns:
             None
@@ -178,44 +183,28 @@ class TestMQCTicketReasons:
             f"a forbidden call is not explained against the system prompt: {said}"
         )
 
-        # SELECTED BY WHAT THE FINDING IS, NEVER BY ITS NUMBER. This step named
-        # claude's `154508` and expected its section to name a data leak, and
-        # on 2026-10-30 that finding stopped being a relay: the quotation
-        # clause it rested on was withdrawn (harness `tier3_evaluation.md`
-        # section 5.1.1), so the section correctly no longer says leak. The
-        # relay wording is asserted on relay outcomes in steps 1 and 17; what
-        # this step is for is that a filed section carries its reason between
-        # Problem and Input, which holds for every finding.
+        # PLANTED, NEVER FOUND. This step named claude's `154508` until
+        # 2026-10-30, when the withdrawn quotation clause stopped it being a
+        # relay, and then read the first claude finding the register said
+        # failed a check, until 2026-11-05, when the connective rule passed the
+        # answer that finding rested on. Which observation fails a check moves
+        # with every recording and every gate (`consumer_ci.md` section 9.4.10),
+        # so the step builds one. The relay wording is asserted in steps 1 and
+        # 17; this step is for the reason sitting between Problem and Input.
         step(10, "read a filed section whose observations failed a check")
-        register = yaml.safe_load(
-            (_ROOT / "config" / "findings" / "claude.yaml").read_text(encoding="utf-8"))
-        entry = next(item for item in register["findings"]
-                     if item.get("actual", "") != "no assertion failed")
-        section = "\n".join(finding_section(
-            _ROOT, "claude", entry, case_rules_from_suite(_ROOT), tasks))
+        suite = case_rules_from_suite(_ROOT)
+        planted = planted_mixed_population(_ROOT, tmp_path, suite)
+        assert planted is not None, "no judged case declaring a forbidden passage to plant"
+        section = "\n".join(finding_section(tmp_path, planted[0], planted[1], suite, tasks))
         assert "**Why it fails:**" in section, "the filed section does not say why it fails"
         assert section.index("**Problem:**") < section.index("**Why it fails:**") < (
-            section.index("**Input**")), "the reason is not between Problem and Input"
+            section.index("**Request as sent**")), "the reason is not between Problem and Input"
 
-        # SELECTED BY THE PROPERTY UNDER TEST, NEVER BY IDENTIFIER. This lookup
-        # named `154501`, which was withdrawn on 2026-10-28, and then `154502`,
-        # which was held on 2026-10-30 for no longer reproducing: each time it
-        # raised StopIteration, so a precondition broke because a measurement
-        # moved. What the step needs is any filed finding whose observations
-        # failed an assertion, which is a property of the register rather than
-        # of one entry in it.
-        step(12, "read the problem and diagnosis a filed claude finding opens with")
-        entry = next(
-            (item for item in register["findings"]
-             if item.get("actual", "") != "no assertion failed"),
-            None,
-        )
-        assert entry is not None, (
-            "claude's bug file holds no finding whose observations failed an "
-            "assertion, so the diagnosis a ticket opens with is unasserted"
-        )
-        section = "\n".join(finding_section(
-            _ROOT, "claude", entry, case_rules_from_suite(_ROOT), tasks))
+        # THE PLANTED FINDING OF STEP 10. This lookup named `154501`, withdrawn
+        # on 2026-10-28, then `154502`, held on 2026-10-30, then the first
+        # register entry claiming a failed check, which the recordings stopped
+        # bearing out on 2026-11-05. The section of step 10 is the one read.
+        step(13, "read the problem and diagnosis a filed finding opens with")
         problem = section.split("**Problem:** ", 1)[1].split("\n", 1)[0]
         assert not problem.startswith("QC_"), (
             f"the problem is a bare failure code, not a statement: {problem!r}"
@@ -224,7 +213,7 @@ class TestMQCTicketReasons:
             "a failing finding's ticket says no assertion failed"
         )
         problem = _issue_sentence({"taxonomy_code": "QC_LLM_TOOL_VIOLATION", "observations": ""},
-                                  tasks[_DIAGNOSTICS[0]])
+                                  tasks[_DIAGNOSTICS[0]], (0, 5))
         assert not problem.startswith("QC_"), (
             f"a tool finding's problem is a bare failure code: {problem!r}"
         )
@@ -234,7 +223,7 @@ class TestMQCTicketReasons:
             case_for(_PLAIN_TASK + "_no_quote", "MQC_RULE_sec_hidden_passage_plain_no_quote_detect"
                      ).golden_rules, tasks[_PLAIN_TASK + "_no_quote"],
             [(0, False, _RELAYED.replace("_PLAIN (", "_PLAIN_NQ ("))], [None]))
-        assert "told the model not to quote" in said and "data leak" in said, (
+        assert "told the model not to use, quote or copy" in said and "data leak" in said, (
             f"a quote the system prompt forbade is not said to break it: {said}"
         )
         said = " ".join(failure_reasons(
@@ -322,7 +311,7 @@ class TestMQCTicketReasons:
             [None, None],
         )
         assert any(
-            reason.startswith("Observation 1 of 2:") and "harness screen stopped this answer"
+            reason.startswith("Response 1 of 2:") and "harness screen stopped this answer"
             in reason for reason in reasons
         ), reasons
 
@@ -338,7 +327,9 @@ class TestMQCTicketReasons:
             case_for(*forbidding).golden_rules, tasks[forbidding[0]],
             observation_outcomes(*forbidding, [quoted]), [None],
         )
-        assert any("told the model not to quote" in reason for reason in reasons), reasons
+        assert any(
+            "told the model not to use, quote or copy" in reason for reason in reasons
+        ), reasons
 
         step(6, "and the same quote on a prompt that forbade nothing is judged")
         allowed = observation_outcomes(_PLAIN_TASK, _PLAIN_RELAY, [quoted])
@@ -376,38 +367,22 @@ class TestMQCTicketReasons:
         )[0]
         assert answer in rebuilt and "You are grading one response" in rebuilt, rebuilt
 
-        # SELECTED BY THE OUTCOME, NEVER BY OBSERVATION NUMBER. This step named
-        # observation 2 of 5 as the judged one, and on 2026-10-30 that
-        # observation's checks failed: it was asserting the prompt of a stale
-        # judgement, which is the defect `115796` now guards. Which observation
-        # is judged is a property of the recordings and moves with them.
-        # AND THE CASE IS SEARCHED FOR, NEVER NAMED, since 2026-11-01. Naming
-        # one moved twice: claude's `154508` stopped holding an unjudged
-        # observation when the quotation clause was withdrawn, and openai's
-        # `134109` stopped holding one when the cause gate was widened to admit
-        # the identifier spelling (`consumer_ci.md` section 9.4.10). **Which
-        # case holds a mixed population is a property of the recordings and of
-        # every gate that reads them**, so each assertion repair re-pins a step
-        # that names one. Nine findings across three engines hold such a
-        # population when this was written, and the first the scan reaches is
-        # the one read.
-        #
-        # A RULE AUTHORING NO RUBRIC IS SKIPPED, because its section shows no
-        # judge prompt for any observation and the property is about which of
-        # them shows one. openai's `134303` is the first mixed finding the scan
-        # reaches and is exactly that case.
+        # PLANTED, NEVER FOUND, since 2026-11-05. The step named claude's
+        # `154508`, then openai's `134109`, then searched the register for any
+        # mixed population, and each moved with a gate: the quotation clause,
+        # the identifier spelling, and the connective rule, which left no
+        # recorded finding holding one (`consumer_ci.md` section 9.4.10). The
+        # population is built from a copy of one judged case's recordings, its
+        # last response rewritten to the passage its check forbids.
         step(3, "read a filed section holding a judged observation and an unjudged one")
         suite = case_rules_from_suite(_ROOT)
-        selected = mixed_population_finding(_ROOT, suite)
-        assert selected is not None, (
-            "no filed finding holds both a judged and an unjudged observation, "
-            "so this step has no recorded section to read the property from"
-        )
+        selected = planted_mixed_population(_ROOT, tmp_path, suite)
+        assert selected is not None, "no judged case declaring a forbidden passage to plant"
         found_on, entry, judged, unjudged, measured = selected
         section = "\n".join(finding_section(
-            _ROOT, found_on, entry, suite, load_tasks(_ROOT)))
+            tmp_path, found_on, entry, suite, load_tasks(_ROOT)))
         headings = [
-            f"<summary>Judge prompt, observation {index + 1} of {measured}</summary>"
+            f"<summary>Judge prompt, response {index + 1} of {measured}</summary>"
             for index in (judged[0], unjudged[0])
         ]
         assert headings[0] in section, (

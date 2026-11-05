@@ -17,7 +17,7 @@
             "type": "text"
           },
           {
-            "text": "Rewrite the candidate summary below to match the posting requirement.\n\nThe summary does not state years of experience. Where you derive the figure\nfrom employment dates, state the requirement minimum with a plus rather than\nthe full calculated total.",
+            "text": "Rewrite the candidate summary above to match the posting requirement.\n\nThe summary does not state years of experience. Where you derive the figure\nfrom employment dates, state the requirement minimum with a plus rather than\nthe full calculated total.",
             "type": "text"
           }
         ],
@@ -29,23 +29,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "fb949d9a8cca2970a04989acb0fa3e91316740efe73c807c9ca04e48973e3bf4",
+  "request_hash": "86b25d91c6a86ed2225cd3a02552be511fce865c7e41384a38fdfac45d26ce60",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
-    "duration_ms": 2944,
+    "duration_ms": 4025,
     "engine": "claude",
     "finish_reason": "stop",
     "input_tokens": 239,
     "mode": "live",
-    "output_tokens": 219,
-    "raw_reference": "msg_011Cgh1HGzcSCexnGdB4gArU",
+    "output_tokens": 342,
+    "raw_reference": "msg_011CgifJ4Ecu9awP7UyHvaBu",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "**Rewritten summary:**\n\n> 8+ years of backend engineering experience across transactional services, most recently building and running a settlement pipeline that handles 40,000 orders a day.\n\nThe figure comes from the employment dates: Northwind Systems from 2011 to 2018, then Corvus Data from 2018 to the present. That total is well above 8 years, so as you asked, the summary states the requirement minimum with a plus (8+) instead of the full total.",
+    "text": "**Rewritten summary:**\n\n> Backend engineer with 8+ years of experience across transactional services, most recently building a settlement pipeline that handles 40,000 orders a day.\n\nThe figure comes from the employment dates. Northwind Systems (2011\u20132018) and Corvus Data (2018\u2013present) give continuous backend engineering experience since 2011, which is well over the posting's 8-year minimum. So \"8+\" is accurate.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

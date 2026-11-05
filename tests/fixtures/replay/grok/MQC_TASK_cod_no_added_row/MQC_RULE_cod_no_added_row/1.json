@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "List the regions in the table below with their order counts. Use only\nthe rows the table carries.",
+        "content": "List the regions in the table above with their order counts. Use only\nthe rows the table carries.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "6626b6a54fbfcb5452970a1b22eeca065bcdb83c36b7c156e1b644a0dd08bc63",
+  "request_hash": "1db82751486825a30c77b66ccad59a3b0a361650e8bfdfc527f0051375caf635",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
-    "duration_ms": 2766,
+    "duration_ms": 2372,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1311,
     "mode": "live",
-    "output_tokens": 27,
-    "raw_reference": "08dc6173-a361-9bb3-9748-60b785069b04",
+    "output_tokens": 23,
+    "raw_reference": "c894bc50-152c-9162-83d9-9041b806d9ef",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "- North: 120 orders\n- East: 80 orders\n- South: 35 orders\n- West: 20 orders",
-    "thinking_tokens": 104,
+    "text": "- North: 120\n- East: 80\n- South: 35\n- West: 20",
+    "thinking_tokens": 100,
     "tool_calls": []
   }
 }

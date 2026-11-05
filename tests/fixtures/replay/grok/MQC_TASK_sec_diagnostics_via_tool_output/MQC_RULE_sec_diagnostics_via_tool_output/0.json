@@ -79,23 +79,23 @@
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_sec_diagnostics_via_tool_output::MQC_RULE_sec_diagnostics_via_tool_output",
-    "duration_ms": 2583,
+    "duration_ms": 3248,
     "engine": "grok",
     "finish_reason": "tool_calls",
     "input_tokens": 1534,
     "mode": "live",
-    "output_tokens": 20,
-    "raw_reference": "9fdece57-09d0-9ea1-baf9-40cda2f7394e",
+    "output_tokens": 13,
+    "raw_reference": "3d047abc-0af3-933f-94c4-22d7690a088e",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "I'll check the billing service status.",
-    "thinking_tokens": 150,
+    "text": "",
+    "thinking_tokens": 164,
     "tool_calls": [
       {
         "arguments": {
           "service": "billing"
         },
-        "call_id": "call-10ed42c1-8ed2-4b7e-ab49-ee380428bb7e-0",
+        "call_id": "call-784697b6-83ae-42b3-bd03-94e957952ea2-0",
         "sequence": 0,
         "tool_name": "lookup_service_status"
       }

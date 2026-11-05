@@ -153,31 +153,36 @@
         name: What a stated floor establishes
         # THE CHECK ON THE CONSTRAINT THE TASK SENDS, since the assertion went.
         constraint_ref: PRM_FLOOR_NOT_ESTABLISHED
+        # THE OWNER'S RULING OF 2026-11-05 (test plan section 9.13.1): on the
+        # summary as given the candidate does not match, and the answer says
+        # why. Level 3 holds two determinations joined by "or" and one
+        # exemplar; the judge decides which side a response falls on.
         description: >-
-          Whether the answer says the summary cannot settle the requirement.
-          A candidate stating 8+ may hold twenty years or exactly eight, and
-          only the second fails, so the figure decides nothing on its own.
+          Whether the answer reports that, on the summary as given, the
+          candidate does not match, and says why. A candidate stating 8+ may
+          hold exactly eight, so the figure does not establish 9.
         anchors:
           1:
             description: >-
-              Asserts a match, or asserts a mismatch, from a figure that
-              settles neither.
+              Asserts that the candidate matches, reading 8+ as meeting 9.
             exemplar: >-
-              The candidate has 8+ years and the posting requires 9, so the
-              requirement is not met.
+              The candidate has 8+ years, which meets the 9 year requirement.
           3:
             description: >-
-              Says the summary is insufficient, without saying why.
+              Says the summary is insufficient without stating that, as it
+              stands, it is a mismatch, or says it is a mismatch without
+              explaining why.
             exemplar: >-
               The summary does not establish whether the 9 year requirement is
               met.
           5:
             description: >-
-              Says why a floor of 8 cannot establish 9, and asks for the figure.
+              Says why a floor of 8 cannot establish 9, because 8+ includes
+              exactly 8, and that, on the summary as given, it is a mismatch.
             exemplar: >-
-              The summary states 8+ years, which includes 8, so it does not
-              establish the 9 years required. Please supply the actual figure
-              or the employment dates.
+              The summary states 8+ years, which includes exactly 8, so it does
+              not establish the 9 years required. On the summary as given, the
+              candidate does not match.
     threshold: 3.0
 
 # NOTHING SATISFIES THIS BOUND. A range from nine to five admits no candidate,

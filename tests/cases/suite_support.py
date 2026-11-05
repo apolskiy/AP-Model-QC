@@ -3,14 +3,14 @@
 """Support code reading which corpus case each graded case observes, from the suite itself.
 
 Created: 2026-10-21
-Last updated: 2026-11-01
+Last updated: 2026-11-05
 
 This file contains ``case_rules_from_suite``, which parses every graded case module
 and returns the task and rule set each case dispatches through ``observe`` or
 ``observe_repeatedly``, ``case_families_from_suite``, which returns the
-evaluation family each case's rule set declares, and ``mixed_population_finding``,
-which returns the first filed finding whose observations split into judged and
-unjudged.
+evaluation family each case's rule set declares, and
+``planted_mixed_population``, which builds a finding whose observations split
+into judged and unjudged from a copy of one case's recordings.
 
 The priority agreement and family preconditions, the case index and the ticket
 tools call them, so a case is tied to its corpus entry by the call it makes rather
@@ -19,10 +19,10 @@ when that module reached the 900-line runway (harness ``code-style.md`` section 
 """
 
 import ast
+import json
+import shutil
 from pathlib import Path
-from typing import Final, Optional
-
-import yaml
+from typing import Any, Final, Optional
 
 from tests.cases.graded_support import engine_roster, shipped_corpus
 from tools.ticket_recordings import observation_outcomes, recorded_responses
@@ -111,49 +111,74 @@ def case_families_from_suite(root: Path) -> dict[str, str]:
     }
 
 
-def mixed_population_finding(
-    root: Path, suite: dict[str, tuple[str, str]]
+def planted_mixed_population(
+    root: Path, scratch: Path, suite: dict[str, tuple[str, str]]
 ) -> Optional[tuple[str, dict, list[int], list[int], int]]:
-    """Return the first filed finding whose observations split into judged and unjudged.
+    """Return a finding whose observations split into judged and unjudged, built under scratch.
 
-    A rule authoring no rubric is passed over, its section showing no judge
-    prompt for any observation, and so is a case whose recordings cannot be
-    read.
-
-    Scanned rather than named: which case holds such a population is a property
-    of the recordings and of every gate that reads them, so a caller that names
-    one is re-pinned by each assertion repair. ``consumer_ci.md`` section
-    9.4.10 records the two that moved.
+    Copies one judged case's recordings and judgements into ``scratch`` and
+    rewrites its last response to the passage its ``source_phrase_absent``
+    check forbids, so that observation fails the check and the others reach
+    the judge. The population is planted rather than found, since which case
+    holds one moves with every recording and every gate (``consumer_ci.md``
+    section 9.4.10).
 
     Args:
-        root (Path): This repository's root.
+        root (Path): This repository's root, read only.
+        scratch (Path): The root the planted recordings are written under.
         suite (dict[str, tuple[str, str]]): Each case's task and rule.
 
     Returns:
-        Optional[tuple[str, dict, list[int], list[int], int]]: The engine, the
-        register entry, the judged indices, the unjudged indices and the
-        population measured, or None where no filed finding holds both.
+        Optional[tuple[str, dict, list[int], list[int], int]]: The engine, a
+        register entry naming the case, the judged indices, the unjudged
+        indices and the population measured, or None where no judged case
+        declaring the check holds two recordings.
     """
-    judging = {
-        rules.rule_id for rules in shipped_corpus()[1] if rules.rubric is not None
+    forbidden = {
+        rules.rule_id: check
+        for rules in shipped_corpus()[1] if rules.rubric is not None
+        for check in rules.assertions if check.kind == "source_phrase_absent"
     }
     for engine in engine_roster():
-        register_path = root / "config" / "findings" / f"{engine}.yaml"
-        if not register_path.exists():
-            continue
-        register = yaml.safe_load(register_path.read_text(encoding="utf-8")) or {}
-        for item in register.get("findings") or []:
-            pair = suite.get(item.get("case", ""))
-            if not pair or pair[1] not in judging:
+        for case, pair in sorted(suite.items()):
+            if pair[1] not in forbidden:
                 continue
-            try:
-                outcomes = observation_outcomes(
-                    *pair, recorded_responses(root, engine, *pair),
-                )
-            except (FileNotFoundError, KeyError, ValueError, StopIteration):
-                continue
+            outcomes = _plant(root, scratch, (engine, *pair), forbidden[pair[1]])
             judged = [index for index, passed, _ in outcomes if passed]
             unjudged = [index for index, passed, _ in outcomes if not passed]
             if judged and unjudged:
-                return (engine, item, judged, unjudged, len(outcomes))
+                entry = {"case": case, "taxonomy_code": forbidden[pair[1]].taxonomy_code}
+                return (engine, entry, judged, unjudged, len(outcomes))
     return None
+
+
+def _plant(
+    root: Path, scratch: Path, where: tuple[str, str, str], check: Any
+) -> list[tuple[int, bool, str]]:
+    """Copy one pair's recordings and judgements, plant the passage in the last, and check them.
+
+    Args:
+        root (Path): This repository's root, read only.
+        scratch (Path): The root the copies are written under.
+        where (tuple[str, str, str]): The engine, the task and the rule set.
+        check (Any): The ``source_phrase_absent`` assertion whose source is planted.
+
+    Returns:
+        list[tuple[int, bool, str]]: Each copied observation's check outcome,
+        empty where the pair holds fewer than two recordings.
+    """
+    engine, task_id, rule_id = where
+    replay = Path("tests") / "fixtures" / "replay"
+    recordings = root / replay / engine / task_id / rule_id
+    if len(list(recordings.glob("*.json"))) < 2:
+        return []
+    planted = scratch / replay / engine / task_id / rule_id
+    shutil.copytree(recordings, planted, dirs_exist_ok=True)
+    for judged_by in (root / replay / "judgements" / engine).glob(f"*/{task_id}/{rule_id}"):
+        shutil.copytree(judged_by, scratch / judged_by.relative_to(root), dirs_exist_ok=True)
+    target = max(planted.glob("*.json"), key=lambda path: int(path.stem))
+    record = json.loads(target.read_text(encoding="utf-8"))
+    record["response"]["text"] = check.parameters["source"]
+    target.write_text(json.dumps(record, indent=2), encoding="utf-8")
+    return observation_outcomes(
+        task_id, rule_id, recorded_responses(scratch, engine, task_id, rule_id))

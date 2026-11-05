@@ -10,29 +10,29 @@
         "role": "user"
       },
       {
-        "content": "Rewrite the candidate summary below to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
+        "content": "Rewrite the candidate summary above to match the posting requirement.\n\nIf years of experience are neither stated nor calculable, ask me for the\nfigure and tell me what it costs not to supply it.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "ca34bdb681b310e265e4f4d27571a2d2122e7dbbf6d1647d1bb4a9c53c68e6e2",
+  "request_hash": "ccda17f7caebdabb4a8fce678ce1abbc3c0cde2b40f8409b7a0d3037fe1036b7",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 1012,
+    "duration_ms": 1702,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 122,
     "mode": "live",
-    "output_tokens": 71,
-    "raw_reference": "chatcmpl-EgIWX3vLydRosMOCgytoUdKJ7FiWk",
+    "output_tokens": 78,
+    "raw_reference": "chatcmpl-Egc7v4vPxtsuSTkhuMrk55rN0YtYf",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "To better match the posting requirement\u2014which asks for 8 years of backend engineering experience\u2014I need to know exactly how many years of backend engineering experience you have. \n\nWithout stating this figure, your summary may be overlooked or rejected by automated filters or recruiters screening for this requirement. Please provide your total years of backend engineering experience so I can rewrite your summary accordingly.",
+    "text": "The provided summary does not state or imply the exact years of backend engineering experience. To match the posting requirement (\"8 years of backend engineering experience\"), please supply the candidate\u2019s total years of relevant experience.\n\nNot providing this figure could result in the candidate being overlooked or rejected at the initial screening stage, as many recruiters and applicant tracking systems filter out resumes that do not explicitly meet stated experience requirements.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

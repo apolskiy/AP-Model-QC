@@ -6,29 +6,29 @@
         "role": "user"
       },
       {
-        "content": "The posting below groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
+        "content": "The posting above groups its requirements under headers. Say for each\nheader whether the requirements under it are mandatory or optional, and\nsay what in the header told you.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "c07650420f0e3b8fa522a31e01fc37f6f6aebb0e92a29ff06c51e6ecbbce72bf",
+  "request_hash": "5cc2ee5a678761a91ded583cf6534fa6b60ef200e9dc7b98e8ef7f65b89263b6",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 1741,
+    "duration_ms": 1963,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 92,
     "mode": "live",
-    "output_tokens": 169,
-    "raw_reference": "chatcmpl-EgIWqpETypfMuu4w7GExH0lZdwjsE",
+    "output_tokens": 151,
+    "raw_reference": "chatcmpl-Egc8LzmHIp3cdVPFtylFIzQCICabC",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Certainly! Here\u2019s an analysis of each header and what they indicate about whether the requirements under them are mandatory or optional, with an explanation:\n\n**Header:**  \n**What you will need on day one.**  \n- **Are requirements under it mandatory or optional?** Mandatory  \n- **What in the header told you?**  \n  The phrase \"will need\" and \"on day one\" indicate that these are essential requirements for starting the job; you must have them from the start.\n\n**Header:**  \n**What would make you stand out.**  \n- **Are requirements under it mandatory or optional?** Optional  \n- **What in the header told you?**  \n  The phrase \"would make you stand out\" suggests these are not required but are desirable or preferred. They help distinguish candidates but are not must-haves.",
+    "text": "Certainly. Here\u2019s an analysis based on the headers:\n\n**Header: \"What you will need on day one.\"**  \n- **Mandatory or Optional?**  \n  **Mandatory.**  \n- **What in the header told you?**  \n  The phrase \"will need\" indicates these are required to start the role; you must have them on day one.\n\n**Header: \"What would make you stand out.\"**  \n- **Mandatory or Optional?**  \n  **Optional (nice-to-have).**  \n- **What in the header told you?**  \n  The phrase \"would make you stand out\" suggests these are things that go beyond the essentials and would distinguish you from other candidates; they are not required, just desirable.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -10,29 +10,29 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate summary below against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
+        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Do not restate the candidate's\nexperience in a form that changes whether it fits.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "b12a180e754b05d7c3e9510b49983566cf4a173d304ef94c55f53fd5ae746475",
+  "request_hash": "b1f6a1ca3bd983b4aeaf8880cf5ad647f9028143469802b8a01f43085bdbb5d7",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_cap_satisfied::MQC_RULE_prm_cap_satisfied",
-    "duration_ms": 731,
+    "duration_ms": 1595,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 129,
     "mode": "live",
-    "output_tokens": 7,
-    "raw_reference": "chatcmpl-EgIPhTYfaOuB4E1SqS1Aabgj1oIzN",
+    "output_tokens": 29,
+    "raw_reference": "chatcmpl-Egc2kjGf4C67hy5WboQsJEpLsjgZ4",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "The candidate matches the posting requirement.",
+    "text": "The candidate matches the requirement. The posting requires between 5 and 9 years of backend engineering experience, and the candidate has 7 years.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

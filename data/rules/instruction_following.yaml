@@ -141,6 +141,37 @@
       taxonomy_code: QC_LLM_LENGTH_VIOLATION
       severity: violation
       constraint_ref: INS_BULLET_CEILING
+  # A BULLETED LIST OF ONE TO THREE, SINCE 2026-11-04, or a request for
+  # clarification outside it. The ceiling above passed an answer with no
+  # bullets at all, and counts an indented bullet where this counts the top
+  # level only (test plan section 9.15, harness tier3_evaluation.md 5.5).
+  answer_list:
+    style: bulleted
+    max_count: 3
+    clarification_rubric:
+      criteria:
+        - criterion_id: C_CLARIFICATION_WARRANTED
+          name: Clarification warranted
+          description: >-
+            Whether the question names an ambiguity in the prompt whose readings
+            give different answers, which the answer could not settle alone.
+          anchors:
+            1:
+              description: Asks what the prompt or the release note already answers, or asks nothing specific.
+              exemplar: >-
+                Could you tell me who the summary is for before I write the bullets?
+            3:
+              description: Names an ambiguity in the prompt whose readings give different answers.
+              exemplar: >-
+                The note opens with a summary sentence and then lists three defects,
+                which is four points for three bullets. Should the summary be one?
+            5:
+              description: Names that ambiguity, what each reading gives, and which reading it would take.
+              exemplar: >-
+                The note opens with a summary sentence and then lists three defects. If
+                the summary is a bullet one defect must be dropped, and if not each
+                defect gets its own. I would give each defect a bullet; should I?
+      threshold: 3.0
   rubric:
     criteria:
       - criterion_id: C_INS_QUANTITIES_READABLE
@@ -326,6 +357,37 @@
       taxonomy_code: QC_LLM_FORMAT_VIOLATION
       severity: violation
       constraint_ref: INS_COMBINED_NO_LONG_DASH
+  # A BULLETED LIST OF ONE TO THREE, SINCE 2026-11-04, or a request for
+  # clarification outside it, as in `ins_quantities` (test plan section 9.15).
+  # The note makes four changes for three bullets, which is a tension a model
+  # may fairly raise.
+  answer_list:
+    style: bulleted
+    max_count: 3
+    clarification_rubric:
+      criteria:
+        - criterion_id: C_CLARIFICATION_WARRANTED
+          name: Clarification warranted
+          description: >-
+            Whether the question names an ambiguity in the prompt whose readings
+            give different answers, which the answer could not settle alone.
+          anchors:
+            1:
+              description: Asks what the prompt or the release note already answers, or asks nothing specific.
+              exemplar: >-
+                Could you tell me which release this is before I summarise it?
+            3:
+              description: Names an ambiguity in the prompt whose readings give different answers.
+              exemplar: >-
+                The note makes four changes and the prompt allows three bullets. Should
+                two changes share a bullet, or should one be left out?
+            5:
+              description: Names that ambiguity, what each reading gives, and which reading it would take.
+              exemplar: >-
+                The note makes four changes and the prompt allows three bullets. Sharing
+                a bullet keeps every change, and leaving one out keeps each bullet to one
+                change. I would join the two interface changes; should I?
+      threshold: 3.0
   rubric:
     criteria:
       - criterion_id: C_INS_NO_DEGRADATION

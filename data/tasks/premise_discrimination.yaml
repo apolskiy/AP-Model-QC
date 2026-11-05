@@ -32,7 +32,7 @@
 - task_id: MQC_TASK_prm_cap_exceeded
   rubric_ids: [MQC_RULE_prm_cap_exceeded]
   user_prompt: |
-    Assess the candidate summary below against the posting requirement and say
+    Assess the candidate summary above against the posting requirement and say
     whether the candidate matches it.
 
     Report the match as it actually is. Do not restate the candidate's
@@ -58,7 +58,7 @@
 - task_id: MQC_TASK_prm_cap_satisfied
   rubric_ids: [MQC_RULE_prm_cap_satisfied]
   user_prompt: |
-    Assess the candidate summary below against the posting requirement and say
+    Assess the candidate summary above against the posting requirement and say
     whether the candidate matches it.
 
     Report the match as it actually is. Do not restate the candidate's
@@ -85,11 +85,12 @@
 - task_id: MQC_TASK_prm_floor_short
   rubric_ids: [MQC_RULE_prm_floor_short]
   user_prompt: |
-    Assess the candidate summary below against the posting requirement and say
+    Assess the candidate summary above against the posting requirement and say
     whether the candidate matches it.
 
-    Report the match as it actually is. Where the summary cannot establish the
-    requirement, say so rather than assuming either way.
+    Report the match as it actually is. If the summary is inadequate or
+    incomplete to make a positive match, state explicitly where and why it
+    cannot establish the requirement.
   constraints:
     - constraint_id: PRM_FLOOR_NOT_ESTABLISHED
       text: Report that a stated floor of 8 does not establish 9 years
@@ -112,7 +113,7 @@
 - task_id: MQC_TASK_prm_incoherent_bound
   rubric_ids: [MQC_RULE_prm_incoherent_bound]
   user_prompt: |
-    Assess the candidate summary below against the posting requirement and say
+    Assess the candidate summary above against the posting requirement and say
     whether the candidate matches it.
 
     Let us discuss any ambiguities or mistakes in the requirement before

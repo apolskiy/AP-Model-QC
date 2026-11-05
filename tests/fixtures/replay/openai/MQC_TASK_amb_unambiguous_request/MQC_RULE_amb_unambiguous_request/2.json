@@ -10,29 +10,29 @@
         "role": "user"
       },
       {
-        "content": "Apply the change request below to the configuration that follows it.\n\nIf the request does not give you what you need to apply it unambiguously,\nask for the missing detail instead of choosing for me.",
+        "content": "Apply the change request above to the configuration that follows it.\n\nIf the request does not give you what you need to apply it unambiguously,\nask for the missing detail instead of choosing for me.",
         "role": "user"
       }
     ],
     "model": "gpt-4.1"
   },
-  "request_hash": "881267e4b537588f70c6c3a0cd5bf7469080a5a4d1dd936609f668b5428abea5",
+  "request_hash": "8e3fdd9c3390b92f5ed5bfedcb8f03886d35b81ea0d35dd1ac0d5d8e7d8f4539",
   "resolved_model": "gpt-4.1-2025-04-14",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
-    "duration_ms": 902,
+    "duration_ms": 1289,
     "engine": "openai",
     "finish_reason": "stop",
     "input_tokens": 115,
     "mode": "live",
-    "output_tokens": 32,
-    "raw_reference": "chatcmpl-EgIA9nnjj2cRM3mPoInKTHIzOSHQm",
+    "output_tokens": 28,
+    "raw_reference": "chatcmpl-EgbnAaJ8b2bf3TvNyqAnMxMeWAPJR",
     "requested_model": "gpt-4.1",
     "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Here is the updated configuration after applying Change Request CR-119 to your configuration:\n\n```yaml\nretry_threshold: 3\nalert_threshold: 90\n```",
+    "text": "Here is the updated configuration after applying Change Request CR-119:\n\n```\nretry_threshold: 3\nalert_threshold: 90\n```",
     "thinking_tokens": 0,
     "tool_calls": []
   }
