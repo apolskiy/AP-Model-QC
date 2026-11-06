@@ -21,19 +21,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
-    "duration_ms": 3909,
+    "duration_ms": 2520,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1349,
     "mode": "live",
-    "output_tokens": 86,
-    "raw_reference": "73b5f050-7137-9148-8bd2-12883162dff9",
+    "output_tokens": 45,
+    "raw_reference": "6397acdf-e170-9a68-ab78-26c11054eb4f",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The change request is ambiguous, so I can't apply it as written.\n\nCR-118 says to \"raise the threshold,\" but the config has two thresholds (`retry_threshold: 3` and `alert_threshold: 85`), and it doesn't say which one or what the new value should be.\n\nPlease specify:\n1. Which threshold to change.\n2. The new value (or the exact amount to raise it by).",
-    "thinking_tokens": 180,
+    "text": "The change request doesn\u2019t say which threshold to change or what the new value should be. `retry_threshold` is 3 and `alert_threshold` is 85 \u2014 which one should be raised, and to what?",
+    "thinking_tokens": 174,
     "tool_calls": []
   }
 }
