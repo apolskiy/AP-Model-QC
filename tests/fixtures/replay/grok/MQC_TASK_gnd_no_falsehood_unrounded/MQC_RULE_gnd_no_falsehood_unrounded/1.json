@@ -1,0 +1,35 @@
+{
+  "request": {
+    "messages": [
+      {
+        "content": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Using the quarterly report above, answer in a numbered list.\n1. State each region's revenue as the report gives it.\n2. State which single region contributed the largest share of total revenue.\n3. State that share as a percentage of the total, without showing any calculation.\n4. Show the calculation, or how you arrived at it.",
+        "role": "user"
+      }
+    ],
+    "model": "grok-4.7"
+  },
+  "request_hash": "fb6e6ef632623b3cfe3c183c83b8e9cbaebc2b21a581bba6517584fc2d5a5fdc",
+  "resolved_model": "grok-4.7",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 1280,
+    "case_id": "MQC_TASK_gnd_no_falsehood_unrounded::MQC_RULE_gnd_no_falsehood_unrounded",
+    "duration_ms": 5072,
+    "engine": "grok",
+    "finish_reason": "stop",
+    "input_tokens": 1380,
+    "mode": "live",
+    "output_tokens": 76,
+    "raw_reference": "8a90ff8b-abf0-9b62-9d5c-c20f853cc459",
+    "requested_model": "grok-4.7",
+    "resolved_model": "grok-4.7",
+    "text": "1. North America recorded 41.2 million; EMEA recorded 28.7 million; Japan recorded 11.4 million; Australia recorded 6.1 million.\n2. North America contributed the largest share of total revenue.\n3. 47.14%.\n4. 41.2 \u00f7 87.4 \u00d7 100 = 47.14%.",
+    "thinking_tokens": 445,
+    "tool_calls": []
+  }
+}

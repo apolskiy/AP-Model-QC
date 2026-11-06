@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. If the summary is inadequate or\nincomplete to make a positive match, state explicitly where and why it\ncannot establish the requirement.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "c648d6df0c3c2853041cd6b3a391c9b51fe0a2a12f6806011e234ee08dd501c9",
+  "request_hash": "8e5d69e4cf2e398e12d807f069083710127e72b9cafa1f4669c5ce0ec2c82b63",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1280,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 3720,
+    "duration_ms": 4624,
     "engine": "grok",
     "finish_reason": "stop",
-    "input_tokens": 1356,
+    "input_tokens": 1365,
     "mode": "live",
-    "output_tokens": 63,
-    "raw_reference": "43c26082-7a31-9623-94d3-9f59ef82ae03",
+    "output_tokens": 82,
+    "raw_reference": "0b228331-1895-97f7-b558-b5260efccad9",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The candidate does not match the requirement on the evidence given. The posting requires 9 years of backend engineering experience. The summary only states \u201c8+ years,\u201d which establishes a floor of 8 years and does not show that the total reaches 9. The settlement-pipeline detail does not add years of experience.",
-    "thinking_tokens": 170,
+    "text": "The candidate does not match the requirement on the information given.\n\nThe posting requires 9 years of backend engineering experience. The summary only states \u201c8+ years,\u201d which establishes a floor of 8 years and does not show that the total reaches 9. Experience of 8 years and some months would satisfy the summary and still fall short of the requirement. The settlement-pipeline detail does not fill that gap.",
+    "thinking_tokens": 253,
     "tool_calls": []
   }
 }

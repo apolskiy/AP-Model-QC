@@ -17,19 +17,19 @@
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1536,
+    "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 63085,
+    "duration_ms": 68162,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1551,
     "mode": "live",
-    "output_tokens": 398,
-    "raw_reference": "fd52ba17-a535-937f-b2aa-572e6db8f306",
+    "output_tokens": 447,
+    "raw_reference": "26bcd829-e590-965e-8b3d-4315515fa166",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The settlement math treats a rate as a price, reads only one coupon, aborts on a bad code, and can finish at or below zero.\n\n**Tier discount is applied as the amount due, not as a reduction.** `discount` is a percent of the basket (standard 20 means 20% off). `total_amount * discount / 100` keeps that slice and throws away the rest, so a 100-unit standard basket is reduced to 20 before any coupon. It should keep the complement: `total_amount * (100 - discount) / 100`.\n\n**A currency coupon is then taken off that wrong slice.** A tier value and a coupon value are different units. The percent must be turned into a currency reduction of the original total first; only then should coupon currency be subtracted from what remains. They must not be combined as if they were the same kind of number, and the coupon must not be subtracted from the discount slice.\n\n**Only `coupon_codes[0]` is used.** Later codes are ignored, so `[\"SAVE20\", \"SAVE30\"]` never applies both. Every recognised code should be summed and subtracted.\n\n**An unknown code aborts the sale.** `coupon_lookup[code]` raises `KeyError` (as with `\"NOPE\"`), so settlement never finishes. Unrecognised codes should be skipped and treated as no reduction.\n\n**Nothing stops a non-positive balance.** After a correct 20% off, `SAVE90` still drives 80 \u2212 90 below zero; the current formula goes further negative. The seller should not give the basket away or end up owing the buyer. After the percent-of-total reduction and the sum of recognised coupons, the amount owed must be kept strictly positive (a non-positive result is not a valid settlement). The snippet does not name the seller\u2019s minimum, so that floor has to be an explicit positive bound rather than an implicit zero.",
-    "thinking_tokens": 3994,
+    "text": "The settlement expression is wrong in four separate ways. Each one is a cause, not just a bad return value.\n\n**The tier percentage is used as the amount charged.** `total_amount * discount / 100` takes 20% of 100 and treats 20 as what the customer owes. A discount is a percentage off the basket, so standard should leave 80% payable: `total_amount * (100 - discount) / 100`, not the discount slice itself.\n\n**That percentage slice is then netted against a currency coupon.** The tier value is a percent of the total; a coupon lookup is an absolute currency amount. Subtracting the coupon from the discount slice mixes those units. Coupons must be subtracted only after the percentage has been turned into a currency reduction and taken off the basket: discounted total minus coupon currency.\n\n**Only `coupon_codes[0]` is read.** Later codes never affect the sum, so stacked coupons are dropped. Every supplied code should contribute its lookup value.\n\n**A missing code aborts the sale.** `coupon_lookup[code]` raises `KeyError` for `\"NOPE\"`, so one unrecognised code prevents settlement. Unknown codes should be skipped and counted as zero; recognised ones should still apply.\n\n**The result is allowed to hit zero or go negative.** With the current formula, `[\"SAVE20\", \"SAVE30\"]` becomes `20 - 20 = 0` (first coupon only), and `SAVE30` / `SAVE90` go negative. That gives the goods away or credits the buyer. After the percentage-off and the summed, recognised coupons, the amount owed must stay strictly positive. The seller is not giving the product away, and is not paying the customer. The calls do not define a numeric floor above zero, only that a non-positive result is not a valid settlement.\n\nOn a 100-unit standard basket that means: `SAVE30` \u2192 50, unknown `NOPE` \u2192 80 with no exception, `SAVE20` plus `SAVE30` \u2192 30. `SAVE90` (80 \u2212 90) must not be returned as \u221210 or as 0.",
+    "thinking_tokens": 4625,
     "tool_calls": []
   }
 }

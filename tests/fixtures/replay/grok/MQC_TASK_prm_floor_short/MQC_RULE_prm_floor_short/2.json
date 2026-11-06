@@ -10,30 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. If the summary is inadequate or\nincomplete to make a positive match, state explicitly where and why it\ncannot establish the requirement.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "c648d6df0c3c2853041cd6b3a391c9b51fe0a2a12f6806011e234ee08dd501c9",
+  "request_hash": "8e5d69e4cf2e398e12d807f069083710127e72b9cafa1f4669c5ce0ec2c82b63",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
-    "cached_input_tokens": 1152,
+    "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 3356,
+    "duration_ms": 5130,
     "engine": "grok",
     "finish_reason": "stop",
-    "input_tokens": 1356,
+    "input_tokens": 1365,
     "mode": "live",
-    "output_tokens": 60,
-    "raw_reference": "bc6425b6-a7f9-9bfb-9ec2-e1a02f0838fd",
+    "output_tokens": 83,
+    "raw_reference": "c42fe409-bb23-9ba8-a46a-4429896a183e",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "The candidate does not clearly match the requirement.\n\nThe posting requires 9 years of backend engineering experience. The summary only states \u201c8+ years,\u201d which establishes at least 8 years but does not establish 9. Whether the candidate actually has 9 or more years cannot be determined from the summary.",
-    "thinking_tokens": 167,
+    "text": "The candidate does not match the requirement on the information given.\n\nThe posting requires 9 years of backend engineering experience. The summary only states \u201c8+ years.\u201d That establishes a floor of 8 years, not 9. \u201c8+\u201d is compatible with 8 years, or with more than 9, so it cannot confirm the required amount. The settlement-pipeline detail does not add years of experience.",
+    "thinking_tokens": 226,
     "tool_calls": []
   }
 }
