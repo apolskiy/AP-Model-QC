@@ -3,7 +3,7 @@
 """Unit preconditions for the ticket page a graded finding is filed from, and its register.
 
 Created: 2026-10-12
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
 This file contains fifteen cases on ``tools/ticket_report.py`` and the findings,
 recordings, evidence and register tools it joins. ``TestMQCTicketInput`` checks a
@@ -454,9 +454,9 @@ class TestMQCTicketFormat:
 
         assert heading("MQC_EVL_EVAL_134502_x") == "## `MQC_EVL_EVAL_134502_x` (134502)"
 
-        block = "\n".join(reproduce_outside("openai", {"model": "gpt-4.1", "messages": [
+        block = "\n".join(reproduce_outside("openai", {"model": "gpt-6-astra", "input": [
             {"role": "user", "content": "A prompt the provider received."}]}, 1, 1))
-        assert "curl https://api.openai.com/v1/chat/completions" in block, (
+        assert "curl https://api.openai.com/v1/responses" in block, (
             "an engine whose recording is the wire body offers no curl"
         )
 

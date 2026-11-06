@@ -528,6 +528,13 @@
         # continuation, and CPython before 3.10 reports the error at it.
         # All four engines answered line 2; the only one marked wrong was
         # the one that went on to explain this.
+        #
+        # A HEDGE CAN SIT IN THE SENTENCE BEFORE. claude-opus-5-5 wrote
+        # "Older versions keep reading line 3 as part of the unfinished
+        # expression. They hit return and report SyntaxError: invalid
+        # syntax on line 3, even though the real mistake is on line 2."
+        # The second sentence carries its own contrast, so "even though"
+        # is declared as the hedge this case has seen (2026-11-06).
         pattern: '(?i)(error|issue|problem|fault|bug|missing|unclosed)[^.]{0,40}\bline\s*3\b|\bline\s*3\b[^.]{0,30}(has|holds|carries|contains|is where)[^.]{0,25}(error|issue|problem)'
         present: false
         unless:
@@ -548,6 +555,7 @@
         - depending
         - either way
         - cause is on line 2
+        - even though
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation
       constraint_ref: COD_LOCATE_SYNTAX_ERROR
@@ -600,10 +608,15 @@
     # so the lookup raises. Promoted from credited to required on 2026-09-23:
     # it is as deterministic as the other two, and a defect the evaluator can
     # settle should not be scored by a model.
+    #
+    # "INVALID" NAMES IT TOO, since 2026-11-06. gemini-4-argon headed the
+    # defect "Unhandled Invalid Coupon Codes", said the lookup runs "without
+    # checking if the coupon exists" and that it "raises an unhandled
+    # KeyError", and failed here on all three phrasings.
     - assertion_id: A_COD_OUTCOME_NO_SETTLEMENT
       kind: regex
       parameters:
-        pattern: '(?i)(unknown|undefined|unrecognis|unrecogniz|missing|not in|absent|keyerror|no such)[^.]{0,60}(code|coupon|key|lookup)|(code|coupon)[^.]{0,60}(not (defined|found|present|recognis|recogniz)|does not exist)'
+        pattern: '(?i)(unknown|undefined|unrecognis|unrecogniz|invalid|missing|not in|absent|keyerror|no such)[^.]{0,60}(code|coupon|key|lookup)|(code|coupon)[^.]{0,60}(not (defined|found|present|recognis|recogniz)|does not exist)'
         present: true
       taxonomy_code: QC_LLM_DEFECT_MISSED
       severity: violation

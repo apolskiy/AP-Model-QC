@@ -3,7 +3,7 @@
 """The ticket report, which writes each engine's filed findings as pages ready to submit.
 
 Created: 2026-10-05
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
 This file contains ``page_for``, which builds one engine's findings page,
 ``finding_section``, which writes one finding's defect report with its problem,
@@ -271,8 +271,9 @@ def _message_texts(request: dict[str, Any]) -> list[tuple[str, str]]:
     """Return the role and text of each message in a composed request.
 
     **Provider-agnostic, because the shape differs per adapter.** One sends
-    ``messages`` with ``role`` and ``content``, another sends ``contents`` with
-    ``parts``, and a system instruction may be a top-level field or a message.
+    ``messages`` with ``role`` and ``content``, the Responses protocol sends
+    the same entries as ``input``, another sends ``contents`` with ``parts``,
+    and a system instruction may be a top-level field or a message.
 
     Args:
         request (dict): The composed request.
@@ -294,7 +295,7 @@ def _message_texts(request: dict[str, Any]) -> list[tuple[str, str]]:
     )
     if isinstance(system, str) and system.strip():
         found.append(("system", system))
-    for key in ("messages", "contents"):
+    for key in ("messages", "input", "contents"):
         entries = request.get(key)
         if not isinstance(entries, list):
             continue
