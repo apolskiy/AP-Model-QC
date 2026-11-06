@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
         "role": "user"
@@ -14,26 +14,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "86f498da991e6a37b39d19fdc1698dee8fc75fa400293b5d1f7d442d84f21400",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "92886e7ac13623b417cfeaac7b2861e2b56342a459c2ae90b0ddb9bfb84ac5b8",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 2051,
+    "duration_ms": 5645,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 216,
+    "input_tokens": 215,
     "mode": "live",
-    "output_tokens": 152,
-    "raw_reference": "chatcmpl-Egc6N61a8y2FPg9faDMMp5fXACPF1",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Mandatory Requirements Assessment**\n\nJob Posting Mandatory Requirements (10 total):\n\n1. Python. \u2714\ufe0f  \n2. SQL. \u2714\ufe0f  \n3. Linux administration. \u2714\ufe0f  \n4. Git. \u2714\ufe0f  \n5. REST API design. \u2714\ufe0f  \n6. Unit testing. \u2714\ufe0f  \n7. CI pipelines. \u2714\ufe0f  \n8. Docker, Kubernetes, Terraform, Ansible, Helm. \u274c  \n9. Kafka. \u274c  \n10. GraphQL. \u274c  \n\nMatches: 7/10\n\nPercentage: (7 / 10) x 100 = **70%**\n\n---\n\n**Warning:**  \nCandidate achieves **70%**, which is below the cutoff of **78%**.  \nNice-to-have requirements are not evaluated.",
-    "thinking_tokens": 0,
+    "output_tokens": 158,
+    "raw_reference": "resp_0ce89e4b5fa19ccc016aed407c97e487d0967ebb3433c2ef89",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "**Mandatory match: 70% (7 of 10 requirements).** Each numbered requirement is counted as one item.\n\n**Warning:** This is below your **78% cutoff**.\n\n- **Matched:** Python, SQL, Linux administration, Git, REST API design, unit testing, and CI pipelines.\n- **Not evidenced in the resume:** Docker/Kubernetes/Terraform/Ansible/Helm (requirement 8), Kafka, and GraphQL.\n\nNice-to-have requirements were not evaluated, per your instruction.",
+    "thinking_tokens": 47,
     "tool_calls": []
   }
 }

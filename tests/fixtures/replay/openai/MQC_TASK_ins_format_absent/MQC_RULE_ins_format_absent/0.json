@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_release_note>\nRelease 4.2 closes three reported defects. The importer no longer\ndrops a trailing column when a file ends without a newline. The\nscheduler retries a failed job twice before reporting it. The audit\nlog records the account that performed a deletion.\n</document>",
         "role": "user"
@@ -10,25 +10,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "0f88f8072ca89bc534cc010ba3ebf00f17a5b795b551b56d5c50fd2c53b27b44",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "1a797ec2d57b200254f158612238f26f24c1b3e7deb0aab6388e93e7d6a06183",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_format_absent::MQC_RULE_ins_format_absent",
-    "duration_ms": 1355,
+    "duration_ms": 3339,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 81,
+    "input_tokens": 80,
     "mode": "live",
-    "output_tokens": 42,
-    "raw_reference": "chatcmpl-EgbzEb1Z2XfGNFLK3kIm222pLTemZ",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Release 4.2 fixes three issues: the importer now handles files missing a final newline correctly, the scheduler retries failed jobs twice before reporting failure, and the audit log now records which account performed a deletion.",
+    "output_tokens": 49,
+    "raw_reference": "resp_043535ab64d3eb38016aed3df8a26887d0b51f49e16d6b5eed",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "Release 4.2 fixes three defects:\n- The importer preserves the trailing column in files without a final newline.\n- The scheduler retries failed jobs twice before reporting failure.\n- The audit log records which account performed a deletion.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
         "role": "user"
@@ -14,26 +14,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "7350bb437ad1919648966ab7de45363a0871adf65b2ed220822b9770d8a90faa",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "6b63b8f1500b3af33b5079c0618597c40e2f4dc80f131d0bdf46623357b566bd",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 4585,
+    "duration_ms": 5482,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 256,
+    "input_tokens": 255,
     "mode": "live",
-    "output_tokens": 595,
-    "raw_reference": "chatcmpl-Egc5gMdCZyXj2I3GMzRhJl28kYGxV",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Let's assess the candidate against the posting, using the rule that a numbered requirement listing several items counts as one requirement, with credit given in proportion to the candidate's coverage.\n\n### MANDATORY REQUIREMENTS (10 total)\n\n1. **Python**  \n   - Candidate: Yes  \n   - Credit: 1\n\n2. **SQL**  \n   - Candidate: Yes  \n   - Credit: 1\n\n3. **Linux administration**  \n   - Candidate: Yes  \n   - Credit: 1\n\n4. **Git**  \n   - Candidate: Yes  \n   - Credit: 1\n\n5. **REST API design**  \n   - Candidate: Yes  \n   - Credit: 1\n\n6. **Unit testing**  \n   - Candidate: Yes  \n   - Credit: 1\n\n7. **CI pipelines**  \n   - Candidate: Yes  \n   - Credit: 1\n\n8. **Docker, Kubernetes, Terraform, Ansible, Helm** *(5 sub-requirements)*\n   - Candidate: Docker, Kubernetes, Terraform, Ansible (4/5)\n   - Credit: 4/5 = 0.8\n\n9. **Kafka**\n   - Candidate: Not shown\n   - Credit: 0\n\n10. **GraphQL**\n    - Candidate: Not shown\n    - Credit: 0\n\n**Total Mandatory Credit =** 1 + 1 + 1 + 1 + 1 + 1 + 1 + 0.8 + 0 + 0 = 7.8\n\n**Mandatory Match Percentage:**  \n= (7.8 / 10) \u00d7 100  \n= 78%\n\n---\n\nSince 78% is within the specified 78-84% range, we also calculate the combined percentage considering nice-to-have requirements.\n\n### NICE TO HAVE (5 total)\n\n11. **Grafana**  \n   - Candidate: Yes  \n   - Credit: 1\n\n12. **Prometheus**  \n    - Candidate: Yes  \n    - Credit: 1\n\n13. **Technical writing**  \n    - Candidate: Yes  \n    - Credit: 1\n\n14. **Mentoring**  \n    - Candidate: Yes  \n    - Credit: 1\n\n15. **Public speaking**  \n    - Candidate: Yes  \n    - Credit: 1\n\n**Total Nice-to-have Credit = 5**\n\n**Combined Requirements: 10 (mandatory) + 5 (nice-to-have) = 15**\n\n**Combined Match Percentage:**  \n= (7.8 (mandatory) + 5 (nice to have)) / 15 \u00d7 100  \n= 12.8 / 15 \u00d7 100  \n\u2248 85.3%\n\n---\n\n**Summary:**\n\n- **Mandatory Match Percentage:** 78%\n- **Combined Match Percentage:** \u224885.3%\n\n**Conclusion:** The candidate passes the combined threshold and qualifies for further consideration.",
-    "thinking_tokens": 0,
+    "output_tokens": 211,
+    "raw_reference": "resp_0711b5890f3902b9016aed40323bec87d0a11b5648f1980a22",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "**Mandatory match: 78%.**\n\n- Requirements 1\u20137: fully met \u2014 **7 points**.\n- Requirement 8: 4 of 5 items shown (Docker, Kubernetes, Terraform, Ansible; Helm not shown) \u2014 **0.8 points**.\n- Requirements 9\u201310: Kafka and GraphQL not shown \u2014 **0 points**.\n\nMandatory total: **7.8 \u00f7 10 = 78%**.\n\nSince this falls between 78% and 84%, the combined score applies. All five nice-to-have requirements are met:\n\n**Combined match: (7.8 + 5) \u00f7 15 = 85.33%.**\n\n**Decision: Proceed**, because the combined match reaches the 85% threshold.",
+    "thinking_tokens": 48,
     "tool_calls": []
   }
 }

@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_change_request_vague>\nChange request CR-118: raise the threshold, the current one is too low\nand support has complained twice this month.\n</document>",
         "role": "user"
@@ -14,25 +14,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "4e7afc2769b0f184c222680175052a546172214a1e300e4a3402184ca946bfa9",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "6732d0018f50c49366a868538e701cf5d688da18a23f0e276b1af068d6a2b5c4",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_ambiguous_request::MQC_RULE_amb_ambiguous_request",
-    "duration_ms": 2092,
+    "duration_ms": 2580,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 117,
+    "input_tokens": 116,
     "mode": "live",
-    "output_tokens": 69,
-    "raw_reference": "chatcmpl-EgefhkWX0SQmE3y3yMOGkyZgsfSlR",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "The change request asks to \"raise the threshold\" but does not specify which threshold (retry_threshold or alert_threshold) should be raised, nor does it state the new value to use.\n\nPlease clarify:\n- Which threshold (\u201cretry_threshold\u201d, \u201calert_threshold\u201d, or both) should be raised?\n- What value should the new threshold be set to?",
+    "output_tokens": 40,
+    "raw_reference": "resp_0972f215455e459b016aed39ddde6c87d098bbc514ab3eb07c",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "Which threshold should CR-118 increase\u2014`retry_threshold` (currently `3`) or `alert_threshold` (currently `85`)\u2014and what should its new value be?",
     "thinking_tokens": 0,
     "tool_calls": []
   }

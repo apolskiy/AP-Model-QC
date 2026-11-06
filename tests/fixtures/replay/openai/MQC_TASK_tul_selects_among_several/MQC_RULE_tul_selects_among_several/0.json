@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "You are an order support assistant. Use the tool that answers the question\nasked.",
         "role": "system"
@@ -10,98 +10,97 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1",
+    "model": "gpt-6-astra",
+    "store": false,
     "tools": [
       {
-        "function": {
-          "description": "Return the current status and history of one order.",
-          "name": "lookup_order",
-          "parameters": {
-            "properties": {
-              "include_history": {
-                "type": "boolean"
-              },
-              "order_id": {
-                "type": "string"
-              }
+        "description": "Return the current status and history of one order.",
+        "name": "lookup_order",
+        "parameters": {
+          "properties": {
+            "include_history": {
+              "type": "boolean"
             },
-            "required": [
-              "order_id"
-            ],
-            "type": "object"
-          }
+            "order_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "order_id"
+          ],
+          "type": "object"
         },
+        "strict": false,
         "type": "function"
       },
       {
-        "function": {
-          "description": "Refund an order. Moves money and cannot be undone.",
-          "name": "issue_refund",
-          "parameters": {
-            "properties": {
-              "amount": {
-                "type": "number"
-              },
-              "order_id": {
-                "type": "string"
-              }
+        "description": "Refund an order. Moves money and cannot be undone.",
+        "name": "issue_refund",
+        "parameters": {
+          "properties": {
+            "amount": {
+              "type": "number"
             },
-            "required": [
-              "order_id",
-              "amount"
-            ],
-            "type": "object"
-          }
+            "order_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "order_id",
+            "amount"
+          ],
+          "type": "object"
         },
+        "strict": false,
         "type": "function"
       },
       {
-        "function": {
-          "description": "Search the customer policy handbook for a phrase.",
-          "name": "search_policy",
-          "parameters": {
-            "properties": {
-              "limit": {
-                "type": "integer"
-              },
-              "query": {
-                "type": "string"
-              }
+        "description": "Search the customer policy handbook for a phrase.",
+        "name": "search_policy",
+        "parameters": {
+          "properties": {
+            "limit": {
+              "type": "integer"
             },
-            "required": [
-              "query"
-            ],
-            "type": "object"
-          }
+            "query": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "type": "object"
         },
+        "strict": false,
         "type": "function"
       }
     ]
   },
-  "request_hash": "a8329c707da4fa1c8bf0eb401eed00ecf4bac9b96b5962fb1b92ebecb437c5db",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "1cd04c262e1b6a578e8a6e78bd21137d1b787efd091fc3dd40fcf5dcfb0768a2",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_selects_among_several::MQC_RULE_tul_selects_among_several",
-    "duration_ms": 1167,
+    "duration_ms": 2515,
     "engine": "openai",
     "finish_reason": "tool_calls",
-    "input_tokens": 152,
+    "input_tokens": 155,
     "mode": "live",
-    "output_tokens": 17,
-    "raw_reference": "chatcmpl-EgcJxZDAUTsTPO1gwh7zCKYXgxcnm",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
+    "output_tokens": 28,
+    "raw_reference": "resp_09f75c05faaf6005016aed442d70c887d0bb2a036fe289dd4f",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
     "text": "",
     "thinking_tokens": 0,
     "tool_calls": [
       {
         "arguments": {
-          "query": "return period after delivery"
+          "limit": 3,
+          "query": "return window how many days after delivery"
         },
-        "call_id": "call_xG8WgfvVfehgALQOqD1Ojwsm",
+        "call_id": "call_zJfDsohSt05VEpH9euGawnZ0",
         "sequence": 0,
         "tool_name": "search_policy"
       }

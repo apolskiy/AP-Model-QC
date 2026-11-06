@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>",
         "role": "user"
@@ -10,26 +10,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "8c32452c1a6dd71eac0e672ac5af2dd0d03f23f3dff43ee46d4c25c07db2e8bd",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "ff9d01fdb7ce7cbedb6ecadfac89db9722eac81f7342eabfa8ee770fb140453c",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_tolerance_permitted::MQC_RULE_gnd_tolerance_permitted",
-    "duration_ms": 1878,
+    "duration_ms": 3122,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 163,
+    "input_tokens": 162,
     "mode": "live",
-    "output_tokens": 156,
-    "raw_reference": "chatcmpl-Egby48dPFeRu8mDNnWUQ3dJFils6i",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**EMEA revenue as reported:** 28.7 million.\n\n**Nearest ten million, rounded up:** 30 million.\n\n**Calculation of overstatement:**\n\n- Overstatement amount: 30 million \u2013 28.7 million = 1.3 million.\n- Overstatement percentage: (1.3 / 28.7) \u00d7 100 \u2248 4.53%.\n\n**Comparison with the 5% limit:**\n\n- 4.53% is **less** than the 5% overstatement limit.\n\n**Final answer:**\n> EMEA revenue rounded up for a headline: **30 million**.  \n> This overstates the reported figure by 1.3 million (4.53%), which is within the 5% rounding allowance.",
-    "thinking_tokens": 0,
+    "output_tokens": 113,
+    "raw_reference": "resp_0087e2c5ca0a101f016aed3db6607887d09f192c7fd8aecee9",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "EMEA revenue was **30 million, rounded up** from the reported 28.7 million to the nearest ten million.\n\nThis overstates revenue by 1.3 million, or **4.53%** (1.3 \u00f7 28.7 \u00d7 100), which is within the 5% limit.",
+    "thinking_tokens": 41,
     "tool_calls": []
   }
 }

@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_req_closed_or>\nRequired: Python, Go, or Rust.\n</document>",
         "role": "user"
@@ -14,26 +14,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "7e715e808bc46dc1ecab3612ab5fa1e70e70bf4b40ec973d949f3f7f83a59081",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "339411cc3013928c2d6b346263fd7e30a5d1a923634ab49237f74079ac9b2538",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
-    "duration_ms": 2718,
+    "duration_ms": 5290,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 75,
+    "input_tokens": 74,
     "mode": "live",
-    "output_tokens": 165,
-    "raw_reference": "chatcmpl-EgfEe7cOSFddB0E8RsnaBi9PbYmPu",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Requirement (from DOC_req_closed_or):**\n- Required: Python, Go, or Rust.\n\nThis is a closed \"or\" requirement, meaning the candidate needs at least one of the listed languages to fully meet the requirement.\n\n**Candidate (from DOC_candidate_python):**\n- Languages: Python, SQL, Bash.\n\n**Calculation:**\n- Candidate knows Python, which is one of the required languages.\n- In a closed \"or\" requirement, meeting any one suffices. Thus, the candidate meets 100% of the requirement.\n\n**Answer:**\n\nThe candidate meets **100%** of the requirement.\n\n**Explanation:**  \nThe requirement asks for knowledge of Python, Go, or Rust. The candidate knows Python, which is one of these languages. Since only one is needed, the candidate fully satisfies the requirement.",
-    "thinking_tokens": 0,
+    "output_tokens": 119,
+    "raw_reference": "resp_0f74de20f17c9b2b016aed3f86a36c87d08be94f786c169f88",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "The candidate meets **100% of the requirement**.\n\n- **Requirement:** Python, Go, **or** Rust\u2014any one of these languages satisfies it.\n- **Candidate:** Lists Python, which is an accepted option.\n- **Calculation:** 1 requirement satisfied \u00f7 1 total requirement \u00d7 100 = **100%**.\n\nSQL and Bash do not affect this result.",
+    "thinking_tokens": 36,
     "tool_calls": []
   }
 }

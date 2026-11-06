@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_release_note_measured>\nRelease 4.3 makes four changes. The export job now completes in\nunder 30 seconds. The login page was restyled. The importer accepts\nfiles up to 2 GB. The help link points to the new documentation.\n</document>",
         "role": "user"
@@ -10,25 +10,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "40bdc904df3cb718cfc0fc6036f172556081e8cced333abfb0cd0c9fb0a160be",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "1b4702a23b415c74ec89319c4010daa2f24e8a72ce087795e53d1c779c1af061",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_ordering::MQC_RULE_ins_ordering",
-    "duration_ms": 1146,
+    "duration_ms": 2223,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 103,
+    "input_tokens": 102,
     "mode": "live",
-    "output_tokens": 48,
-    "raw_reference": "chatcmpl-Egc0ZbRAVDmzQjgOfOyRuodvfHybu",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "1. The export job now completes in under 30 seconds.  \n2. The importer accepts files up to 2 GB.  \n3. The login page was restyled.  \n4. The help link points to the new documentation.",
+    "output_tokens": 49,
+    "raw_reference": "resp_02b1ad2ff2ebe499016aed3ea2240887d083e510c587c35ee4",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "1. The export job now completes in under 30 seconds.\n2. The importer accepts files up to 2 GB.\n3. The login page was restyled.\n4. The help link points to the new documentation.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

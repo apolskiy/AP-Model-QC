@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
         "role": "user"
@@ -14,25 +14,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "ccda17f7caebdabb4a8fce678ce1abbc3c0cde2b40f8409b7a0d3037fe1036b7",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "d7ef33ac59045d6d4f5df89cc87b5eb5ea0400644d83497e705e6d2007989b55",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 1698,
+    "duration_ms": 3176,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 122,
+    "input_tokens": 121,
     "mode": "live",
-    "output_tokens": 74,
-    "raw_reference": "chatcmpl-Egc7lQL9AViuUVEuj0S55RmG70beS",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "The job posting requires 8 years of backend engineering experience, but the candidate summary does not state or allow calculation of years of experience.\n\nNot supplying the years costs your submission credibility\u2014many employers will screen you out automatically if your experience isn't clearly quantified.\n\nPlease tell me how many years of backend engineering experience the candidate has so I can revise the summary to match the requirement.",
+    "output_tokens": 75,
+    "raw_reference": "resp_0b1d7f4cfceabf2c016aed40cb45f087d084b6c3b5a9126095",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "How many years of backend engineering experience does the candidate have? The summary doesn\u2019t state a figure or provide dates to calculate it.\n\nWithout that figure, I can tailor the summary to emphasize relevant backend work, but I can\u2019t truthfully show that the candidate meets the 8-year requirement. Leaving it out may weaken the application or lead to screening rejection.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

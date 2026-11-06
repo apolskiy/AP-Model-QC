@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>",
         "role": "user"
@@ -10,26 +10,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "2f638a7228e66e3fb8c2ff72fcbf84a64babf6370e364c4e6c382d9a5d68d728",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "4f6c34bca30b8c7b8a23f2eeceb51a2d26d71744dac656a6b9556ee010f73458",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
-    "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
-    "duration_ms": 1374,
+    "case_id": "MQC_TASK_gnd_no_falsehood_unrounded::MQC_RULE_gnd_no_falsehood_unrounded",
+    "duration_ms": 3857,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 149,
+    "input_tokens": 148,
     "mode": "live",
-    "output_tokens": 117,
-    "raw_reference": "chatcmpl-EgejTpQcN9vr0rLnKe2IOXtPgfFcS",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "1. Each region's revenue as reported:\n   - North America: 41.2 million\n   - EMEA: 28.7 million\n   - Japan: 11.4 million\n   - Australia: 6.1 million\n\n2. The single region that contributed the largest share of total revenue is North America.\n\n3. North America\u2019s share of the total revenue is 47%.\n\n4. Calculation:  \n\\( \\frac{41.2}{87.4} \\times 100 = 47.16\\% \\)\u2014rounded to 47%.",
-    "thinking_tokens": 0,
+    "output_tokens": 134,
+    "raw_reference": "resp_0bd9891ce88f47c8016aed3d3992a087d090732e55984d2147",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "1. **Revenue by region:** North America: 41.2 million; EMEA: 28.7 million; Japan: 11.4 million; Australia: 6.1 million.\n2. **Largest contributor:** North America.\n3. **Share of total revenue:** Approximately 47.1%.\n4. **Calculation:** (41.2 \u00f7 87.4) \u00d7 100 \u2248 47.1%.",
+    "thinking_tokens": 38,
     "tool_calls": []
   }
 }

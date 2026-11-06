@@ -1,35 +1,36 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
         "role": "user"
       },
       {
-        "content": "The function below settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\nThe seller does not expect to give the product away for free.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})",
+        "content": "The function above settles an order incorrectly. State the cause of\neach defect rather than only what it returns, and say what the\nfunction should do instead.\n\nA discount is a percentage of the total. A coupon code is looked up\nto a currency amount, so the two are different units. An\nunrecognised coupon code must not stop a settlement.\nThe seller does not expect to give the product away for free.\n\nIt is called in production like this, against a 100 unit basket:\n\nsettle_order(\"standard\", 100, [\"SAVE30\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE90\"], {\"SAVE90\": 90})\nsettle_order(\"standard\", 100, [\"NOPE\"], {\"SAVE30\": 30})\nsettle_order(\"standard\", 100, [\"SAVE20\", \"SAVE30\"],\n             {\"SAVE20\": 20, \"SAVE30\": 30})",
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "01a9ffc5d035107f5a63fac314614e653319454c23f0c86fd968bed97e1fad65",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "2d3dab60aa5023b02c2492597a7e11e5ecdd308df9f95fa7c6ed581d98eae0d0",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_settlement_causes::MQC_RULE_cod_settlement_remedy",
-    "duration_ms": 6063,
+    "duration_ms": 19564,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 298,
+    "input_tokens": 297,
     "mode": "live",
-    "output_tokens": 804,
-    "raw_reference": "chatcmpl-EgZFtlOqAE0CvMYWVAJU2N0fgicBJ",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Let's analyze the defects in the function as per your requirements:\n\n### The code:\n```python\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n```\n\n---\n\n### 1. **Wrong Discount Calculation**\n**Cause:**  \nIt computes `total_amount * discount / 100`, which yields *just the discount amount* (i.e., the value discounted), not the remaining amount owed. Then it subtracts the coupon; this can result in negative values.\n\n**What it should do instead:**  \nCalculate the **amount to pay after discount**:  \n```python\namount_after_discount = total_amount * (1 - discount / 100)\n```\n\n---\n\n### 2. **Wrong Coupon Calculation**\n**Cause:**  \nOnly the *first* coupon in `coupon_codes` is used:  \n`coupon_sum = coupon_lookup[coupon_codes[0]]`  \nIt disregards all other coupons.\n\n**What it should do instead:**  \n**Accumulate the valid coupons:**  \n```python\ncoupon_sum = sum(coupon_lookup.get(code, 0) for code in coupon_codes)\n```\nThis also safely ignores unknown coupon codes.\n\n---\n\n### 3. **Unrecognised Coupon Code Causes Error**\n**Cause:**  \nDirect lookup:  \n`coupon_lookup[coupon_codes[0]]`  \nIf the coupon code isn\u2019t in `coupon_lookup`, a `KeyError` occurs, stopping settlement.\n\n**What it should do instead:**  \n*Ignore unrecognised codes* via `.get()` with a default value, as above.\n\n---\n\n### 4. **Can Return Negative Result**\n**Cause:**  \nIf total discount + coupons exceed the total amount, the result can be negative\u2014meaning the seller ends up owing the customer.\n\n**What it should do instead:**  \n*Never charge less than zero*:  \n```python\nreturn max(0, amount_after_discount - coupon_sum)\n```\n\n---\n\n### 5. **Applying Coupons and Discounts:**\n**Defect:**  \nCoupons are subtracted after the discount. (This is correct if business logic is: apply discount first, then subtract coupon amount as a further monetary reduction.)  \n**If this is not by design, clarify with business logic.**\n\n---\n\n### **Correct Function**\nHere\u2019s a fixed version, assuming coupon values are always in currency (applied after percentage discount is taken):\n\n```python\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    amount_after_discount = total_amount * (1 - discount / 100)\n    coupon_sum = sum(coupon_lookup.get(code, 0) for code in coupon_codes)\n    amount_owed = max(0, amount_after_discount - coupon_sum)\n    return amount_owed\n```\n\n---\n\n### **Summary Table:**\n\n| Defect | Cause | What to do instead |\n|--------|-------|--------------------|\n| Wrong discount math | Uses only the discounted amount, not the remainder to pay | Subtract discount from total |\n| Ignores most coupons | Only uses first coupon in the list | Use all valid coupons |\n| KeyError on unknown coupon | Direct lookup | Use `.get()` with default 0 |\n| Can return negative | No check for zero | Use `max(0, ...)` to not \"owe\" money |\n| Application order (if relevant) | Apply coupons after discount | Confirm with business; this is standard |\n\nLet me know if you wish to see test results for the corrected function.",
-    "thinking_tokens": 0,
+    "output_tokens": 619,
+    "raw_reference": "resp_0c13514f5e8e0ab5016aed3cdf393487d0a894e838de629847",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "The function has four defects:\n\n| Defect | Cause | What it should do instead |\n|---|---|---|\n| **It charges the discount rather than the remaining price.** | `total_amount * discount / 100` calculates the amount saved, not the amount owed. | Subtract that saving from the total: `total_amount * (1 - discount / 100)`. |\n| **Coupons can eliminate or exceed the remaining price.** | Coupon amounts are subtracted without checking whether the resulting charge is acceptable. | Enforce a policy that keeps the charge positive\u2014for example, reject coupons that would exhaust the balance, or cap their benefit at a defined minimum charge. Clamping to zero would still give the product away for free. |\n| **An unknown coupon stops settlement.** | `coupon_lookup[...]` raises `KeyError` when the code is absent. | Treat an unrecognised code as contributing no discount and continue, for example using `.get(code, 0)`. |\n| **Only the first coupon is processed.** | `coupon_codes[0]` ignores subsequent codes and also fails for an empty list. | Process every supplied coupon and sum the recognised currency amounts. An empty list should contribute zero. |\n\nThe units must remain distinct: first convert the percentage discount into a currency saving, then subtract the currency-valued coupons.\n\nFor the supplied calls, the standard-tier discount leaves **80 units before coupons**:\n\n- **`SAVE30`:** charge **50**.\n- **`SAVE90`:** the unrestricted calculation would be **\u221210**, so the coupon must be rejected or limited under the positive-charge policy. The requirements do not specify an exact minimum charge; rejecting this coupon would leave **80**.\n- **`NOPE`:** ignore the unknown coupon and charge **80**, without an exception.\n- **`SAVE20`, `SAVE30`:** apply both recognised coupons and charge **30**.",
+    "thinking_tokens": 216,
     "tool_calls": []
   }
 }

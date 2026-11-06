@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_excerpt_api>\nimport httpx\n\ndef fetch_profile(client, user_id):\n    response = client.get(f\"/users/{user_id}\")\n    return response.json()\n</document>",
         "role": "user"
@@ -10,26 +10,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "892f9608ea7e55e073964822b7a66db75966ba8b514d8f592dad38f6005b109b",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "f9d29602ddbbc8d6fc4fcdc91f5050db1e7617b07eef53891bdb9125c20c4361",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
-    "duration_ms": 1780,
+    "duration_ms": 3560,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 70,
+    "input_tokens": 69,
     "mode": "live",
-    "output_tokens": 26,
-    "raw_reference": "chatcmpl-EgboQTCrwj54BwPPXTKBbeSOSFI7H",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "The function fetch_profile uses client.get and response.json(). It takes user_id as an argument and returns the result of response.json().",
-    "thinking_tokens": 0,
+    "output_tokens": 102,
+    "raw_reference": "resp_0e0aefd87c84f09c016aed3a791c9887d09a75432d93eedda0",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "The function calls `client.get(f\"/users/{user_id}\")`, stores the result in `response`, and returns the result of `response.json()`.",
+    "thinking_tokens": 65,
     "tool_calls": []
   }
 }

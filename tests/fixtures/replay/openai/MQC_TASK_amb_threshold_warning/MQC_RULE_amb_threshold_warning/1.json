@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_availability_week>\nMeasured availability: 99.1 percent.\nIncidents this week: one lasting 12 minutes, one lasting 41 minutes.\n</document>",
         "role": "user"
@@ -10,26 +10,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "77a38f5b4d308ef7e695d377a3016bac55dbe91a08f2234a77cfe6fcdef5e6c0",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "865b978a519d337dab56d535c1a58d827b1a80bcb8704177c176539a9bfcbd1c",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 1752,
+    "duration_ms": 3724,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 110,
+    "input_tokens": 109,
     "mode": "live",
-    "output_tokens": 122,
-    "raw_reference": "chatcmpl-EgbnUZulZIOCkD3mvI87uhbL8XcJc",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Warning:** The weekly availability failed the following gate(s):\n\n- **Availability gate:** Actual availability was 99.1%, which is **0.4% below** the required 99.5%.\n\n---\n\n**Weekly Availability Summary:**\n\n- **Measured availability:** 99.1%\n- **Number of incidents:** 2\n    - Incident 1 duration: 12 minutes\n    - Incident 2 duration: 41 minutes\n- **Maximum single incident:** 41 minutes (within the 60-minute limit)\n\n**Note:** The availability requirement of 99.5% was not met.",
-    "thinking_tokens": 0,
+    "output_tokens": 153,
+    "raw_reference": "resp_0416c0980651ebdc016aed3a32ea3487d0ad9fdeabd4b59d71",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "**Warning:** The availability gate failed: measured availability was **99.1%**, which is **0.4 percentage points below** the required 99.5%.\n\n### Weekly availability summary\n- **Availability:** 99.1% \u2014 failed.\n- **Incidents:** 2, lasting 12 minutes and 41 minutes, totaling 53 minutes.\n- **Single-incident gate:** Passed. The longest incident was 41 minutes, 19 minutes below the 60-minute limit.\n- **Overall result:** Requirements not met because the availability gate failed.",
+    "thinking_tokens": 33,
     "tool_calls": []
   }
 }

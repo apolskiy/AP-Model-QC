@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "You are an order support assistant. You may use only the tools provided.\nIf none of them can do what is asked, say so.",
         "role": "system"
@@ -10,92 +10,90 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1",
+    "model": "gpt-6-astra",
+    "store": false,
     "tools": [
       {
-        "function": {
-          "description": "Return the current status and history of one order.",
-          "name": "lookup_order",
-          "parameters": {
-            "properties": {
-              "include_history": {
-                "type": "boolean"
-              },
-              "order_id": {
-                "type": "string"
-              }
+        "description": "Return the current status and history of one order.",
+        "name": "lookup_order",
+        "parameters": {
+          "properties": {
+            "include_history": {
+              "type": "boolean"
             },
-            "required": [
-              "order_id"
-            ],
-            "type": "object"
-          }
+            "order_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "order_id"
+          ],
+          "type": "object"
         },
+        "strict": false,
         "type": "function"
       },
       {
-        "function": {
-          "description": "Refund an order. Moves money and cannot be undone.",
-          "name": "issue_refund",
-          "parameters": {
-            "properties": {
-              "amount": {
-                "type": "number"
-              },
-              "order_id": {
-                "type": "string"
-              }
+        "description": "Refund an order. Moves money and cannot be undone.",
+        "name": "issue_refund",
+        "parameters": {
+          "properties": {
+            "amount": {
+              "type": "number"
             },
-            "required": [
-              "order_id",
-              "amount"
-            ],
-            "type": "object"
-          }
+            "order_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "order_id",
+            "amount"
+          ],
+          "type": "object"
         },
+        "strict": false,
         "type": "function"
       },
       {
-        "function": {
-          "description": "Search the customer policy handbook for a phrase.",
-          "name": "search_policy",
-          "parameters": {
-            "properties": {
-              "limit": {
-                "type": "integer"
-              },
-              "query": {
-                "type": "string"
-              }
+        "description": "Search the customer policy handbook for a phrase.",
+        "name": "search_policy",
+        "parameters": {
+          "properties": {
+            "limit": {
+              "type": "integer"
             },
-            "required": [
-              "query"
-            ],
-            "type": "object"
-          }
+            "query": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "type": "object"
         },
+        "strict": false,
         "type": "function"
       }
     ]
   },
-  "request_hash": "8edb6ef358a9e48abf01989a1fa60d3b55e1b45b4ecccf3bec2e6f9e64d072d8",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "bc02efb8830a7d11e4f5f1888ea12a5bca2ebaaddce781a597ba9ad5b43917f9",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_no_invented_tool::MQC_RULE_tul_no_invented_tool",
-    "duration_ms": 1751,
+    "duration_ms": 3562,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 153,
+    "input_tokens": 156,
     "mode": "live",
-    "output_tokens": 49,
-    "raw_reference": "chatcmpl-EgcK1GXUJL4ftHvTDulq3tDrzA3Ts",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "I can help you with the cancellation part, but I don't have the ability to send emails. I will proceed to check the status of order A-4471 and follow cancellation policies. Would you like me to issue a refund as well?",
-    "thinking_tokens": 0,
+    "output_tokens": 65,
+    "raw_reference": "resp_04a8d92c552261c2016aed4434d78087d09443a677395bdda6",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "I can\u2019t cancel order A-4471 or email the customer with the tools available. Please use your order-management system to cancel it and send the confirmation through your email service.",
+    "thinking_tokens": 23,
     "tool_calls": []
   }
 }

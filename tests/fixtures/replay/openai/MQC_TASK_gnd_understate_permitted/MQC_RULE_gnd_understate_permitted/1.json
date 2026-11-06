@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>",
         "role": "user"
@@ -10,25 +10,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "019b78b3a8a034652bc79789341e107f0cf2b8120019556b764f8941371cf4fe",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "94a7406b982538c91fcbd739930c33c61cc7c4a7cc83e598693df7657cdc4065",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
-    "duration_ms": 1453,
+    "duration_ms": 2139,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 127,
+    "input_tokens": 126,
     "mode": "live",
     "output_tokens": 21,
-    "raw_reference": "chatcmpl-EgbyMlfPTSBDEUB7DvI6RqkWj381O",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "A conservative floor for EMEA revenue, based on the report, is **28.7 million**.",
+    "raw_reference": "resp_0181fd37881b2f0e016aed3dccd22487d09866415522d44b7d",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "EMEA revenue was at least **28.7 million**, according to the report.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_req_closed_and>\nRequired: Docker, Kubernetes.\n</document>",
         "role": "user"
@@ -14,25 +14,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "d5d48f039c9514c95e605fe992309ddcd2bd529874ec4dbd8c1525250823a144",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "e082c5dd76443a441650886405b7514a26e5e154e7fc18f6c68e4e37fc584c3b",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 2210,
+    "duration_ms": 4028,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 72,
+    "input_tokens": 71,
     "mode": "live",
-    "output_tokens": 201,
-    "raw_reference": "chatcmpl-EgfFAjaon0GxOZ9lbz0do9t6jtOCx",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Let's break down the requirements and candidate qualifications:\n\n### Step 1: Extract requirements from DOC_req_closed_and\n**Required:**  \n1. Docker  \n2. Kubernetes  \n\nTotal requirements: **2**\n\n---\n\n### Step 2: Extract candidate qualifications from DOC_candidate_docker\n**Given:**  \nContainers and orchestration: Docker.\n\nCandidate matches: **Docker**\n\n---\n\n### Step 3: Calculate the percentage met\n\n- Requirements met: 1 (Docker)\n- Total requirements: 2\n\n**Percentage met = (1/2) \u00d7 100% = 50%**\n\n---\n\n### Step 4: Reasoning\n\n- The requirement is for both Docker and Kubernetes.\n- The candidate has Docker but not Kubernetes.\n\n---\n\n**Final Answer:**\n\nThe candidate meets **50%** of the requirement. This is because out of the 2 requirements (Docker and Kubernetes), the candidate meets 1 (Docker). Calculation: (1 \u00f7 2) \u00d7 100% = 50%.",
+    "output_tokens": 59,
+    "raw_reference": "resp_00cf35b182aa498e016aed3fc7203487d0b2a61fc8991f8c93",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "The candidate meets **50%** of the stated requirement.\n\n- **Docker:** Explicitly listed \u2014 met.\n- **Kubernetes:** Not listed \u2014 not demonstrated.\n\n**Calculation:** 1 of 2 required technologies \u00d7 100 = **50%**, weighting both equally.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

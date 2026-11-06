@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_status_glossary>\nAMBER does not indicate a warning in this system. AMBER marks a record\nthat has completed successfully and been archived. It is raised only\nafter a successful run, and the on-call rota is deliberately NOT\nnotified; the change advisory board receives a weekly digest instead.\n</document>",
         "role": "user"
@@ -10,25 +10,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "676a7131217c19dec71e1c4120473a47d5c66d0f90fc0b11ea406752be889da6",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "677c11363fe0f229010172e2da5dd1665393d113c5560f8ae58f22e229553536",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_uses_context::MQC_RULE_gnd_uses_context",
-    "duration_ms": 1264,
+    "duration_ms": 2290,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 105,
+    "input_tokens": 104,
     "mode": "live",
-    "output_tokens": 52,
-    "raw_reference": "chatcmpl-EgbwwEZUk13IjiLblfLmMsAAMIZse",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "According to the glossary, the status code **AMBER** means that a record has completed successfully and been archived. When AMBER is raised, the **on-call rota is not notified**; instead, the **change advisory board receives a weekly digest**.",
+    "output_tokens": 41,
+    "raw_reference": "resp_001b5daed361dced016aed3d27eb1c87d0b548a7ff501d50f3",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "AMBER means a record has completed successfully and been archived\u2014not a warning. The on-call rota is **not notified**; the change advisory board receives a **weekly digest** instead.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

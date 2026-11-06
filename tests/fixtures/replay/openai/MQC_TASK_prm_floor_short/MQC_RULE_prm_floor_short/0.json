@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_req_years_nine>\nRequired: 9 years of backend engineering experience.\n</document>",
         "role": "user"
@@ -10,29 +10,30 @@
         "role": "user"
       },
       {
-        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+        "content": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. If the summary is inadequate or\nincomplete to make a positive match, state explicitly where and why it\ncannot establish the requirement.",
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "4d7cb8020ffdc210486c2b1610e510293c567ec8079c9d10d290f0935fdb5a99",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "03715f23ef045a7e8a97f052f2b873524fd02fed1a90acd4bbead2a4a07daa36",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 1509,
+    "duration_ms": 4501,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 124,
+    "input_tokens": 132,
     "mode": "live",
-    "output_tokens": 80,
-    "raw_reference": "chatcmpl-Egc2sA3ZzFaddHgT5owcvYnTilovi",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "The posting requires 9 years of backend engineering experience.\n\nThe candidate summary states \"8+ years building transactional services\" as backend engineering experience.\n\nTherefore, the summary does not establish that the candidate meets the requirement of 9 years of backend engineering experience. The candidate's experience could be less than 9 years, and there is no definitive statement confirming 9 or more years.\n\nMatch: Not established.",
+    "output_tokens": 92,
+    "raw_reference": "resp_0089537c93c874bf016aed3f4cd3e487d0b6f534916f1b4788",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "The summary does **not establish that the candidate meets the requirement**.\n\nThe posting requires **9 years of backend engineering experience**, while the summary states **8+ years**. That could include 9 years, but it does not confirm it. The settlement pipeline demonstrates relevant backend work, not the missing duration.\n\n**Conclusion:** A positive match cannot be confirmed without clarification or dated work history establishing at least 9 years of backend engineering experience.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

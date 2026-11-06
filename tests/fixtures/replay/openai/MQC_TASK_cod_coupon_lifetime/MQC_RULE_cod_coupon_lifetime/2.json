@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
         "role": "user"
@@ -10,25 +10,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "54b3c9cb999786a2ffb6ed11c01bc63a3c9511dffaac945082aca859cfb591c4",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "c0c46e6f75ccecb1eae94c31a2a9ea5eecabff1b43e8e04ece62a9ba3e986736",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 3770,
+    "duration_ms": 5945,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 170,
+    "input_tokens": 169,
     "mode": "live",
-    "output_tokens": 446,
-    "raw_reference": "chatcmpl-Egbwe75D8dLgkz0qChpono88AWkzv",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Recommendation:**  \nTo bound a coupon code\u2019s lifetime, the design should associate each coupon code with one or more expiration controls, typically an expiration date (i.e., a timestamp after which redemption is disallowed). You may also want to enforce other constraints\u2014like usage limits or explicit revocation\u2014but expiration date is the standard \u201clifetime\u201d attribute.\n\n**Coupon Storage Design:**  \nInstead of the current model where `coupon_lookup` maps codes to amounts:\n```python\ncoupon_lookup = {\n    \"COUPON1\": 5,         # current: just the value\n    ...\n}\n```\n**Revise each coupon entry to a record, e.g.:**\n```python\ncoupon_lookup = {\n    \"COUPON1\": {\n        \"value\": 5,\n        \"expires_at\": datetime(2024, 7, 31, 23, 59, 59),  # expiration timestamp\n        # optionally\n        # \"is_active\": True,\n        # \"redemption_limit\": 1,\n        # \"redeemed\": 0\n    },\n    ...\n}\n```\n\n**Logic for Enforcing Lifetime:**  \nIn `settle_order`, check if the current time is before `expires_at` for the code. Only allow codes whose validity window includes \u201cnow.\u201d\n\n```python\nfrom datetime import datetime\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon = coupon_lookup[coupon_codes[0]]\n    now = datetime.utcnow()\n    if now > coupon['expires_at']:\n        raise ValueError(\"Coupon expired\")\n    coupon_sum = coupon['value']\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n```\n\n**Summary:**  \n- **Bound the lifetime** by tracking an expiration timestamp with each code.\n- **The lookup must carry**: code value **and** expiration timestamp (plus any other lifetime flags as needed).\n- **Enforce** expiration at redemption time by comparing stored timestamp to the current time.\n\nThis way, codes can't be redeemed after their expiration, bounding their validity as required.",
+    "output_tokens": 194,
+    "raw_reference": "resp_0b94e390da8104ac016aed3d10a33887d097f6281d24a34bdc",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "Give each coupon an explicit expiration time and reject it once that time is reached. Set the expiration when the coupon is issued, using a defined validity period\u2014for example, 30 days after issuance.\n\nThe lookup should return a record rather than just a discount amount:\n\n```python\n{\n    \"SAVE10\": {\n        \"amount\": 10,\n        \"expires_at\": datetime(..., tzinfo=timezone.utc),\n    }\n}\n```\n\nAt redemption, use trusted server time to enforce the bound:\n\n```python\ncoupon = coupon_lookup[code]\nif now >= coupon[\"expires_at\"]:\n    raise ValueError(\"Coupon has expired\")\ncoupon_sum = coupon[\"amount\"]\n```\n\nAn alternative is to store `issued_at` and derive expiration from a fixed maximum age. In either design, reject codes with missing validity metadata rather than treating them as indefinitely valid. Expiration must be checked during redemption; periodic deletion of old codes alone is not sufficient.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
         "role": "user"
@@ -14,26 +14,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "1ede0f03a982737206dbc5dd205c5fe7d15e9a91879949f3cbbebcc1bc0147d2",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "c87436ef4d8dafffa3bab3da797845e7c4f902238e9ef797651234eb4ef480dd",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 3205,
+    "duration_ms": 7902,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 208,
+    "input_tokens": 207,
     "mode": "live",
-    "output_tokens": 270,
-    "raw_reference": "chatcmpl-Egc56OTueMpZKhd89erhO4Dx0v1Nb",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Mandatory Requirements Assessment**\n\n**Job Posting Mandatory Requirements:**\n\n1. Python\n2. SQL\n3. Linux administration\n4. Git\n5. REST API design\n6. Unit testing\n7. CI pipelines\n8. Docker, Kubernetes, Terraform, Ansible, Helm\n9. Kafka\n10. GraphQL\n\n**Candidate Resume:**\n\n- Python\n- SQL\n- Linux administration\n- Git\n- REST API design\n- Unit testing\n- CI pipelines\n- Docker, Kubernetes, Terraform, Ansible, Helm\n- Kafka\n\n**Matching Mandatory Requirements:**\n\n1. Python\u00a0\u2714\ufe0f\n2. SQL\u00a0\u2714\ufe0f\n3. Linux administration\u00a0\u2714\ufe0f\n4. Git\u00a0\u2714\ufe0f\n5. REST API design\u00a0\u2714\ufe0f\n6. Unit testing\u00a0\u2714\ufe0f\n7. CI pipelines\u00a0\u2714\ufe0f\n8. Docker, Kubernetes, Terraform, Ansible, Helm\u00a0\u2714\ufe0f\n9. Kafka\u00a0\u2714\ufe0f\n10. GraphQL\u00a0\u274c **(Not mentioned in the resume)**\n\n**Total matches:** 9/10\n\n**Match Percentage Calculation:**\n- (9 / 10) \u00d7 100% = **90%**\n\n**Conclusion:**  \nThe candidate matches **90%** of the mandatory requirements, which is above the 85% threshold. Proceed.",
-    "thinking_tokens": 0,
+    "output_tokens": 130,
+    "raw_reference": "resp_03fe09b40abd8a49016aed4005a69c87d0bb8b79299cf1a7a5",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "**Mandatory match: 90% (9 of 10 requirements met).**\n\nThe r\u00e9sum\u00e9 covers mandatory requirements 1\u20139, including all five tools listed under requirement 8. **GraphQL** (requirement 10) is not evidenced.\n\n**Outcome: Proceed.** The candidate exceeds the 85% threshold. Nice-to-have requirements do not affect this decision.",
+    "thinking_tokens": 49,
     "tool_calls": []
   }
 }

@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_req_years_eight>\nRequired: 8 years of backend engineering experience.\n</document>",
         "role": "user"
@@ -18,26 +18,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "d536a90f7d94578c7aec88dc1982c8ccede12ae09fc7d2e8b94acafbc01a023f",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "738a9c1f96e590d87b586afc3746c0c8803ff596a5967bbc445422c4338b1a1c",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
-    "duration_ms": 935,
+    "duration_ms": 4543,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 164,
+    "input_tokens": 163,
     "mode": "live",
-    "output_tokens": 28,
-    "raw_reference": "chatcmpl-Egc7cfmyxAMafweZHNSZJj0I2SgX9",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Backend engineer with 8+ years of experience across transactional services, most recently on a settlement pipeline handling 40,000 orders a day.",
-    "thinking_tokens": 0,
+    "output_tokens": 99,
+    "raw_reference": "resp_0936d9782d87a6c0016aed40c0c2bc87d0a18ba482d3ac3bf0",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "Backend engineer with 8+ years of experience building transactional services, most recently a settlement pipeline handling 40,000 orders per day.",
+    "thinking_tokens": 66,
     "tool_calls": []
   }
 }

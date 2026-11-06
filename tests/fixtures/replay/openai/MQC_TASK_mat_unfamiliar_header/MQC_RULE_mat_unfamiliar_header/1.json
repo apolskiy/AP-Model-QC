@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_posting_odd_headers>\nWhat you will need on day one.\n1. Python.\n2. SQL.\n\nWhat would make you stand out.\n3. Grafana.\n4. Technical writing.\n</document>",
         "role": "user"
@@ -10,25 +10,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "5cc2ee5a678761a91ded583cf6534fa6b60ef200e9dc7b98e8ef7f65b89263b6",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "9fcf542d0e8e1a0212f406d7520ac2d7359fd4682b6c1829edaa80f78a154fcf",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 1766,
+    "duration_ms": 3065,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 92,
+    "input_tokens": 91,
     "mode": "live",
-    "output_tokens": 122,
-    "raw_reference": "chatcmpl-Egc8WYRiVU8YhyqtkNMHyb08vWrp6",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Sure! Here\u2019s the analysis for each header in the document:\n\n**Header:** What you will need on day one.  \n- **Mandatory or Optional?** Mandatory  \n- **Reason:** The phrase \"you will need\" indicates these are requirements absolutely necessary from the start (day one), so they are mandatory.\n\n**Header:** What would make you stand out.  \n- **Mandatory or Optional?** Optional  \n- **Reason:** This header uses language like \"would make you stand out,\" suggesting these are nice-to-have qualifications that set candidates apart, but are not required. Therefore, they are optional.",
+    "output_tokens": 77,
+    "raw_reference": "resp_0663b94c958ca5f3016aed41066da487d0882eb8c21a888e0c",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "- **\u201cWhat you will need on day one.\u201d \u2014 Mandatory:** \u201cWill need\u201d signals requirements, and \u201con day one\u201d says Python and SQL are expected from the start.\n- **\u201cWhat would make you stand out.\u201d \u2014 Optional:** \u201cWould make you stand out\u201d signals advantages rather than prerequisites, so Grafana and technical writing are desirable extras.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

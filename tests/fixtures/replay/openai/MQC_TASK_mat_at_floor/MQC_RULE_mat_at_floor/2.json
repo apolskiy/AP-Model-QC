@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_posting_ten_five>\nMandatory requirements.\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm.\n9. Kafka.\n10. GraphQL.\n\nNice to have.\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n</document>",
         "role": "user"
@@ -14,26 +14,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "7350bb437ad1919648966ab7de45363a0871adf65b2ed220822b9770d8a90faa",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "6b63b8f1500b3af33b5079c0618597c40e2f4dc80f131d0bdf46623357b566bd",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 4836,
+    "duration_ms": 5415,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 256,
+    "input_tokens": 255,
     "mode": "live",
-    "output_tokens": 563,
-    "raw_reference": "chatcmpl-Egc61N19Zg9Ty6UPxHxwQs0iy1Voc",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Let's proceed step by step.\n\n### 1. Map the Posting Requirements:\n\n**Mandatory requirements (10 total):**\n1. Python.\n2. SQL.\n3. Linux administration.\n4. Git.\n5. REST API design.\n6. Unit testing.\n7. CI pipelines.\n8. Docker, Kubernetes, Terraform, Ansible, Helm. *(5 items)*\n9. Kafka.\n10. GraphQL.\n\n**Nice to have (5 total):**\n11. Grafana.\n12. Prometheus.\n13. Technical writing.\n14. Mentoring.\n15. Public speaking.\n\n---\n\n### 2. Assess Resume Against Each Mandatory Requirement\n\n1. **Python**: \u2714\ufe0f (has)\n2. **SQL**: \u2714\ufe0f (has)\n3. **Linux administration**: \u2714\ufe0f (has)\n4. **Git**: \u2714\ufe0f (has)\n5. **REST API design**: \u2714\ufe0f (has)\n6. **Unit testing**: \u2714\ufe0f (has)\n7. **CI pipelines**: \u2714\ufe0f (has)\n8. **[Docker, Kubernetes, Terraform, Ansible, Helm]**: Docker, Kubernetes, Terraform, Ansible = 4/5 items \u2192 **0.8**\n9. **Kafka**: \u274c (not shown)\n10. **GraphQL**: \u274c (not shown)\n\n**Matches per requirement:**\n- Fully matched: #1, #2, #3, #4, #5, #6, #7 \u2192 7\n- Partially matched: #8 (0.8)\n- Not matched: #9, #10\n\n**Total matched (mandatory):**\n\\[ \\text{Total} = 7 + 0.8 = 7.8 \\]\n\\[ \\text{Percentage} = (7.8 / 10) \\times 100 = 78\\% \\]\n\n---\n\n### 3. Since this is **78%**, also calculate combined figure with nice-to-haves.\n\n**Nice to have:**\n- Grafana \u2714\ufe0f\n- Prometheus \u2714\ufe0f\n- Technical writing \u2714\ufe0f\n- Mentoring \u2714\ufe0f\n- Public speaking \u2714\ufe0f\n\nAll 5/5 matched: **5**\n\n**Total possible requirements: 10 (mandatory) + 5 (nice) = 15**  \n**Total matched: 7.8 (mandatory) + 5 (nice) = 12.8**\n\n\\[ \\text{Combined percentage} = (12.8 / 15) \\times 100 = 85.333\\% \\]\n\n---\n\n## **Results**\n\n**Mandatory match percentage:** **78%**  \n**Combined match percentage:** **85%**\n\n**Combined match meets the required threshold (\u226585%), so proceed.**",
-    "thinking_tokens": 0,
+    "output_tokens": 217,
+    "raw_reference": "resp_0253a35de54bd771016aed406344e087d0b6604d5eede17f73",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "**Mandatory match: 78%.**\n\n- Requirements 1\u20137: fully met \u2014 **7 points**.\n- Requirement 8: Docker, Kubernetes, Terraform, and Ansible shown; Helm not shown \u2014 **4/5 = 0.8 points**.\n- Requirements 9\u201310: Kafka and GraphQL not shown \u2014 **0 points**.\n\nMandatory total: **7.8 \u00f7 10 \u00d7 100 = 78%**.\n\nSince this falls within 78\u201384%, the combined score applies. All five nice-to-have requirements are met:\n\n**Combined match: (7.8 + 5) \u00f7 15 \u00d7 100 = 85.33%.**\n\n**Decision: Proceed**, because the combined match reaches the 85% threshold.",
+    "thinking_tokens": 52,
     "tool_calls": []
   }
 }

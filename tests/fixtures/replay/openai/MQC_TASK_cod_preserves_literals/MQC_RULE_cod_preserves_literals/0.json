@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_excerpt_top_scorers_syntactic>\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True\n    return ranked[:limit]\n</document>",
         "role": "user"
@@ -10,24 +10,25 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "65e2cf557e966a8908507755852963d14c75a05cdab9255f18d40509d3355123",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "d33d8c11150b8e92009ccc74e2868e0dc740b63243734270713bf94b5442286d",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_literals::MQC_RULE_cod_preserves_literals",
-    "duration_ms": 1277,
+    "duration_ms": 2024,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 94,
+    "input_tokens": 93,
     "mode": "live",
-    "output_tokens": 36,
-    "raw_reference": "chatcmpl-Egbq9Hrbhw5YDRwaYdcdbtASJEzm0",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
+    "output_tokens": 40,
+    "raw_reference": "resp_09c340aa13926d7a016aed3afe21ec87d08a301abc2c26d9d6",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
     "text": "```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",
     "thinking_tokens": 0,
     "tool_calls": []

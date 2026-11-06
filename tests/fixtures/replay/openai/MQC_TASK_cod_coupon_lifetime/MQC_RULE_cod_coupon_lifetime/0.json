@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_excerpt_settle_order>\nDISCOUNT_BY_TIER = {\"standard\": 20, \"premium\": 30}\n\ndef settle_order(account_tier, total_amount, coupon_codes, coupon_lookup):\n    discount = DISCOUNT_BY_TIER[account_tier]\n    coupon_sum = coupon_lookup[coupon_codes[0]]\n    amount_owed = total_amount * discount / 100 - coupon_sum\n    return amount_owed\n</document>",
         "role": "user"
@@ -10,25 +10,26 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "54b3c9cb999786a2ffb6ed11c01bc63a3c9511dffaac945082aca859cfb591c4",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "c0c46e6f75ccecb1eae94c31a2a9ea5eecabff1b43e8e04ece62a9ba3e986736",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_coupon_lifetime::MQC_RULE_cod_coupon_lifetime",
-    "duration_ms": 2057,
+    "duration_ms": 7032,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 170,
+    "input_tokens": 169,
     "mode": "live",
-    "output_tokens": 213,
-    "raw_reference": "chatcmpl-EgbwMzOPdyIL3JOAWyvB0Dke0diGr",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "**Recommendation:**  \nTo **bound the lifetime** of a coupon code, each code should have an **expiration timestamp** (or date) associated with it. The code should be redeemable only up until that time.\n\n**Changes to lookup:**  \n- The `coupon_lookup` must, for each code, carry **both** the value (discount) **and** the expiration time.\n    - For example:  \n      ```python\n      coupon_lookup = {\n        \"SUMMER2024\": {\"value\": 10, \"expires\": datetime(2024, 9, 1)},\n        ...\n      }\n      ```\n- In the `settle_order` function:\n  - On lookup, check if the coupon is present **and** if the current time is before its `expires` timestamp.\n  - Only then apply the coupon discount.\n\n**Summary:**  \nAdd an **expiration timestamp** to each coupon\u2019s data. The lookup must return both the discount and its expiration; the code must check current time vs. expiration before redeeming the coupon.",
+    "output_tokens": 175,
+    "raw_reference": "resp_02fceb691f50c2df016aed3cf9c2e887d09dd671ca0c146c20",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "Give each coupon an explicit expiration time, and reject expired coupons when redeeming them. Define the validity window\u2014for example, 30 days after issuance\u2014and treat a code as expired when `now >= expires_at`.\n\nThe lookup should return a coupon record rather than only its discount amount, such as:\n\n```python\n{\n    \"discount_amount\": 10,\n    \"expires_at\": datetime(...),  # timezone-aware UTC\n}\n```\n\nAlternatively, store `issued_at` and apply a fixed lifetime, though storing `expires_at` makes the deadline explicit and supports different lifetimes.\n\nAt redemption, use trusted server time to check validity **before applying the discount**. Missing or invalid expiration data should make a coupon non-redeemable, not valid indefinitely. Retaining expired records for auditing is fine; deleting them is not required to enforce expiration.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

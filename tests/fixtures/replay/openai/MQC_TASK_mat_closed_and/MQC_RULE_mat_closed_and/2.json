@@ -1,6 +1,6 @@
 {
   "request": {
-    "messages": [
+    "input": [
       {
         "content": "<document id=DOC_req_closed_and>\nRequired: Docker, Kubernetes.\n</document>",
         "role": "user"
@@ -14,26 +14,27 @@
         "role": "user"
       }
     ],
-    "model": "gpt-4.1"
+    "model": "gpt-6-astra",
+    "store": false
   },
-  "request_hash": "d5d48f039c9514c95e605fe992309ddcd2bd529874ec4dbd8c1525250823a144",
-  "resolved_model": "gpt-4.1-2025-04-14",
+  "request_hash": "e082c5dd76443a441650886405b7514a26e5e154e7fc18f6c68e4e37fc584c3b",
+  "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 1891,
+    "duration_ms": 5378,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 72,
+    "input_tokens": 71,
     "mode": "live",
-    "output_tokens": 161,
-    "raw_reference": "chatcmpl-EgfFILK1XINHGG12nPMLEH0VYtQuA",
-    "requested_model": "gpt-4.1",
-    "resolved_model": "gpt-4.1-2025-04-14",
-    "text": "Let's break down the requirement and what the candidate has:\n\n**Requirement (DOC_req_closed_and):**\n- Docker\n- Kubernetes\n\n**Candidate (DOC_candidate_docker):**\n- Docker\n\n**Matching Process:**\n1. The requirement lists 2 skills: Docker and Kubernetes.\n2. The candidate has only 1 of these skills: Docker.\n\n**Calculation:**\n- Number of required skills: 2\n- Number of required skills present in candidate: 1\n\n**Percentage met = (Number matched / Total required) x 100**\n- = (1 / 2) x 100\n- = 0.5 x 100\n- = 50%\n\n**Final Answer:**\nThe candidate meets 50% of the requirement (Docker is present, but Kubernetes is missing).",
-    "thinking_tokens": 0,
+    "output_tokens": 120,
+    "raw_reference": "resp_0535f4c11e448fca016aed3fd6955887d0971bcd21594d7d48",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "The candidate meets **50%** of the stated requirements based on the provided information.\n\n| Required skill | Evidence in candidate document | Met? |\n|---|---|---|\n| Docker | Explicitly listed | Yes |\n| Kubernetes | Not mentioned | Not demonstrated |\n\n**Calculation:** 1 demonstrated skill \u00f7 2 required skills \u00d7 100 = **50%**.\n\nBecause both skills are required, the candidate does **not fully meet** the requirement.",
+    "thinking_tokens": 21,
     "tool_calls": []
   }
 }
