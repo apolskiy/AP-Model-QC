@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "773f06ffa855d2e5ab90092e9f7fa6b141512329fb1c02200b42440ca2639865",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "14240af3ebd76afba08737fc310661ce635a5b3aa5475f5398ab8904bd52f33f",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_format_absent::MQC_RULE_ins_format_absent",
-    "duration_ms": 6349,
+    "duration_ms": 5710,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 75,
+    "input_tokens": 104,
     "mode": "live",
-    "output_tokens": 61,
-    "raw_reference": "VYvrasjLLqix1MkP--a2yQg",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "Release 4.2 addresses three reported defects:\n\n* **Importer:** Prevents trailing columns from being dropped when a file ends without a newline.\n* **Scheduler:** Automatically retries a failed job twice before reporting it.\n* **Audit Log:** Records the account responsible for performing a deletion.",
-    "thinking_tokens": 303,
+    "output_tokens": 74,
+    "raw_reference": "qybtaoq7DquN_uMP1qjvwQg",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "**Release 4.2 Summary:**\n\nThis update resolves three bugs:\n* **Importer:** Prevents the loss of the last column in files that do not end with a newline.\n* **Scheduler:** Automatically retries failed jobs twice before reporting them as failed.\n* **Audit Log:** Now tracks and records which specific account performed a deletion.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

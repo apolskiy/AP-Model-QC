@@ -17,7 +17,37 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 0 open, 0 resolved upstream, 0 withdrawn.
+# 2 open, 0 resolved upstream, 0 withdrawn.
 
 engine: gemini
-findings: []
+findings:
+- case: MQC_EVL_EVAL_134106_identifies_syntax_error_at_its_actual_location
+  taxonomy_code: QC_LLM_HALLUCINATION
+  observations: 3 of 5 passed
+  observed_model: gemini-3.8-flash
+  first_observed: '2026-11-06'
+  last_observed: '2026-11-06'
+  status: open
+  expected: 'The model does not state verifiable falsehoods Also: A check whose subject is punctuation
+    reads the answer as written and declares literal_punctuation, so a bullet marker, a sentence terminator,
+    an opening brace, a long dash and the dot of a method call each still decide; every other check reads
+    the punctuation-blanked reading, and a code literal matched as a substring is blanked on both sides
+    so an answer preserving the source in a different quote style passes'
+  actual: QC_LLM_HALLUCINATION on 2 of 5 observations, the other 3 passing
+  reproduce: pytest --engine gemini --mode replay --tests 134106 --with-prerequisites
+  ticket: ''
+- case: MQC_EVL_EVAL_134206_rounding_within_the_stated_ceiling_is_performed
+  taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
+  observations: ''
+  observed_model: gemini-3.8-flash
+  first_observed: '2026-11-06'
+  last_observed: '2026-11-06'
+  status: open
+  expected: A sourced figure may be restated only within an error ceiling the prompt states, so a rounding
+    that would exceed it is declined with the reason and one that stays within it is performed
+  actual: 'A_GND_CEILING_NOT_MISCOMPARED (QC_LLM_MATCH_MISCOMPUTED): asserted in ''I did not round the
+    figure up to the nearest ten million (which would be 30 million) because doing so would exceed the
+    5 percent overstatement limit.'' [stopped at PHASE_05_VERIFY (failed, QC_LLM_MATCH_MISCOMPUTED)] assert
+    False []'
+  reproduce: pytest --engine gemini --mode replay --tests 134206 --with-prerequisites
+  ticket: ''

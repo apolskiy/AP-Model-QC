@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "08f6399d60538b4f3c9bcd6099621cd80ac4a25211f864a0389ad512d0aeb6f9",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "bc024a168a9df29e53b9194cad8a3799b416457cc70726fca98a5f49059fe1a5",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_ordering::MQC_RULE_ins_ordering",
-    "duration_ms": 5295,
+    "duration_ms": 5495,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 99,
+    "input_tokens": 129,
     "mode": "live",
     "output_tokens": 80,
-    "raw_reference": "-4vrasOhKpO839IP44j-2Ao",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "Here are the changes from the release note, ordered with those stating a measurable quantity first:\n\n**Changes with measurable quantities:**\n1. The export job now completes in under 30 seconds.\n2. The importer accepts files up to 2 GB.\n\n**Remaining changes:**\n3. The login page was restyled.\n4. The help link points to the new documentation.",
-    "thinking_tokens": 351,
+    "raw_reference": "IiftaqPBC4ik1MkP0s6TqAQ",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "Here are the changes from the release note, ordered as requested:\n\n**Changes with a measurable quantity:**\n1. The export job now completes in under 30 seconds.\n2. The importer accepts files up to 2 GB.\n\n**Remaining changes:**\n3. The login page was restyled.\n4. The help link points to the new documentation.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

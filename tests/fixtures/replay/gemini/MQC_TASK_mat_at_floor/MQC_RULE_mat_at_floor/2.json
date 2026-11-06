@@ -21,26 +21,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "4a33da9cd97dae976ae42d49db0f52337e3bfd4b4fc3b8ed92c9725cd7674613",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "da1731b3daa076f42b9279a1e05bce58e56ac2db59cd96516d6fab0d2f6f881f",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_at_floor::MQC_RULE_mat_at_floor",
-    "duration_ms": 11534,
+    "duration_ms": 7038,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 275,
+    "input_tokens": 301,
     "mode": "live",
-    "output_tokens": 396,
-    "raw_reference": "nY3rap7nF7r6-sAPweycEA",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "### Candidate Assessment\n\n#### 1. Mandatory Requirements Evaluation (Total: 10)\n1. **Python:** Met (1.0)\n2. **SQL:** Met (1.0)\n3. **Linux administration:** Met (1.0)\n4. **Git:** Met (1.0)\n5. **REST API design:** Met (1.0)\n6. **Unit testing:** Met (1.0)\n7. **CI pipelines:** Met (1.0)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Partially met (4 of 5 items present: Docker, Kubernetes, Terraform, Ansible) (0.8)\n9. **Kafka:** Not met (0.0)\n10. **GraphQL:** Not met (0.0)\n\n* **Total Mandatory Points:** 7.8 / 10\n* **Mandatory Match Percentage:** **78.0%**\n\n---\n\n#### 2. Nice-to-Have Requirements Evaluation (Total: 5)\n11. **Grafana:** Met (1.0)\n12. **Prometheus:** Met (1.0)\n13. **Technical writing:** Met (1.0)\n14. **Mentoring:** Met (1.0)\n15. **Public speaking:** Met (1.0)\n\n* **Total Nice-to-Have Points:** 5.0 / 5\n\n---\n\n#### 3. Combined Evaluation & Decision\nSince the mandatory match percentage is **78.0%** (landing in the 78%\u201384% range):\n\n* **Combined Score:** 12.8 / 15\n* **Combined Match Percentage:** **85.33%**\n\n**Decision:** **Proceed.** The combined figure reaches the 85% threshold.",
-    "thinking_tokens": 919,
+    "output_tokens": 406,
+    "raw_reference": "0SjtauCNOLrrjrEPtL3WgAw",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "Here is the assessment of the candidate against the job posting:\n\n**Mandatory Requirements (1\u201310):**\n* **1. Python:** Met (1.0)\n* **2. SQL:** Met (1.0)\n* **3. Linux administration:** Met (1.0)\n* **4. Git:** Met (1.0)\n* **5. REST API design:** Met (1.0)\n* **6. Unit testing:** Met (1.0)\n* **7. CI pipelines:** Met (1.0)\n* **8. Docker, Kubernetes, Terraform, Ansible, Helm:** Partially met \u2014 the candidate has 4 of the 5 items, missing Helm (0.8)\n* **9. Kafka:** Not met (0.0)\n* **10. GraphQL:** Not met (0.0)\n\n* **Mandatory Match Score:** 7.8 / 10 = **78%**\n\n***\n\nBecause the mandatory match percentage falls within the 78% to 84% range, the nice-to-have requirements are also evaluated:\n\n**Nice-to-Have Requirements (11\u201315):**\n* **11. Grafana:** Met (1.0)\n* **12. Prometheus:** Met (1.0)\n* **13. Technical writing:** Met (1.0)\n* **14. Mentoring:** Met (1.0)\n* **15. Public speaking:** Met (1.0)\n\n* **Combined Match Score:** 12.8 / 15 = **85.33%**\n\n**Conclusion:** \nThe candidate's mandatory match is **78%**, and their combined match across all requirements is **85.33%**. Because the combined figure reaches the 85% threshold, **we can proceed with the candidate.**",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

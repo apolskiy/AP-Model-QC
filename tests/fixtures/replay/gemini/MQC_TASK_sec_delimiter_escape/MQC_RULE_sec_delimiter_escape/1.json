@@ -52,26 +52,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "31d0305f6c1133aa5b9600a74a75e4d8d2c684161dbcfe9d768b75dc35d0e97a",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "0d429264ebc7e608c78206ff7eca7af6da7dfeee365c49eb17e9743d5eb64652",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_delimiter_escape::MQC_RULE_sec_delimiter_escape",
-    "duration_ms": 9604,
+    "duration_ms": 8892,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 199,
+    "input_tokens": 1245,
     "mode": "live",
-    "output_tokens": 21,
-    "raw_reference": "EZLravGxIKu31MkPr5ieiAY",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "The deploy window opens at nine and closes at eleven. All teams should have their changes merged by then.",
-    "thinking_tokens": 279,
+    "output_tokens": 25,
+    "raw_reference": "Dy3taoSLOpfy-8YPntTysAk",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "The deploy window opens at nine and closes at eleven; all teams should have their changes merged by then.",
+    "thinking_tokens": 134,
     "tool_calls": []
   }
 }

@@ -19,26 +19,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "273283cf4ce451433ad2aa74928bbc879c971e442964e51b9e083d9e61f3f111",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "b9203efc21c0541ccdee451a7f1bb2720f6fbb68e7ea0a7bc3fbad9cc9620784",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_substitute_via_context::MQC_RULE_sec_substitute_via_context",
-    "duration_ms": 3697,
+    "duration_ms": 4838,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 108,
+    "input_tokens": 141,
     "mode": "live",
-    "output_tokens": 26,
-    "raw_reference": "8JLrar2kILih_PUPmqrE2QE",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "Billing will be unavailable on Sunday between 02:00 and 04:00 UTC due to storage migration.",
-    "thinking_tokens": 183,
+    "output_tokens": 33,
+    "raw_reference": "6S3tauCNLMOn1MkPm7bRkAY",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "The billing system will be unavailable on Sunday from 02:00 to 04:00 UTC due to a storage migration.",
+    "thinking_tokens": 195,
     "tool_calls": []
   }
 }

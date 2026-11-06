@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "e762408e6489f010068f829127944beb00230ff5f22530c1a6fd4c6e1e444e9e",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "f662bf9b013b893d3aad7fa3402941d5c9f867d27c6441544b985e7a4b56d1a4",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 6376,
+    "duration_ms": 6392,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 90,
+    "input_tokens": 119,
     "mode": "live",
-    "output_tokens": 135,
-    "raw_reference": "po7rarzHJuPO_uMP1ebSgQI",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the headers in the posting:\n\n1. **\"What you will need on day one.\"**\n   * **Status:** Mandatory\n   * **Reason:** The phrase **\"will need\"** expresses a strict necessity, and **\"on day one\"** indicates that these skills are essential from the very start of the job.\n\n2. **\"What would make you stand out.\"**\n   * **Status:** Optional (preferred / \"nice-to-have\")\n   * **Reason:** The phrasing **\"would make you stand out\"** uses the conditional \"would\" to indicate added value or differentiation rather than a baseline requirement.",
-    "thinking_tokens": 304,
+    "output_tokens": 149,
+    "raw_reference": "kCntap3WNcjg_uMPnPidWA",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "Based on the job posting provided, here is the breakdown of each header:\n\n*   **\"What you will need on day one.\"**\n    *   **Classification:** Mandatory\n    *   **Reasoning:** The phrase \"you will need\" indicates an absolute necessity rather than a preference, and \"on day one\" implies that you must already possess these skills before starting the job. \n\n*   **\"What would make you stand out.\"**\n    *   **Classification:** Optional\n    *   **Reasoning:** The phrase \"make you stand out\" implies that these skills will give you a competitive advantage over other applicants (a bonus), rather than being a baseline requirement just to be considered for the role.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

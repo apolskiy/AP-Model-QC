@@ -21,26 +21,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "f8203f0376c35d81031e60b1bef0f2c5f4f5b113b1de5158324544370b0a0840",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "9e151a74ad241b9fa380bdb7ce4b57886eb4def0debf9edbc6b2e36f8822dd5f",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_incalculable::MQC_RULE_mat_experience_incalculable",
-    "duration_ms": 7590,
+    "duration_ms": 7624,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 120,
+    "input_tokens": 148,
     "mode": "live",
-    "output_tokens": 164,
-    "raw_reference": "dY7rapWZD-y6sOIPrszggQw",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "Could you please provide the candidate's actual number of years of backend engineering experience?\n\n### What it costs not to supply it:\n* **Risk of Automatic Disqualification:** Applicant Tracking Systems (ATS) and recruiters screen heavily for the mandatory 8-year threshold. Without an explicit timeframe, the application is likely to be filtered out before reaching a hiring manager.\n* **Risk of Fabrication / Credibility Loss:** If we simply insert \"8+ years\" without verifying the candidate's actual background, it could lead to immediate disqualification during resume verification, technical screening, or background checks if their actual tenure falls short. \n\nOnce you provide the exact number of years (or confirm the candidate meets/exceeds the 8-year requirement), I will integrate it seamlessly into the rewritten summary.",
-    "thinking_tokens": 413,
+    "output_tokens": 216,
+    "raw_reference": "YSntas_bH-Kl_PUPh4fCGQ",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "How many years of backend engineering experience does the candidate have? \n\nBecause the original summary contains no dates or duration figures, the total years of experience are neither stated nor calculable. \n\n**The cost of not supplying this figure:**\nIf you do not explicitly state the years of experience, the resume will likely fail automated Applicant Tracking System (ATS) filters and initial recruiter screenings. Because the job posting strictly requires 8 years of experience, hiring teams and screening software will often automatically reject or deprioritize a candidate whose summary leaves this baseline qualification ambiguous, rather than taking the time to guess or follow up.\n\n***\n\n**Draft Rewrite (incorporating a placeholder until you provide the figure):**\n\n> Backend engineer with **[X]** years of experience building and maintaining transactional services. Most recently architected and managed a settlement pipeline processing 40,000 orders daily, following previous backend roles developing payment reconciliation and inventory systems. \n\n*(Reply with the candidate's actual years of experience, and I will finalize the rewrite.)*",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

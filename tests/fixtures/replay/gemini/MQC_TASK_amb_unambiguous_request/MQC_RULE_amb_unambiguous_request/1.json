@@ -21,26 +21,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "133d6d9b26a0ea06c9fd1083c1b2d7f4d83da0caa95dc5df0c16a7461830b0b9",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "38b34c9048ebfc6806db03f598b7190741a6408390e15d82fcae230a6f87cb62",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_unambiguous_request::MQC_RULE_amb_unambiguous_request",
-    "duration_ms": 4399,
+    "duration_ms": 3064,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 116,
+    "input_tokens": 144,
     "mode": "live",
-    "output_tokens": 19,
-    "raw_reference": "sIfrauCxBuaqjrEP8s-kmA8",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
+    "output_tokens": 23,
+    "raw_reference": "wiLtarDSPN7k-sAPhMjG8Q4",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
     "text": "```yaml\nretry_threshold: 3\nalert_threshold: 90\n```",
-    "thinking_tokens": 231,
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

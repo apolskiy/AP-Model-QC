@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "e762408e6489f010068f829127944beb00230ff5f22530c1a6fd4c6e1e444e9e",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "f662bf9b013b893d3aad7fa3402941d5c9f867d27c6441544b985e7a4b56d1a4",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 6340,
+    "duration_ms": 15612,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 90,
+    "input_tokens": 119,
     "mode": "live",
-    "output_tokens": 143,
-    "raw_reference": "sI7rapTZKt2O1MkPtrC58QY",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the headers in the posting:\n\n1. **\"What you will need on day one.\"**\n   * **Status:** **Mandatory**\n   * **Why:** The phrase **\"will need\"** indicates an absolute requirement or necessity, and specifying **\"on day one\"** implies these skills are essential from the very start of the job.\n\n2. **\"What would make you stand out.\"**\n   * **Status:** **Optional** (preferred/nice-to-have)\n   * **Why:** The conditional phrasing **\"would make you stand out\"** signifies bonus qualifications that give an applicant a competitive edge, rather than baseline requirements for the role.",
-    "thinking_tokens": 316,
+    "output_tokens": 166,
+    "raw_reference": "oSntau_oOqfH-sAP7ay88QM",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "Here is the breakdown for each header:\n\n*   **\"What you will need on day one.\"**\n    *   **Status:** Mandatory.\n    *   **Why:** The word **\"need\"** indicates that the skills are strictly required, and **\"on day one\"** means you must already possess them before starting the job (rather than learning them later).\n\n*   **\"What would make you stand out.\"**\n    *   **Status:** Optional. \n    *   **Why:** The phrase **\"make you stand out\"** implies that these skills give an applicant a competitive advantage over others. If they were required of everyone, having them would just be the baseline, not something that sets you apart. Furthermore, the conditional word **\"would\"** is softer and less absolute than \"will.\"",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "e762408e6489f010068f829127944beb00230ff5f22530c1a6fd4c6e1e444e9e",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "f662bf9b013b893d3aad7fa3402941d5c9f867d27c6441544b985e7a4b56d1a4",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_unfamiliar_header::MQC_RULE_mat_unfamiliar_header",
-    "duration_ms": 5874,
+    "duration_ms": 5403,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 90,
+    "input_tokens": 119,
     "mode": "live",
-    "output_tokens": 156,
-    "raw_reference": "nI7rap-RJYea9MoPr8mGyAs",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the headers in the posting:\n\n1. **\"What you will need on day one.\"**\n   * **Status:** Mandatory.\n   * **Reasoning:** The word **\"need\"** signifies a firm requirement rather than a preference, and the phrase **\"on day one\"** indicates these skills are essential immediately upon starting the role.\n\n2. **\"What would make you stand out.\"**\n   * **Status:** Optional (preferred / \"nice-to-have\").\n   * **Reasoning:** The phrase **\"make you stand out\"** implies these skills provide a competitive edge over other candidates rather than being baseline necessities. Additionally, the conditional word **\"would\"** signals a bonus rather than an absolute requirement.",
-    "thinking_tokens": 317,
+    "output_tokens": 176,
+    "raw_reference": "hintaoTuHMCO1MkPpKSi0QQ",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "Based on the job posting provided, here is the breakdown for each header:\n\n*   **\"What you will need on day one.\"**\n    *   **Status:** Mandatory\n    *   **Why:** The word **\"need\"** indicates that these skills are essential requirements, and **\"on day one\"** means you must already possess them before starting the job (rather than learning them on the job). \n\n*   **\"What would make you stand out.\"**\n    *   **Status:** Optional\n    *   **Why:** The phrase **\"make you stand out\"** implies that these skills will give you a competitive advantage over other typical applicants, meaning they are \"nice-to-have\" bonus qualifications rather than baseline requirements. Furthermore, the word **\"would\"** is conditional, contrasting with the definitive \"will need\" in the first header.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

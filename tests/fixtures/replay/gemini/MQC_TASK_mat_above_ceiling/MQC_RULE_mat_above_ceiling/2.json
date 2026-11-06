@@ -21,26 +21,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "567331cf0fc3daec9feb276a6f95a007765b183f1aa2d5adb24f851b2eb6cef5",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "1a0afc7f3a9d787dcfec7b8a16a2473176104d9e282a4e82e48ac2b85d09694b",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_above_ceiling::MQC_RULE_mat_above_ceiling",
-    "duration_ms": 5824,
+    "duration_ms": 5160,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 225,
+    "input_tokens": 252,
     "mode": "live",
-    "output_tokens": 225,
-    "raw_reference": "b43raqnSAfKNjMcPusGGmA8",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "### Candidate Assessment\n\n#### Mandatory Requirements Evaluation:\n1. **Python:** Met (listed under Languages)\n2. **SQL:** Met (listed under Languages)\n3. **Linux administration:** Met (listed under Platform)\n4. **Git:** Met (listed under Platform)\n5. **REST API design:** Met (listed under Services)\n6. **Unit testing:** Met (listed under Services)\n7. **CI pipelines:** Met (listed under Services)\n8. **Docker, Kubernetes, Terraform, Ansible, Helm:** Met (listed under Infrastructure)\n9. **Kafka:** Met (listed under Streaming)\n10. **GraphQL:** Not Met (not listed on resume)\n\n---\n\n### Results\n* **Mandatory Match:** 9 / 10 requirements met\n* **Mandatory Match Percentage:** **90%**\n\n### Decision\nThe candidate exceeds the 85% threshold (at 90%). Per instructions, the nice-to-have requirements do not affect the outcome, and the candidate **proceeds** to the next stage.",
-    "thinking_tokens": 309,
+    "output_tokens": 171,
+    "raw_reference": "rijtauSfOMWV_uMPw7nc2Qw",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "**Mandatory Requirements Assessment**\n\n1. Python: **Matched**\n2. SQL: **Matched**\n3. Linux administration: **Matched**\n4. Git: **Matched**\n5. REST API design: **Matched**\n6. Unit testing: **Matched**\n7. CI pipelines: **Matched**\n8. Docker, Kubernetes, Terraform, Ansible, Helm: **Matched**\n9. Kafka: **Matched**\n10. GraphQL: **Not Matched**\n\n**Summary**\n* **Mandatory Match Percentage:** 90% (9 out of 10 requirements met)\n* **Outcome:** **Proceed.** Because the candidate exceeds the 85% mandatory threshold, the nice-to-have criteria (0 out of 5 matched) do not affect the decision.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

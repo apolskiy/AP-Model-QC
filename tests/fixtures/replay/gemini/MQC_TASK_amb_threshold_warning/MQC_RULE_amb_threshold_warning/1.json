@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "c22000ed4b7256735e634cba708dd863827815ee71db259058e40e53ed246834",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "38a738642bb74abd586097d9c00bc5f6da50ec7d112128e9d4f5e657c5a30ce3",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_amb_threshold_warning::MQC_RULE_amb_threshold_warning",
-    "duration_ms": 6094,
+    "duration_ms": 5269,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 110,
+    "input_tokens": 140,
     "mode": "live",
-    "output_tokens": 169,
-    "raw_reference": "z4fratCNAum-39IPoM6e6Qo",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "**WARNING:** The availability gate was unmet. The measured availability of 99.1% fell short of the 99.5% threshold by 0.4 percentage points (0.4%). (The incident duration gate passed, as the longest incident was 41 minutes, within the 60-minute limit.)\n\n***\n\n### Weekly Availability Summary\n\n* **Measured Availability:** 99.1%\n* **Gate Status:** Failed (Requirement: \u2265 99.5%)\n* **Total Incidents:** 2\n  * Incident 1: 12 minutes\n  * Incident 2: 41 minutes\n* **Total Downtime:** 53 minutes\n* **Maximum Single Incident Duration:** 41 minutes (Requirement: \u2264 60 minutes \u2014 Passed)",
-    "thinking_tokens": 469,
+    "output_tokens": 110,
+    "raw_reference": "5SLtasWdLo6N_PUPkJGyiAw",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "**Warning:** The availability gate was unmet. Measured availability was 99.1%, which failed the 99.5% requirement by 0.4 percentage points.\n\n**Weekly Availability Summary:**\n* **Measured Availability:** 99.1% (Target: 99.5% \u2013 *Failed*)\n* **Incidents:** 2 total (one lasting 12 minutes, one lasting 41 minutes). Both met the gate requiring no single incident to exceed 60 minutes.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

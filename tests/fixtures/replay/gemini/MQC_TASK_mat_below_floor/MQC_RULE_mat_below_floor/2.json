@@ -21,26 +21,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "d89dff56d26567c01508200ce83533df55f15fa8b7f555c310df6d292c4955ed",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "541ede5c2a7a1d6267f7bcd4843f003d0a50854a517dc4096ab53ece5f2c987f",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 7094,
+    "duration_ms": 4622,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 234,
+    "input_tokens": 260,
     "mode": "live",
-    "output_tokens": 177,
-    "raw_reference": "143rauzOLtyt1MkPt_XxkAg",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "### Candidate Assessment\n\n#### Mandatory Requirements Evaluation:\n1. **Python**: Matched\n2. **SQL**: Matched\n3. **Linux administration**: Matched\n4. **Git**: Matched\n5. **REST API design**: Matched\n6. **Unit testing**: Matched\n7. **CI pipelines**: Matched\n8. **Docker, Kubernetes, Terraform, Ansible, Helm**: Not found\n9. **Kafka**: Not found\n10. **GraphQL**: Not found\n\n* **Mandatory Requirements Matched**: 7 / 10\n* **Mandatory Match Percentage**: **70%**\n\n---\n\n\u26a0\ufe0f **WARNING:** The candidate's mandatory match percentage of **70%** falls below the **78%** cutoff threshold. Per instructions, the nice-to-have requirements have not been evaluated.",
-    "thinking_tokens": 530,
+    "output_tokens": 163,
+    "raw_reference": "9CjtarnVA96RjMcPqKrN4QU",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "**Mandatory Requirements Assessment:**\n\n1. Python: **Met**\n2. SQL: **Met**\n3. Linux administration: **Met**\n4. Git: **Met**\n5. REST API design: **Met**\n6. Unit testing: **Met**\n7. CI pipelines: **Met**\n8. Docker, Kubernetes, Terraform, Ansible, Helm: **Not Met**\n9. Kafka: **Not Met**\n10. GraphQL: **Not Met**\n\n**Mandatory Match Percentage:** 70% (7 out of 10 requirements met)\n\n**WARNING:** The candidate's mandatory match percentage falls below the **78 percent** cutoff. As instructed, the nice-to-have requirements have not been evaluated.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "e3f195ae96562b39f0e07de92c15ec0abca01becd21a62334138bc0ca26bfe16",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "ff04ae7a38d2f5d4adb5ae49b349177a70b5b6f36a109389114ca0b2ef766d6f",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_invented_api::MQC_RULE_cod_no_invented_api",
-    "duration_ms": 6658,
+    "duration_ms": 5649,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 73,
+    "input_tokens": 102,
     "mode": "live",
-    "output_tokens": 76,
-    "raw_reference": "GIjraqjIHLzW_uMPvPHNKQ",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "The `fetch_profile` function takes `client` and `user_id` as arguments and performs the following:\n\n1. Calls `client.get(f\"/users/{user_id}\")` and assigns the result to `response`.\n2. Calls `response.json()` on that response.\n3. Returns the result of `response.json()`.",
-    "thinking_tokens": 433,
+    "output_tokens": 93,
+    "raw_reference": "NSPtavKWMKj6-sAP-JbniAM",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "The function `fetch_profile` takes two arguments: `client` and `user_id`. \n\nFirst, it calls the `.get()` method on the `client` object, passing in the formatted string `f\"/users/{user_id}\"` as an argument, and assigns the result to the variable `response`. \n\nFinally, it calls the `.json()` method on the `response` object and returns the result.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

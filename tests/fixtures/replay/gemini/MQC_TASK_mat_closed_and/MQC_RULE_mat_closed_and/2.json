@@ -21,26 +21,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "8fb71fca7097ee6023aa411dcf4a7dcc813d4f2d6aa4a88a543d77ea79815a8a",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "475ec6bceafda94bb214845e8d5cd0d0a58f9d5f5df6aeaf47a101b097605a51",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_and::MQC_RULE_mat_closed_and",
-    "duration_ms": 4536,
+    "duration_ms": 4567,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 65,
+    "input_tokens": 94,
     "mode": "live",
-    "output_tokens": 111,
-    "raw_reference": "i8frauyvH7mM_uMP0OKcmQs",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "The candidate meets **50%** of the requirement.\n\n### How this was calculated:\n\n1. **Identify total required skills:** \n   * Docker\n   * Kubernetes  \n   *(Total: 2 requirements)*\n\n2. **Identify skills the candidate possesses:** \n   * Docker  \n   *(Met: 1 requirement)*\n\n3. **Calculate the percentage:**  \n   $$\\frac{1 \\text{ met}}{2 \\text{ required}} \\times 100\\% = 50\\%$$",
-    "thinking_tokens": 279,
+    "output_tokens": 109,
+    "raw_reference": "cijtavGuG6nK_uMP5oip8Q8",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "The candidate meets **50%** of the requirement.\n\n**How this was calculated:**\n1. **Identify total requirements:** The first document lists 2 required skills: Docker and Kubernetes.\n2. **Identify candidate's matching skills:** The second document shows the candidate has 1 of the required skills (Docker), and is missing the other (Kubernetes).\n3. **Calculate the percentage:** 1 matching skill divided by 2 total required skills = 0.50, or 50%.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

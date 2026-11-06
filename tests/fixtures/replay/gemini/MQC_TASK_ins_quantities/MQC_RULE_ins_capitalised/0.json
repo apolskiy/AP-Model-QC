@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "77c0ccc63156cd4a18f81f28cfc88e753a97e498b9068a794f1ab6b8416a870e",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "b64df2aa0afcf0190c3513dcb48fb6c3c6ed12a354e24136d7d466dbc9a5acfd",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_ins_quantities::MQC_RULE_ins_capitalised",
-    "duration_ms": 7006,
+    "duration_ms": 4961,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 119,
+    "input_tokens": 148,
     "mode": "live",
-    "output_tokens": 37,
-    "raw_reference": "xIvrasaFDKSq_PUPusGawAI",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "* The importer retains trailing columns when files lack a newline.\n* The scheduler retries failed jobs twice before reporting them.\n* The audit log records which account performed a deletion.",
-    "thinking_tokens": 699,
+    "output_tokens": 42,
+    "raw_reference": "-SbtauT4Boe3jMcP1cSmsA8",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "* The importer keeps trailing columns in files without a final newline.\n* The scheduler retries failed jobs twice before reporting them.\n* The audit log records the account that performs a deletion.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

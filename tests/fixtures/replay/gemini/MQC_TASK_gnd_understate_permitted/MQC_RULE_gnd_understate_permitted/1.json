@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "d537c49d1f083050696908889a89d701d52b011911d21f728c166f757ecafb9f",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "bfda70288239121c9239e7598514b8f09eefd334f82d34dbca7c11978d927710",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_understate_permitted::MQC_RULE_gnd_understate_permitted",
-    "duration_ms": 5863,
+    "duration_ms": 4936,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 121,
+    "input_tokens": 150,
     "mode": "live",
-    "output_tokens": 26,
-    "raw_reference": "BovraopUuKH89Q-aqsTZAQ",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the report, a conservative floor for EMEA revenue is **28.7 million** (or 28 million).",
-    "thinking_tokens": 151,
+    "output_tokens": 47,
+    "raw_reference": "ZSbtarqcJK2f_uMPxtKewAw",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "Based on the quarterly report, EMEA recorded a revenue of **28.7 million** (making a conservative floor of **28 million** or **28.7 million** fully supported by the document).",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "3cf5b8d1dabaa4c0d6263f8a572a67e4d2752c21c6b7f8e86a603c1157551407",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "03410b4195e95ac2979323dc794cd75a94b8a177dec7cf2f26b92cb21a5a132c",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 6630,
+    "duration_ms": 4528,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 113,
+    "input_tokens": 142,
     "mode": "live",
-    "output_tokens": 63,
-    "raw_reference": "dYjrapG3MsKk_uMPnJCnoQs",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "In Q3, North America recorded 41.2 million and EMEA recorded 28.7 million in revenue. During the same period, Japan recorded 11.4 million and Australia recorded 6.1 million. In total, revenue across these four regions was 87.4 million.",
-    "thinking_tokens": 694,
+    "output_tokens": 73,
+    "raw_reference": "hSPtatThDaessOIPppqJwAc",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "The Q3 quarterly report details revenue performance across four global regions. North America recorded 41.2 million and EMEA recorded 28.7 million, while Japan recorded 11.4 million and Australia recorded 6.1 million. Combining the results of these four areas, the total revenue was 87.4 million.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

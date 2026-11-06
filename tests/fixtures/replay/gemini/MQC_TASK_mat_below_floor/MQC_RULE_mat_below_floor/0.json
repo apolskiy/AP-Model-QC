@@ -21,26 +21,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "d89dff56d26567c01508200ce83533df55f15fa8b7f555c310df6d292c4955ed",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "541ede5c2a7a1d6267f7bcd4843f003d0a50854a517dc4096ab53ece5f2c987f",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_below_floor::MQC_RULE_mat_below_floor",
-    "duration_ms": 7834,
+    "duration_ms": 4408,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 234,
+    "input_tokens": 260,
     "mode": "live",
-    "output_tokens": 161,
-    "raw_reference": "ro3rapymEJvIjMcPs8KFoA8",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "### Mandatory Requirements Assessment\n\n* **1. Python:** Met\n* **2. SQL:** Met\n* **3. Linux administration:** Met\n* **4. Git:** Met\n* **5. REST API design:** Met\n* **6. Unit testing:** Met\n* **7. CI pipelines:** Met\n* **8. Docker, Kubernetes, Terraform, Ansible, Helm:** Not met\n* **9. Kafka:** Not met\n* **10. GraphQL:** Not met\n\n**Mandatory Match Percentage:** 70% (7 out of 10)\n\n---\n\n\u26a0\ufe0f **WARNING:** The mandatory match percentage of **70%** falls below the **78% cutoff**. As instructed, the nice-to-have requirements will not be evaluated.",
-    "thinking_tokens": 506,
+    "output_tokens": 169,
+    "raw_reference": "3yjtauKXEJyV_uMPtIzOmQ0",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "**Mandatory Requirements Assessment:**\n\n1. Python: **Met**\n2. SQL: **Met**\n3. Linux administration: **Met**\n4. Git: **Met**\n5. REST API design: **Met**\n6. Unit testing: **Met**\n7. CI pipelines: **Met**\n8. Docker, Kubernetes, Terraform, Ansible, Helm: **Not Met**\n9. Kafka: **Not Met**\n10. GraphQL: **Not Met**\n\n**Mandatory Match Percentage:** 70% (7 out of 10 requirements met)\n\n**WARNING:** The candidate's mandatory match percentage of 70% falls below the **78 percent** cutoff. Per your instructions, the nice-to-have requirements will not be evaluated.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

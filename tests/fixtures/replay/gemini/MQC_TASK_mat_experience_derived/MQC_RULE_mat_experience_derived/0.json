@@ -24,26 +24,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "b3262172be1d111a15e73ede618512121721a57a47297f84a17d1bd2a4d3f081",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "a0d5e347f0b2091c8595dbc09509103a36e2927015409be6780130e4668ac114",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_experience_derived::MQC_RULE_mat_experience_derived",
-    "duration_ms": 4913,
+    "duration_ms": 4155,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 167,
+    "input_tokens": 194,
     "mode": "live",
-    "output_tokens": 28,
-    "raw_reference": "VI7rasCcEPWU_uMPn5afgAM",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
+    "output_tokens": 32,
+    "raw_reference": "Gintarm7L6HwjrEP64TnqAs",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
     "text": "8+ years of backend engineering experience across transactional services, most recently a settlement pipeline handling 40,000 orders a day.",
-    "thinking_tokens": 430,
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

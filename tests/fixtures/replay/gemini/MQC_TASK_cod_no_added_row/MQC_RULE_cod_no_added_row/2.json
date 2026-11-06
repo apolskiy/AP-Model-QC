@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "82ab34cf8c82f47ff16e91c1a9a6801599d5a03c32c944b39cc21dc559fc8aea",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "25d0fe9bc2d12070ff54c92b686c05d62d61743eccfd10e900c2e7288322d7bd",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_no_added_row::MQC_RULE_cod_no_added_row",
-    "duration_ms": 4768,
+    "duration_ms": 8795,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 86,
+    "input_tokens": 116,
     "mode": "live",
-    "output_tokens": 47,
-    "raw_reference": "a4jrapTtGsXU_uMPzanhkAg",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "Based on the table, here are the regions and their order counts:\n\n* **North:** 120\n* **East:** 80\n* **South:** 35\n* **West:** 20",
-    "thinking_tokens": 206,
+    "output_tokens": 49,
+    "raw_reference": "dyPtar3EM6fH-sAP7ay88QM",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "Here are the regions and their order counts from the table:\n\n* **North:** 120\n* **East:** 80\n* **South:** 35\n* **West:** 20",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

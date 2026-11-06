@@ -21,26 +21,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "9115fd7747d1ebc7f334b34ec607c019d2daea5734924a817de0b886b4b14b03",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "fea171a20b99525858f65193116ca4b6551ed96d15116e95caebfd13dbfbe739",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_mat_closed_or::MQC_RULE_mat_closed_or",
-    "duration_ms": 8651,
+    "duration_ms": 5467,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 70,
+    "input_tokens": 99,
     "mode": "live",
-    "output_tokens": 231,
-    "raw_reference": "SMfrasbZH4CzjMcP-YXyoQw",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "The candidate meets **100%** of the requirement.\n\n### How this was determined:\n\n1. **Analyze the requirement:** \n   The requirement is stated using the disjunction **\"or\"** (*\"Python, Go, or Rust\"*). This forms a single logical condition meaning a candidate needs to know at least one of the three listed languages.\n\n2. **Evaluate the candidate's skills:** \n   The candidate possesses **Python** (along with SQL and Bash).\n\n3. **Calculate the percentage:** \n   Because knowing Python completely satisfies the \"Python, Go, or Rust\" requirement, the candidate fulfills the condition entirely:\n   $$\\frac{1 \\text{ satisfied condition}}{1 \\text{ total condition}} \\times 100\\% = 100\\%$$\n\n*(Note: If interpreted purely as a checklist of all 3 mentioned technologies rather than a logical OR, the candidate matches 1 out of 3, or **33.3%**; however, as a qualification requirement, the \"or\" means only one is necessary to be fully qualified).*",
-    "thinking_tokens": 579,
+    "output_tokens": 121,
+    "raw_reference": "SSjtao-dPOyxsOIP8YCi4AI",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "The candidate meets **100%** of the requirement.\n\n**How this was calculated:**\n* **The Requirement:** The requirement states \"Python, Go, **or** Rust.\" Because it uses the word \"or,\" the candidate only needs to know **1** of these three languages to fully satisfy the condition.\n* **The Candidate:** The candidate lists Python, SQL, and Bash. \n* **The Match:** Because the candidate knows Python, they have met the 1 required language from the list (1 out of 1 = 100%).",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

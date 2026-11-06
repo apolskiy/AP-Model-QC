@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "d857b997056c828bb0620ff4d8c4cdea9d231d9de8cf44efbc8a21ed13958f91",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "5cd456d885775d13d0a728a2784abf6e04d10ea7a766728d0faafe1c491c2050",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_threshold::MQC_RULE_cod_preserves_threshold",
-    "duration_ms": 6627,
+    "duration_ms": 4140,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 72,
+    "input_tokens": 101,
     "mode": "live",
-    "output_tokens": 26,
-    "raw_reference": "FYnraqXxJbmn1MkPr4uuoAk",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "A build is promoted when line coverage is at or above 82 percent, while builds below that figure are held for review.",
-    "thinking_tokens": 517,
+    "output_tokens": 41,
+    "raw_reference": "ESTtauC1Kd7e-sAP1q-I-Ak",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "According to the release gate specification, a build is promoted if its line coverage is \"at or above 82 percent,\" while any build falling below that threshold is held for review.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

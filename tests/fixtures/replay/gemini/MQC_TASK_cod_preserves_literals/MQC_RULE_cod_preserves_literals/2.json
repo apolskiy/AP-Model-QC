@@ -18,26 +18,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "ea5366d4682024a851bd17f1dd5a247f55f04b0a9a6fb734066f035932afae90",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "014379909294cdbb1ec7c46ff56051029cb0b9038051bdc54a7ca346b020fd98",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_cod_preserves_literals::MQC_RULE_cod_preserves_literals",
-    "duration_ms": 4020,
+    "duration_ms": 4519,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 92,
+    "input_tokens": 122,
     "mode": "live",
-    "output_tokens": 43,
-    "raw_reference": "sYjravXDA4Od_uMPwfOjmQs",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
+    "output_tokens": 47,
+    "raw_reference": "vyPtasyNKenUjMcP5uyi4AE",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
     "text": "```python\ndef top_scorers(entries, limit):\n    ranked = sorted(entries, key=lambda row: row[\"score\"], reverse=True)\n    return ranked[:limit]\n```",
-    "thinking_tokens": 135,
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }

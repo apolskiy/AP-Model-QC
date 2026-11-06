@@ -1,0 +1,43 @@
+{
+  "request": {
+    "config": {
+      "automatic_function_calling": {
+        "disable": true
+      }
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>"
+          },
+          {
+            "text": "Using the quarterly report above, answer in a numbered list.\n1. State each region's revenue as the report gives it.\n2. State which single region contributed the largest share of total revenue.\n3. State that share as a percentage of the total, without showing any calculation.\n4. Show the calculation, or how you arrived at it."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "gemini-4-argon"
+  },
+  "request_hash": "6c699c6e921d562cd9a2160e4c4b3620f4cc7b2982273e2b19a03207088f998e",
+  "resolved_model": "gemini-4-argon",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_no_falsehood_unrounded::MQC_RULE_gnd_no_falsehood_unrounded",
+    "duration_ms": 5447,
+    "engine": "gemini",
+    "finish_reason": "stop",
+    "input_tokens": 178,
+    "mode": "live",
+    "output_tokens": 125,
+    "raw_reference": "0yXtaqqxK-yxsOIPzP-h4AI",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "1. North America: 41.2 million; EMEA: 28.7 million; Japan: 11.4 million; Australia: 6.1 million.\n2. North America contributed the largest share of total revenue.\n3. 47.14%\n4. Divide North America's revenue by the total revenue and multiply by 100: (41.2 / 87.4) \u00d7 100 = 47.139588%, which rounds to 47.14%.",
+    "thinking_tokens": 0,
+    "tool_calls": []
+  }
+}

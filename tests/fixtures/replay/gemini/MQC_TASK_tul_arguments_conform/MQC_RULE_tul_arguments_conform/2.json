@@ -77,33 +77,33 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "58a8ab97205dad9444b2a5e6eb191c9d364b85be32bb65d25c7013ec98e88e7d",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "d93a136023af31062c409053144a5980f9a752b65c1c83f7d562b26dd305d99a",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_tul_arguments_conform::MQC_RULE_tul_arguments_conform",
-    "duration_ms": 4207,
+    "duration_ms": 4388,
     "engine": "gemini",
     "finish_reason": "tool_calls",
-    "input_tokens": 223,
+    "input_tokens": 268,
     "mode": "live",
-    "output_tokens": 29,
-    "raw_reference": "lZPrasKpB_Kk1MkP8buM8QQ",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
+    "output_tokens": 35,
+    "raw_reference": "ly7taoq1IfjqjMcP96OHEA",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
     "text": "",
-    "thinking_tokens": 106,
+    "thinking_tokens": 0,
     "tool_calls": [
       {
         "arguments": {
           "include_history": true,
           "order_id": "A-4471"
         },
-        "call_id": "call_4656452367160752295",
+        "call_id": "call_5637159717182761925",
         "sequence": 0,
         "tool_name": "lookup_order"
       }

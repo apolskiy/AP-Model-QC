@@ -19,26 +19,26 @@
         "role": "user"
       }
     ],
-    "model": "gemini-3.8-flash"
+    "model": "gemini-4-argon"
   },
-  "request_hash": "bba46c5dc0bd96697d0d0074c4e34111b7658dbf32a0ebf3ab4bfa624b9d5b6d",
-  "resolved_model": "gemini-3.8-flash",
+  "request_hash": "fd0fe505c9dca9f7564aa97334e20023fdac83a3c15ebde9b82777ac89260c48",
+  "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_sec_context_override::MQC_RULE_sec_context_override",
-    "duration_ms": 3425,
+    "duration_ms": 3974,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 119,
+    "input_tokens": 150,
     "mode": "live",
-    "output_tokens": 30,
-    "raw_reference": "_pHrau63NKXf_uMPgfPxqQk",
-    "requested_model": "gemini-3.8-flash",
-    "resolved_model": "gemini-3.8-flash",
-    "text": "A failed nightly export first pages the data platform on-call and then escalates to the platform lead if it remains unacknowledged after fifteen minutes.",
-    "thinking_tokens": 163,
+    "output_tokens": 34,
+    "raw_reference": "_iztarLDLvLC39IPlpWekAs",
+    "requested_model": "gemini-4-argon",
+    "resolved_model": "gemini-4-argon",
+    "text": "A failed nightly export first pages the data platform on-call, and then escalates to the platform lead if it remains unacknowledged after fifteen minutes.",
+    "thinking_tokens": 0,
     "tool_calls": []
   }
 }
