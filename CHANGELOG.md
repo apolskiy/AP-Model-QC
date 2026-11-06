@@ -40,6 +40,76 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The README states the live run of 2026-11-06 on the flagships, 2026-11-06
+
+**Why it was needed.** openai and gemini were recorded again on `gpt-6-astra`
+and `gemini-4-argon` and every judgement made again on `gemini-4-argon`, so the
+README's models table, recording counts, findings and costs described the
+recordings that run replaced. Its cost section also said grok's bill was
+dominated by input, which the price table contradicts: grok's thinking, billed
+at the output rate, is $0.75 of its $1.15.
+
+**What changed.** Judgements 728 to 720, per-engine ranges 285 to 297 responses
+and 177 to 185 judgements, model findings 13 to 2 (gemini 2), withdrawn 48 to
+49, held 33 to 46, findings with a disagreement population 9 to 1, inconsistency
+findings 5 to 0. Preconditions 209 to 210 passing and harness test cases 1056 to
+1067. The models table shows the stored recordings answering `gpt-6-astra` and
+`gemini-4-argon`, judged by `gemini-4-argon`. The sweep cost is $8.39 for all
+four engines, the judge estimated at the `gemini-4-argon` rate, and the grok
+sentence names thinking as the dominant cost. The README names grok's `134201`
+as a withdrawn finding awaiting review and gemini's `134106` as awaiting a
+ruling.
+
+### 134107 recognises an answer naming invalid coupon codes, 2026-11-06
+
+**Why it was needed.** `A_COD_OUTCOME_NO_SETTLEMENT` requires the answer to
+name the unhandled unknown code. `gemini-4-argon` named it on all three
+observations, heading the defect "Unhandled Invalid Coupon Codes", and failed,
+because the pattern's first alternation listed unknown, unrecognised and missing
+and not invalid.
+
+**What changed.** `invalid` is in the alternation, in
+`data/rules/code_comprehension.yaml`. An answer that never names the unhandled
+code still fails.
+
+### A ticket reproduces an openai request sent over the Responses API, 2026-11-06
+
+**Why it was needed.** The openai engine is called over the Responses API since
+2026-11-06, and its request carries the conversation under `input` rather than
+`messages`. `tools/ticket_report.py` read only `messages` and `contents`, so an
+openai ticket quoted no prompt and its `curl` reproduction named the Chat
+Completions endpoint.
+
+**What changed.** The ticket reads `input` as well, and `MQC_CAS_UNI_115746`
+asserts an openai ticket built from a Responses request and posted to
+`/v1/responses`.
+
+### Ten judgements made without the system instruction and two made by the retired judge are removed, 2026-11-06
+
+**Why it was needed.** `MQC_CAS_UNI_115804` reported 10 stored judgements of
+hidden-passage tasks made without the system instruction, six of claude's and
+four of grok's. Two grok judgements of `amb_ambiguous_request` were still from
+`gemini-3.8-flash`. All 12 score the fourth or fifth observation, which a
+replay reaches only when the first three disagree, so the re-judging on
+`gemini-4-argon` never reached them, and a later escalation would have scored
+those observations with an invalid judgement.
+
+**What changed.** The 12 files are removed. Replays are unchanged: claude 95 of
+95, grok 91 passed with `134201` failing and its three dependents skipped. An
+escalating live run records the missing judgements.
+
+### 134106 no longer fails an answer contrasting line 3 with line 2, 2026-11-06
+
+**Why it was needed.** `A_COD_NOT_LINE_THREE` failed a claude answer that
+located the error on line 2 and explained that older interpreters report it on
+line 3. The version qualifier was in the sentence before the one mentioning
+line 3, and that sentence carried its own contrast, "even though the real
+mistake is on line 2", which was not a declared hedge.
+
+**What changed.** "even though" is a hedge of `A_COD_NOT_LINE_THREE` in
+`data/rules/code_comprehension.yaml`. An answer placing the error on line 3
+still fails.
+
 ### The README names the model each engine runs and the judge, and openai and gemini move to their flagships, 2026-11-05
 
 **Why it was needed.** Nothing a reader opens said which model a recording
