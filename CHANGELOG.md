@@ -40,6 +40,187 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A ticket says one send may miss the problem only where it did not appear on every attempt, 2026-11-06
+
+**Why it was needed.** 134206's ticket said the problem appeared on 3 of 3
+attempts, "so a single send may not show it", which contradicts the count.
+
+**What changed.** `tools/ticket_reproduction.py` adds that caveat only where
+the problem appeared on fewer than all attempts (`consumer_ci.md` section
+9.5.5.13, `MQC_REQ_CAS_COR_0068`). `115807` asserts both counts and failed
+before the change.
+
+### A precondition passes or fails, and one marked passw exits 3, 2026-11-06
+
+**Why it was needed.** passw belongs to the graded layers, which measure a
+model. A precondition here measures the instrument, so one reporting passw is an
+instrument defect, and the run exited 0.
+
+**What changed.** `conftest.py` calls the harness
+`refuse_precondition_warnings` at session end, beside the skip and failure
+refusals, so a `unit` or `system` case marked passw is logged with
+`QC_HARNESS_PRECONDITION_WARNED` and the run exits 3. Graded cases keep passw
+(harness `harness_test_taxonomy.md` section 5.1.2.1).
+
+### A ticket's commands carry `<key>` for the reader's own key, and a warning's ticket quotes what was corrected, 2026-11-06
+
+**Why it was needed.** A vendor fixes what they can reproduce, so a ticket's
+commands have to run when copied with only a key pasted in. They read
+`$ANTHROPIC_API_KEY` in bash, `$env:ANTHROPIC_API_KEY` in PowerShell, and an
+SDK client read a variable the reader had to know to set. Separately,
+`134206`'s warning ticket gave the failure sentence for a requirement match,
+said the problem appeared on 0 of 3 attempts, and labelled each warned
+response as passing its checks.
+
+**What changed.**
+
+- Every curl, curl.exe and SDK call in a ticket carries `<key>` where the
+  credential goes, and the step before it says to replace `<key>` with the
+  reader's own key, naming the variable that would hold it, keeping the quotes.
+  The steps for running through this repository set the variables to `"<key>"`
+  the same way (`consumer_ci.md` section 9.5.3.1). The commands come from the
+  harness adapters.
+- A warning's ticket states the problem as a statement the rule forbids,
+  corrected later in the same response. Each warned response is labelled
+  passed with a warning, quoting the sentence the claim found and the one that
+  corrected it, and counts as showing the problem (section 6.4.6,
+  `MQC_REQ_CAS_CI_0078`, case `115826`).
+- The preconditions are 220 cases and the matrix carries 226 requirements.
+
+### No observation is recorded beyond a first pass that holds, and twelve cases are recorded again live, 2026-11-06
+
+**Why it was needed.** The roster gives a case 3 observations and 2 more only
+where one of the first three fails. Twelve cases held a fourth and fifth
+observation from a run made before their harness, rubric, prompt or system
+instruction changed, and their first three now passed. Those observations were
+made under other conditions, so they measured nothing about the case as it now
+stands, and their recordings were kept as though they did.
+
+**What changed.**
+
+- `tools/unreached_observations.py` lists every recorded observation beyond a
+  first pass that holds, and case `115820` fails where one exists
+  (`consumer_ci.md` section 6.4.7, requirement `MQC_REQ_CAS_CI_0076`). It failed
+  on the recordings as they stood, naming the twelve cases, before they were
+  removed.
+- The 30 response and judgement files of those observations are removed. The
+  twelve cases, two of gemini's, five of claude's and five of grok's, were then
+  recorded again live with their foundations, and judged the same day. The
+  recordings hold 1146 responses and 727 judgements, 15 of them claude's. The
+  README's recorded judge responses row read 737, the configured judge's 720
+  and the second judge's 17, which is the count before the removal; it reads
+  727, 712 and 15, matching the files.
+- The live run left 3 failures and 1 warning: gemini `134106`, claude
+  `154103`, grok `134201`, and gemini `134206` passed with a warning. The README
+  status rows say so, and no longer describe withdrawn or held findings.
+- `115781` counts the failures and the warnings on the filing sheet apart, as
+  `MQC_REQ_CAS_CI_0075` requires. It had read the warning as a fourth finding to
+  file.
+- Repeat observations agree only when every measured one has the same
+  outcome, so `passw` beside `pass` or beside `fail` is `QC_LLM_INCONSISTENT`
+  and the message counts the warnings among the passes (`consumer_ci.md`
+  section 6.4.6, `MQC_REQ_CAS_CI_0077`, case `115825`). Agreement had compared
+  pass against fail only, so a case correcting itself on one observation and
+  answering cleanly on the others concluded consistent. The preconditions are
+  219 cases and the matrix carries 225 requirements.
+
+### A finding whose case passes is removed, and nothing is withdrawn or held, 2026-11-06
+
+**Why it was needed.** A finding that our own fix removed, to the harness, a
+rubric, a prompt or a system instruction, and that passed on retest, was kept as
+`withdrawn` or held as `not_reproduced` in `config/findings/unconfirmed/`. The
+fix replaces the recordings the finding was observed on, so the record pointed
+at evidence nobody could open, and a run under different conditions says nothing
+about the earlier one.
+
+**What changed.**
+
+- `tools/findings.py` removes a finding whose case the run measured passing and
+  prints `REMOVED <case>, it passed on <date>`. A live run with
+  `--resolve-from-live` records `resolved_upstream` instead, and a case the run
+  skipped keeps its finding unchanged (`consumer_ci.md` section 9.4.11).
+- A failure entry the run measures as passw, or a warning entry it measures
+  failing, is replaced by a fresh entry, so no date, population, ticket or
+  diagnosis carries over.
+- `--hold-unreproduced` is removed. The statuses `withdrawn` and
+  `not_reproduced`, their dates and reasons, `intermittent`, `reproduced_on`, the
+  holding list, `tools/review_report.py` and the review tickets are retired. The
+  bug file holds the open and the resolved entries, and only the open ones are
+  filed.
+- The README's filing steps are two: record the register, then write the
+  tickets.
+- Cases `115737`, `115739`, `115750`, `115763` and `115794` are retired, and
+  `115821` to `115824` added. The preconditions are 218 cases.
+
+### An answer that corrected itself is recorded passw and filed as a warning, 2026-11-06
+
+**Why it was needed.** gemini's `134206` answers stated that rounding to 30
+million would exceed the five per cent ceiling, then worked the figure in the
+same response and said it was within it. The claim failed the case although the
+answer recovered, and the register filed it as a failure.
+
+**What changed.**
+
+- `134206`'s claim `A_GND_CEILING_NOT_MISCOMPARED` declares `corrected_by`, so a
+  later sentence putting the figure within the ceiling makes the case pass with a
+  warning. The level 5 anchor of `C_GND_CEILING_ARITHMETIC` requires no
+  contrary statement anywhere; a self-corrected answer scores at most 4. The
+  case was judged again on all four engines by gemini and by claude, the two
+  agreeing on every observation.
+- The observation record is `passw` where a passing result carries a warning
+  code, and the band report counts `passw` apart from `passed`.
+- The findings recorder reads the JUnit `passw` mark as a warning finding. Its
+  ticket says the case passed with a warning, and the filing sheet lists
+  warnings apart from the failures (`consumer_ci.md` section 6.4.6).
+- Cases `115817` to `115819`. The preconditions are 218 cases and the matrix
+  carries 223 requirements.
+- The README says how to judge one case again after its rule changes, with
+  `134206` as the worked example: the foundation replayed once into a carry
+  file, the case alone sent to each live judge, and why the carry file stays
+  inside the repository. Nothing had recorded the order, and a carry file
+  outside the checkout fails every option as unrecognised.
+
+### A ticket reads the configured judge first, and the README says how to file, 2026-11-06
+
+**Why it was needed.** claude's judgements of gemini's `134206` were recorded
+beside gemini's, and the ticket tool read judge folders alphabetically, so a
+gemini ticket would have shown claude's scores and named claude in its
+reproduction. The README also said where findings live and never how to turn
+them into tickets.
+
+**What changed.** The ticket tool reads the judge the roster configures first,
+and another judge's recordings only for an observation it left without one
+(`consumer_ci.md` section 9.5.5.8.2). The README gains "Filing a finding with
+the ticket tools": recording the register with `tools.findings`, writing the
+tickets with `tools.ticket_report`, writing review tickets with
+`tools.review_report`, each one's options, what is written where, and what a
+ticket carries. Requirements 219 to 220 and preconditions 214 to 215.
+Judgements 720 to 728: claude judged gemini's recorded responses to `134205`
+and `134206`, its first judgements, recorded beside gemini's.
+
+### A judge that stopped answering skips judged cases before dispatch, 2026-11-06
+
+**Why it was needed.** The first run judged by claude got 400 on every judge
+request and kept dispatching candidates nobody could score. Three unjudged
+observations were read as failures, which drew a fourth. That fourth found no
+recording and reported `QC_HARNESS_FIXTURE_MISSING`, hiding the judge's own
+code. The README also still described the findings register from before the
+registers were rebuilt from the clean runs of the same day.
+
+**What changed.** `observe` skips a rule carrying a rubric before its dispatch
+when the harness judge channel has stopped, recording an environmental skip
+with the judge's code. `observe_repeatedly` passes an unjudged observation to
+the escalation rule as no outcome. An unavailable judgement reports the judge's
+own harness code, in its record and when its case concludes (`consumer_ci.md`
+section 6.4.5). The observation-record builders moved from `graded_support.py`
+to `observation_records.py`, the first having reached the runway ceiling.
+
+**README figures.** Requirements 215 to 219, preconditions 210 to 214 passing,
+harness test cases 1067 to 1070. Model findings 2 to 3 (gemini 2, grok 1),
+findings with a disagreement population 1 to 2, inconsistency findings 0 to 1.
+grok's `134201` is open on the clean run rather than withdrawn, and keeps its
+review ticket.
+
 ### The README states the live run of 2026-11-06 on the flagships, 2026-11-06
 
 **Why it was needed.** openai and gemini were recorded again on `gpt-6-astra`
