@@ -13,7 +13,7 @@
             "type": "text"
           },
           {
-            "text": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+            "text": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. If the summary is inadequate or\nincomplete to make a positive match, state explicitly where and why it\ncannot establish the requirement.",
             "type": "text"
           }
         ],
@@ -25,23 +25,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "3287e9bb07b0c7c75b827eac35316196a9de08885098ea4420b5fea4351fa898",
+  "request_hash": "acb1ffd4e6ba300b95358627e4aefd29ddaa6754365d47ae3cccb7102f948ee0",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 6174,
+    "duration_ms": 5132,
     "engine": "claude",
     "finish_reason": "stop",
-    "input_tokens": 177,
+    "input_tokens": 192,
     "mode": "live",
-    "output_tokens": 434,
-    "raw_reference": "msg_011Cgieq4dg97DuVWvy93JDa",
+    "output_tokens": 460,
+    "raw_reference": "msg_011CgksChLH6tXtsP7gvAF7r",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "**Assessment: Cannot be confirmed from the summary.**\n\n**Requirement:** 9 years of backend engineering experience.\n\n**What the summary states:** \"8+ years\" building transactional services.\n\n**Why it's undetermined:**\n- \"8+\" sets a floor of 8 years and no ceiling. It is consistent with exactly 8 years, which falls short, and with 9 or more, which meets the bar.\n- It is neither a clear miss nor a clear match. Presenting it as either would be an assumption.\n- Candidates often write \"X+\" when the true figure is somewhat above X, but that isn't evidence of 9. Some also round up, so it could be under 9 in practice.\n\n**Other relevant points:**\n- The experience is the right kind. Transactional backend work, including a settlement pipeline at 40,000 orders/day, fits a backend engineering requirement squarely.\n- Even at the floor, the candidate is at most about one year short of the stated threshold.\n\n**Recommended next step:** Ask the candidate for their exact years of backend experience, or check start and end dates on the full resume or work history. That will settle whether the 9-year requirement is met.",
+    "text": "**Verdict: Not established.** The summary does not show that the candidate meets the requirement.\n\n**Requirement:** 9 years of backend engineering experience.\n\n**What the summary states:** \"8+ years\" of backend engineering, building transactional services.\n\n**Why this falls short:**\n\n- **The stated minimum is below the threshold.** \"8+\" guarantees only 8 years. That is one year short of the required 9.\n- **The \"+\" is open-ended.** It could mean 8 years and a few months, or well over 9. The summary gives no upper bound, dates, or role history to tell which. A positive match cannot rest on an unquantified \"+\".\n- **Missing information.** To establish the requirement, the summary would need an explicit figure of 9 or more years, or a dated employment history showing at least 9 years of backend engineering.\n\n**What the summary does establish:** The experience is relevant. The candidate built transactional services, most recently a settlement pipeline handling 40,000 orders a day. That speaks to the type and scale of the backend work. It does not speak to duration, which is what this requirement measures.\n\n**Recommendation:** Treat this as unconfirmed, not a match. If you want to consider the candidate, ask for their exact years of experience or a dated work history before moving forward.",
     "thinking_tokens": 0,
     "tool_calls": []
   }

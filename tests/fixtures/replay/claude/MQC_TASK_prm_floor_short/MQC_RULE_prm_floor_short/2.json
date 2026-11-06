@@ -13,7 +13,7 @@
             "type": "text"
           },
           {
-            "text": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. Where the summary cannot establish the\nrequirement, say so rather than assuming either way.",
+            "text": "Assess the candidate summary above against the posting requirement and say\nwhether the candidate matches it.\n\nReport the match as it actually is. If the summary is inadequate or\nincomplete to make a positive match, state explicitly where and why it\ncannot establish the requirement.",
             "type": "text"
           }
         ],
@@ -25,23 +25,23 @@
       "effort": "medium"
     }
   },
-  "request_hash": "3287e9bb07b0c7c75b827eac35316196a9de08885098ea4420b5fea4351fa898",
+  "request_hash": "acb1ffd4e6ba300b95358627e4aefd29ddaa6754365d47ae3cccb7102f948ee0",
   "resolved_model": "claude-opus-5-5",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_prm_floor_short::MQC_RULE_prm_floor_short",
-    "duration_ms": 5127,
+    "duration_ms": 8082,
     "engine": "claude",
     "finish_reason": "stop",
-    "input_tokens": 177,
+    "input_tokens": 192,
     "mode": "live",
-    "output_tokens": 405,
-    "raw_reference": "msg_011CgieqtM5UgBz3uQ7MegCR",
+    "output_tokens": 690,
+    "raw_reference": "msg_011CgksDS9kfHfBv4PxXLWQp",
     "requested_model": "claude-opus-5-5",
     "resolved_model": "claude-opus-5-5",
-    "text": "**Match status: Cannot be established from the summary.**\n\n- **Requirement** (DOC_req_years_nine): 9 years of backend engineering experience.\n- **Candidate** (DOC_summary_states_eight_plus): \"8+ years\" of backend engineering.\n\n\"8+\" sets a floor of 8 years but no ceiling. The candidate could have anywhere from 8 years (one short) to 9 or more (meets it). The summary supports neither \"meets\" nor \"does not meet.\"\n\n**What the summary does establish:**\n- At least 8 years in the relevant field (backend/transactional services), which is within a year of the requirement.\n- Recent, relevant, production-scale work: a settlement pipeline handling 40,000 orders a day. This speaks to the kind of experience, not its length.\n\n**To resolve it:** Ask the candidate for their exact years of backend experience, or check dated employment history on the full r\u00e9sum\u00e9. If the 9-year requirement is strict, this needs to be confirmed before treating the candidate as qualified.",
+    "text": "## Verdict: Not established\n\nThe summary does not show that the candidate meets the requirement. It doesn't rule them out either.\n\n## Comparison\n\n| | Requirement (DOC_req_years_nine) | Candidate summary (DOC_summary_states_eight_plus) |\n|---|---|---|\n| Domain | Backend engineering | Backend engineering \u2705 |\n| Duration | **9 years** | **\"8+ years\"** \u2753 |\n\n## Why the summary falls short\n\n1. **\"8+\" sets a minimum of 8 years, not 9.** It is true whether the candidate has 8 years and 1 month or 15 years. The only figure the summary actually commits to is 8, which is one year below the requirement.\n\n2. **The summary gives no other dates.** It has no start date, no list of roles with durations, and no tenure for the settlement pipeline work. Nothing else in it can show that the \"+\" reaches 9 years.\n\n3. **Scope and quality don't substitute for duration.** A settlement pipeline handling 40,000 orders a day shows relevant, substantial backend experience. It says nothing about how many years the candidate has, so it can't close the gap.\n\n4. **The wording may itself be informative.** People with 9 or more years usually say \"9+\" or \"10+.\" Choosing \"8+\" suggests, though it doesn't prove, that the real figure is between 8 and 9 years. This is an inference, not a fact from the document.\n\n## What would settle it\n\n- Employment history with start and end dates for each backend role, or\n- An exact total, such as \"9.5 years,\" from the candidate.\n\n## Recommendation\n\nDon't record this as a match. Mark the requirement as **unverified (possible shortfall)** and ask the candidate to clarify their years of experience before deciding. If the posting's 9-year figure is flexible, the domain fit and production-scale experience may justify a conversation, but that is a judgment the hiring team would have to make outside the stated requirement.",
     "thinking_tokens": 0,
     "tool_calls": []
   }
