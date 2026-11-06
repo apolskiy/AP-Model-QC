@@ -1137,6 +1137,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115818` | P | `a_passw_case_is_a_warning_finding_filed_apart` (6.4.6) |
 | `115819` | N | `the_ceiling_claim_declares_its_correction_and_anchor` (6.4.6) |
 | `115825` | N | `passw_beside_pass_or_fail_is_inconsistent` (6.4.6) |
+| `115826` | N | `a_warning_ticket_quotes_the_statement_and_its_correction` (6.4.6) |
 | `115820` | N | `no_observation_is_recorded_beyond_a_first_pass_that_holds` (6.4.7) |
 | `115805` | N | `a_ticket_states_the_test_case_step_by_step` (9.5.5.13) |
 | `115806` | N | `a_ticket_shows_the_system_instruction_first` (9.5.5.13) |
@@ -1190,7 +1191,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 158 cases, 115 negative, 34 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 159 cases, 116 negative, 34 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2932,6 +2933,7 @@ still the vendor's to decide on, so it is filed.** The harness reads the order
 | Repeat observations | Agree only when every measured observation has the same outcome. `passw` beside `pass`, or beside `fail`, is `QC_LLM_INCONSISTENT`, and the message counts the warnings among the passes |
 | The band report | `passw` counted from the JUnit property `mqc_outcome`, apart from `passed` |
 | The findings | A case carrying the property is a **warning** finding with its own ticket, listed apart from the failures on the filing sheet |
+| The warning's ticket | The problem is the forbidden statement corrected later in the same response, never the code's sentence for a failure. Each warned response is labelled passed with a warning, quoting the sentence the claim found and the one that corrected it, and is counted as showing the problem in the response count and the reproduction steps |
 | Two judges | A judge gives a score and never an outcome: `passw` is set by the assertion that found the correction, never by a judge. Two judges disagree when one score clears the rubric threshold and the other does not on the same observation, and that observation is examined, rubric, case, prompts, responses, system instructions and both judgements, before anything is filed |
 
 **A changed rubric invalidates the rule's stored judgements**, so the rule is
@@ -2941,7 +2943,8 @@ judge and on claude, before its findings are regenerated.
 `MQC_CAS_UNI_115817` asserts the record, `115818` the warning finding and its
 place on the filing sheet, and `115819` the corpus: `134206`'s assertion
 declares `corrected_by` and its level 5 anchor names the contrary statement.
-`115825` asserts that `passw` beside `pass` or beside `fail` is inconsistent.
+`115825` asserts that `passw` beside `pass` or beside `fail` is inconsistent,
+and `115826` the warning's ticket.
 
 #### 6.4.7 An observation beyond the first pass is recorded only where the first pass failed
 
@@ -4497,6 +4500,18 @@ refused for the wrong key. A client on a declared base URL now takes its
 engine's variable by name, `api_key=os.environ["XAI_API_KEY"]`, which still
 carries no credential. `113129` asserts it.
 
+**The key is written as `<key>`, and the ticket says what replaces it.**
+Changed 2026-11-06. A command reading `$ANTHROPIC_API_KEY` depends on a
+variable the reader has to know to set, and in PowerShell the reference takes
+another form, so the example a vendor copies was not the call itself. Every
+`curl`, `curl.exe` and SDK call now carries the literal `<key>` where the
+credential goes: `-H "x-api-key: <key>"`, `-H "Authorization: Bearer <key>"`,
+`anthropic.Anthropic(api_key="<key>")`, and on another base URL
+`openai.OpenAI(base_url=..., api_key="<key>")`. The step before the command
+says to replace `<key>` with the reader's own key for that provider, keeping
+the quotes. No credential appears, as before, and no variable on either side is
+read. `113130` to `113133` and `113138` to `113145` assert it.
+
 ##### claude carries a `curl` too, and no body goes through a here-document
 
 Amended 2026-11-05 with section 9.5.5.13. **The table's claude row was wrong
@@ -5270,8 +5285,9 @@ every command reads it from that file. A body passed on the command line is
 re-quoted by whichever shell runs it, and a here-document is `bash` alone.
 
 - **Where the recording is the wire body**, a `curl` for `bash` and a
-  `curl.exe` for PowerShell post the file to the engine's endpoint, with the
-  credential read from the engine's own variable, named and never valued. The
+  `curl.exe` for PowerShell post the file to the engine's endpoint, with
+  `<key>` where the credential goes and a line before the commands saying to
+  replace it with the reader's own key for that provider (section 9.5.3.1). The
   protocol or adapter declares the endpoint and the headers, as section 9.5.3.1
   sets it. **claude's recording is its wire body** (`max_tokens`, `messages`,
   `model`, `output_config`, and `system` where there is one), so claude now
@@ -5294,7 +5310,8 @@ they differ:
 1. Clone this repository and install the harness it pins
    (`config/harness_pin.yaml`, README "Pinning A Harness Version").
 2. Set the engine's credential variable, and the judge engine's where the case
-   is judged, by name.
+   is judged, by name, each shown set to `"<key>"` with a line saying to
+   replace it with the reader's own key for that provider.
 3. **Run the case live**: `--engine`, `--mode live`, `--tests` with its number,
    and `--with-prerequisites`, which dispatches the cases it rests on first.
    A judged case names `--judge-engine`.

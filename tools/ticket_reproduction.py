@@ -3,7 +3,7 @@
 """The parts of a ticket that state the test case and reproduce it, in and out of this repository.
 
 Created: 2026-11-05
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
 This file contains ``case_steps``, which states a finding's test case step by
 step: what is sent, how many times, what each response is checked for and what
@@ -96,7 +96,9 @@ def reproduce_outside(
         list[str]: Markdown lines. Where the recording is the wire body: the
         body as ``request.json``, a ``curl`` for bash and a ``curl.exe`` for
         PowerShell reading it, then the SDK call. Otherwise the SDK call alone,
-        saying why. Then how many times to send it and which reply field to read.
+        saying why. Each carries ``<key>`` where the credential goes, and a line
+        says to replace it with the reader's own key. Then how many times to
+        send it and which reply field to read.
     """
     out = ["**Reproduce without this repository**", ""]
     if request is None:
@@ -104,10 +106,11 @@ def reproduce_outside(
     adapter = adapter_for(engine)
     body = reproduction_body(engine, request)
     snippet = reproduction_snippet(engine, request)
+    replace = _replace_key(adapter.API_KEY_ENV)
     if body:
         out.extend([
             "1. Save this body as `request.json`:", "", *fenced(body, "json"), "",
-            f"2. Set `{adapter.API_KEY_ENV}` and post the file. In bash:", "",
+            f"2. {replace} Then post the file. In bash:", "",
             *fenced(reproduction_curl(engine, request), "bash"), "",
             "   In PowerShell, which runs `curl.exe` in place of its own `curl` alias:", "",
             *fenced(reproduction_curl(engine, request, shell="powershell"), "powershell"), "",
@@ -117,7 +120,7 @@ def reproduce_outside(
         out.extend([
             "1. This recording carries a field with no REST form, so the call is "
             "re-issued through the provider's SDK, which sends it exactly.", "",
-            f"2. Set `{adapter.API_KEY_ENV}` and run:", "",
+            f"2. {replace} Then run:", "",
         ])
         sdk = ""
     if snippet:
@@ -142,7 +145,8 @@ def reproduce_through_repository(engine: str, case: str, judge_engine: str) -> l
 
     Returns:
         list[str]: Markdown lines: clone and install, set the credential
-        variables by name for bash and PowerShell, run the case live with its
+        variables by name to ``<key>`` for bash and PowerShell with a line
+        saying what replaces it, run the case live with its
         prerequisites, where the result lands, and the replay command.
     """
     parts = case.split("_")
@@ -162,10 +166,11 @@ def reproduce_through_repository(engine: str, case: str, judge_engine: str) -> l
             f"python -m pip install {_HARNESS}",
             "python -m pip install --no-deps --editable .",
         ]), "bash"), "",
-        f"2. Set {' and '.join(f'`{name}`' for name in variables)}. In bash:", "",
-        *fenced("\n".join(f'export {name}="<your key>"' for name in variables), "bash"), "",
+        f"2. Set {' and '.join(f'`{name}`' for name in variables)}. "
+        + " ".join(_replace_key(name) for name in variables) + " In bash:", "",
+        *fenced("\n".join(f'export {name}="<key>"' for name in variables), "bash"), "",
         "   In PowerShell:", "",
-        *fenced("\n".join(f'$env:{name} = "<your key>"' for name in variables), "powershell"),
+        *fenced("\n".join(f'$env:{name} = "<key>"' for name in variables), "powershell"),
         "",
         "3. Run the case live. `--with-prerequisites` runs the cases it rests on first"
         + (", and the judge engine scores each response" if judge_engine else "") + ":", "",
@@ -179,6 +184,21 @@ def reproduce_through_repository(engine: str, case: str, judge_engine: str) -> l
         *fenced(f"python -m pytest --engine {engine} --mode replay --tests {number} "
                 f"--with-prerequisites"), "",
     ]
+
+
+def _replace_key(variable: str) -> str:
+    """Return the sentence telling a reader what replaces ``<key>``.
+
+    Args:
+        variable (str): The credential variable naming which provider's key it is.
+
+    Returns:
+        str: The instruction, naming the variable so the reader knows which key.
+    """
+    return (
+        f"Replace `<key>` with your own API key, the one `{variable}` would hold, "
+        f"keeping the quotes around it. This ticket carries no key."
+    )
 
 
 def fenced(text: str, info: str = "") -> list[str]:

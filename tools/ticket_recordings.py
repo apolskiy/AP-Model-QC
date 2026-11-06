@@ -70,7 +70,9 @@ def observation_outcomes(
 
     Returns:
         list: One entry per observation, as index, whether every check passed,
-        and what failed when one did.
+        and what failed when one did. A passing observation carrying a warning
+        holds what was stated and where it was corrected; a clean pass holds
+        nothing.
     """
     try:
         case = case_for(task_id, rule_id)
@@ -101,7 +103,14 @@ def observation_outcomes(
             for result in results
             if not result.passed
         ]
-        outcomes.append((index, not failures, "; ".join(failures)))
+        # A PASS WITH A WARNING CARRIES WHAT WAS CORRECTED, so its ticket can
+        # quote the statement and its correction (consumer_ci.md section 6.4.6).
+        warnings = [
+            f"{result.assertion_id} ({result.warning_code}): {result.detail}"
+            for result in results
+            if result.passed and getattr(result, "warning_code", None)
+        ]
+        outcomes.append((index, not failures, "; ".join(failures or warnings)))
     return outcomes
 
 

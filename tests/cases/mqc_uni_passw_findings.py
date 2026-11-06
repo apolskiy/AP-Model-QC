@@ -32,6 +32,7 @@ Specified by ``docs/design/consumer_ci.md`` section 6.4.6.
 #   115818  a_passw_case_is_a_warning_finding_filed_apart
 #   115819  the_ceiling_claim_declares_its_correction_and_anchor
 #   115825  passw_beside_pass_or_fail_is_inconsistent
+#   115826  a_warning_ticket_quotes_the_statement_and_its_correction
 # ------------------------------------------------------------ end of cases
 
 from datetime import date
@@ -40,6 +41,7 @@ from types import SimpleNamespace
 from typing import Final
 
 import pytest
+import yaml
 
 from cmn.case_steps import step
 from cmn.grouping import story
@@ -218,3 +220,39 @@ class TestMQCPasswFindings:
         step(3, "compare observations sharing one outcome")
         agreeing = [consistent([warned, warned, warned]), consistent([clean, clean, clean])]
         assert agreeing == [None, None], agreeing
+
+    @story("A corrected answer is filed as a warning")
+    def MQC_CAS_UNI_115826_a_warning_ticket_quotes_the_statement_and_its_correction(
+        self,
+    ) -> None:
+        """134206's warning ticket states the correction, counts and labels each warned response.
+
+        Design: ``consumer_ci.md`` section 6.4.6.
+
+        Returns:
+            None
+        """
+        register = yaml.safe_load(
+            (_ROOT / "config" / "findings" / "gemini.yaml").read_text(encoding="utf-8")
+        )
+        entry = next(found for found in register["findings"] if found["case"] == _WARNED)
+        step(1, "write the warning's ticket from the shipped register")
+        ticket = "\n".join(finding_section(
+            _ROOT, "gemini", entry, case_rules_from_suite(_ROOT), load_tasks(_ROOT)
+        ))
+        problem = ticket.split("**Problem:** ", 1)[1].split("\n", 1)[0]
+        assert "corrected it later in the same response" in problem and (
+            "reported a match" not in problem
+        ), problem
+
+        step(2, "read the response count and the reproduction steps")
+        assert "The problem appeared on 3 of 3 attempts" in ticket and (
+            "appeared on 0 of" not in ticket
+        ), ticket
+
+        step(3, "read each response's label")
+        labels = [line for line in ticket.splitlines() if line.startswith("*Response ")]
+        assert len(labels) == 3 and all(
+            "Passed with a warning" in label and "A_GND_CEILING_NOT_MISCOMPARED" in label
+            and "corrected after it in" in label for label in labels
+        ), labels

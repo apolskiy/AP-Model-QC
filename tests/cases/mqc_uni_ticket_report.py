@@ -155,8 +155,8 @@ class TestMQCTicketInput:
             "the ticket offers no runnable call, so reproducing the finding "
             "means rebuilding the request by hand"
         )
-        assert "ANTHROPIC_API_KEY" in block, (
-            "the reproduction does not say which variable to set"
+        assert 'api_key="<key>"' in block and "Replace `<key>` with your own API key" in block, (
+            "the reproduction does not show where the reader's key goes"
         )
 
         # WITHOUT A RECORDING IT SAYS SO. A reconstruction labelled as the

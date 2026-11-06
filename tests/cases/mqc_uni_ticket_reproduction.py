@@ -3,7 +3,7 @@
 """Unit preconditions for a ticket that a vendor can reproduce without this repository.
 
 Created: 2026-11-05
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
 This file contains ``TestMQCTicketReproduction``, five cases on
 ``tools/ticket_reproduction.py``, ``tools/ticket_responses.py`` and the
@@ -65,6 +65,8 @@ _DIAGNOSTICS: tuple[str, str] = (
     "MQC_TASK_sec_diagnostics_via_context", "MQC_RULE_sec_diagnostics_via_context",
 )
 _WIRE_ENGINES: tuple[str, ...] = ("claude", "grok", "openai")
+# THE LINE TELLING A READER WHAT GOES WHERE `<key>` STANDS, section 9.5.3.1.
+_REPLACE_KEY: str = "Replace `<key>` with your own API key"
 
 
 class TestMQCTicketReproduction:
@@ -161,9 +163,15 @@ class TestMQCTicketReproduction:
             assert "Send it 5 times. The problem appeared on 3 of 5" in block, (
                 f"{engine} does not say how often to send it: {block}"
             )
-            fields = adapter_for(engine).reproduction_reply_fields()
-            assert f"In each reply read {fields}" in block and "client." in block, (
-                f"{engine} names no reply field or omits the SDK call: {block}"
+            # COPIED, KEY PASTED, RUN: the commands carry `<key>`, a line says
+            # what replaces it, and nothing reads a variable the reader must set.
+            adapter = adapter_for(engine)
+            assert f"In each reply read {adapter.reproduction_reply_fields()}" in block and (
+                "client." in block and _REPLACE_KEY in block and 'api_key="<key>"' in block
+                and f"${adapter.API_KEY_ENV}" not in block
+            ), (
+                f"{engine} names no reply field, omits the SDK call, or is not a "
+                f"command to paste a key into: {block}"
             )
 
         step(16, "reproduce gemini's recorded call, which has no REST form")
@@ -175,7 +183,9 @@ class TestMQCTicketReproduction:
         assert "no REST form" in block and "client.models.generate_content(" in block, (
             f"gemini's reproduction does not say why it is the SDK call, or omits it: {block}"
         )
-        assert "Send it 3 times" in block and "`response.text`" in block, block
+        assert "Send it 3 times" in block and "`response.text`" in block and (
+            _REPLACE_KEY in block and 'genai.Client(api_key="<key>")' in block
+        ), block
         assert pairs, "the suite pairs no case with a task, so nothing was checked"
 
     @story("Reproduce with this repository")
@@ -194,8 +204,8 @@ class TestMQCTicketReproduction:
             "git clone https://github.com/apolskiy/AP-Model-QC.git",
             '"ap-harness-qc[dev] @ git+https://github.com/apolskiy/AP-Harness-QC@main"',
             "python -m pip install --no-deps --editable .",
-            'export OPENAI_API_KEY="<your key>"', 'export GEMINI_API_KEY="<your key>"',
-            '$env:OPENAI_API_KEY = "<your key>"', '$env:GEMINI_API_KEY = "<your key>"',
+            'export OPENAI_API_KEY="<key>"', 'export GEMINI_API_KEY="<key>"',
+            '$env:OPENAI_API_KEY = "<key>"', '$env:GEMINI_API_KEY = "<key>"', _REPLACE_KEY,
             "--engine openai --mode live --tests 134502 --with-prerequisites "
             "--judge-engine gemini",
             "tests/fixtures/replay/openai/", "tests/fixtures/replay/judgements/openai/",
@@ -203,12 +213,12 @@ class TestMQCTicketReproduction:
         ):
             assert expected in block, f"the repository reproduction lacks {expected!r}: {block}"
 
-        step(12, "reproduce an unjudged case, which names no judge")
+        step(13, "reproduce an unjudged case, which names no judge")
         unjudged = "\n".join(reproduce_through_repository(
             "openai", "MQC_EVL_SEC_154401_x", ""))
         assert "--judge-engine" not in unjudged and "GEMINI_API_KEY" not in unjudged, unjudged
 
-        step(13, "read both reproductions' place in a generated section")
+        step(14, "read both reproductions' place in a generated section")
         _, _, section = instructed_section("openai")
         assert section.index("**Expected**") < section.index(
             "**Reproduce without this repository**") < section.index(

@@ -97,21 +97,22 @@ def failing_count(
     outcomes: list[tuple[int, bool, str]],
     judged: Optional[list[Optional[tuple[bool, float, str]]]] = None,
 ) -> int:
-    """Return how many responses failed their checks or the judge.
+    """Return how many responses showed the problem: failed, or passed with a warning.
 
     Args:
         total (int): How many responses were recorded.
-        outcomes (list): Each response's check outcome.
+        outcomes (list): Each response's check outcome, a passing one carrying
+            a detail only where it passed with a warning.
         judged (Optional[list]): Each response's judged outcome, None where unjudged.
 
     Returns:
         int: The count.
     """
-    checks = {index: passed for index, passed, _ in outcomes}
+    checks = {index: not passed or bool(detail) for index, passed, detail in outcomes}
     judgements = list(judged or [])
     return sum(
         1 for index in range(total)
-        if not checks.get(index, True)
+        if checks.get(index, False)
         or (index < len(judgements) and judgements[index] is not None
             and not judgements[index][0])
     )
@@ -137,10 +138,12 @@ def _label(
         scored = (f"the judge scored it {judgement[1]:g}. {judgement[2]}".rstrip()
                   if decided else "the judge's score is in the appendix.")
         return f"Failed its checks: {detail}; {scored}"
+    # A PASS WITH A WARNING QUOTES WHAT IT CORRECTED (consumer_ci.md section 6.4.6).
+    checked = f"Passed with a warning: {detail}." if detail else "Passed its checks."
     if judgement is None:
-        return "Passed its checks."
+        return checked
     if not decided:
-        return "Passed its checks. The judge's score is in the appendix."
+        return f"{checked} The judge's score is in the appendix."
     if not judgement[0]:
         return f"Failed: the judge scored it {judgement[1]:g}. {judgement[2]}".rstrip()
     return f"Passed its checks and the judge, scoring {judgement[1]:g}. {judgement[2]}".rstrip()

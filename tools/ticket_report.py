@@ -107,6 +107,13 @@ _BACKTICKS: Final[re.Pattern[str]] = re.compile("`+")
 # codes by criticality, which every consumer needs; this phrasing is for one
 # audience, a vendor reading a report, and `framework-rules.md` section 4.1
 # forbids a second registry of the same fact rather than a different one.
+# A WARNING'S PROBLEM, whatever its code: the statement the rule forbids and
+# its correction later in the same response (consumer_ci.md section 6.4.6).
+_WARNED_PROBLEM: Final[str] = (
+    "The model made a statement the rule forbids, then corrected it later in the "
+    "same response"
+)
+
 _PROBLEM: Final[dict[str, str]] = {
     "QC_LLM_SOURCE_ALTERATION":
         "The model stated a figure the source does not support",
@@ -644,8 +651,12 @@ def _issue_sentence(
         measured observations passed and some failed.
     """
     code = str(entry.get("taxonomy_code") or "")
-    # WHERE THE PAYLOAD SITS DECIDES THE CLAIM (section 9.5.5.3).
-    stated = framed_problem(code, task) or _PROBLEM.get(code)
+    # WHERE THE PAYLOAD SITS DECIDES THE CLAIM (section 9.5.5.3), and a warning
+    # is a statement corrected, not the code's failure (section 6.4.6).
+    stated = (
+        _WARNED_PROBLEM if is_warning(entry)
+        else framed_problem(code, task) or _PROBLEM.get(code)
+    )
     if stated is None:
         # AN UNMAPPED CODE FALLS BACK RATHER THAN INVENTING A PHRASE, and says
         # which code it could not phrase so the gap is visible.
