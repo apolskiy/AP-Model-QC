@@ -3,7 +3,7 @@
 """The finding review tool, which prints one finding's evidence for a person to judge.
 
 Created: 2026-10-12
-Last updated: 2026-10-21
+Last updated: 2026-11-06
 
 This file contains ``evidence``, which cuts one finding's section out of an
 engine's generated ticket page, ``register_rows``, which reads an engine's
@@ -13,8 +13,10 @@ engines and the review questions, or with ``--open`` lists the open findings.
 
 It is run by hand after ``tools.ticket_report`` has written the pages, when a
 reviewer decides whether a finding is the model's defect or our assertion's.
-The answer is acted on by a person, who withdraws a finding with its reason or
-leaves it to be filed.
+The answer is acted on by a person, who repairs the assertion, rubric, prompt
+or system instruction behind a finding that is ours, or leaves it to be filed.
+A repaired finding leaves the register when a run measures its case passing
+(section 9.4.11).
 
 Specified by ``docs/design/consumer_ci.md`` section 9.5.4.
 
@@ -28,9 +30,7 @@ withdrawal so far.
 inspiration; each fell to one of the questions below, and leaving them implicit
 is why one class recurred twelve times.
 
-Read-only. Withdrawing a finding stays a person's act with its reason recorded,
-because ``findings.py`` generates every other field and must not overwrite a
-judgement it did not make.
+Read-only: ``findings.py`` writes the register.
 
 Usage::
 
@@ -175,8 +175,8 @@ def _print_questions() -> None:
         print(f"\n{index}. {question}")
         print(f"   seen in: {scar}")
     print("\nA finding that survives all seven is the model's. One that does")
-    print("not is withdrawn in the register, with the reason, and the")
-    print("assertion behind it is repaired (consumer_ci.md section 9.4.1).")
+    print("not is ours: repair what behind it is wrong, and the next run that")
+    print("measures it passing removes it (consumer_ci.md section 9.4.11).")
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -203,7 +203,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     if arguments.open or not arguments.case:
         openish = [
             row for row in rows
-            if row.get("status") not in ("withdrawn", "resolved_upstream")
+            if row.get("status") != "resolved_upstream"
         ]
         if not openish:
             print(f"{arguments.engine}: no open findings")

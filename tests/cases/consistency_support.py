@@ -3,7 +3,7 @@
 """Support code deciding what a graded case's repeated observations conclude.
 
 Created: 2026-10-06
-Last updated: 2026-10-21
+Last updated: 2026-11-06
 
 This file contains ``assert_consistent_pass``, which refuses observations that disagree,
 then refuses a failure, and returns the first result; the readers it rests on,
@@ -73,6 +73,40 @@ def measured(results: list[Any]) -> list[Any]:
         if getattr(entry, "judge_skipped_reason", None) not in _NOT_MEASURED
     ]
 
+def measured_outcome(result: Any) -> Optional[bool]:
+    """Return whether one observation passed, or None where nothing measured it.
+
+    The escalation rule reads None as no outcome, so an unjudged observation
+    earns no further one (``consumer_ci.md`` section 6.4.5).
+
+    Args:
+        result (Any): One observation's result.
+
+    Returns:
+        Optional[bool]: True or False for a measured observation, None for one
+        whose judgement was unavailable or withheld.
+    """
+    if getattr(result, "judge_skipped_reason", None) in _NOT_MEASURED:
+        return None
+    return bool(result.passed)
+
+def harness_code(result: Any) -> str:
+    """Return the first harness code one observation carried.
+
+    For an unavailable judgement that is the judge's own code: the store's, or
+    the provider's the channel mapped (``consumer_ci.md`` section 6.4.5).
+
+    Args:
+        result (Any): One observation's result.
+
+    Returns:
+        str: The code, or the parser code when none is named.
+    """
+    for code in getattr(result, "taxonomy_codes", ()) or ():
+        if str(code).startswith("QC_HARNESS_"):
+            return str(code)
+    return "QC_HARNESS_PARSER_ERROR"
+
 def unmeasured_code(results: list[Any]) -> str:
     """Return the harness code the unmeasured observations carried.
 
@@ -80,20 +114,22 @@ def unmeasured_code(results: list[Any]) -> str:
         results (list): One result per observation.
 
     Returns:
-        str: The store's own code, or the parser code when none is named.
+        str: The withheld code where the judge was withheld, otherwise the
+        first unavailable judgement's own harness code, or the parser code
+        when none is named.
     """
     if any(getattr(entry, "judge_skipped_reason", None) == _UNJUDGED for entry in results):
         return _WITHHELD_CODE
     for entry in results:
-        if getattr(entry, "judge_skipped_reason", None) != _UNMEASURED:
-            continue
-        for code in getattr(entry, "taxonomy_codes", ()):
-            if str(code).startswith("QC_HARNESS_FIXTURE_"):
-                return str(code)
+        if getattr(entry, "judge_skipped_reason", None) == _UNMEASURED:
+            return harness_code(entry)
     return "QC_HARNESS_PARSER_ERROR"
 
 def consistent(results: list[Any]) -> Optional[str]:
     """Return why repeat observations disagreed, or ``None`` when they agree.
+
+    Observations agree only when each has the same outcome, ``pass``, ``passw``
+    or ``fail``, so a pass with a warning beside a clean pass disagrees.
 
     **No majority is taken.** Two passes and a fail is not a pass: a majority
     discards exactly the finding the repeats exist to produce, which is that
@@ -113,10 +149,15 @@ def consistent(results: list[Any]) -> Optional[str]:
     results = measured(results)
     if len(results) < 2:
         return None
-    outcomes = {bool(entry.passed) for entry in results}
+    # THREE OUTCOMES, NOT TWO. A pass with a warning beside a clean pass is a
+    # model answering the same request two ways, so `passw` against `pass` or
+    # against `fail` disagrees (section 6.4.6).
+    outcomes = {_outcome(entry) for entry in results}
     if len(outcomes) == 1:
         return None
     passing = sum(1 for entry in results if entry.passed)
+    warned = sum(1 for entry in results if _outcome(entry) == "passw")
+    with_warning = f", {warned} of them with a warning" if warned else ""
 
     # WHAT ELSE FIRED, NAMED. **Added 2026-10-05 at the project owner's
     # instruction.** This message was the only thing a failing case emitted, so
@@ -143,9 +184,23 @@ def consistent(results: list[Any]) -> Optional[str]:
     )
     return (
         f"QC_LLM_INCONSISTENT: {passing} of {len(results)} observations "
-        f"passed, so the model does not answer this consistently and no "
+        f"passed{with_warning}, so the model does not answer this consistently and no "
         f"single-sample result from it characterises anything.{alongside}"
     )
+
+def _outcome(result: Any) -> str:
+    """Return one measured observation's outcome: pass, passw or fail.
+
+    Args:
+        result (Any): One observation's result.
+
+    Returns:
+        str: ``passw`` where it passed carrying a warning code, otherwise
+        ``pass`` or ``fail``.
+    """
+    if not result.passed:
+        return "fail"
+    return "passw" if getattr(result, "warning_codes", None) else "pass"
 
 def failure_detail(result: Any) -> str:
     """Return what failed, so a finding names its own cause.

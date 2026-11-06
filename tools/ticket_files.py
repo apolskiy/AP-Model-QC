@@ -3,7 +3,7 @@
 """One ticket file per filed finding, for submitting each to its vendor alone.
 
 Created: 2026-10-15
-Last updated: 2026-11-01
+Last updated: 2026-11-06
 
 This file contains ``page_name`` and ``ticket_name``, which name an engine's
 findings page and one finding's ticket file, ``write_tickets``, which writes a
@@ -252,9 +252,12 @@ def filing_sheet(today: str, filed: dict[str, list[dict[str, Any]]]) -> str:
     Returns:
         str: The sheet, as Markdown.
     """
-    total = sum(len(entries) for entries in filed.values())
+    failures = {engine: [entry for entry in entries if not is_warning(entry)]
+                for engine, entries in filed.items()}
+    total = sum(len(entries) for entries in failures.values())
+    warned = sum(len(entries) for entries in filed.values()) - total
     counted = ", ".join(
-        f"{engine} {len(filed.get(engine, []))}" for engine in sorted(filed)
+        f"{engine} {len(failures.get(engine, []))}" for engine in sorted(filed)
     )
     lines = [
         _SHEET_MARK,
@@ -262,7 +265,8 @@ def filing_sheet(today: str, filed: dict[str, list[dict[str, Any]]]) -> str:
         f"# Filing sheet, {today}",
         "",
         f"**{total} finding(s) to file**, each reproduced on the latest replay: "
-        f"{counted}.",
+        f"{counted}. **{warned} warning(s)** besides, each an answer that "
+        f"corrected itself, listed apart under each engine.",
         "",
         "Each group below is one defect, so it is **one report**: a code "
         "observed on several cases of one engine is that engine's defect seen "
@@ -270,9 +274,9 @@ def filing_sheet(today: str, filed: dict[str, list[dict[str, Any]]]) -> str:
         "evidence, the request as sent, every recorded response unchanged, "
         "what a correct answer is, and a replay command needing no credential.",
         "",
-        "**Not filed:** anything withdrawn as this instrument's own defect, and "
-        "anything that stopped reproducing. Both wait in "
-        "`config/findings/unconfirmed/<engine>.yaml` with the reason, and a "
+        "**Not filed:** a finding resolved upstream, and one the latest run "
+        "did not measure, which waits for a run that does. A finding whose "
+        "case a run measured passing is removed from the register, and a "
         "dependent of a failed foundation is absent because its case skipped "
         "rather than failed.",
     ]
@@ -303,8 +307,46 @@ def _engine_section(engine: str, entries: list[dict[str, Any]]) -> list[str]:
         "behaviour before filing.",
         "",
     ]
+    warnings = [entry for entry in entries if is_warning(entry)]
+    entries = [entry for entry in entries if not is_warning(entry)]
+    lines.extend(_failure_lines(engine, entries))
+    if warnings:
+        lines.extend([
+            "", f"### Warnings, {len(warnings)} answer(s) that corrected themselves", "",
+            "Each passed: the answer stated something wrong and corrected it later "
+            "in the same response. Filed for the vendor to decide on, apart from "
+            "the failures.", "",
+        ])
+        lines.extend(_finding_line(engine, entry) for entry in warnings)
+    return lines
+
+
+def is_warning(entry: dict[str, Any]) -> bool:
+    """Report whether a register entry is a warning finding.
+
+    Args:
+        entry (dict): The register entry.
+
+    Returns:
+        bool: True where it carries ``severity`` ``warning``, which an answer
+        that corrected itself records (``consumer_ci.md`` section 6.4.6).
+    """
+    return entry.get("severity") == "warning"
+
+
+def _failure_lines(engine: str, entries: list[dict[str, Any]]) -> list[str]:
+    """Return one engine's failures, grouped one report per code and layer.
+
+    Args:
+        engine (str): The engine.
+        entries (list): Its fileable failures, in register order.
+
+    Returns:
+        list[str]: The lines, or one saying no failure reproduces.
+    """
+    lines: list[str] = []
     if not entries:
-        return lines + ["No finding reproduces on the latest run."]
+        return ["No finding reproduces on the latest run."]
 
     grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
     for entry in entries:

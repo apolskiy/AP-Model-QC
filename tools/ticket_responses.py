@@ -3,7 +3,7 @@
 """The responses part of a ticket, and the appendix holding what the judge was given.
 
 Created: 2026-11-05
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
 This file contains ``responses_block``, which quotes every recorded response
 whole, each labelled by its checks and, where the judge decided the finding,
@@ -132,7 +132,11 @@ def _label(
     """
     passed, detail = checks
     if not passed:
-        return f"Failed its checks, so the judge was not called: {detail}"
+        if judgement is None:
+            return f"Failed its checks, so the judge was not called: {detail}"
+        scored = (f"the judge scored it {judgement[1]:g}. {judgement[2]}".rstrip()
+                  if decided else "the judge's score is in the appendix.")
+        return f"Failed its checks: {detail}; {scored}"
     if judgement is None:
         return "Passed its checks."
     if not decided:

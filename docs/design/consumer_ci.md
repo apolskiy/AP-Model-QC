@@ -1102,12 +1102,12 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `430003` | P | `a_graded_result_carries_its_band_as_its_suite_root` (harness CMN 16.8) |
 | `430004` | P | `a_run_here_writes_the_shared_failure_categories` (harness CMN 16.9) |
 | `115736` | P | `the_finding_reader_carries_the_questions` |
-| `115737` | P | `a_finding_that_stopped_reproducing_is_withdrawn` |
+| ~~`115737`~~ | | ~~`a_finding_that_stopped_reproducing_is_withdrawn`~~. **Retired 2026-11-06** with `withdrawn` and the hold (section 9.4.11). The identifier stays retired |
 | `115738` | N | `a_run_that_collected_nothing_does_not_retire_findings` |
-| `115739` | P | `the_bug_file_holds_only_what_reproduced` |
+| ~~`115739`~~ | | ~~`the_bug_file_holds_only_what_reproduced`~~. **Retired 2026-11-06** with the holding list (section 9.4.11). The identifier stays retired |
 | `115745` | N | `a_ticket_shows_every_observation_with_its_judgement` (9.5.5) |
 | `115746` | P | `a_ticket_states_a_correct_answer_and_a_command_that_runs` (9.5.5) |
-| `115750` | N | `a_finding_whose_case_skipped_is_not_held` (9.4.7.1) |
+| ~~`115750`~~ | | ~~`a_finding_whose_case_skipped_is_not_held`~~. **Retired 2026-11-06**: nothing is held, and `115822` asserts the skip rule on removal (section 9.4.11). The identifier stays retired |
 | `115751` | N | `a_response_carrying_a_fence_stays_inside_its_own` (9.5.5.1) |
 | `115752` | N | `a_finding_failing_every_observation_drops_a_stale_population` (9.5.5.1) |
 | `115753` | N | `a_ticket_label_is_a_sentence_without_a_dash` (9.5.5.1) |
@@ -1120,7 +1120,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115760` | N | `this_repository_refuses_a_case_collected_twice` (harness `cmn_verdict_and_cli.md` 7.8.5) |
 | `115761` | P | `the_steps_after_the_observations_are_recorded` (9.4.3.3) |
 | `115762` | P | `this_repository_warns_of_its_own_crowded_blocks` (harness taxonomy 11.9.6) |
-| `115763` | N | `a_held_finding_keeps_its_date_and_reason_on_a_later_run` (9.4.8) |
+| ~~`115763`~~ | | ~~`a_held_finding_keeps_its_date_and_reason_on_a_later_run`~~. **Retired 2026-11-06** with the hold (section 9.4.11). The identifier stays retired |
 | `115764` | N | `this_repository_refuses_a_harness_under_mutation` (5.4) |
 | `115765` | P | `a_gate_a_newer_commit_cancelled_is_followed_to_its_verdict` (3.11.3) |
 | `115766` | N | `a_red_gate_or_one_cancelled_in_place_is_refused_unfollowed` (3.11.3) |
@@ -1131,6 +1131,13 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115771` | N | `a_ticket_shows_each_judged_observation_its_judge_prompt` (9.5.5.8) |
 | `115796` | B | `a_stored_judgement_an_observation_never_got_is_not_shown` (9.5.5.8) |
 | `115797` | N | `a_ticket_without_the_four_parts_is_reported` (9.5.5.12) |
+| `115813` | B | `a_failed_observation_keeps_the_judgement_that_quotes_it` (9.5.5.8.1) |
+| `115816` | N | `a_ticket_reads_the_configured_judge_first` (9.5.5.8.2) |
+| `115817` | P | `a_corrected_answer_is_recorded_passw_and_counts_as_a_pass` (6.4.6) |
+| `115818` | P | `a_passw_case_is_a_warning_finding_filed_apart` (6.4.6) |
+| `115819` | N | `the_ceiling_claim_declares_its_correction_and_anchor` (6.4.6) |
+| `115825` | N | `passw_beside_pass_or_fail_is_inconsistent` (6.4.6) |
+| `115820` | N | `no_observation_is_recorded_beyond_a_first_pass_that_holds` (6.4.7) |
 | `115805` | N | `a_ticket_states_the_test_case_step_by_step` (9.5.5.13) |
 | `115806` | N | `a_ticket_shows_the_system_instruction_first` (9.5.5.13) |
 | `115807` | N | `a_ticket_reproduces_without_the_repository` (9.5.5.13) |
@@ -1144,6 +1151,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115772` | N | `a_withheld_judge_leaves_a_graded_case_unpassed` (6.4.2) |
 | `115803` | N | `the_judge_is_given_the_system_instruction_the_candidate_was` (6.4.3) |
 | `115804` | N | `a_judgement_not_shown_the_system_instruction_is_invalid` (6.4.4) |
+| `115814` | N | `a_stopped_judge_skips_a_judged_case_before_its_dispatch` (6.4.5) |
+| `115815` | N | `an_unjudged_observation_earns_nothing_and_keeps_its_code` (6.4.5) |
 | `115773` | N | `a_file_date_line_missing_or_stale_is_reported` |
 | `115774` | N | `every_code_production_code_names_is_registered` |
 | `115775` | N | `a_band_not_reading_the_precondition_record_is_reported` (3.12.1.1) |
@@ -1174,9 +1183,14 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115790` | N | `a_dispatching_job_reading_no_green_pairing_is_reported` (4.23.5) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
-| `115794` | N | `a_withdrawn_finding_is_not_resolved_upstream` (9.4.9) |
+| ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
+| `115812` | N | `a_findings_run_reads_no_result_an_earlier_run_left` (9.3.1) |
+| `115821` | P | `a_finding_whose_case_passed_on_replay_is_removed` (9.4.11) |
+| `115822` | N | `a_finding_whose_case_skipped_is_kept` (9.4.11) |
+| `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
+| `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 149 cases, 109 negative, 32 positive, 8 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 158 cases, 115 negative, 34 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2869,6 +2883,92 @@ the eight hidden-passage tasks and the 14 of `gnd_no_falsehood`, whose
 instruction postdates its recordings. The case stays red until they are judged
 again, which waits for the harness and test fixes to finish.
 
+#### 6.4.5 A judge that stopped answering skips a judged case before its candidate is dispatched
+
+Added 2026-11-06, after the first run judged by claude. **Every judge request
+was rejected with 400** (harness `tier2_execution.md` section 7.8.5), and the
+run kept going. Each judged case dispatched its candidate, its judgement came
+back unavailable, and three unjudged observations were read as failures, which
+drew two more. The fourth found no recording, so the case reported
+`QC_HARNESS_FIXTURE_MISSING` and the judge's own code was never shown.
+
+**A judge unavailable is environmental, and it is a property of the run.**
+The harness channel now stops at the first failure that will repeat, or at the
+breaker threshold of transient ones (harness `tier2_execution.md` section
+8.3.3), and names the code it stopped on. This repository reads that code in
+three places.
+
+| Where | What holds |
+|---|---|
+| `observe`, before dispatch | A rule carrying a rubric, with the judge not withheld, whose judge has stopped: the observation is recorded as an `environmental` skip carrying the judge's code, and the case skips **without dispatching its candidate**. A live run buys no response nobody can score; a replay reads none |
+| `observe_repeatedly`, escalation | An observation whose judgement was unavailable or withheld is passed to the harness rule as no outcome rather than a failure, so it earns no further observation (harness `cmn_verdict_and_cli.md` section 4.9.2.2.1) |
+| The code an unjudged observation reports | **The judge's own code**, the first harness code the result carries. Until this section a provider code read as `QC_HARNESS_PARSER_ERROR` when a case concluded, and the observation record carried the first code of any family, which is an assertion's when a check failed before the judge was asked |
+
+**A rule carrying no rubric is untouched.** The deterministic families bind no
+judge, so a stopped judge cannot skip them, and a run judging nothing never asks
+whether the judge has stopped.
+
+`MQC_CAS_UNI_115814` asserts the skip before dispatch, with the judge's code
+and an `environmental` record, and that a withheld judge and a rule with no
+rubric are not skipped. `MQC_CAS_UNI_115815` asserts that unmeasured
+observations earn no escalation and that an unjudged observation reports the
+judge's code, both in its record and when the case concludes.
+
+#### 6.4.6 An answer that corrected itself is recorded passw, and filed as a warning
+
+Added 2026-11-06 at the project owner's ruling, after `134206` reported
+`gemini-4-argon` for an answer that stated the overstatement exceeded the five
+per cent ceiling and, later in the same response, worked the figure and said it
+was within it. **The model recovered, so it is not a failure; the error is
+still the vendor's to decide on, so it is filed.** The harness reads the order
+(harness `tier3_evaluation.md` section 5.3.2) and counts the outcome apart
+(harness `harness_test_taxonomy.md` section 5.1.2).
+
+| Where | What holds |
+|---|---|
+| The rule | A forbidding `claim` declares `corrected_by`. A correction must come after the last wrong statement; one before it is taken back and fails |
+| The rubric | The level 5 anchor requires no contrary statement anywhere in the response; an answer that first states the wrong comparison and corrects itself scores at most 4 |
+| The observation record | Outcome `passw` where the result passed and carries a warning code; a pass in the escalation rule and in every floor |
+| Repeat observations | Agree only when every measured observation has the same outcome. `passw` beside `pass`, or beside `fail`, is `QC_LLM_INCONSISTENT`, and the message counts the warnings among the passes |
+| The band report | `passw` counted from the JUnit property `mqc_outcome`, apart from `passed` |
+| The findings | A case carrying the property is a **warning** finding with its own ticket, listed apart from the failures on the filing sheet |
+| Two judges | A judge gives a score and never an outcome: `passw` is set by the assertion that found the correction, never by a judge. Two judges disagree when one score clears the rubric threshold and the other does not on the same observation, and that observation is examined, rubric, case, prompts, responses, system instructions and both judgements, before anything is filed |
+
+**A changed rubric invalidates the rule's stored judgements**, so the rule is
+judged again on every engine with the candidates replayed, on the configured
+judge and on claude, before its findings are regenerated.
+
+`MQC_CAS_UNI_115817` asserts the record, `115818` the warning finding and its
+place on the filing sheet, and `115819` the corpus: `134206`'s assertion
+declares `corrected_by` and its level 5 anchor names the contrary statement.
+`115825` asserts that `passw` beside `pass` or beside `fail` is inconsistent.
+
+#### 6.4.7 An observation beyond the first pass is recorded only where the first pass failed
+
+Added 2026-11-06 at the project owner's ruling, after `134206` was judged
+again under its new rubric and gemini's fourth and fifth observations stayed
+on disk from the run before. **A run takes the roster's observation count,
+three, and takes two more only when one of those fails**
+(`cmn.observations.further_observations`). An escalated observation belongs
+to the conditions that failed: once a rule, rubric, prompt or the harness
+changes and the first pass holds, the earlier observations were made under
+different conditions and are not evidence.
+
+| Where | What holds |
+|---|---|
+| A recorded case | Holds no more observations than the roster count unless one of the first ones fails today, from its checks or from its stored judgement against the rubric |
+| A replay | Reads only the first pass when it holds, so a leftover is never measured and never reported by a run |
+| A ticket | Quotes every recording, so a leftover would put a response and a score from other conditions in front of a vendor |
+| The remedy | The observations beyond the first pass are removed, their judgements under every judge with them |
+
+**Measured the same way a ticket measures**: the screen, assertions and tool
+checks re-run on the recorded text, and the stored judgement of the configured
+judge, then any other, read against the rubric's threshold
+(`tools.ticket_recordings.observation_outcomes`, `ticket_report.judged_outcome`).
+
+`MQC_CAS_UNI_115820` reports every case holding observations beyond a first
+pass that holds.
+
 ## 7. The Three-Rung Attribution Ladder
 
 Added 2026-09-24. A graded run has two moving parts, the candidate and the
@@ -3246,8 +3346,26 @@ recompute:
 | `observations` | How many of how many passed, which is what makes an inconsistency claim checkable |
 | `expected`, `actual` | The two sentences a ticket opens with |
 | `reproduce` | The exact command |
-| `status` | `open`, `reported`, or `resolved_upstream` |
+| `status` | `open` or `resolved_upstream` (section 9.4.11) |
 | `ticket` | The vendor's reference, added by hand when one is filed |
+
+#### 9.3.1 The served model is read from this run's results and no other
+
+**What must hold.** `observed_model` names the model that served the run
+being recorded. The Allure results `tools/findings_run.py` reads it from are
+written by that run alone, so the directory is emptied before the run starts.
+
+**Why it is stated.** The directory sat at one fixed temporary path and was
+created, never emptied. By 2026-11-06 it held 46,000 result files for gemini,
+4,067 of them published by `gemini-3.8-flash` runs and 380 by
+`gemini-4-argon`. `models_by_case` reads the files in name order and the last
+one for a case wins, so both gemini findings recorded `gemini-3.8-flash` after
+every recording answered `gemini-4-argon`, and both tickets carried that model
+in their title. A replay published the right model; nothing compared it with
+what the register kept.
+
+`MQC_CAS_UNI_115812` places a stale result in the directory and asserts that
+preparing it for a run leaves nothing behind.
 
 ### 9.4 Only a live run can detect an upstream fix
 
@@ -3273,6 +3391,8 @@ so it keeps its `observed_model` and gains a second observation rather than
 losing the first.
 
 ### 9.4.1 A finding can be withdrawn, and that is not the same as resolved
+
+**Superseded by section 9.4.11 on 2026-11-06**: `withdrawn` is retired, and a finding the run measured passing is removed.
 
 Added 2026-10-05, when the first finding was withdrawn.
 
@@ -3805,6 +3925,8 @@ question moved, so the recorded answers answer a different one.
 
 ### 9.4.7 A finding a fresh run does not reproduce is held, and the miss is examined
 
+**Superseded by section 9.4.11 on 2026-11-06**: nothing is held, and a finding the run measured passing is removed. Section 9.4.7.1 still holds.
+
 Decided 2026-10-12 by the project owner: "If failure no longer reproduces we
 withdraw, perhaps analyze why we have not caught it."
 
@@ -3877,6 +3999,8 @@ measures it decides. `MQC_CAS_UNI_115750` asserts both.
 
 ### 9.4.8 A bug file holds what the latest run reproduced; the rest waits
 
+**Superseded by section 9.4.11 on 2026-11-06**: the holding list and the `intermittent` marker are retired.
+
 Decided 2026-10-12 by the project owner: "let's engine bug files keep only
 problems we reproduced on the latest run, if problems are no longer
 reproducible or prove intermittent, let's keep a separate list, if they
@@ -3946,6 +4070,8 @@ gate: a P0 or P1 failure fails the run whether its finding is filed, held or
 withdrawn (section 9.2).
 
 ### 9.4.9 Resolution is held to the rules the hold is held to, and was not
+
+**The withdrawn half is superseded by section 9.4.11 on 2026-11-06**, with `withdrawn` and the hold; the skip guard and `115793` stand.
 
 Added 2026-10-29 at the project owner's instruction, who asked that
 `resolve_upstream` be made correct before a live rerun fed it.
@@ -4130,6 +4256,81 @@ non-event.
 A rule edit does not move a request hash, which is what made "a replay is the
 verification" look sound; what moves is the set of observations that ask for a
 judgement, and nothing in the request hash can show that.
+
+### 9.4.11 A finding the run measured passing is removed, unless a live run resolves it
+
+Decided 2026-11-06. **It supersedes sections 9.4.1, 9.4.7 and 9.4.8, and the
+withdrawn half of 9.4.9**, whose prose stays as the history of what was
+replaced.
+
+**What must hold.** The register holds what the latest measuring run
+reproduced, and the findings a live run resolved upstream. Nothing else.
+
+| Situation | The entry becomes |
+|---|---|
+| The run reproduces it, as a failure or as passw | `open` |
+| Its case was measured passing on a live run with `--resolve-from-live` | `resolved_upstream`, with `resolved_on` and `resolved_model` (section 9.4.9) |
+| Its case was measured passing on any other run, replay or live | **Removed**, with the change line `REMOVED <case>, it passed on <date>` |
+| Its case skipped, so the run did not measure it | Kept unchanged, as section 9.4.7.1 states |
+| A failure entry the run measures as passw, or a warning entry it measures failing | **Replaced by a fresh entry**, with the change line `REPLACED <case>, ...` |
+
+**Why it is stated.** A) A finding that our own fix removed, to the harness, a
+rubric, a prompt or a system instruction, and that passed on retest, was kept:
+as `withdrawn` with a reason, or as `not_reproduced` in
+`config/findings/unconfirmed/`, where a later reproduction promoted it back
+with `intermittent: true`, and where a withdrawn one that failed again carried
+`reproduced_on` and a review ticket. B) The fix that removes such a finding
+also removes its evidence. The case is retaken under the changed harness,
+rubric, prompt or instruction, the recordings it was observed on are replaced,
+and a record of the finding points at observations nobody can open. A run made
+under different conditions is not evidence about this one either, so the
+earlier population cannot be compared with the later one, and a flip between
+them is not a measurement.
+
+**Removal needs a pass, as holding did.** A case absent from the failures may
+have skipped behind a failed foundation or a missing recording, and its
+finding stays until a run measures it (section 9.4.7.1). The run's passing
+cases are read from the same report as its failures.
+
+**Removal is automatic.** `--hold-unreproduced` is removed, and argparse
+refuses it. A replay run that measures the case passing removes its finding,
+and a live run does the same unless `--resolve-from-live` asks for the
+vendor's fix to be recorded instead. Only the live path writes a record,
+because only it makes a claim about the model (section 9.4).
+
+**A change of severity is a new finding.** A passw warning is a claim that the
+answer was corrected within itself (section 6.4.6) and a failure is a claim
+that it was not, so a failure entry the run measures as passw is replaced: its
+`first_observed`, population, `ticket` and diagnosis describe the failure and
+none of them carries over. A warning entry measured failing is replaced the
+same way, for the same reason in the other direction.
+
+**The empty-run guard counts what the merge would retire.** A run that
+collected nothing removes every finding it did not see, which is the loss
+`MQC_CAS_UNI_115738` guards; the count it is given is the entries this merge
+removes or resolves.
+
+**One file per engine.** `config/findings/<engine>.yaml` carries the open and
+the resolved entries, and the ticket generator files only the open ones
+observed on the register's latest date (section 9.5.5.1). There is no holding
+list, so `holding_path` and `partition` are removed and `load_register` reads
+the one file.
+
+| Retired | Was |
+|---|---|
+| The statuses `withdrawn` and `not_reproduced` | The two ways a finding left the bug file without being resolved |
+| `withdrawn_on`, `withdrawn_reason`, `held_on`, `held_reason` | Their dates and reasons |
+| `config/findings/unconfirmed/` | The holding list |
+| `intermittent` and the `PROMOTED` line | A held finding that reproduced again |
+| `reproduced_on`, `clear_stale_reproductions` and the `RETURNED` line | A withdrawn finding that failed again |
+| `tools/review_report.py` and `reports/tickets/review/` | The review tickets written for those |
+
+**None of the registers carried a retired status on 2026-11-06**, so the
+change is to the mechanism and no entry moves.
+
+`MQC_CAS_UNI_115821` to `115824` assert it: removal on a replay pass, the skip
+that keeps its finding, the failure replaced by a warning, and the refused
+flag with no retired status and no holding list written.
 
 ### 9.5 Filing needs three sources joined, and nothing joined them
 
@@ -4663,6 +4864,64 @@ the defect it closes.
 `MQC_CAS_UNI_115796` that a judgement an observation never received is shown
 neither as a prompt nor as a score.
 
+##### 9.5.5.8.1 A failed check keeps the judgement whose prompt quotes its response
+
+Found 2026-11-06, reading gemini's `134206` ticket. **The premise above stopped
+being true on 2026-11-02**, when the harness began judging a response whose
+checks failed (harness `tier3_evaluation.md` section 4.2): a run that is not an
+injection, a relay or a `fatal` failure sends every response to the judge and
+records the judgement, so a recording kept for comparison carries the rubric's
+reading of a response the checks rejected, and a run finds every problem a
+response has rather than one per fix.
+
+**The ticket kept the old premise and dropped the measurement.** All five of
+`134206`'s responses failed `A_GND_CEILING_NOT_MISCOMPARED`, all five were
+judged by `gemini-4-argon`, and the page labelled each "Failed its checks, so
+the judge was not called" and showed no score and no judge prompt.
+
+| Read from | Said |
+|---|---|
+| The ticket | The judge was not called |
+| The judgement recorded for response 1 | Scored 5, the prompt quoting response 1 word for word |
+
+**So whether a judgement belongs to a failed observation is decided by what it
+quotes.** Where the checks failed, the judgement stored at that index is the
+observation's own when its prompt carries the observation's response, and it is
+dropped otherwise, which is the stale record this section was written for: that
+prompt quoted an earlier response. A judgement stored without a prompt cannot
+be checked and is dropped where the checks failed, as before. A response whose
+checks passed keeps its judgement unchanged.
+
+**Its label says both outcomes**: the check that failed, then the judge's
+score, which stands in the appendix where the checks decided the finding.
+"The judge was not called" is said only where no judgement of its own exists.
+
+`MQC_CAS_UNI_115813` asserts a failed observation keeps and labels its own
+judgement and still drops one quoting another response.
+
+##### 9.5.5.8.2 A ticket reads the configured judge first
+
+Added 2026-11-06. **A second judge's recordings sit beside the first's**, under
+`judgements/<engine>/<judge>/`, since claude judged gemini's `134206` that day.
+The ticket tool read the judge folders alphabetically, so `claude` came before
+`gemini`, and a gemini ticket would have shown claude's scores and named claude
+in its reproduction command, although gemini is the judge the roster configures
+and the one whose scores decided the finding.
+
+| Order | Judge folder read |
+|---|---|
+| First | The judge the engine roster names, `judge.engine` in the installed harness's `engines.yaml` |
+| Then | Every other judge folder, alphabetically |
+
+**Each observation takes the first judgement found for it**, so another judge
+fills only an observation the configured judge left without one. The
+reproduction command names the first judge in that order holding the pair.
+
+`MQC_CAS_UNI_115816` asserts the configured judge is read first for an engine
+holding a second judge's folder that sorts before it, that another judge fills
+an observation the configured one left empty, and that the reproduction names
+the configured judge.
+
 #### 9.5.5.9 A ticket counts one population, and names the observations it could not read
 
 Found 2026-10-24, regenerating the tickets after the screen and the unprompted
@@ -4883,6 +5142,8 @@ them was which words they used to describe it. That is visible only by
 contrasting the two, and invisible in any summary of either.
 
 ##### A withdrawn finding that reproduces gets a ticket of its own, and no filing
+
+**Superseded by section 9.4.11 on 2026-11-06**: `withdrawn`, `reproduced_on` and the review tickets are retired, and `115797` asserts the four parts only.
 
 **A ticket exists if and only if its finding reproduced on the latest run.** A
 withdrawn finding that reproduces is evidence for a decision rather than

@@ -3,10 +3,10 @@
 """The band report, which prints a band's result line from its JUnit XML for a job summary.
 
 Created: 2026-10-06
-Last updated: 2026-10-21
+Last updated: 2026-11-06
 
-This file contains ``counts_from``, which reads the passed and failed counts and
-each skip's reason from one JUnit report, and ``main``, which prints the band
+This file contains ``counts_from``, which reads the passed, passw and failed
+counts and each skip's reason from one JUnit report, and ``main``, which prints the band
 line for one report or, with ``--overall``, a table with one row per band.
 
 The band composite action runs it after each band, appending the line to the
@@ -47,25 +47,26 @@ from typing import Final
 from typing import Optional
 from xml.etree import ElementTree
 
-from cmn.band_summary import band_table, result_lines
+from cmn.band_summary import Heading, band_table, result_lines
 
 
-def counts_from(report: Path) -> tuple[int, int, list[tuple[str, str]]]:
-    """Return passed, failed and each skip's reason from a JUnit report.
+def counts_from(report: Path) -> tuple[int, int, list[tuple[str, str]], int]:
+    """Return passed, failed, each skip's reason and passw from a JUnit report.
 
     **A case carrying neither failure, error nor skip passed.** JUnit records
-    the exceptions rather than the successes, so a pass is an absence.
+    the exceptions rather than the successes, so a pass is an absence. A pass
+    carrying the property ``mqc_outcome`` ``passw`` is counted as passw instead.
 
     Args:
         report (Path): The JUnit XML a run wrote.
 
     Returns:
-        tuple: Passed count, failed count, and one ``(case, reason)`` pair per
-        skipped case. **The pair rather than the reason alone**, because a skip
-        is reported on its own line against the case it belongs to (harness
-        design section 7.11.3).
+        tuple: Passed count, failed count, one ``(case, reason)`` pair per
+        skipped case, and the passw count. **The pair rather than the reason
+        alone**, because a skip is reported on its own line against the case it
+        belongs to (harness design sections 7.11.3 and 7.11.5).
     """
-    passed = failed = 0
+    passed = failed = warned = 0
     skips: list[tuple[str, str]] = []
     for case in ElementTree.parse(report).getroot().iter("testcase"):
         skipped = case.find("skipped")
@@ -77,8 +78,12 @@ def counts_from(report: Path) -> tuple[int, int, list[tuple[str, str]]]:
         if case.find("failure") is not None or case.find("error") is not None:
             failed += 1
             continue
+        if any(prop.get("name") == "mqc_outcome" and prop.get("value") == "passw"
+               for prop in case.iter("property")):
+            warned += 1
+            continue
         passed += 1
-    return passed, failed, skips
+    return passed, failed, skips, warned
 
 
 # A REPORT ASKED FOR AND NOT THERE. 4 is the project's refusal code: the
@@ -117,6 +122,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         return 0
 
     measured: list[tuple[str, int, int, list[str]]] = []
+    warned_by_band: list[int] = []
     for report, band in zip(parsed.report, bands):
         if not report.is_file():
             # AN ABSENCE IS NOT AN EMPTINESS. This said "that band ran
@@ -130,20 +136,25 @@ def main(argv: Optional[list[str]] = None) -> int:
                 f"writes a report saying so"
             )
             return _EXIT_NO_REPORT
-        passed, failed, skips = counts_from(report)
+        passed, failed, skips, warned = counts_from(report)
         measured.append((band, passed, failed, skips))
+        warned_by_band.append(warned)
 
     if not measured:
         return 0
 
     if parsed.overall:
-        for line in band_table(measured) or ["Nothing was measured."]:
+        # A PASSW IS A PASS in the per-band table, which has no column for it.
+        table = [(band, passed + warned, failed, skips)
+                 for (band, passed, failed, skips), warned in zip(measured, warned_by_band)]
+        for line in band_table(table) or ["Nothing was measured."]:
             print(line)
         return 0
 
-    for band, passed, failed, skips in measured:
+    for (band, passed, failed, skips), warned in zip(measured, warned_by_band):
         lines = result_lines(
-            passed=passed, failed=failed, skips=skips, priority=band,
+            passed=passed, failed=failed, skips=skips, heading=Heading(priority=band),
+            passw=warned,
         )
         for line in lines or ["This band selected nothing."]:
             print(line)

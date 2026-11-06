@@ -1,56 +1,46 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""The findings file writer, which puts each finding in the bug file or the holding list.
+"""The findings file writer, which writes each engine's bug file and chooses what is filed.
 
 Created: 2026-10-12
-Last updated: 2026-10-21
+Last updated: 2026-11-06
 
-This file contains ``register_path`` and ``holding_path``, which name an
-engine's bug file and holding list, ``partition`` and ``to_file``, which split
-a register into what is fileable and what waits, ``refuse_empty_run``, which
-refuses a merge from a run that measured too little, and ``write_register``,
-which writes both files from one merged register.
+This file contains ``register_path``, which names an engine's bug file,
+``to_file``, which splits a register into what is filed and what awaits
+measurement, ``refuse_empty_run``, which refuses a merge from a run that
+measured too little, and ``write_register``, which writes the bug file from one
+merged register.
 
 ``tools.findings`` calls it after reading a run, to refuse or write, and
 ``tools.ticket_report`` calls ``to_file`` to choose the findings that get a
-ticket. Which file an entry lands in therefore decides whether it is filed with
-a vendor.
+ticket.
 
-Specified by ``docs/design/consumer_ci.md`` section 9.4.8.
+Specified by ``docs/design/consumer_ci.md`` section 9.4.11.
 
 **Split from ``findings.py`` on 2026-10-12**, which this subject took to 903
 lines against the nine-hundred-line runway ceiling.
 
-**A bug file is what gets filed**, so it carries only what the latest run
-reproduced, whatever that finding's failure rate. Everything else waits in
-``unconfirmed/`` with its reason: a claim retracted as ours, or one that
-stopped reproducing.
+**One file per engine.** It holds the open findings and those a live run
+resolved upstream; only the open ones are filed.
 
 **And a run that measured nothing is refused rather than believed.** A
 collection error aborts pytest before any case executes and the merge then sees
 an empty result: on 2026-10-12 a stale import in one case module emptied all
-four bug files in a single command, moving twelve reproducing findings into the
-holding list. Recording a finding a run did not see is impossible; retiring one
-on an empty result is a silent, total loss, and the asymmetry is why the guard
-reads the report rather than the exit status.
+four bug files in a single command. Recording a finding a run did not see is
+impossible; retiring one on an empty result is a silent, total loss, and the
+asymmetry is why the guard reads the report rather than the exit status.
 """
 
-import logging
 from pathlib import Path
 from typing import Any, Final, Optional
 from xml.etree import ElementTree
 
-logger = logging.getLogger(__name__)
-
 _REGISTER_ROOT: Final[Path] = Path("config") / "findings"
-_HOLDING_ROOT: Final[Path] = _REGISTER_ROOT / "unconfirmed"
 
 # BELOW THIS, A GRADED RUN DID NOT HAPPEN. The suite carries seventy graded
 # cases, so a report with fewer than ten means the selection failed rather than
 # that the findings resolved.
 _MINIMUM_COLLECTED: Final[int] = 10
-
-_UNREPRODUCED: Final[str] = "not_reproduced"
 
 
 def register_path(engine: str) -> Path:
@@ -65,42 +55,10 @@ def register_path(engine: str) -> Path:
     return _REGISTER_ROOT / f"{engine}.yaml"
 
 
-def holding_path(engine: str) -> Path:
-    """Return where this engine's unfileable findings wait.
-
-    Args:
-        engine (str): The engine.
-
-    Returns:
-        Path: The holding file, which need not exist.
-    """
-    return _HOLDING_ROOT / f"{engine}.yaml"
-
-
-def partition(
-    findings: dict[str, dict[str, Any]],
-) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
-    """Split a register into what is fileable and what waits.
-
-    Args:
-        findings (dict): Every entry, by case.
-
-    Returns:
-        tuple: The fileable entries and the held ones, each by case. **Fileable
-        means status open**, which is the only state a vendor can act on.
-    """
-    fileable = {
-        case: entry for case, entry in findings.items()
-        if entry.get("status") == "open"
-    }
-    held = {case: entry for case, entry in findings.items() if case not in fileable}
-    return fileable, held
-
-
 def refuse_empty_run(
     report: Path,
     observed: dict[str, dict[str, Any]],
-    held_count: int,
+    retired_count: int,
 ) -> Optional[str]:
     """Return a refusal where this run measured too little to merge.
 
@@ -111,7 +69,8 @@ def refuse_empty_run(
     Args:
         report (Path): The JUnit XML the run wrote.
         observed (dict): What the run reported, by case.
-        held_count (int): How many entries this merge would retire.
+        retired_count (int): How many entries this merge would remove or
+            resolve upstream.
 
     Returns:
         Optional[str]: The reason to refuse, or None where the run may be
@@ -132,10 +91,10 @@ def refuse_empty_run(
             f"A run that could not collect is not a run in which nothing "
             f"reproduced"
         )
-    if held_count and not observed and len(cases) < _MINIMUM_COLLECTED:
+    if retired_count and not observed and len(cases) < _MINIMUM_COLLECTED:
         return (
             f"the run collected {len(cases)} case(s) and reported no failure, "
-            f"while {held_count} finding(s) would be retired. A graded suite "
+            f"while {retired_count} finding(s) would be retired. A graded suite "
             f"this small means the selection failed"
         )
     return None
@@ -146,34 +105,20 @@ def write_register(
     findings: dict[str, dict[str, Any]],
     renderer: Any,
 ) -> None:
-    """Write the bug file and the holding list from one merged register.
+    """Write the bug file from one merged register.
 
     Args:
-        engine (str): The engine whose files to write.
-        findings (dict): Every entry, by case.
-        renderer (Any): Called as ``renderer(engine, entries, holding=bool)``
-            to produce each file's text. **Injected** so this module decides
-            placement and ``findings.py`` keeps the format.
+        engine (str): The engine whose file to write.
+        findings (dict): Every entry, by case, open and resolved alike.
+        renderer (Any): Called as ``renderer(engine, entries)`` to produce the
+            file's text. **Injected** so ``findings.py`` keeps the format.
 
     Returns:
         None
     """
-    fileable, held = partition(findings)
     register_path(engine).write_text(
-        renderer(engine, fileable), encoding="utf-8", newline="\n"
+        renderer(engine, findings), encoding="utf-8", newline="\n"
     )
-    # AN ABSENT FILE IS HOW THIS PROJECT SAYS "NOTHING HERE" EVERYWHERE ELSE.
-    # An empty one invites a reader to wonder what was removed.
-    holding = holding_path(engine)
-    if held:
-        holding.parent.mkdir(parents=True, exist_ok=True)
-        holding.write_text(
-            renderer(engine, held, holding=True), encoding="utf-8", newline="\n"
-        )
-    elif holding.is_file():
-        holding.unlink()
-        logger.info("%s has nothing held, so its holding file is removed", engine)
-
 
 def to_file(
     findings: list[dict[str, Any]],
@@ -185,12 +130,12 @@ def to_file(
 
     Returns:
         tuple: The open findings observed on the newest ``last_observed`` among
-        them, and the open findings observed earlier. A withdrawn finding is in
-        neither (``consumer_ci.md`` section 9.5.5.1).
+        them, and the open findings observed earlier. A finding resolved
+        upstream is in neither (``consumer_ci.md`` sections 9.5.5.1 and 9.4.11).
     """
     live = [
         entry for entry in findings
-        if isinstance(entry, dict) and entry.get("status") != "withdrawn"
+        if isinstance(entry, dict) and entry.get("status", "open") == "open"
     ]
     latest = max((str(entry.get("last_observed") or "") for entry in live), default="")
     filed = [entry for entry in live if str(entry.get("last_observed") or "") == latest]

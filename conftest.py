@@ -3,7 +3,7 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-11-03
+Last updated: 2026-11-06
 
 This file contains the pytest hooks for the case suite. They declare the
 execution flags, record what the run was invoked with, label severity, select
@@ -51,11 +51,12 @@ from cmn.environments import (
     refuse_precondition_failures,
     refuse_precondition_skips,
 )
-from cmn.band_summary import Alarms, result_lines, skipped_cases_from
+from cmn.band_summary import Alarms, Heading, result_lines, skipped_cases_from
 from cmn.broken import broken_count, broken_detail_lines, mark_broken, refuse_broken
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
 from cmn.mutation_guard import imported_harness_root, refuse_if_mutating
+from cmn.passw import mark_passw, passw_count
 from cmn.run_context import adopt_run_context, publish_preconditions_record
 from cmn.selection import (
     refuse_repeated_cases,
@@ -297,6 +298,8 @@ def pytest_runtest_makereport(item: pytest.Item, call: Any) -> Any:
     outcome = yield
     # A CRASH IS BROKEN, NOT FAILED (taxonomy section 5.1.1).
     mark_broken(outcome.get_result(), call)
+    # A PASS WITH A WARNING IS COUNTED APART (taxonomy section 5.1.2).
+    mark_passw(outcome.get_result(), item)
     # EVERY PHASE, not only the call. A middle link skipped by the cascade
     # reports from setup, and recording only the call phase left the next link
     # with no entry to read. Design section 10.28.5.
@@ -380,22 +383,26 @@ def pytest_terminal_summary(
     del exitstatus
     stats = getattr(terminalreporter, "stats", {}) or {}
     broken = broken_count(stats)
+    warned = passw_count(stats)
     lines = result_lines(
-        passed=len(stats.get("passed", [])),
+        passed=len(stats.get("passed", [])) - warned,
+        passw=warned,
         failed=len(stats.get("failed", [])) - broken[0],
         skips=skipped_cases_from(stats.get("skipped", [])),
-        priority=str(config.getoption("--priority") or ""),
-        # THE ENGINE ONLY WHERE ONE WAS MEASURED. `--engine` carries a
-        # default, so a precondition run reported "on gemini" about a run
-        # that contacted nothing. A graded case having run is the signal.
-        engine=(
-            str(config.getoption("--engine", "") or "")
-            if any(
-                not is_precondition(getattr(report, "nodeid", ""))
-                for outcome in ("passed", "failed", "skipped")
-                for report in stats.get(outcome, [])
-            )
-            else ""
+        heading=Heading(
+            priority=str(config.getoption("--priority") or ""),
+            # THE ENGINE ONLY WHERE ONE WAS MEASURED. `--engine` carries a
+            # default, so a precondition run reported "on gemini" about a run
+            # that contacted nothing. A graded case having run is the signal.
+            engine=(
+                str(config.getoption("--engine", "") or "")
+                if any(
+                    not is_precondition(getattr(report, "nodeid", ""))
+                    for outcome in ("passed", "failed", "skipped")
+                    for report in stats.get(outcome, [])
+                )
+                else ""
+            ),
         ),
         alarms=Alarms(
             preconditions_skipped=sum(

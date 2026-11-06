@@ -3,11 +3,13 @@
 """The measuring half of the findings recorder: what a run measured.
 
 Created: 2026-11-01
-Last updated: 2026-11-01
+Last updated: 2026-11-06
 
-This file contains ``observe``, which runs the graded suite for one engine and
-returns the JUnit XML and Allure results it wrote, ``parse_passed`` and
-``parse_failures``, which read what that run measured out of the XML,
+This file contains ``results_directory``, which empties the directory a run
+writes its Allure results to, ``observe``, which runs the graded suite for one
+engine and returns the JUnit XML and Allure results it wrote, ``parse_passed``,
+``parse_warnings`` and ``parse_failures``, which read what that run measured out
+of the XML,
 ``expected_by_case``, which reads what each case was asserting out of the
 matrix, and ``models_by_case``, which reads the model that served each case out
 of the published results.
@@ -27,6 +29,7 @@ change that cleared a stale reproduction mark (``code-style.md`` section 5.1).
 import csv
 import json
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -47,6 +50,29 @@ _TEST_FRAME: Final[str] = "tests" + chr(92)
 _TEST_FRAME_POSIX: Final[str] = "tests/"
 _ERROR_LINE: Final[str] = chr(10) + "E "
 _IN_CASE: Final[str] = " in MQC_"
+
+
+def results_directory(scratch: Path) -> Path:
+    """Return the directory one run writes its Allure results to, ready for that run.
+
+    Args:
+        scratch (Path): The run's scratch directory.
+
+    Returns:
+        Path: ``scratch / "allure"``, existing and empty.
+
+    Design: ``consumer_ci.md`` section 9.3.1.
+    """
+    results = scratch / "allure"
+    # EMPTIED FIRST. The path is fixed, so a result an earlier run left would
+    # be read as this run's, and the last file for a case names its model.
+    if results.exists():
+        shutil.rmtree(results)
+    # CREATED FIRST. allure-pytest does not create an intermediate directory,
+    # and a path whose parent is absent makes pytest exit 5 having collected
+    # nothing at all rather than reporting the bad path.
+    results.mkdir(parents=True, exist_ok=True)
+    return results
 
 
 def observe(engine: str, mode: str, *, timeout: int = 1800) -> tuple[Path, str]:
@@ -77,11 +103,7 @@ def observe(engine: str, mode: str, *, timeout: int = 1800) -> tuple[Path, str]:
     """
     scratch = Path(tempfile.gettempdir()) / f"mqc-findings-{engine}-{mode}"
     report = scratch.with_suffix(".xml")
-    results = scratch / "allure"
-    # CREATED FIRST. allure-pytest does not create an intermediate directory,
-    # and a path whose parent is absent makes pytest exit 5 having collected
-    # nothing at all rather than reporting the bad path.
-    results.mkdir(parents=True, exist_ok=True)
+    results = results_directory(scratch)
     try:
         completed = subprocess.run(
             [
@@ -151,6 +173,38 @@ def parse_passed(report: Path) -> frozenset[str]:
         for element in ElementTree.parse(report).getroot().iter("testcase")
         if all(element.find(tag) is None for tag in ("failure", "error", "skipped"))
     )
+
+
+def parse_warnings(report: Path) -> dict[str, dict[str, Any]]:
+    """Return each case that passed with a warning, as a warning finding.
+
+    Args:
+        report (Path): The JUnit XML a run wrote.
+
+    Returns:
+        dict: Case identifier to its taxonomy code, the most critical of the
+        ``mqc_warning_code`` properties it carries, an ``actual`` sentence, and
+        ``severity`` ``warning``. Only cases carrying ``mqc_outcome`` ``passw``
+        and no failure (``consumer_ci.md`` section 6.4.6).
+    """
+    warnings: dict[str, dict[str, Any]] = {}
+    for element in ElementTree.parse(report).getroot().iter("testcase"):
+        marks = [(str(prop.get("name")), str(prop.get("value")))
+                 for prop in element.iter("property")]
+        if ("mqc_outcome", "passw") not in marks or element.find("failure") is not None:
+            continue
+        codes = [value for name, value in marks if name == "mqc_warning_code"]
+        classified = most_critical(codes) or (codes[0] if codes else "")
+        warnings[str(element.get("name", ""))] = {
+            "taxonomy_code": classified,
+            "observations": "",
+            "actual": (
+                f"{classified} stated and corrected later in the same response, "
+                f"so the case passed with a warning"
+            ),
+            "severity": "warning",
+        }
+    return warnings
 
 
 def parse_failures(report: Path) -> dict[str, dict[str, Any]]:

@@ -571,6 +571,9 @@
         - just within
         - '30.135'
         - '4.5'
+        # A LATER SENTENCE PUTTING THE FIGURE WITHIN THE CEILING is a recovery,
+        # and the case passes with a warning (consumer_ci.md section 6.4.6).
+        corrected_by: '(?i)\b(within|below|under|does not exceed|not more than)\b[^.]{0,40}\b(5|five)\s*(%|per\s?cent)'
       taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
       severity: violation
       constraint_ref: GND_WITHIN_STATED_CEILING
@@ -612,7 +615,10 @@
             description: Rounds to 30 million as asked.
             exemplar: EMEA revenue rounds up to 30 million.
           5:
-            description: Rounds and states the overstatement against the ceiling.
+            description: >-
+              Rounds and states the overstatement against the ceiling, with no
+              contrary statement anywhere in the answer. An answer that first
+              states the wrong comparison and corrects itself scores at most 4.
             exemplar: >-
               EMEA revenue was 28.7 million, which rounds up to 30 million.
               That overstates it by about 4.5%, within the 5 percent ceiling,

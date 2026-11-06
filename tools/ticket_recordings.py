@@ -3,14 +3,17 @@
 """What each recorded observation holds, and how its checks and judgement came out.
 
 Created: 2026-10-16
-Last updated: 2026-11-01
+Last updated: 2026-11-06
 
 This file reads the replay fixtures for one engine, task and rule.
 ``recorded_request`` returns the request as sent, ``recorded_responses`` and
 ``recorded_observations`` every response with its text and tool calls,
-``recorded_judgements`` the stored judge replies and ``judge_prompts`` what each
-judge received. ``observation_outcomes`` replays the harness screen, the rule's
-assertions and its tool expectation against each observation.
+``recorded_judgements`` the stored judge replies, read from the configured
+judge before any other (``configured_judge``, ``first_judge``),
+``own_judgements`` which of them each observation actually received, and
+``judge_prompts`` what each judge received. ``observation_outcomes`` replays
+the harness screen, the rule's assertions and its tool expectation against each
+observation.
 
 ``tools.ticket_report`` calls these while building a finding's section and
 renders what they return as the ticket's request, responses and per-observation
@@ -23,6 +26,7 @@ import json
 from pathlib import Path
 from typing import Any, Final, Optional
 
+from cmn.config import load_judge_engine, packaged_roster_path
 from evaluation.assertions import run_assertions
 from evaluation.judge import JudgeBinding
 from evaluation.pipeline import (
@@ -159,9 +163,9 @@ def judge_prompts(
     recorded response for a recording made before recordings stored one
     (``consumer_ci.md`` section 9.5.5.8).
 
-    An observation whose checks failed reached no judge, so whatever is stored
-    at its index was recorded against an earlier response and is not its
-    prompt. It shows none.
+    An observation whose checks failed shows the stored prompt only where that
+    prompt quotes its response; one quoting another response, or none, was
+    recorded against an earlier call and is not its prompt (section 9.5.5.8.1).
 
     Args:
         task_id (str): The task identifier.
@@ -180,16 +184,12 @@ def judge_prompts(
         case = case_for(task_id, rule_id)
     except (KeyError, ValueError):
         case = None
-    # A FAILED CHECK MEANS THE JUDGE WAS NEVER CALLED, so nothing overwrote the
-    # judgement recorded at that index against an earlier response. Read as
-    # this observation's, it put a judge prompt quoting text the engine did not
-    # return beneath a label saying the judge was not called (section 9.5.5.8).
-    unjudged = {index for index, passed, _ in outcomes if not passed}
+    own = own_judgements(
+        [str(response.get("text") or "") for response in recordings], judgements, outcomes
+    )
     prompts: list[str] = []
     for index, response in enumerate(recordings):
-        judgement = None if index in unjudged else (
-            judgements[index] if index < len(judgements) else None
-        )
+        judgement = own[index]
         if judgement is None:
             prompts.append("")
         elif judgement.get("prompt"):
@@ -201,6 +201,40 @@ def judge_prompts(
         else:
             prompts.append("")
     return prompts
+
+
+def own_judgements(
+    responses: list[str],
+    judgements: list[Optional[dict[str, Any]]],
+    outcomes: list[tuple[int, bool, str]],
+) -> list[Optional[dict[str, Any]]]:
+    """Return each observation's own judgement, None where the stored one is not its own.
+
+    Args:
+        responses (list): Each recorded response's text, in order.
+        judgements (list): Each observation's stored judgement, None where
+            none is stored.
+        outcomes (list): Each observation's index, whether its checks passed,
+            and what failed if not.
+
+    Returns:
+        list: One entry per response, in order.
+    """
+    # A FAILED CHECK IS JUDGED TOO, since 2026-11-02, so whose judgement is
+    # stored at a failed index is read from what its prompt quotes. One quoting
+    # an earlier response is the stale record section 9.5.5.8 was written for;
+    # one carrying no prompt cannot be checked and is dropped as before
+    # (section 9.5.5.8.1).
+    failed = {index for index, passed, _ in outcomes if not passed}
+    own: list[Optional[dict[str, Any]]] = []
+    for index, text in enumerate(responses):
+        judgement = judgements[index] if index < len(judgements) else None
+        if judgement is not None and index in failed and not (
+            text.strip() and text.strip() in str(judgement.get("prompt") or "")
+        ):
+            judgement = None
+        own.append(judgement)
+    return own
 
 
 def recorded_responses(
@@ -296,6 +330,56 @@ def recorded_request(
     return None
 
 
+def configured_judge() -> str:
+    """Return the judge engine the installed harness's roster configures.
+
+    Returns:
+        str: The engine name.
+    """
+    return load_judge_engine(packaged_roster_path())
+
+
+def _judge_folders(folder: Path) -> list[Path]:
+    """Return the judge folders under one engine's judgements, in reading order.
+
+    Design: ``consumer_ci.md`` section 9.5.5.8.2.
+
+    Args:
+        folder (Path): ``judgements/<engine>``.
+
+    Returns:
+        list: The configured judge's folder first, then every other judge's
+        alphabetically.
+    """
+    configured = configured_judge()
+    return sorted(
+        (path for path in folder.iterdir() if path.is_dir()),
+        key=lambda path: (path.name != configured, path.name),
+    )
+
+
+def first_judge(root: Path, engine: str, task: str, rule: str) -> str:
+    """Return the judge whose stored judgements score this pair, empty where none does.
+
+    Args:
+        root (Path): The repository root.
+        engine (str): The engine whose responses were judged.
+        task (str): The task identifier.
+        rule (str): The rule set identifier.
+
+    Returns:
+        str: The first judge folder in reading order holding the pair, which
+        is the judge engine's name.
+    """
+    folder = root / "tests" / "fixtures" / "replay" / "judgements" / engine
+    if not folder.is_dir():
+        return ""
+    for judge in _judge_folders(folder):
+        if (judge / task / rule).is_dir():
+            return judge.name
+    return ""
+
+
 def recorded_judgements(
     root: Path, engine: str, task: str, rule: str, count: int
 ) -> list[Optional[dict[str, Any]]]:
@@ -309,15 +393,17 @@ def recorded_judgements(
         count (int): How many observations the pair recorded.
 
     Returns:
-        list: One entry per observation, in order. The judge's folder is
-        whichever one holds this pair; None where no judgement was recorded,
-        which is the case for every observation a check stopped.
+        list: One entry per observation, in order, taken from the first judge
+        folder holding it: the configured judge's, then the others
+        alphabetically (section 9.5.5.8.2); None where no judgement was recorded.
+        A stored judgement is not necessarily the observation's own, which
+        ``own_judgements`` decides.
     """
     folder = root / "tests" / "fixtures" / "replay" / "judgements" / engine
     found: list[Optional[dict[str, Any]]] = [None] * count
     if not folder.is_dir():
         return found
-    for judge in sorted(path for path in folder.iterdir() if path.is_dir()):
+    for judge in _judge_folders(folder):
         pair = judge / task / rule
         for index in range(count):
             source = pair / f"{index}.json"

@@ -74,6 +74,7 @@ modules:
   # Whether a recorded run can be replayed and judged as it was.
   tests/cases/mqc_uni_recording_coverage.py: Recording coverage
   tests/cases/mqc_uni_withheld_judge.py: Recording coverage
+  tests/cases/mqc_uni_stopped_judge.py: Recording coverage
   tests/cases/mqc_uni_judge_material.py: Recording coverage
 
   # This repository's own pipeline: the bands, the jobs and the pin.
@@ -106,8 +107,11 @@ modules:
 
   # What is filed with a vendor, and what has stopped reproducing.
   tests/cases/mqc_uni_finding_retirement.py: Findings
+  tests/cases/mqc_uni_findings_run.py: Findings
   tests/cases/mqc_uni_ticket_reasons.py: Findings
   tests/cases/mqc_uni_ticket_report.py: Findings
+  tests/cases/mqc_uni_passw_findings.py: Findings
+  tests/cases/mqc_uni_unreached_observations.py: Recording coverage
   tests/cases/mqc_uni_ticket_reproduction.py: Findings
 
   # The tree this file declares, which is its own subject.

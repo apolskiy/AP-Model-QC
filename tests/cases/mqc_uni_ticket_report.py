@@ -5,13 +5,14 @@
 Created: 2026-10-12
 Last updated: 2026-11-06
 
-This file contains fifteen cases on ``tools/ticket_report.py`` and the findings,
+This file contains thirteen cases on ``tools/ticket_report.py`` and the findings,
 recordings, evidence and register tools it joins. ``TestMQCTicketInput`` checks a
-ticket's input is the recorded request, and that findings are retired, withdrawn or
-filed only on what reproduced. ``TestMQCTicketFormat`` checks a ticket shows every
-observation with its judgement, a correct answer and a command that runs; and
-``TestMQCTicketHygiene`` covers fences, stale populations, labels, one ticket per
-finding, payload framing, tool calls and engine page names.
+ticket's input is the recorded request, that the finding reader carries its
+questions, and that a run which collected nothing retires no finding.
+``TestMQCTicketFormat`` checks a ticket shows every observation with its
+judgement, a correct answer and a command that runs; and
+``TestMQCTicketHygiene`` covers fences, stale populations, labels, one ticket
+per finding, payload framing, tool calls and engine page names.
 
 **Retirement left for ``mqc_uni_finding_retirement.py``** on 2026-10-29, when this
 module reached the 900-line runway ceiling and holding and resolving had become a
@@ -42,8 +43,6 @@ asked about is their model.
 #   115733  a_ticket_input_is_the_recorded_request_not_the_corpus
 #   115736  the_finding_reader_carries_the_questions
 #   115738  a_run_that_collected_nothing_does_not_retire_findings
-#   115739  the_bug_file_holds_only_what_reproduced
-#   115737  a_finding_that_stopped_reproducing_is_withdrawn
 # TestMQCTicketFormat
 #   115745  a_ticket_shows_every_observation_with_its_judgement
 #   115746  a_ticket_states_a_correct_answer_and_a_command_that_runs
@@ -88,7 +87,6 @@ from tools.ticket_recordings import (
 )
 from tools.findings import (
     RunContext,
-    hold_unreproduced,
     merge,
 )
 from tools.findings_run import _first_sentence
@@ -100,10 +98,7 @@ from tools.ticket_files import (
     write_tickets,
 )
 from tools.register_files import (
-    holding_path,
-    partition,
     refuse_empty_run,
-    register_path,
     to_file,
 )
 from tools.finding_evidence import (
@@ -283,86 +278,6 @@ class TestMQCTicketInput:
         assert refuse_empty_run(report, {}, 0) is None
         assert refuse_empty_run(report, {}, 4) is None
 
-    @story("A bug file holds only what reproduced")
-    def MQC_CAS_UNI_115739_the_bug_file_holds_only_what_reproduced(self) -> None:
-        """What gets filed and what waits are different files.
-
-        Design: ``consumer_ci.md`` section 9.4.8.
-
-        Returns:
-            None
-        """
-        entries = {
-            "a": {"case": "a", "status": "open"},
-            "b": {"case": "b", "status": "withdrawn"},
-            "c": {"case": "c", "status": "not_reproduced"},
-            "d": {"case": "d", "status": "resolved_upstream"},
-        }
-        fileable, held = partition(entries)
-
-        assert set(fileable) == {"a"}, fileable
-        assert set(held) == {"b", "c", "d"}, held
-        assert holding_path("claude") != register_path("claude")
-        assert holding_path("claude").parent.name == "unconfirmed"
-
-    @story("The register is reconciled against the run")
-    def MQC_CAS_UNI_115737_a_finding_that_stopped_reproducing_is_withdrawn(
-        self,
-    ) -> None:
-        """A finding the run does not show is withdrawn as ours, not theirs.
-
-        **The register drifted both ways and nothing reconciled it.** Four open
-        entries described failures the re-recorded corpus no longer contained,
-        and two withdrawn entries described failures that had returned. Every
-        one of the four was a minority finding: 1 or 2 observations of 5, a
-        claim about variance reported as a characterisation.
-
-        Design: ``consumer_ci.md`` section 9.4.7.
-
-        Returns:
-            None
-        """
-        run = RunContext(
-            engine="gemini", mode="replay", models={}, expected={},
-            today=date(2026, 10, 12), resolve=False, hold_unreproduced=True,
-            passed=frozenset({"MQC_EVL_EVAL_134000_gone"}),
-        )
-        register = {
-            "MQC_EVL_EVAL_134000_gone": {
-                "case": "MQC_EVL_EVAL_134000_gone", "status": "open",
-                "observations": "4 of 5 passed",
-            },
-            "MQC_EVL_EVAL_134001_here": {
-                "case": "MQC_EVL_EVAL_134001_here", "status": "open",
-            },
-            "MQC_EVL_EVAL_134002_ours": {
-                "case": "MQC_EVL_EVAL_134002_ours", "status": "withdrawn",
-            },
-        }
-        observed = {"MQC_EVL_EVAL_134001_here": {"taxonomy_code": "QC_LLM_HALLUCINATION"}}
-
-        lines = hold_unreproduced(register, observed, run)
-
-        # THE ABSENT ONE IS WITHDRAWN, AND THE POPULATION IS IN THE REASON.
-        gone = register["MQC_EVL_EVAL_134000_gone"]
-        assert gone["status"] == "not_reproduced", gone
-        assert gone["held_on"] == "2026-10-12", gone
-        assert "4 of 5 passed" in gone["held_reason"], gone["held_reason"]
-        assert any("134000" in line for line in lines), lines
-
-        # OURS, NOT THEIRS. Crediting a vendor with a correction they did not
-        # make is the error that most damages a published report.
-        assert "resolved_on" not in gone, gone
-        assert gone["status"] != "resolved_upstream"
-        # NOR OURS. A flip is not a retraction of our assertion either, which
-        # is why it has a status of its own (section 9.4.8).
-        assert gone["status"] != "withdrawn", gone
-
-        # ONE THE RUN STILL SHOWS IS UNTOUCHED, and so is one already retracted.
-        assert register["MQC_EVL_EVAL_134001_here"]["status"] == "open"
-        assert register["MQC_EVL_EVAL_134002_ours"]["status"] == "withdrawn"
-        assert "withdrawn_on" not in register["MQC_EVL_EVAL_134002_ours"]
-
 
 class TestMQCTicketFormat:
     """The ticket carries the format the project owner set on 2026-10-15."""
@@ -539,11 +454,11 @@ class TestMQCTicketHygiene:
     def MQC_CAS_UNI_115754_a_finding_not_observed_on_the_latest_run_is_not_filed(
         self,
     ) -> None:
-        """Only findings observed on the register's latest date are filed.
+        """Only open findings observed on the register's latest date are filed.
 
         A finding last observed earlier is returned apart, to be named as
-        awaiting measurement. A diagnosis cut at its first clause closes any
-        bracket the cut left open.
+        awaiting measurement, and one resolved upstream is in neither. A
+        diagnosis cut at its first clause closes any bracket the cut left open.
 
         Design: ``consumer_ci.md`` section 9.5.5.1.
 
@@ -553,7 +468,7 @@ class TestMQCTicketHygiene:
         findings = [
             {"case": "MQC_EVL_EVAL_134400_x", "status": "open", "last_observed": "2026-10-15"},
             {"case": "MQC_EVL_EVAL_134402_x", "status": "open", "last_observed": "2026-10-13"},
-            {"case": "MQC_EVL_EVAL_134206_x", "status": "withdrawn",
+            {"case": "MQC_EVL_EVAL_134206_x", "status": "resolved_upstream",
              "last_observed": "2026-10-15"},
         ]
         filed, awaiting = to_file(findings)

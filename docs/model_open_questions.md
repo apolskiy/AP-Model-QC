@@ -55,7 +55,7 @@ restated here, because a second copy drifts.
 |---|---|---|
 | Should a case judge a prohibition it never sends? | 2026-10-12, no: send it | `model_evaluation_test_plan.md` section 9.10.2.4 |
 | Should the ceiling comparison be asked for or only scored? | 2026-10-12, asked for | `consumer_ci.md` section 9.4.6.1 |
-| What happens to a finding a fresh run does not reproduce? | 2026-10-12, withdrawn as ours and held | `consumer_ci.md` sections 9.4.7 and 9.4.8 |
+| What happens to a finding a fresh run does not reproduce? | 2026-11-06, removed once a run measures its case passing, or resolved upstream by a live run asked to resolve; it was withdrawn as ours and held from 2026-10-12 | `consumer_ci.md` section 9.4.11 |
 | Does this repository need a changelog? | 2026-10-12, yes | harness `code-style.md` section 7.4 |
 | Should the five forbidding assertions become `claim`? | 2026-10-13, no: all five are correct as written | Section 3.1 below |
 | Does a keyword list for "named the cost" belong in an assertion at all? (was 2.1) | 2026-10-15, no: a check gates the behaviour a case is named for, and the rubric grades the explanation | `model_evaluation_test_plan.md` section 8.9.1 |

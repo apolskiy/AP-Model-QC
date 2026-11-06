@@ -3,14 +3,14 @@
 """Unit preconditions for the reasons and rule a finding's ticket states.
 
 Created: 2026-10-20
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
-This file contains ``TestMQCTicketReasons``, eight cases on the ticket tools,
-``tools/ticket_report.py``, ``tools/ticket_reasons.py``, ``tools/ticket_recordings.py``
-and ``tools/review_report.py``.
+This file contains ``TestMQCTicketReasons``, ten cases on the ticket tools,
+``tools/ticket_report.py``, ``tools/ticket_reasons.py`` and ``tools/ticket_recordings.py``.
 They check a ticket says why each failing observation fails, states the rule in its
 expected section, says why the screen stopped an observation, shows each judged
-observation the prompt its judge received and no other, carries the four parts a
+observation the prompt its judge received and no other, whether its checks
+passed or failed, reads the configured judge before any other, carries the four parts a
 finding rests on, counts only the observations the run measured, and generates the
 filing sheet the findings are filed from.
 
@@ -40,6 +40,8 @@ a vendor reading that closes it as our false positive.
 #   115770  a_screen_stopped_observation_says_why_on_its_ticket
 #   115771  a_ticket_shows_each_judged_observation_its_judge_prompt
 #   115796  a_stored_judgement_an_observation_never_got_is_not_shown
+#   115813  a_failed_observation_keeps_the_judgement_that_quotes_it
+#   115816  a_ticket_reads_the_configured_judge_first
 #   115797  a_ticket_without_the_four_parts_is_reported
 #   115780  a_ticket_counts_the_population_it_measured
 #   115781  the_filing_sheet_is_generated_and_groups_by_cause
@@ -65,13 +67,19 @@ from tools.ticket_report import (
     load_tasks,
     page_for,
 )
-from tools.review_report import review_page_for
-from tools.ticket_files import filing_sheet, intake_engines, ticket_name, write_tickets
+from tools.ticket_files import (
+    filing_sheet, intake_engines, is_warning, ticket_name, write_tickets,
+)
 from tools.ticket_reasons import failure_reasons, rule_lines
 from tools.ticket_recordings import (
+    configured_judge,
+    first_judge,
     judge_prompts,
     observation_outcomes,
+    own_judgements,
+    recorded_judgements,
 )
+from tools.ticket_responses import responses_block
 
 pytestmark = pytest.mark.unit
 
@@ -418,10 +426,10 @@ class TestMQCTicketReasons:
     ) -> None:
         """A judgement stored at an index whose checks failed shows no prompt and no score.
 
-        The boundary is whether the checks passed. An observation whose checks
-        failed reached no judge, so nothing overwrote the judgement recorded
-        there against an earlier response, and the one stored beside it is not
-        its own. An observation whose checks passed shows what it was asked.
+        An observation whose checks failed and whose stored prompt quotes an
+        earlier response shows neither, the judgement stored beside it not
+        being its own. An observation whose checks passed shows what it was
+        asked. ``115813`` covers a failed observation the judge did score.
 
         Design: ``consumer_ci.md`` section 9.5.5.8.
 
@@ -450,15 +458,109 @@ class TestMQCTicketReasons:
             f"a judged observation lost its own stored prompt: {shown[1]!r}"
         )
 
+    @story("A judgement belongs to the response beside it")
+    def MQC_CAS_UNI_115813_a_failed_observation_keeps_the_judgement_that_quotes_it(
+        self
+    ) -> None:
+        """A response whose checks failed shows the judgement whose prompt quotes it.
+
+        The boundary is what the stored prompt quotes. One quoting the
+        response is that response's own and is shown, with its score, beside
+        the check that failed; one quoting another response, or carrying no
+        prompt, is not.
+
+        Design: ``consumer_ci.md`` section 9.5.5.8.1.
+
+        Returns:
+            None
+        """
+        failed = ("A_GND_CEILING_NOT_MISCOMPARED (QC_LLM_MATCH_MISCOMPUTED): asserted in "
+                  "'I did not round the figure up'")
+        responses = ["EMEA revenue is 28.7 million. I did not round the figure up.",
+                     "the second response", "the third response"]
+        stored = [
+            {"prompt": f"<data field=candidate_output>\n{responses[0]}\n"
+                       f"</data field=candidate_output>"},
+            {"prompt": "A PROMPT QUOTING AN EARLIER RESPONSE"},
+            {},
+        ]
+        outcomes = [(index, False, failed) for index in range(len(responses))]
+
+        step(1, "a failed response whose stored prompt quotes it keeps that prompt")
+        shown = judge_prompts(
+            _PLAIN_TASK, _PLAIN_DETECT, [{"text": text} for text in responses],
+            stored, outcomes,
+        )
+        assert shown[0] == stored[0]["prompt"], (
+            "a response the judge scored after its checks failed shows no judge "
+            "prompt, so the ticket hides the judgement the run recorded for it"
+        )
+
+        step(2, "one quoting another response, or carrying no prompt, is not shown")
+        assert shown[1] == "" and shown[2] == "", shown[1:]
+
+        step(3, "and the score is kept for the response it quotes and no other")
+        assert own_judgements(responses, stored, outcomes) == [stored[0], None, None]
+
+        step(4, "the response is labelled with the failed check and the judge's score")
+        body, appendix = responses_block(
+            "gemini", responses, outcomes,
+            [(True, 5.0, "Rounds and states the overstatement."), None, None], shown,
+        )
+        first = next(line for line in body if line.startswith("*Response 1 of 3.*"))
+        third = next(line for line in body if line.startswith("*Response 3 of 3.*"))
+        assert "judge was not called" not in first and failed in first, (
+            f"a response the judge scored is labelled as one it never saw: {first!r}"
+        )
+        assert "scoring 5" in "\n".join(appendix), appendix
+        assert "<summary>Judge prompt, response 1 of 3</summary>" in appendix
+        assert "judge was not called" in third, third
+
+    @story("A judgement belongs to the response beside it")
+    def MQC_CAS_UNI_115816_a_ticket_reads_the_configured_judge_first(
+        self, tmp_path: Path
+    ) -> None:
+        """The configured judge's judgements are read before any other judge's.
+
+        A second judge's folder named to sort before the configured judge's
+        holds both observations; the configured judge holds only the first.
+
+        Design: ``consumer_ci.md`` section 9.5.5.8.2.
+
+        Args:
+            tmp_path (Path): pytest's scratch directory.
+
+        Returns:
+            None
+        """
+        configured = configured_judge()
+        engine, task, rule = "gemini", "MQC_TASK_t", "MQC_RULE_r"
+        store = tmp_path / "tests" / "fixtures" / "replay" / "judgements" / engine
+        for judge, indices in ((configured, [0]), ("aaa_second_judge", [0, 1])):
+            pair = store / judge / task / rule
+            pair.mkdir(parents=True)
+            for index in indices:
+                (pair / f"{index}.json").write_text(
+                    json.dumps({"prompt": f"{judge} {index}"}), encoding="utf-8")
+
+        step(1, "read each observation's judgement")
+        read = [(entry or {}).get("prompt")
+                for entry in recorded_judgements(tmp_path, engine, task, rule, 2)]
+        assert read == [f"{configured} 0", "aaa_second_judge 1"], (
+            f"read {read}: the configured judge {configured!r} must come first, and "
+            f"another judge only fills an observation it left without one"
+        )
+
+        step(2, "name the judge the reproduction runs with")
+        assert first_judge(tmp_path, engine, task, rule) == configured, (
+            "the reproduction names a judge other than the configured one"
+        )
+
     @story("A finding without its evidence is invalid")
     def MQC_CAS_UNI_115797_a_ticket_without_the_four_parts_is_reported(
         self, tmp_path: Path
     ) -> None:
         """Every generated ticket carries a summary, the prompt, the responses and the judge.
-
-        A returned withdrawn finding carries them too, under a temporary
-        summary naming the withdrawal, and a withdrawn finding the latest run
-        did not reproduce carries no ticket at all.
 
         The tickets are generated here from the shipped registers rather than
         read from ``reports/``, which is gitignored and empty on a clean
@@ -472,12 +574,10 @@ class TestMQCTicketReasons:
         Returns:
             None
         """
-        step(1, "generate every filed and returned ticket from the shipped registers")
+        step(1, "generate every filed ticket from the shipped registers")
         generated = tmp_path / "tickets"
         for engine in sorted(engine_roster()):
             write_tickets(generated / engine, engine, page_for(_ROOT, engine)[1])
-            write_tickets(generated / "review" / engine, engine,
-                          review_page_for(_ROOT, engine)[1])
         tickets = sorted(generated.rglob("*.md"))
         bodies = {path: path.read_text(encoding="utf-8") for path in tickets
                   if not path.stem.endswith("_findings") and path.stem != "FILING"}
@@ -500,34 +600,6 @@ class TestMQCTicketReasons:
             f"a ticket states a finding without the evidence it rests on, so a "
             f"vendor closes it as not a bug: "
             f"{ {name: gaps for name, gaps in missing.items() if gaps} }"
-        )
-
-        step(3, "a returned withdrawn finding carries a temporary summary")
-        reviewed = sorted((generated / "review").rglob("*.md"))
-        returned = [path for path in reviewed if not path.stem.endswith("_findings")]
-        held = {
-            str(entry.get("case", "")): entry
-            for path in sorted((_ROOT / "config" / "findings" / "unconfirmed").glob("*.yaml"))
-            for entry in (yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-                          ).get("findings") or []
-            if entry.get("reproduced_on")
-        }
-        assert len(returned) == len(held), (
-            f"{len(held)} withdrawn finding(s) reproduce and {len(returned)} "
-            f"carry a review ticket, so a ruling is being asked for without "
-            f"evidence or evidence is kept for a finding that is not failing"
-        )
-        assert all("**Temporary summary, pending a ruling.**"
-                   in path.read_text(encoding="utf-8") for path in returned), (
-            "a review ticket states no open question, so it reads as filed"
-        )
-
-        step(5, "and a withdrawn finding that stopped reproducing carries none")
-        named = {path.stem.split("_", 1)[0] for path in returned}
-        quiet = [case for case in held if case.split("_")[3] not in named]
-        assert not quiet, (
-            f"a review ticket is missing for {quiet}, each of which the "
-            f"register says reproduced"
         )
 
     @story("A ticket counts what it measured")
@@ -676,7 +748,7 @@ class TestMQCTicketReasons:
         step(7, "an engine with nothing reproducing says so rather than vanishing")
         empty = filing_sheet("2026-10-24", {"grok": []})
         assert "## grok" in empty and "No finding reproduces" in empty, (
-            f"an engine whose findings were all withdrawn left the sheet: {empty}"
+            f"an engine with no finding to file left the sheet: {empty}"
         )
 
         step(8, "every finding names the ticket file carrying its evidence")
@@ -695,10 +767,15 @@ class TestMQCTicketReasons:
         generated = filing_sheet("2026-10-28", {
             engine: [entry for entry, _ in built[1]] for engine, built in pages.items()
         })
-        fileable = sum(len(built[1]) for built in pages.values())
-        assert f"**{fileable} finding(s) to file**" in generated, (
-            f"a sheet built from the registers does not state the {fileable} "
-            f"finding(s) it filed: {generated}"
+        # A WARNING IS COUNTED APART (requirement MQC_REQ_CAS_CI_0075), so the
+        # sheet states the failures to file and the warnings besides.
+        warned = [is_warning(entry) for built in pages.values() for entry, _ in built[1]]
+        assert f"**{warned.count(False)} finding(s) to file**" in generated and (
+            not any(warned) or f"**{sum(warned)} warning(s)** besides" in generated
+        ), (
+            f"a sheet built from the registers does not state the "
+            f"{warned.count(False)} failure(s) and {sum(warned)} warning(s) it "
+            f"filed: {generated}"
         )
 
         # FILED PLUS AWAITING EQUALS OPEN (design section 9.5.5.10). The total
@@ -714,8 +791,8 @@ class TestMQCTicketReasons:
                 "findings", []) or [])
             for path in sorted((_ROOT / "config" / "findings").glob("*.yaml"))
         )
-        assert fileable + awaiting == held, (
+        assert len(warned) + awaiting == held, (
             f"the bug files hold {held} open finding(s) and the generator "
-            f"accounts for {fileable} filed and {awaiting} awaiting "
-            f"measurement, so {held - fileable - awaiting} appears nowhere"
+            f"accounts for {len(warned)} filed and {awaiting} awaiting "
+            f"measurement, so {held - len(warned) - awaiting} appears nowhere"
         )

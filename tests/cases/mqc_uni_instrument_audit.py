@@ -3,7 +3,7 @@
 """Unit preconditions for whether a graded result from this suite means what it says.
 
 Created: 2026-10-06
-Last updated: 2026-11-01
+Last updated: 2026-11-06
 
 This file contains nine cases. ``TestMQCTheInstrumentDoesNotManufactureFindings``
 checks the injection screen raises nothing on an ordinary case and every failure message
@@ -67,11 +67,11 @@ from evaluation.screening import screen_text
 
 from tests.cases.graded_support import (
     FIXTURE_ROOT,
-    _measured_fields,
     case_for,
     repository_root,
     shipped_corpus,
 )
+from tests.cases.observation_records import measured_fields
 from tests.cases.consistency_support import (
     assert_consistent_pass,
     consistent,
@@ -618,7 +618,7 @@ class TestMQCAssertionsCanFail:
             passed=False, judge_skipped_reason="screen_abort",
             taxonomy_codes=["QC_SEC_INJECTION_ATTEMPT"],
         )
-        recorded = _measured_fields(case, outcome, caught, 0)
+        recorded = measured_fields(case, outcome, caught, 0)
         assert recorded["outcome"] == "fail", (
             f"an answer whose injection the screen caught was recorded as "
             f"{recorded['outcome']!r}, not as a failure"
@@ -631,6 +631,6 @@ class TestMQCAssertionsCanFail:
             passed=False, judge_skipped_reason="judgement_unavailable",
             taxonomy_codes=["QC_HARNESS_FIXTURE_MISSING"],
         )
-        assert _measured_fields(case, outcome, unscored, 0)["outcome"] == "skip", (
+        assert measured_fields(case, outcome, unscored, 0)["outcome"] == "skip", (
             "an answer nobody could score was recorded as something other than a skip"
         )

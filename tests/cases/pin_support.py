@@ -3,7 +3,7 @@
 """Support code for the harness-pin preconditions: GitHub API shapes and README figures.
 
 Created: 2026-10-05
-Last updated: 2026-10-21
+Last updated: 2026-11-06
 
 This file contains builders of the GitHub API shapes the resolver in
 ``tools/harness_pin.py`` reads, ``workflow_run``, ``unconcluded_runs`` and
@@ -190,15 +190,15 @@ def inventoried_case_ids() -> frozenset[str]:
 def open_findings(registers: list[Path], code: str = "") -> int:
     """Return how many findings are open, optionally of one failure class.
 
-    **A withdrawn or resolved entry is excluded.** A withdrawn one records a
-    claim made and retracted because our own assertion was wrong, and counting
-    it would keep a retraction in a total a reader reads as current.
+    **An entry resolved upstream is excluded.** It stays in the bug file as the
+    record of a vendor's fix, and counting it would keep a fixed defect in a
+    total a reader reads as current.
 
-    **Parsed rather than counted as substrings.** A withdrawn entry still
+    **Parsed rather than counted as substrings.** A resolved entry still
     carries ``- case:`` and its original taxonomy code, so an occurrence count
-    cannot tell a live claim from a retracted one.
+    cannot tell a live claim from a resolved one.
 
-    Design: ``consumer_ci.md`` section 9.4.1.
+    Design: ``consumer_ci.md`` section 9.4.11.
 
     Args:
         registers (list): The per-engine register files.
@@ -213,7 +213,7 @@ def open_findings(registers: list[Path], code: str = "") -> int:
         for entry in payload.get("findings") or []:
             if not isinstance(entry, dict):
                 continue
-            if entry.get("status") in ("withdrawn", "resolved_upstream"):
+            if entry.get("status") == "resolved_upstream":
                 continue
             if code and entry.get("taxonomy_code") != code:
                 continue

@@ -3,15 +3,14 @@
 """The findings recorder, which keeps each engine's register of model defects up to date.
 
 Created: 2026-10-04
-Last updated: 2026-11-01
+Last updated: 2026-11-06
 
 This file contains ``load_register``, which reads what is already recorded,
 ``RunContext``, which carries what one run was, ``merge``, which folds the run
-into the existing register and reports what changed, ``hold_unreproduced`` and
-``resolve_upstream``, which decide what happens to an open finding the run did
-not reproduce, ``clear_stale_reproductions``, which drops the reproduction mark
-of a withdrawn finding the run passed, ``render``, which is the file as a
-reader sees it, and ``main``, the command line around them.
+into the existing register and reports what changed, ``remove_passed`` and
+``resolve_upstream``, which decide what happens to a finding whose case the run
+measured passing, ``render``, which is the file as a reader sees it, and
+``main``, the command line around them.
 
 **What a run measured is read by ``tools/findings_run.py``**, which is the
 other half of this recorder: that module runs the suite and parses its JUnit
@@ -19,11 +18,12 @@ XML, and this one decides what the register does with the result.
 
 It is run by hand, one engine at a time, and runs the graded suite itself in
 replay or live mode. What it writes, through ``tools.register_files``, is the
-engine's bug file under ``config/findings/`` and its holding list under
-``config/findings/unconfirmed/``. ``tools.ticket_report`` builds the vendor
-tickets from the bug file, so an entry recorded here is what gets filed.
+engine's bug file under ``config/findings/``. ``tools.ticket_report`` builds
+the vendor tickets from the bug file, so an entry recorded here is what gets
+filed.
 
-Specified by ``docs/design/consumer_ci.md`` section 9.
+Specified by ``docs/design/consumer_ci.md`` section 9, and section 9.4.11 for
+what a passing case does to its finding.
 
 **Nothing here files anything.** The register exists for the interval between
 observing a finding and filing it: a finding fixed upstream in that interval
@@ -34,11 +34,10 @@ like a case that stopped testing anything.
 from the first re-run, on the same principle that makes the matrix families
 column derived.
 
-**Only a live run can retire a finding.** Replay replays our own recorded
-responses, so a recorded finding reproduces from replay whatever the vendor
-does. ``record`` reads a run of either mode; ``--resolve-from-live`` is refused
-unless the run was live, because the alternative is retiring a finding on
-evidence that could not bear on it.
+**Only a live run can credit a vendor.** Replay replays our own recorded
+responses, so it cannot show a model changed. ``--resolve-from-live`` is
+refused unless the run was live; on every other run a finding whose case was
+measured passing is removed, and no record of it is kept.
 """
 
 import argparse
@@ -56,9 +55,9 @@ from tools.findings_run import (
     observe,
     parse_failures,
     parse_passed,
+    parse_warnings,
 )
 from tools.register_files import (
-    holding_path,
     refuse_empty_run,
     register_path,
     write_register,
@@ -66,19 +65,7 @@ from tools.register_files import (
 from tools.ticket_report import reproduce_command
 
 _RESOLVED: Final[str] = "resolved_upstream"
-
-# WITHDRAWN IS OURS, RESOLVED IS THEIRS. A finding withdrawn because our own
-# assertion was wrong must not read as a vendor fix: crediting a vendor with a
-# correction they did not make is wrong in the direction that most damages a
-# published report. Section 9.4.1.
-_WITHDRAWN: Final[str] = "withdrawn"
-
-# A FLIP IS NOT A RETRACTION. A finding that stopped reproducing says nothing
-# about the model until it is seen again, and nothing about our assertion
-# either: it is an absence of a measurement rather than a correction of one.
-# So it takes its own status and waits in the holding list, where a later run
-# can promote it back with the intermittent marker (section 9.4.8).
-_UNREPRODUCED: Final[str] = "not_reproduced"
+_WARNING: Final[str] = "warning"
 
 
 def load_register(engine: str) -> dict[str, dict[str, Any]]:
@@ -92,17 +79,14 @@ def load_register(engine: str) -> dict[str, dict[str, Any]]:
         for quarantine: a register that must exist to be read would make the
         file a prerequisite for a clean repository.
     """
-    found: dict[str, dict[str, Any]] = {}
-    # BOTH FILES, because the holding list is where a flipped finding waits and
-    # a run that could not see it would record the same finding again as new
-    # (section 9.4.8).
-    for path in (register_path(engine), holding_path(engine)):
-        if not path.is_file():
-            continue
-        loaded = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        for entry in loaded.get("findings", ()) or ():
-            found[str(entry["case"])] = dict(entry)
-    return found
+    path = register_path(engine)
+    if not path.is_file():
+        return {}
+    loaded = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return {
+        str(entry["case"]): dict(entry)
+        for entry in loaded.get("findings", ()) or ()
+    }
 
 
 @dataclass(frozen=True)
@@ -116,12 +100,8 @@ class RunContext:
         expected (dict): Case name to the requirement it traces to.
         today (date): The date to stamp, injected rather than read, so a
             register is reproducible from the same inputs.
-        resolve (bool): Whether an absent finding may be retired as the
-            vendor's fix, which only a live run may ask for.
-        hold_unreproduced (bool): Whether an absent finding may be
-            withdrawn as ours. **Replay may ask for this**, because it is a
-            question about our own record rather than about the model
-            (section 9.4.7).
+        resolve (bool): Whether a finding whose case passed is recorded as the
+            vendor's fix rather than removed, which only a live run may ask for.
         passed (frozenset): The cases the run measured as passing. Only one of
             these can have stopped reproducing (section 9.4.7.1).
     """
@@ -132,92 +112,20 @@ class RunContext:
     expected: dict[str, str]
     today: date
     resolve: bool
-    hold_unreproduced: bool = False
     passed: frozenset[str] = frozenset()
 
 
-def hold_unreproduced(
+def remove_passed(
     merged: dict[str, dict[str, Any]],
     observed: dict[str, dict[str, Any]],
     run: RunContext,
 ) -> list[str]:
-    """Hold every open finding this run did not reproduce.
+    """Remove every finding whose case this run measured as passing.
 
-    **Neither ours nor theirs, which is why it has its own status.** A finding
-    that stops reproducing is not a retraction of our assertion and not a
-    vendor's fix: it is an absence of a measurement. Crediting a vendor with a
-    correction they did not make is the error that most damages a published
-    report (section 9.4.1), and calling it our defect would be the mirror of
-    that error.
-
-    **Intermittent is a run-to-run property, not a failure rate.** A case
-    failing one observation in five has been measured, and that measurement is
-    the finding; a case that failed and now passes has flipped, and this is the
-    only situation the holding list is for (section 9.4.8).
-
-    **Replay may ask for this**, unlike resolution. It asks whether our own
-    record still shows what we said it showed, which is exactly what replay
-    answers (section 9.4.7).
-
-    **Named rather than inline so a case can call it**, which is the lesson the
-    cascade marker taught when it was set and read by nothing.
-
-    Args:
-        merged (dict): The register, modified in place.
-        observed (dict): What this run reported, by case.
-        run (RunContext): What the run was, for the date and the intent.
-
-    Returns:
-        list[str]: One line per withdrawal, naming the population it was drawn
-        from, because a one-in-five finding is a claim about variance and a
-        five-in-five finding is a claim about behaviour.
-    """
-    changed: list[str] = []
-    for case, entry in sorted(merged.items()):
-        if case in observed or entry.get("status") in (_RESOLVED, _WITHDRAWN):
-            continue
-        # HELD ONCE. An entry already held keeps the day it was first held and
-        # its reason, which may have been written by hand (section 9.4.8).
-        if entry.get("status") == _UNREPRODUCED:
-            continue
-        # A SKIP IS NOT A PASS. A case the run did not measure keeps its
-        # finding, and the next run that measures it decides (9.4.7.1).
-        if case not in run.passed:
-            continue
-        population = entry.get("observations") or "population not recorded"
-        entry["status"] = _UNREPRODUCED
-        entry["held_on"] = run.today.isoformat()
-        entry["held_reason"] = (
-            f"Did not reproduce on a fresh run of {run.today.isoformat()}. "
-            f"Recorded from {population}, so it was a claim drawn from that "
-            f"population and the sample did not hold. Nothing had asked "
-            f"whether an open finding still reproduced: the inventory checks "
-            f"compare the register to the suite and the trace checks to the "
-            f"matrix, and none compared it to a result (consumer_ci.md "
-            f"section 9.4.7)"
-        )
-        changed.append(f"HELD {case}, it no longer reproduces ({population})")
-    return changed
-
-
-def clear_stale_reproductions(
-    merged: dict[str, dict[str, Any]],
-    observed: dict[str, dict[str, Any]],
-    run: RunContext,
-) -> list[str]:
-    """Drop the reproduction mark of a withdrawn finding this run passed.
-
-    ``reproduced_on`` is the evidence a review ticket is written from, so an
-    entry carries it only while the run that wrote it is the latest word on
-    that case. The condition is the one :func:`hold_unreproduced` uses: a case
-    the run measured as passing has stopped reproducing, and a case it skipped
-    decides nothing.
-
-    **It runs whatever the flags say**, unlike holding and resolving. Those
-    change a finding's status, which is a judgement the caller asks for; this
-    withdraws a fact the register no longer has.
-
-    Design: ``consumer_ci.md`` section 9.5.5.12.
+    A finding resolved upstream is kept, and so is one whose case the run did
+    not measure: a skip is not a pass (section 9.4.7.1). Nothing records a
+    removed finding, because the fix that removed it replaced the recordings
+    it was observed on (section 9.4.11).
 
     Args:
         merged (dict): The register, modified in place.
@@ -225,22 +133,16 @@ def clear_stale_reproductions(
         run (RunContext): What the run was, for the date and what passed.
 
     Returns:
-        list[str]: One line per entry whose mark was dropped, naming the date
-        it carried, because that date is what a reader was acting on.
+        list[str]: One ``REMOVED`` line per removal, naming the date.
     """
-    changed: list[str] = []
-    for case, entry in sorted(merged.items()):
-        if case in observed or entry.get("status") != _WITHDRAWN:
-            continue
-        if not entry.get("reproduced_on") or case not in run.passed:
-            continue
-        changed.append(
-            f"NO LONGER RETURNED {case}, it passed on "
-            f"{run.today.isoformat()} and its reproduction of "
-            f"{entry['reproduced_on']} is no longer the latest word"
-        )
-        entry.pop("reproduced_on", None)
-    return changed
+    removed = sorted(
+        case for case, entry in merged.items()
+        if case not in observed and case in run.passed
+        and entry.get("status") != _RESOLVED
+    )
+    for case in removed:
+        del merged[case]
+    return [f"REMOVED {case}, it passed on {run.today.isoformat()}" for case in removed]
 
 
 def resolve_upstream(
@@ -250,20 +152,11 @@ def resolve_upstream(
 ) -> list[str]:
     """Retire every finding a live run no longer reproduces, as the vendor's.
 
-    **Theirs, not ours**, which is the mirror of
-    :func:`hold_unreproduced` and the reason the two are separate
-    functions. Only a live run may ask for this, because replay replays our own
-    recording and cannot bear on the current model (section 9.4).
-
-    **Absent is not passing, and both guards here are that one sentence.** A
-    case missing from a run's failures may have skipped behind a failed
-    foundation, so the run measured nothing and has nothing to credit; and a
-    withdrawn finding is a conclusion about our own record, so resolving it
-    would claim a vendor corrected something we had already said was never
-    theirs. A **held** finding stays resolvable: it is an absence of a
-    measurement rather than a conclusion, and a live pass is the measurement it
-    was waiting for, so its ``held_on`` and ``held_reason`` are kept as the
-    record of how it got here (section 9.4.9).
+    Only a live run may ask for this, because replay replays our own recording
+    and cannot bear on the current model (section 9.4). A finding whose case
+    the run did not measure is kept: it may have skipped behind a failed
+    foundation, and a run that measured nothing has nothing to credit
+    (section 9.4.9).
 
     Args:
         merged (dict): The register, modified in place.
@@ -275,11 +168,10 @@ def resolve_upstream(
     """
     changed: list[str] = []
     for case, entry in sorted(merged.items()):
-        if case in observed or entry.get("status") in (_RESOLVED, _WITHDRAWN):
+        if case in observed or entry.get("status") == _RESOLVED:
             continue
-        # A SKIP IS NOT A PASS, as it is not for a hold. A case the run did not
-        # measure keeps its finding, and the next run that measures it decides
-        # (section 9.4.9).
+        # A SKIP IS NOT A PASS. A case the run did not measure keeps its
+        # finding, and the next run that measures it decides (section 9.4.9).
         if case not in run.passed:
             continue
         entry["status"] = _RESOLVED
@@ -298,12 +190,11 @@ def merge(
 ) -> tuple[dict[str, dict[str, Any]], list[str]]:
     """Return the register after a run, and what changed.
 
-    **A finding that stops reproducing is kept**, and which state it takes
-    depends on what stopped. ``resolved_upstream`` needs a live run, because
-    only that bears on the current model. ``withdrawn`` is the answer where the
-    run shows our own record no longer holds, which replay answers perfectly
-    well: it asks whether we still see what we said we saw
-    (section 9.4.7).
+    A finding the run reproduced is recorded or updated. A finding whose case
+    the run measured passing is resolved upstream where the run asks to
+    resolve, and removed otherwise; one whose case the run did not measure is
+    kept unchanged. An entry whose severity the run measured differently is
+    replaced by a fresh entry (section 9.4.11).
 
     Args:
         existing (dict): What was already recorded.
@@ -319,61 +210,18 @@ def merge(
     for case, measured in sorted(observed.items()):
         entry = merged.get(case)
         if entry is None:
-            merged[case] = {
-                "case": case,
-                "taxonomy_code": measured["taxonomy_code"],
-                "observations": measured.get("observations", "1 of 1 passed"),
-                "observed_model": run.models.get(case, ""),
-                "first_observed": run.today.isoformat(),
-                "last_observed": run.today.isoformat(),
-                "status": "open",
-                "expected": run.expected.get(case, ""),
-                "actual": measured.get("actual", ""),
-                # ONE COMMAND, SHARED WITH THE TICKET, which carries
-                # --with-prerequisites: without it a case resting on a
-                # foundation is refused (consumer_ci.md section 9.5.5).
-                "reproduce": reproduce_command(run.engine, case),
-                "ticket": "",
-            }
-            changes.append(f"RECORDED {case} ({measured['taxonomy_code']})")
+            merged[case] = _fresh_entry(case, measured, run)
+            changes.append(f"RECORDED {case} ({measured['taxonomy_code']})"
+                           + (", passed with a warning" if measured.get("severity") else ""))
             continue
 
-        # A WITHDRAWN ENTRY IS LEFT ALONE. It records a claim we made and
-        # retracted, so stamping it with today's run would make it look live
-        # again, and reopening it would resurrect a judgement about an
-        # assertion that no longer exists. Section 9.4.1.
-        if entry.get("status") == _UNREPRODUCED:
-            # IT CAME BACK, SO IT IS FILEABLE AND IT IS MARKED. A claim that
-            # has flipped is a different claim from one that has held, and a
-            # vendor is told plainly that the behaviour is not every run
-            # (section 9.4.8).
-            entry["status"] = "open"
-            entry["intermittent"] = True
-            entry["last_observed"] = run.today.isoformat()
-            entry.pop("held_on", None)
-            entry.pop("held_reason", None)
+        # A CHANGE OF SEVERITY IS A NEW FINDING. A warning and a failure are
+        # different claims, so nothing of the one carries over (9.4.11).
+        if measured.get("severity") != entry.get("severity"):
+            merged[case] = _fresh_entry(case, measured, run)
             changes.append(
-                f"PROMOTED {case} reproduced again and is filed as intermittent"
-            )
-            continue
-
-        if entry.get("status") == _WITHDRAWN:
-            # REPORTED, NOT REOPENED. The status is a judgement we made about
-            # our own assertion and this run cannot revisit it, but a retracted
-            # claim that is failing again is the one thing a reader of the
-            # register must not learn by accident (section 9.4.7).
-            #
-            # RECORDED, NOT ONLY ANNOUNCED. The line below is read once, by
-            # whoever ran the merge. The date goes on the entry so a reader of
-            # the register a week later can tell, and so the ticket generator
-            # can give the finding the evidence a ruling needs without being
-            # told which cases failed (section 9.5.5.12).
-            entry["reproduced_on"] = run.today.isoformat()
-            changes.append(
-                f"RETURNED {case} is withdrawn and reproduces again "
-                f"({measured['taxonomy_code']}). Read it against its recording: "
-                f"either the assertion was repaired and now fires correctly, or "
-                f"the same false positive has come back"
+                f"REPLACED {case}, {entry.get('severity') or 'failure'} is now "
+                f"{measured.get('severity') or 'failure'}, recorded afresh"
             )
             continue
 
@@ -402,17 +250,44 @@ def merge(
             entry["actual"] = measured["actual"]
         changes.extend(_update_population(case, entry, measured))
 
-    # UNCONDITIONAL, because it withdraws a fact rather than deciding a status
-    # (section 9.5.5.12).
-    changes.extend(clear_stale_reproductions(merged, observed, run))
-
-    if run.hold_unreproduced:
-        changes.extend(hold_unreproduced(merged, observed, run))
-
-    if run.resolve:
-        changes.extend(resolve_upstream(merged, observed, run))
+    retire = resolve_upstream if run.resolve else remove_passed
+    changes.extend(retire(merged, observed, run))
 
     return merged, changes
+
+
+def _fresh_entry(
+    case: str, measured: dict[str, Any], run: RunContext
+) -> dict[str, Any]:
+    """Return a new open entry for a finding the run reproduced.
+
+    Args:
+        case (str): The case.
+        measured (dict): What the run said about the case.
+        run (RunContext): What the run was, for the date, model and requirement.
+
+    Returns:
+        dict: The entry, dated today, with an empty ``ticket``. A warning
+        carries ``severity: warning`` and a failure carries no ``severity``
+        field (``consumer_ci.md`` section 6.4.6).
+    """
+    return {
+        "case": case,
+        "taxonomy_code": measured["taxonomy_code"],
+        "observations": measured.get("observations", "1 of 1 passed"),
+        "observed_model": run.models.get(case, ""),
+        "first_observed": run.today.isoformat(),
+        "last_observed": run.today.isoformat(),
+        "status": "open",
+        "expected": run.expected.get(case, ""),
+        "actual": measured.get("actual", ""),
+        # ONE COMMAND, SHARED WITH THE TICKET, which carries
+        # --with-prerequisites: without it a case resting on a foundation is
+        # refused (consumer_ci.md section 9.5.5).
+        "reproduce": reproduce_command(run.engine, case),
+        "ticket": "",
+        **({"severity": _WARNING} if measured.get("severity") == _WARNING else {}),
+    }
 
 
 def _update_population(
@@ -439,12 +314,7 @@ def _update_population(
             f"{stated or 'every observation failing'}"]
 
 
-def render(
-    engine: str,
-    findings: dict[str, dict[str, Any]],
-    *,
-    holding: bool = False,
-) -> str:
+def render(engine: str, findings: dict[str, dict[str, Any]]) -> str:
     """Return the register as the file holds it.
 
     Args:
@@ -455,26 +325,16 @@ def render(
         str: YAML, with the generated-file warning a reader needs.
     """
     ordered = [findings[case] for case in sorted(findings)]
-    open_count = sum(
-        1 for entry in ordered
-        if entry.get("status") not in (_RESOLVED, _WITHDRAWN)
-    )
-    withdrawn_count = sum(
-        1 for entry in ordered if entry.get("status") == _WITHDRAWN
-    )
+    open_count = sum(1 for entry in ordered if entry.get("status") != _RESOLVED)
     header = (
         "# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy\n"
         "# SPDX-License-Identifier: MIT\n"
         f"# Findings observed against {engine}.\n"
-        + ("# THE HOLDING LIST. Nothing here is filed: each entry either was\n"
-           "# retracted as ours or stopped reproducing. A held finding that a\n"
-           "# later run reproduces returns to the bug file carrying\n"
-           "# `intermittent: true` (consumer_ci.md section 9.4.8).\n"
-           if holding else
-           "# THE BUG FILE. Every entry reproduced on the latest run, whatever\n"
-           "# its failure rate. What did not reproduce waits in unconfirmed/\n"
-           "# (consumer_ci.md section 9.4.8).\n")
-        + "#\n"
+        "# THE BUG FILE. Every open entry reproduced on the latest run that\n"
+        "# measured its case, whatever its failure rate. A finding whose case\n"
+        "# a run measured passing is removed, unless a live run resolved it\n"
+        "# upstream (consumer_ci.md section 9.4.11).\n"
+        "#\n"
         "# GENERATED BY tools/findings.py. Specified by\n"
         "# docs/design/consumer_ci.md section 9.\n"
         "#\n"
@@ -487,12 +347,33 @@ def render(
         "# green would be a quarantine with a different name, and a P0 or P1\n"
         "# cannot be exempted at all.\n"
         f"#\n# {open_count} open, "
-        f"{len(ordered) - open_count - withdrawn_count} resolved upstream, "
-        f"{withdrawn_count} withdrawn.\n\n"
+        f"{len(ordered) - open_count} resolved upstream.\n\n"
     )
     return header + yaml.safe_dump(
         {"engine": engine, "findings": ordered},
         sort_keys=False, allow_unicode=True, width=100,
+    )
+
+
+def _retired_count(
+    existing: dict[str, dict[str, Any]], merged: dict[str, dict[str, Any]]
+) -> int:
+    """Return how many entries a merge removed or newly resolved upstream.
+
+    Args:
+        existing (dict): The register before the merge.
+        merged (dict): The register after it.
+
+    Returns:
+        int: The entries absent from ``merged``, and those resolved upstream in
+        ``merged`` that were not resolved in ``existing``.
+    """
+    return sum(
+        1 for case, entry in existing.items()
+        if case not in merged or (
+            merged[case].get("status") == _RESOLVED
+            and entry.get("status") != _RESOLVED
+        )
     )
 
 
@@ -512,17 +393,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         "--resolve-from-live",
         action="store_true",
         help=(
-            "Retire a finding this run did not reproduce. Live only: replay "
-            "replays our own recording and cannot bear on the current model"
-        ),
-    )
-    parser.add_argument(
-        "--hold-unreproduced",
-        action="store_true",
-        help=(
-            "Hold an open finding this run did not reproduce. Permitted in "
-            "replay: it asks whether our own record still holds, not whether "
-            "the model changed"
+            "Record a finding whose case this run measured passing as resolved "
+            "upstream instead of removing it. Live only: replay replays our "
+            "own recording and cannot bear on the current model"
         ),
     )
     parser.add_argument("--dry-run", action="store_true")
@@ -539,7 +412,10 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     today = date.fromisoformat(arguments.as_of)
     report, results = observe(arguments.engine, arguments.mode)
-    observed = parse_failures(report)
+    # A CASE THAT PASSED WITH A WARNING is a finding too, filed apart
+    # (section 6.4.6). A failure on the same case wins, though JUnit never
+    # carries both.
+    observed = {**parse_warnings(report), **parse_failures(report)}
 
     # A FAILURE CARRYING NO MODEL CODE IS REPORTED, NEVER DROPPED. It is either
     # an instrument defect, which belongs nowhere near this register, or a
@@ -557,8 +433,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         )
         del observed[case]
 
+    existing = load_register(arguments.engine)
     merged, changes = merge(
-        load_register(arguments.engine),
+        existing,
         observed,
         RunContext(
             engine=arguments.engine,
@@ -567,7 +444,6 @@ def main(argv: Optional[list[str]] = None) -> int:
             expected=expected_by_case(Path("docs/testing/rtm_model.csv")),
             today=today,
             resolve=arguments.resolve_from_live,
-            hold_unreproduced=arguments.hold_unreproduced,
             passed=parse_passed(report),
         ),
     )
@@ -588,12 +464,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     path = register_path(arguments.engine)
     path.parent.mkdir(parents=True, exist_ok=True)
-    held_count = sum(
-        1 for entry in merged.values()
-        if entry.get("status") == _UNREPRODUCED
-        and entry.get("held_on") == today.isoformat()
-    )
-    refusal = refuse_empty_run(report, observed, held_count)
+    refusal = refuse_empty_run(report, observed, _retired_count(existing, merged))
     if refusal is not None:
         print(
             f"QC_HARNESS_REGISTER_REFUSED: refusing to write the register because "

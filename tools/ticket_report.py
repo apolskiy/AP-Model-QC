@@ -11,10 +11,7 @@ the request as sent, every recorded response, the expected rule and a replay
 command, and ``main``, which writes a page per engine and one ticket file per
 filed finding under ``reports/tickets/``.
 
-It is run by hand, normally after ``tools.findings`` has updated a register, and
-``tools.review_report`` runs after it to write the withdrawn findings that are
-failing again, which are a decision to make rather than something to file
-(``consumer_ci.md`` section 9.5.5.12).
+It is run by hand, normally after ``tools.findings`` has updated a register.
 
 Its sections are assembled from ``tools.ticket_recordings``,
 ``tools.ticket_reasons`` and ``tools.ticket_framing``, and ``tools.ticket_files``
@@ -67,8 +64,10 @@ from tests.cases.graded_support import case_for
 from tests.cases.suite_support import case_rules_from_suite
 from tools.register_files import to_file
 from tools.ticket_recordings import (
+    first_judge,
     judge_prompts,
     observation_outcomes,
+    own_judgements,
     recorded_judgements,
     recorded_observations,
     recorded_request,
@@ -78,6 +77,7 @@ from tools.ticket_files import (
     GENERATED_MARK,
     drop_engine_output,
     filing_sheet,
+    is_warning,
     page_name,
     report_arguments,
     write_tickets,
@@ -513,12 +513,14 @@ def finding_section(
     out.extend(reproduce_outside(
         engine, request, failing_count(len(responses), *observed[:2]), len(responses)))
     out.extend(reproduce_through_repository(
-        engine, case, _judge_engine(root, engine, task_id, rule_id)))
+        engine, case, first_judge(root, engine, task_id, rule_id)))
     out.extend([
         "| | |",
         "|---|---|",
         f"| Model | `{entry.get('observed_model', '')}` |",
         f"| Failure class | `{entry.get('taxonomy_code', '')}` |",
+        *(["| Outcome | Passed with a warning: the answer corrected itself later in "
+           "the same response |"] if is_warning(entry) else []),
         f"| First observed | {entry.get('first_observed', '')} |",
         f"| Last observed | {entry.get('last_observed', '')} |",
     ])
@@ -552,28 +554,6 @@ def _stamp_population(
     return population
 
 
-def _judge_engine(root: Path, engine: str, task_id: str, rule_id: str) -> str:
-    """Return the engine whose stored judgements score this pair, empty where none does.
-
-    Args:
-        root (Path): The repository root.
-        engine (str): The engine whose responses were judged.
-        task_id (str): The task identifier.
-        rule_id (str): The rule set identifier.
-
-    Returns:
-        str: The judge's folder name under the engine's judgements, which is
-        the judge engine's name.
-    """
-    folder = root / "tests" / "fixtures" / "replay" / "judgements" / engine
-    if not folder.is_dir():
-        return ""
-    for judge in sorted(path for path in folder.iterdir() if path.is_dir()):
-        if (judge / task_id / rule_id).is_dir():
-            return judge.name
-    return ""
-
-
 def _observed(
     root: Path, engine: str, pair: tuple[str, str], rules: Any, count: int
 ) -> tuple[list[tuple[int, bool, str]], list[Optional[tuple[bool, float, str]]], list[str]]:
@@ -594,13 +574,12 @@ def _observed(
     stored = recorded_judgements(root, engine, task_id, rule_id, count)
     recordings = recorded_responses(root, engine, task_id, rule_id)
     outcomes = observation_outcomes(task_id, rule_id, recordings)
-    # THE JUDGEMENT AND THE PROMPT ARE DROPPED TOGETHER where the checks
-    # failed, both being the same stale record read two ways: the page would
-    # otherwise count a score the judge gave an earlier response as a
-    # measurement of this one (sections 9.5.5.8 and 9.5.5.9).
-    unjudged = {index for index, passed, _ in outcomes if not passed}
-    own = [None if index in unjudged else judgement
-           for index, judgement in enumerate(stored)]
+    # THE JUDGEMENT AND THE PROMPT ARE KEPT OR DROPPED TOGETHER, being one
+    # record read two ways: a score the judge gave an earlier response is not
+    # a measurement of this one (sections 9.5.5.8, 9.5.5.8.1 and 9.5.5.9).
+    own = own_judgements(
+        [str(response.get("text") or "") for response in recordings], stored, outcomes
+    )
     return (
         outcomes,
         [judged_outcome(judgement, getattr(rules, "rubric", None)) for judgement in own],
@@ -635,6 +614,10 @@ def _claim_lines(
         (section 9.5.5.6).
     """
     out = [f"**Problem:** {_issue_sentence(entry, task, population)}", ""]
+    if is_warning(entry):
+        # A RECOVERY IS STATED AS ONE (consumer_ci.md section 6.4.6).
+        out.extend(["**The case passed with a warning:** the answer corrected this later "
+                    "in the same response. Filed for the vendor to decide on.", ""])
     reasons = failure_reasons(rules, task, *observed) if rules is not None else []
     if reasons:
         out.extend(["**Why it fails:**", "", *(f"- {reason}" for reason in reasons), ""])
@@ -781,7 +764,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         page, sections = page_for(root, engine)
         filed[engine] = [entry for entry, _ in sections]
         # PRUNED FIRST, EVEN WITH NOTHING TO FILE, so an engine whose findings
-        # were all withdrawn loses the tickets it used to have and the
+        # were all removed loses the tickets it used to have and the
         # directory is empty for the removal below.
         tickets = write_tickets(parsed.out_dir / engine, engine, sections)
         if not sections:
