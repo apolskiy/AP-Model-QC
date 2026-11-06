@@ -183,9 +183,15 @@ class TestMQCTicketReproduction:
         assert "no REST form" in block and "client.models.generate_content(" in block, (
             f"gemini's reproduction does not say why it is the SDK call, or omits it: {block}"
         )
+        # THE CAVEAT FOLLOWS THE COUNT: 1 of 3 may not show on one send, and 3
+        # of 3 showed on every send, so it carries none.
+        every = "\n".join(reproduce_outside(
+            "gemini", recorded_request(ROOT, "gemini", task_id, rule_id), 3, 3))
         assert "Send it 3 times" in block and "`response.text`" in block and (
             _REPLACE_KEY in block and 'genai.Client(api_key="<key>")' in block
-        ), block
+            and "may not show it" in block and "appeared on 3 of 3 attempts." in every
+            and "may not show it" not in every
+        ), (block, every)
         assert pairs, "the suite pairs no case with a task, so nothing was checked"
 
     @story("Reproduce with this repository")

@@ -98,7 +98,8 @@ def reproduce_outside(
         PowerShell reading it, then the SDK call. Otherwise the SDK call alone,
         saying why. Each carries ``<key>`` where the credential goes, and a line
         says to replace it with the reader's own key. Then how many times to
-        send it and which reply field to read.
+        send it, adding that one send may not show the problem only where
+        ``failing`` is below ``total``, and which reply field to read.
     """
     out = ["**Reproduce without this repository**", ""]
     if request is None:
@@ -125,9 +126,10 @@ def reproduce_outside(
         sdk = ""
     if snippet:
         out.extend([*([sdk, ""] if sdk else []), *fenced(snippet, "python"), ""])
+    caveat = ", so a single send may not show it." if failing < total else "."
     out.extend([
         f"3. Send it {total} times. The problem appeared on {failing} of {total} "
-        f"attempts, so a single send may not show it.",
+        f"attempts{caveat}",
         f"4. In each reply read {adapter.reproduction_reply_fields()}, and compare "
         f"it with the rule under *Expected* and with the responses quoted above.",
         "",

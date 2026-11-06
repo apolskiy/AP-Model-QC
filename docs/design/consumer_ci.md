@@ -5296,8 +5296,9 @@ re-quoted by whichever shell runs it, and a here-document is `bash` alone.
   with no wire form (section 9.5.3.1), and the ticket says so in one line.
 - Every ticket carries the SDK call as well, for a reader who prefers it.
 - **Send it as many times as the case did**, and the ticket says how many and
-  why: the problem appeared on so many of so many attempts, and one send may not
-  show it.
+  why: the problem appeared on so many of so many attempts. **Only where it
+  appeared on fewer than all of them** does the ticket add that one send may
+  not show it; a problem on every attempt carries no such line.
 - **Read this field of the reply**: the provider's answer text and its tool
   calls, named by path, so the reader compares what they received with the
   rule under Expected and with the responses quoted above.
