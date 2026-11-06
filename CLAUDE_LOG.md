@@ -8052,3 +8052,13 @@ had the same lookup), and step 3 of `115771` render from that copy.
 
 **State.** Model unit 209 of 210, `115804` red as designed. Pylint exit 0, case
 index current.
+
+### The flagship check moved openai and gemini, and the judge, 2026-11-05
+
+The check that opens the live run moved openai to `gpt-6-astra` and gemini and
+the judge to `gemini-4-argon` in the harness; claude and grok are unchanged
+(harness `CLAUDE_LOG.md`, same date). The README now states each engine's model
+for the next run beside the model its stored recordings answer, and the
+judge's. The live run therefore re-records and re-judges every openai and
+gemini case and judges every claude and grok observation again, and
+`CLAUDE_TASK.md` carries that.

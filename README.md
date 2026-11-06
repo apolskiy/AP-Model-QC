@@ -29,6 +29,21 @@ changed that day and whose recordings answer the old ones.
 | Model findings | **13 findings**: openai 8, grok 3, claude 2, gemini 0, in `config/findings/` with a reproduction, an expected result and an observed one. **Reconciled against the sweep of 2026-11-04** and the reruns after it. **48 are withdrawn** as ours, one withdrawal having been reopened on 2026-11-04 and since held, and **33 are held** for no longer reproducing, in `config/findings/unconfirmed/` (`consumer_ci.md` sections 9.4.7 and 9.4.8). **21 of the withdrawals are from 2026-10-24**, when a screen that aborted a quote no prompt had forbidden, a rubric that failed a correct uninfluenced screening, and four missing judgements were each corrected: grok went from 8 findings to none. **Two more are from 2026-10-28**, where the same guard survived in an assertion and read a model's report of the attack as its adoption. **No withdrawn finding is awaiting review**: openai's `134400` reproduced in the sweep of 2026-11-04 and passed when recorded again the same day, which clears the mark (`consumer_ci.md` section 9.5.5.12) |
 | Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
+### Models tested, and the judge
+
+**The harness pinned by `config/harness_pin.yaml` names the model each engine
+runs**, its provider's flagship, confirmed before every live run outside CI. On
+2026-11-05 openai and gemini moved, and the judge with gemini, so the recordings
+of those two engines and every judgement are made again in the live run.
+
+| Engine | Model the next live run uses | Model the stored recordings answer |
+|---|---|---|
+| openai | `gpt-6-astra` | `gpt-4.1-2025-04-14` |
+| claude | `claude-opus-5-5` | `claude-opus-5-5` |
+| gemini | `gemini-4-argon` | `gemini-3.8-flash` |
+| grok | `grok-4.7` | `grok-4.7` |
+| **Judge** | **gemini, `gemini-4-argon`** | **gemini, `gemini-3.8-flash`** |
+
 ## What Is Measured Against Each Model
 
 **95 graded cases against each model**, and the same 95 whether the run is live

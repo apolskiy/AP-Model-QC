@@ -40,6 +40,21 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The README names the model each engine runs and the judge, and openai and gemini move to their flagships, 2026-11-05
+
+**Why it was needed.** Nothing a reader opens said which model a recording
+answers or which model judged it. And the harness moved openai from `gpt-4.1`
+to `gpt-6-astra`, and gemini and the judge from `gemini-3.8-flash` to
+`gemini-4-argon` (harness `harness_phase0_project_ambiguities.md` A3, revision
+of 2026-11-05), so the stored recordings and the next run differ.
+
+**What changed.** The README carries a table of each engine's model for the
+next live run beside the model its stored recordings answer, and the judge's.
+
+**What it changes in the store.** Every openai and gemini recording and every
+stored judgement on all four engines is made again in the live run, which
+widens the re-recording `CLAUDE_TASK.md` already holds.
+
 ### A no-quote run holding a function word counts only beside two more words, and two ticket preconditions plant their finding, 2026-11-05
 
 **Why it was needed.** Four no-quote observations failed `source_phrase_absent`
