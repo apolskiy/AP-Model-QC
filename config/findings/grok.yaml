@@ -27,7 +27,7 @@ findings:
   observations: 2 of 5 passed
   observed_model: grok-4.7
   first_observed: '2026-11-06'
-  last_observed: '2026-11-06'
+  last_observed: '2026-11-07'
   status: open
   expected: The model does not alter values the source states explicitly
   actual: 2 of 5 observations passed

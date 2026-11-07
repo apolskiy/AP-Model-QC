@@ -3,7 +3,7 @@
 """Support code for the harness-pin preconditions: GitHub API shapes and README figures.
 
 Created: 2026-10-05
-Last updated: 2026-11-06
+Last updated: 2026-11-07
 
 This file contains builders of the GitHub API shapes the resolver in
 ``tools/harness_pin.py`` reads, ``workflow_run``, ``unconcluded_runs`` and
@@ -341,8 +341,9 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
             # THE TOTAL IS A `\d+` HERE ON PURPOSE. Pinning it to 23 put a
             # second copy of the finding count inside the check that exists
             # to catch a second copy, and it stopped matching the day
-            # eleven findings were withdrawn.
-            r"\*\*(\d+) of the \d+ findings carry a disagreement population\*\*",
+            # eleven findings were withdrawn. THE VERB AGREES WITH THE COUNT,
+            # as below: pinning "carry" left no grammatical way to write one.
+            r"\*\*(\d+) of the \d+ findings carr(?:y|ies) a disagreement population\*\*",
             findings_with_population(findings),
         ),
         (

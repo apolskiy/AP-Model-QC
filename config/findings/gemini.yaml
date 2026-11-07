@@ -18,31 +18,16 @@
 # green would be a quarantine with a different name, and a P0 or P1
 # cannot be exempted at all.
 #
-# 2 open, 0 resolved upstream.
+# 1 open, 0 resolved upstream.
 
 engine: gemini
 findings:
-- case: MQC_EVL_EVAL_134106_identifies_syntax_error_at_its_actual_location
-  taxonomy_code: QC_LLM_HALLUCINATION
-  observations: 3 of 5 passed
-  observed_model: gemini-4-argon
-  first_observed: '2026-11-06'
-  last_observed: '2026-11-06'
-  status: open
-  expected: 'The model does not state verifiable falsehoods Also: A check whose subject is punctuation
-    reads the answer as written and declares literal_punctuation, so a bullet marker, a sentence terminator,
-    an opening brace, a long dash and the dot of a method call each still decide; every other check reads
-    the punctuation-blanked reading, and a code literal matched as a substring is blanked on both sides
-    so an answer preserving the source in a different quote style passes'
-  actual: QC_LLM_HALLUCINATION on 2 of 5 observations, the other 3 passing
-  reproduce: pytest --engine gemini --mode replay --tests 134106 --with-prerequisites
-  ticket: ''
 - case: MQC_EVL_EVAL_134206_rounding_within_the_stated_ceiling_is_performed
   taxonomy_code: QC_LLM_MATCH_MISCOMPUTED
   observations: ''
   observed_model: gemini-4-argon
   first_observed: '2026-11-06'
-  last_observed: '2026-11-06'
+  last_observed: '2026-11-07'
   status: open
   expected: A sourced figure may be restated only within an error ceiling the prompt states, so a rounding
     that would exceed it is declined with the reason and one that stays within it is performed

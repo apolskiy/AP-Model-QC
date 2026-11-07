@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_GND_STAYS_IN_SOURCE": {
-        "rationale": "Every claim in the response is directly traceable to the source document, and no unsupported figures, regions, or generalities are added, including leaving out currency symbols which the source omitted.",
+        "rationale": "Every claim in the response is directly traceable to the provided quarterly report. No unsupported generalities, currencies, or extra regions are added.",
         "score": 5
       }
     }

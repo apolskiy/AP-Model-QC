@@ -3,20 +3,21 @@
 """Unit preconditions guarding the code excerpts the graded code cases assert against.
 
 Created: 2026-09-23
-Last updated: 2026-10-21
+Last updated: 2026-11-07
 
-This file contains ``TestMQCCodeExcerptFixtures``, five cases over
+This file contains ``TestMQCCodeExcerptFixtures``, six cases over
 ``tests/fixtures/excerpts``. They parse or execute each excerpt and check it still has
 the defect recorded for it, a syntax error at its recorded line, a wrong value, or every
-recorded settlement defect; that the two top-scorer excerpts are the same function; and
-that no excerpt is collected or linted as case code.
+recorded settlement defect; that the two top-scorer excerpts are the same function;
+that no excerpt is collected or linted as case code; and that the syntactic case's
+prompt names the Python version its line is measured on.
 
 **These run in the ``unit`` precondition gate**, ahead of the graded code family in
 ``mqc_eval_code.py``, whose expectations rest on those defects. A failure is an
 instrument defect, **not a model finding**: the run exits 3 and no graded case executes,
 and the module carries no priority marker, per ``framework-rules.md`` section 3.3.
 
-Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.
+Specified by ``docs/testing/model_evaluation_test_plan.md`` sections 8 and 9.9.5.
 
 **These were harness cases until the repository split.** They read files this
 repository owns, which worked only while both lived in one tree, and they failed
@@ -39,12 +40,16 @@ defect.
 #   115102  settlement_excerpt_still_exhibits_every_recorded_defect
 #   115103  the_two_top_scorer_excerpts_are_the_same_function
 #   115104  excerpts_are_not_collected_or_linted_as_case_code
+#   115105  the_syntax_location_prompt_states_version_and_line_count
 # ------------------------------------------------------------ end of cases
 
 import py_compile
+import sys
 from pathlib import Path
 
 import pytest
+
+from tests.cases.graded_support import case_for
 
 pytestmark = pytest.mark.unit
 
@@ -204,3 +209,29 @@ class TestMQCCodeExcerptFixtures:
         """
         assert not list(_EXCERPTS.glob("*.py"))
         assert len(list(_EXCERPTS.glob("*.py.txt"))) == 3
+
+    def MQC_CAS_UNI_115105_the_syntax_location_prompt_states_version_and_line_count(
+        self,
+    ) -> None:
+        """The syntactic case's prompt states the version, the line count, the list and no parser.
+
+        It asks for the error, the line and the cause as three numbered items,
+        counting lines from the first line inside the document, never what a
+        parser reports, and names the Python version ``115100`` measures the
+        line on. Design: ``model_evaluation_test_plan.md`` section 9.9.5.
+
+        Returns:
+            None
+        """
+        case = case_for("MQC_TASK_cod_syntax_location", "MQC_RULE_cod_syntax_location")
+        sent = " ".join(case.task.user_prompt.split())
+        count = "counting lines from the first line inside the document"
+        assert count in sent, f"the prompt does not state how lines are counted: {sent!r}"
+        items = ("1. Name the error. 2. The number of the line where the error occurs. "
+                 "3. What caused the error.")
+        assert "a numbered list of three items" in sent and items in sent, (
+            f"the prompt does not ask for the three items in order: {sent!r}"
+        )
+        assert "pars" not in sent, f"the prompt asks about a parser: {sent!r}"
+        version = f"Python {sys.version_info.major}.{sys.version_info.minor}"
+        assert version in sent, f"the prompt does not state {version}: {sent!r}"

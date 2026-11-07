@@ -237,11 +237,18 @@
   tags: [code_comprehension, logical, recommendation]
 
 # MQC_REQ_MDL_GND_0004, case 30035. The syntax error is at line 2, nowhere else.
+# THE PROMPT STATES THE VERSION AND THE LINE COUNT, and asks for the error,
+# the line and the cause as three numbered items: the first two are checked
+# and the third is judged (test plan sections 9.9.5 and 9.9.5.1).
 - task_id: MQC_TASK_cod_syntax_location
   rubric_ids: [MQC_RULE_cod_syntax_location]
   user_prompt: |
-    The excerpt above does not parse. Say which line carries the error and
-    what the error is.
+    The excerpt above is Python 3.14. It carries an error, and as a result does
+    not execute. Answer in a numbered list of three items, counting lines from the
+    first line inside the document:
+    1. Name the error.
+    2. The number of the line where the error occurs.
+    3. What caused the error.
   constraints:
     - constraint_id: COD_LOCATE_SYNTAX_ERROR
       text: Name the line carrying the syntax error

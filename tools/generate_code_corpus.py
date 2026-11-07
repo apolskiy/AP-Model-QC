@@ -3,7 +3,7 @@
 """The code corpus generator, which writes the code comprehension task file from its excerpts.
 
 Created: 2026-09-24
-Last updated: 2026-11-05
+Last updated: 2026-11-07
 
 This file contains ``excerpt``, which reads one guarded fixture from
 ``tests/fixtures/excerpts/``, ``build``, which returns the whole task file with
@@ -248,10 +248,17 @@ def _tasks() -> list[tuple[str, ...]]:
          "Recommend a bound on how long a coupon code stays redeemable",
          "requirement", "DOC_excerpt_settle_order", "Excerpt under review", settle,
          "[code_comprehension, logical, recommendation]"),
-        ("# MQC_REQ_MDL_GND_0004, case 30035. The syntax error is at line 2, nowhere else.",
+        ("# MQC_REQ_MDL_GND_0004, case 30035. The syntax error is at line 2, nowhere else.\n"
+         "# THE PROMPT STATES THE VERSION AND THE LINE COUNT, and asks for the error,\n"
+         "# the line and the cause as three numbered items: the first two are checked\n"
+         "# and the third is judged (test plan sections 9.9.5 and 9.9.5.1).",
          "cod_syntax_location",
-         "    The excerpt above does not parse. Say which line carries the error and\n"
-         "    what the error is.",
+         "    The excerpt above is Python 3.14. It carries an error, and as a result does\n"
+         "    not execute. Answer in a numbered list of three items, counting lines from the\n"
+         "    first line inside the document:\n"
+         "    1. Name the error.\n"
+         "    2. The number of the line where the error occurs.\n"
+         "    3. What caused the error.",
          "COD_LOCATE_SYNTAX_ERROR", "Name the line carrying the syntax error",
          "requirement", "DOC_excerpt_top_scorers_syntactic", "Excerpt under review",
          syntactic, "[code_comprehension, syntactic, location]"),

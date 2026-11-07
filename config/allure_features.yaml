@@ -67,6 +67,7 @@ modules:
   tests/cases/mqc_uni_families.py: Corpus
   tests/cases/mqc_uni_instrument.py: Corpus
   tests/cases/mqc_uni_rule_reading.py: Corpus
+  tests/cases/mqc_uni_syntax_location.py: Corpus
   tests/cases/mqc_uni_rubric_anchors.py: Premise discrimination
   tests/cases/mqc_uni_list_item_gates.py: Corpus
   tests/cases/mqc_uni_instruction_checks.py: Instruction following

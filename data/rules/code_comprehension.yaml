@@ -479,108 +479,112 @@
     threshold: 3.0
 
 # MQC_REQ_MDL_GND_0004, case 30035. Line 2, and nowhere else.
+#
+# THREE NUMBERED ITEMS, SINCE 2026-11-07: the error and the line are each one
+# word or one number in a known place, so checks read them exactly, and the
+# cause can be said in more ways than a pattern lists, so the judge grades it
+# (test plan section 9.9.5.1). This retired A_COD_NAMES_LINE_TWO and the claim
+# A_COD_NOT_LINE_THREE, whose hedge list split gemini's identical notes about
+# the parser by word order.
 - rule_id: MQC_RULE_cod_syntax_location
   families: [code_comprehension]
   priority: 2
   priority_conditions: [P2_DOCUMENTED_BEHAVIOUR]
   requirement_ids: [MQC_REQ_MDL_GND_0004]
   assertions:
-    - assertion_id: A_COD_NAMES_LINE_TWO
+    # ITEM 1 NAMES THE ERROR. SyntaxError only, for now: a model may give the
+    # message instead, and the owner ruled to count how many live answers do
+    # before admitting it.
+    - assertion_id: A_COD_ITEM_ONE_SYNTAX_ERROR
       kind: regex
       parameters:
-        # NAMING A LINE IS NOT ONLY NUMBERING IT. `gpt-4.1` answered "The
-        # error is in the following line:" and quoted the line verbatim,
-        # which identifies the location at least as precisely as the
-        # number does, and this reported it as having missed the location.
-        #
-        # THE QUOTATION ADMITTED IS THE BROKEN ONE. Line 2 ends
-        # `reverse=True` with no closing parenthesis, so the end anchor
-        # separates it from the correction, which ends `reverse=True)`.
-        #
-        # IT OPENS NO HOLE, although the excerpt is in the prompt and an
-        # answer could echo it. `A_COD_NOT_LINE_THREE` still fails an
-        # answer blaming the line after, and the rubric criterion
-        # `C_COD_NAMES_THE_CAUSE` judges whether the unclosed call to
-        # sorted is identified at all. This assertion was never the only
-        # thing standing between an echo and a pass.
-        #
-        # THE QUOTED LINE IS CODE, so this reads the answer as written. The
-        # second alternative is the broken line itself, and blanked it loses
-        # the `=` that distinguishes it, so an answer that shows the line
-        # instead of numbering it fails although it located the error. Measured
-        # against gemini's recording (test plan section 9.14).
-        literal_punctuation: true
-        pattern: '(?i)(line\s*2\b|reverse\s*=\s*True\s*$)'
+        scope: {list_item: 1}
+        pattern: '(?i)\bsyntax\s*error\b'
         present: true
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation
       constraint_ref: COD_LOCATE_SYNTAX_ERROR
-    # NAMING LINE 3 is the plausible wrong answer: that is where the
-    # interpreter reports the problem, not where the defect is.
-    - assertion_id: A_COD_NOT_LINE_THREE
-      kind: claim
+    # ITEM 2 IS LINE 2. The item opens with its own number, so the first
+    # number after that opener is the line given; a decimal such as 3.14 is a
+    # version, not a line.
+    - assertion_id: A_COD_ITEM_TWO_IS_LINE_TWO
+      kind: regex
       parameters:
-        # LINE 1 IS NO LONGER FORBIDDEN. Nothing here turns on it, and the
-        # excerpt's line 1 is the signature, so mentioning it is innocuous.
-        #
-        # AND MENTIONING LINE 3 IS NOT LOCATING THE ERROR THERE. The
-        # unclosed parenthesis makes the parser read line 3 as a
-        # continuation, and CPython before 3.10 reports the error at it.
-        # All four engines answered line 2; the only one marked wrong was
-        # the one that went on to explain this.
-        #
-        # A HEDGE CAN SIT IN THE SENTENCE BEFORE. claude-opus-5-5 wrote
-        # "Older versions keep reading line 3 as part of the unfinished
-        # expression. They hit return and report SyntaxError: invalid
-        # syntax on line 3, even though the real mistake is on line 2."
-        # The second sentence carries its own contrast, so "even though"
-        # is declared as the hedge this case has seen (2026-11-06).
-        pattern: '(?i)(error|issue|problem|fault|bug|missing|unclosed)[^.]{0,40}\bline\s*3\b|\bline\s*3\b[^.]{0,30}(has|holds|carries|contains|is where)[^.]{0,25}(error|issue|problem)'
-        present: false
-        unless:
-        - older
-        - earlier
-        - before
-        - legacy
-        - version
-        - treats
-        - treated
-        - continuation
-        - argument list
-        - part of
-        - pointing
-        - points at
-        - reported
-        - reports
-        - depending
-        - either way
-        - cause is on line 2
-        - even though
+        scope: {list_item: 2}
+        pattern: '\A\W*2[.)]\D*2(?!\d|\.\d)'
+        present: true
       taxonomy_code: QC_LLM_HALLUCINATION
       severity: violation
       constraint_ref: COD_LOCATE_SYNTAX_ERROR
+    # AND NAMES NO OTHER LINE. Line 3 beside line 2 is the parser note this
+    # case kept finding, false of the Python 3.14 the prompt states.
+    - assertion_id: A_COD_ITEM_TWO_NO_OTHER_LINE
+      kind: regex
+      parameters:
+        scope: {list_item: 2}
+        pattern: '(?<![\d.])[13](?!\d|\.\d)'
+        present: false
+      taxonomy_code: QC_LLM_HALLUCINATION
+      severity: violation
+      constraint_ref: COD_LOCATE_SYNTAX_ERROR
+  # THE THREE ITEMS THE PROMPT ASKS FOR: once each and in order, or a request
+  # for clarification outside the list, judged on its own rubric (test plan
+  # section 9.15, harness tier3_evaluation.md 5.5).
+  answer_list:
+    style: numbered
+    count: 3
+    clarification_rubric:
+      criteria:
+        - criterion_id: C_CLARIFICATION_WARRANTED
+          name: Clarification warranted
+          description: >-
+            Whether the question names an ambiguity in the prompt whose readings
+            give different answers, which the answer could not settle alone.
+          anchors:
+            1:
+              description: Asks what the prompt or the excerpt already answers, or asks nothing specific.
+              exemplar: >-
+                Which line should I start counting from before I give the line
+                number?
+            3:
+              description: Names an ambiguity in the prompt whose readings give different answers.
+              exemplar: >-
+                Should item 1 name the exception class or its message? The answers
+                differ, SyntaxError against '(' was never closed.
+            5:
+              description: Names that ambiguity, what each reading gives, and which reading it would take.
+              exemplar: >-
+                Should item 1 name the exception class or its message? As the class it
+                is SyntaxError, and as the message it is '(' was never closed. I would
+                give the class; should I?
+      threshold: 3.0
   rubric:
     criteria:
       - criterion_id: C_COD_NAMES_THE_CAUSE
         name: Naming the cause
         description: >-
-          Whether the unclosed call to sorted is identified, rather than only
-          the symptom the interpreter reports.
+          Whether item 3 identifies the unclosed call to sorted as the cause,
+          rather than only the symptom the interpreter reports.
         anchors:
           1:
-            description: Wrong line, or no cause given.
-            exemplar: >-
-              The error is on line 3: the return statement is unexpected.
+            description: No cause, or a wrong cause.
+            exemplar: |-
+              1. SyntaxError.
+              2. Line 2.
+              3. The return statement is unexpected.
           3:
-            description: Right line, cause described vaguely.
-            exemplar: >-
-              Line 2 carries the error. Something is wrong with the brackets.
+            description: Cause described vaguely.
+            exemplar: |-
+              1. SyntaxError.
+              2. Line 2.
+              3. Something is wrong with the brackets.
           5:
-            description: Right line, and names the unclosed parenthesis.
-            exemplar: >-
-              Line 2 carries the error: the call to sorted is never closed. The
-              interpreter reports the problem at the following line, because that is
-              where it first meets something that cannot continue the expression.
+            description: Names the unclosed parenthesis of the call to sorted.
+            exemplar: |-
+              1. SyntaxError.
+              2. Line 2.
+              3. The call to sorted is never closed: its closing parenthesis is missing,
+              so the parser reaches the next line still inside the call.
     threshold: 3.0
 
 # MQC_REQ_MDL_GND_0004, case 30036. THE RECALL CASE.

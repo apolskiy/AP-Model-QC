@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_GND_STAYS_IN_SOURCE": {
-        "rationale": "Every region and revenue figure listed in the response directly traces to the provided quarterly report, with no unsupported generalities or outside information added.",
+        "rationale": "Every region and revenue figure listed in the response directly traces to the provided report, without any padding, unsupported generalities, or extrapolated details (such as assuming a currency).",
         "score": 5
       }
     }

@@ -8234,3 +8234,72 @@ the skip and failure refusals. Graded cases keep passw.
   counts and failed before the change.
 * **Code Quality & Compliance Audit:** preconditions 220 of 220, exit 0, none
   marked passw; pylint 10.00/10, exit 0; 226 requirements.
+
+## 2026-11-07: 134106 asks for the error, the line and the cause as a numbered list, checking two and judging the third
+
+**The finding against gemini's `134106` was the prompt's, not the model's.**
+Every gemini observation answered line 2, then added what the interpreter
+reports, and the case graded those notes on hedge words. The prompt left two
+things open: which version the excerpt was, and where line counting began. It
+now states Python 3.14, counts from the first line inside the document, and
+asks for three numbered items: the error, the line, and the cause.
+
+**Items 1 and 2 are checked and item 3 is judged**, because an unclosed call can
+be described in many ways that a pattern would misread, while an error name and
+a line number cannot. The rule declares a numbered `answer_list` of three. Its
+checks are `A_COD_ITEM_ONE_SYNTAX_ERROR` on item 1, and
+`A_COD_ITEM_TWO_IS_LINE_TWO` and `A_COD_ITEM_TWO_NO_OTHER_LINE` on item 2. The
+rubric `C_COD_NAMES_THE_CAUSE` grades item 3, threshold 3, with a level 1
+anchor naming a wrong cause. `A_COD_NAMES_LINE_TWO` and `A_COD_NOT_LINE_THREE`
+retired, and with the latter the vacuity probe it had.
+**Item 1 accepts `SyntaxError` only.** The live run decides whether an
+alternative is needed, and it named `SyntaxError` in 12 of 12 answers.
+
+**Unit preconditions came before the live run.** `115106` to `115114` put
+simulated answers through `observe` with a judge returning a fixed score:
+- no answer, and a dispatch error;
+- no list, and items out of order;
+- a wrong error, and a wrong or second line;
+- a wrong cause;
+- every judge score 1 to 5;
+- three right answers.
+
+Those reading the list and items 1 and 2 failed before the rule changed.
+`115105` asserts the new prompt and failed against the old one.
+Requirements: `COR_0078` (restated) and `COR_0079` (new); test plan sections
+9.9.5 and 9.9.5.1.
+
+**`134106` was recorded again live on all four engines, with its foundations.**
+It passes 3 of 3 on each, every response judged 5.
+
+| Replay | Result |
+|---|---|
+| openai | 95 of 95 |
+| gemini | 94 passed and 1 passw (`134206`) |
+| claude | 91 passed; `154103` fails, as before, and 3 skip behind it |
+| grok | 91 passed; `134201` fails, as before, and 3 skip behind it |
+
+The regenerated registers drop gemini's `134106`, leaving 3 findings. The
+README counts 1144 candidate responses, 725 judgements and 228 requirements.
+
+### Digressions the user spotted, and the fix
+
+* **A live recording was stopped midway to write unit tests.** The fix: unit
+  tests precede any live run, and a run already under way finishes first.
+* **The prompt "Name the error and the number of the line" ended the parser
+  notes, but drew "SyntaxError on line 2." from grok on 3 of 5**, which the
+  judge scored 1 for giving no cause the prompt never asked for. The fix: the
+  prompt asks for the cause as item 3, so the rubric grades what was asked.
+
+### Found while building, and fixed
+
+* `rtm_model.csv` written back through the csv module requoted unrelated rows;
+  it was rebuilt from HEAD with only the two new rows inserted.
+* `QC_HARNESS_STEP_MISNUMBERED`, pylint C0301 and R0801, and support code in a
+  case module (`115711`): each step declared, lines shortened, helpers moved to
+  `syntax_location_support.py`.
+* `115317` read the population figure through a pattern pinned to "findings
+  carry", so a count of one could not be written; it now admits "carries".
+* **Code Quality & Compliance Audit:** preconditions 230 of 230, exit 0;
+  pylint 10.00/10, exit 0; harness unit 1052 of 1052 and system 24 of 24,
+  exit 0.

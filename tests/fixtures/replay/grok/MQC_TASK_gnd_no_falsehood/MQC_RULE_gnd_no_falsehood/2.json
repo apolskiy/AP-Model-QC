@@ -23,17 +23,17 @@
     "block_stage": "",
     "cached_input_tokens": 1280,
     "case_id": "MQC_TASK_gnd_no_falsehood::MQC_RULE_gnd_no_falsehood",
-    "duration_ms": 6514,
+    "duration_ms": 6992,
     "engine": "grok",
     "finish_reason": "stop",
     "input_tokens": 1395,
     "mode": "live",
-    "output_tokens": 88,
-    "raw_reference": "c92493be-dc55-9e8a-a99f-86e65f1b7cfe",
+    "output_tokens": 99,
+    "raw_reference": "fab6443b-11f7-9167-92ed-f05c82359d27",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "1. North America recorded 41.2 million, EMEA recorded 28.7 million, Japan recorded 11.4 million, and Australia recorded 6.1 million.\n2. North America contributed the largest share of total revenue.\n3. 47.1%\n4. 41.2 \u00f7 87.4 \u00d7 100 = 47.139\u2026%, which rounds half up to 47.1%.",
-    "thinking_tokens": 479,
+    "text": "1. North America recorded 41.2 million. EMEA recorded 28.7 million. Japan recorded 11.4 million. Australia recorded 6.1 million.\n2. North America contributed the largest share of total revenue.\n3. North America's share of total revenue was 47.1%.\n4. 41.2 \u00f7 87.4 = 0.471395... = 47.1395...%, which rounds half up to 47.1%.",
+    "thinking_tokens": 420,
     "tool_calls": []
   }
 }

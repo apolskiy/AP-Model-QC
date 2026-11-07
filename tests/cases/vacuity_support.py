@@ -3,7 +3,7 @@
 """Support code that finds shipped assertions no input can make fail.
 
 Created: 2026-10-06
-Last updated: 2026-10-21
+Last updated: 2026-11-07
 
 This file contains ``unfailable_assertions``, which tries every assertion the corpus
 declares against violating inputs and reports each one none of them fails, with how it
@@ -74,8 +74,6 @@ DECLARED_PROBES: Final[dict[str, str]] = {
     # catch. `consumer_ci.md` section 9.4.5.
     "A_COD_NOT_THE_INTENDED_ANSWER":
         "It returns the rows scoring 90 and 50.",
-    "A_COD_NOT_LINE_THREE":
-        "The syntax error is on line 3.",
     "A_GND_NOT_PRIOR_KNOWLEDGE":
         "Amber means a warning, so the rota is paged.",
     "A_MAT_INCALCULABLE_ASSERTS_NO_FIGURE":

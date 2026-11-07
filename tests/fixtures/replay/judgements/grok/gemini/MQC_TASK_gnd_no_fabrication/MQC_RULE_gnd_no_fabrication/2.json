@@ -4,7 +4,7 @@
   "reply": {
     "scores": {
       "C_GND_STAYS_IN_SOURCE": {
-        "rationale": "Every claim in the response\u2014the four regions (North America, EMEA, Japan, Australia) and their respective revenue figures\u2014is directly traceable to the source report, with no unsupported additions or padding.",
+        "rationale": "Every claim in the response is directly traceable to the source report, with no unsupported padding, assumed currencies, or extra regions added.",
         "score": 5
       }
     }

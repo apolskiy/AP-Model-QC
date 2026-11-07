@@ -40,6 +40,39 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### 134106 asks for the error, the line and the cause as a numbered list, checking two and judging the third, 2026-11-07
+
+**Why it was needed.** `gemini-4-argon` named line 2 and the unclosed
+parenthesis on five of five observations, and each added that the parser flags
+the error on line 3, which only Python before 3.10 did. The prompt named no
+version and asked what "does not parse", so the note had no condition to be
+true or false against, and the case measured our reading of it rather than the
+model. A prompt asking to "name the error" then drew `SyntaxError on line 2.`
+from grok, a correct answer to that question that the rubric failed for giving
+no cause.
+
+**What changed.** The prompt says the excerpt is Python 3.14, counts lines from
+the first line inside the document, and asks for three numbered items: the
+error, the line where it occurs and what caused it (test plan section 9.9.5,
+`MQC_REQ_CAS_COR_0078`). The rule declares the three-item list; item 1 must
+name `SyntaxError` and item 2 must give line 2 and no other, each read by a
+check; the judge grades the cause in item 3, its level 1 anchor now naming a
+wrong cause (section 9.9.5.1, `MQC_REQ_CAS_COR_0079`).
+`A_COD_NAMES_LINE_TWO` and `A_COD_NOT_LINE_THREE` are retired. `115105` holds
+the prompt, and `115106` to `115114` simulate the answer and the judge: no
+answer and a dispatch error are never measured, a failing check fails at every
+judge score, and an answer whose checks hold passes from a judge score of 3.
+Each failed before the change it guards.
+
+The README counts 228 requirements, 230 preconditions, and 1080 harness cases,
+which it had left at 1079 when the harness added one. `134106` was recorded
+again live on all four engines and passes 3 of 3 on each, so the README counts
+1144 candidate responses, 725 judgements and 3 findings, 1 of which carries a
+disagreement population. `MQC_CAS_UNI_115317` read that figure through a
+pattern pinned to "findings carry", which left no grammatical way to state a
+count of one; the pattern now admits "carries", as the inconsistency pattern
+beside it already admitted "is" and "are".
+
 ### A ticket says one send may miss the problem only where it did not appear on every attempt, 2026-11-06
 
 **Why it was needed.** 134206's ticket said the problem appeared on 3 of 3

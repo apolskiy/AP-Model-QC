@@ -193,6 +193,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_COR_0074` | The floor case's prompt asks the model to state explicitly where and why the summary cannot establish the requirement when it is inadequate or incomplete to make a positive match, and does not tell the model to withhold a verdict | model_evaluation_test_plan.md section 9.13.1 |
 | `MQC_REQ_CAS_COR_0075` | A generated ticket shows the judgement of a response whose checks failed, its score and its judge prompt, where the stored prompt quotes that response, and labels the response with the failed check and the judge's score; a stored judgement quoting another response, or carrying no prompt, is not shown for it | consumer_ci.md section 9.5.5.8.1 |
 | `MQC_REQ_CAS_COR_0076` | A generated ticket reads the judgements of the judge the engine roster configures first and any other judge's only alphabetically after it, so another judge fills only an observation the configured judge left without a judgement, and the reproduction command names the configured judge where it holds the pair | consumer_ci.md section 9.5.5.8.2 |
+| `MQC_REQ_CAS_COR_0078` | The syntax-location case's prompt states that its excerpt is Python 3.14 and how its lines are counted, and asks for the error, the line and the cause as a three-item numbered list | model_evaluation_test_plan.md section 9.9.5 |
+| `MQC_REQ_CAS_COR_0079` | The syntax-location case checks the list, the error and the line, and its judge grades the cause against a level 1 anchor naming a wrong cause | model_evaluation_test_plan.md section 9.9.5.1 |
 | `MQC_REQ_CAS_COR_0059` | A generated ticket carries a summary, the prompt as sent to the evaluated engine, that engine's response or responses, and the judge's response where the rule authors a rubric; a ticket exists only where its finding reproduced on the latest run | consumer_ci.md section 9.5.5.12 |
 | `MQC_REQ_CAS_COR_0060` | Every text a rule declares for a `source_phrase_absent` check appears verbatim in a context document of a task that rule grades, so the two copies of a planted passage cannot drift | model_evaluation_test_plan.md section 9.10.7.3 |
 | `MQC_REQ_CAS_COR_0061` | A check whose subject is punctuation reads the answer as written and declares `literal_punctuation`, so a bullet marker, a sentence terminator, an opening brace, a long dash and the dot of a method call each still decide; every other check reads the punctuation-blanked reading, and a code literal matched as a substring is blanked on both sides so an answer preserving the source in a different quote style passes | model_evaluation_test_plan.md section 9.14 |
@@ -717,6 +719,16 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115102` | P | `settlement_excerpt_still_exhibits_every_recorded_defect` |
 | `115103` | P | `the_two_top_scorer_excerpts_are_the_same_function` |
 | `115104` | N | `excerpts_are_not_collected_or_linted_as_case_code` |
+| `115105` | N | `the_syntax_location_prompt_states_version_and_line_count` (9.9.5) |
+| `115106` | N | `a_syntax_location_answer_never_given_fails_unjudged` (9.9.5.1) |
+| `115107` | N | `a_syntax_location_dispatch_error_is_skipped_unevaluated` (9.9.5.1) |
+| `115108` | N | `an_answer_given_as_no_list_fails_the_list_check` (9.9.5.1) |
+| `115109` | N | `items_out_of_order_fail_the_syntax_location_list_check` (9.9.5.1) |
+| `115110` | N | `a_wrong_error_in_item_one_fails_its_check` (9.9.5.1) |
+| `115111` | N | `a_wrong_or_second_line_in_item_two_fails_its_checks` (9.9.5.1) |
+| `115112` | N | `a_wrong_cause_in_item_three_fails_on_the_judge` (9.9.5.1) |
+| `115113` | B | `a_checked_answer_passes_from_judge_score_three` (9.9.5.1) |
+| `115114` | P | `all_three_items_right_pass_the_syntax_location_case` (9.9.5.1) |
 | `115000` | P | `the_shipped_corpus_loads_and_passes_referential_integrity` |
 | `115001` | N | `a_constraint_kind_outside_the_registry_is_reported` |
 | `115002` | P | `the_ablation_control_states_no_constraint_and_checks_none` |
@@ -775,7 +787,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115784` | N | `a_shipped_rule_claiming_p0_or_p1_with_a_rubric_is_reported` (8.1.3) |
 | `115802` | P | `the_judging_flag_reaches_the_pipeline_call` |
 
-**Inventory: 61 cases, 51 negative, 10 positive, 0 boundary.**
+**Inventory: 71 cases, 59 negative, 11 positive, 1 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set
@@ -1940,6 +1952,106 @@ written for.
 
 **The list as a whole is checked since 2026-11-04**: two items, once each, in
 order, or a request for clarification judged on its own rubric (section 9.15).
+
+#### 9.9.5 `134106` asks for the error, the line and the cause as a numbered list
+
+Decided 2026-11-07 at the project owner's ruling.
+
+**What must hold.** The prompt of `134106` states that the excerpt is Python
+3.14, the version this project requires, counts lines from the first line
+inside the document, and asks for three numbered items in one order: the
+error, the line where it occurs, and what caused it. It reads:
+
+```
+The excerpt above is Python 3.14. It carries an error, and as a result does
+not execute. Answer in a numbered list of three items, counting lines from the
+first line inside the document:
+1. Name the error.
+2. The number of the line where the error occurs.
+3. What caused the error.
+```
+
+**Why it is stated.** A) `gemini-4-argon` answered line 2 and named the
+unclosed parenthesis on five of five observations, live on 2026-11-06 and
+2026-11-07, and the judge scored every one 5. Each added that the parser flags
+the `SyntaxError` on line 3, at `return`, which is what Python before 3.10
+reported; Python 3.10 and later report line 2, `'(' was never closed`.
+`A_COD_NOT_LINE_THREE` failed some of those notes and passed others. B) The
+prompt named no version and asked what "does not parse", so a statement about
+where the parser reports the error had no condition to be true or false
+against, and the case measured our reading of the note rather than the model.
+**The error is on line 2 for any Python**, because the parser stops there
+before anything executes.
+
+**Three prompts were run live on 2026-11-07 before this one.** Stating the
+version alone left four of gemini's five responses saying the parser may point
+to line 3. Asking to "Name the error and the number of the line" ended those
+notes, and grok then answered "SyntaxError on line 2." on three of five, which
+names the error as asked and gives no cause, while the rubric graded the
+cause. The prompt now asks for the cause as its own item, and the list puts
+each answer where a check or the judge reads it.
+
+`MQC_CAS_UNI_115105` holds the prompt to the version of the interpreter that
+`115100` measures the line on, to the line count, to the three-item list and to
+no mention of a parser.
+
+##### 9.9.5.1 `134106` checks the list, the error and the line, and judges the cause
+
+Decided 2026-11-07 at the project owner's ruling, before the live rerun of the
+prompt above.
+
+**What must hold.** Two of the three items are settled by checks and the third
+by the judge, and the case passes only when every check holds and the judge
+clears its threshold.
+
+| Part | Read by | Holds when |
+|---|---|---|
+| The list | `answer_list`, numbered, `count: 3` | Items 1 to 3 appear once each, in order (section 9.15) |
+| Item 1, the error | `A_COD_ITEM_ONE_SYNTAX_ERROR` | It names `SyntaxError`, with or without the space |
+| Item 2, the line | `A_COD_ITEM_TWO_IS_LINE_TWO` | The first number after the item's own `2.` is 2 |
+| Item 2, no other line | `A_COD_ITEM_TWO_NO_OTHER_LINE` | No 1 or 3 stands as a number in it; a decimal such as `3.14` is not one |
+| Item 3, the cause | `C_COD_NAMES_THE_CAUSE` | The judge scores 3 or more: level 1 no cause or a wrong one, 3 vague, 5 the unclosed call to `sorted` |
+
+**Item 1 accepts `SyntaxError` only, for now.** A model may put the message
+there instead, `'(' was never closed`; the owner ruled to count how many live
+answers do before deciding whether to admit it.
+
+**Why the cause is the judge's.** A missing closing parenthesis can be said in
+more ways than a pattern can list, and a pattern that misses one fails a
+correct answer, which section 8.9.1 records as a finding about our vocabulary
+filed against a vendor. The error and the line are each one word or one number
+in a known place, and a check reads them exactly.
+
+**`A_COD_NAMES_LINE_TWO` and `A_COD_NOT_LINE_THREE` are retired.** The first
+admitted the broken line quoted as code, and the second read a claim of line 3
+through a pattern and a hedge list that split gemini's identical notes by word
+order. With the line asked for as one number in one item, both questions are an
+exact match.
+
+| ID | Answer | Outcome |
+|---|---|---|
+| `115106` | No response: the provider returned no text | Fails with `QC_LLM_NO_OUTPUT`; no assertion runs and no judge is asked |
+| `115107` | Response error: the dispatch returned no response, the provider unavailable | Skipped with the harness code, recorded `environmental`; nothing is evaluated |
+| `115108` | No list: every item right in prose, or `SyntaxError on line 2.` | Fails the list check, judged at every score from 1 to 5 |
+| `115109` | The three items out of order | Fails the list check |
+| `115110` | A wrong error in item 1 | Fails `A_COD_ITEM_ONE_SYNTAX_ERROR`, judged at every score |
+| `115111` | A wrong line in item 2, or line 3 named beside line 2 | Fails an item 2 check, judged at every score |
+| `115112` | Items 1 and 2 right, a wrong cause in item 3 | Passes every check; the judge is sent the level 1 anchor naming a wrong cause, and judged 1 the case fails |
+| `115113` | Items 1 and 2 right, the cause right or wrong | The judge decides at its threshold: judged 1 or 2 the case fails, judged 3, 4 or 5 it passes |
+| `115114` | All three right | Passes, judged 5 |
+
+**Why a failing check is judged at every score.** A judge agreeing with a
+failing check proves nothing about the check. Scoring 1 to 5 shows the checks
+decide on their own, and a judge disagreeing with the outcome on a consistent
+basis is the signal the owner named for a harness or a case defect.
+
+**Why the threshold is tested at 3 exactly.** The rubric passes at 3 and the
+harness passes a score equal to the mark, so 2 against 3 is where an
+off-by-one would sit (`framework-rules.md` section 3.2).
+
+**The level 1 anchor said "Wrong line, or no cause given"** until 2026-11-07,
+so a wrong cause had no level, and a judge placing it at 3, the threshold,
+would have passed it.
 
 
 ### 9.10 `security`, specified 2026-09-24
@@ -3152,7 +3264,11 @@ check into a pass and a presence check into a failure:
 | `A_INS_COMBINED_NO_LONG_DASH` | The same, under every constraint | **Passes** | Passes |
 | `A_COD_NO_INVENTED_CALLS` | A method call the source does not make | **Passes** | Passes |
 | `A_INS_FORMAT_NO_PREAMBLE` | An answer opening with a brace | Fails | **Fails** |
-| `A_COD_NAMES_LINE_TWO` | The line an error is on, named or shown | Fails | **Fails**, where the answer shows the line as code |
+| ~~`A_COD_NAMES_LINE_TWO`~~ | The line an error is on, named or shown | Fails | **Fails**, where the answer shows the line as code |
+
+**`A_COD_NAMES_LINE_TWO` is retired since 2026-11-07** (section 9.9.5.1): the
+prompt asks for the line as a number in item 2, so no answer shows it as code,
+and the eight others stand as measured.
 
 **Each of the nine declares `literal_punctuation: true`**, the opt-out the
 harness section provides for exactly this, as does the tenth below. Nothing
@@ -3184,7 +3300,7 @@ and here the punctuation is the construct the answer was told to preserve.
 | `MQC_CAS_UNI_115716` | An assertion no probe can make fail, which is the seven that pass a violating answer |
 | `MQC_CAS_UNI_115007`, `115012` | An exemplar at or above the pass mark failing a gate, which is `A_INS_FORMAT_NO_PREAMBLE` |
 | `MQC_CAS_UNI_115749` | A two-sentence bullet under the ceiling, which is `A_INS_WORD_CEILING` |
-| `MQC_EVL_EVAL_134106` | The recorded answer that shows the line as code, which is `A_COD_NAMES_LINE_TWO` |
+| ~~`MQC_EVL_EVAL_134106`~~ | The recorded answer that shows the line as code, which is `A_COD_NAMES_LINE_TWO`, retired 2026-11-07 |
 
 ### 9.15 A prompt asking for a list declares it, since 2026-11-04
 
@@ -3210,6 +3326,7 @@ the end of the answer.
 | Rule | Case | Declares | The prompt says |
 |---|---|---|---|
 | `MQC_RULE_cod_behaviour_not_intent` | `134101` | numbered, `count: 2` | "Answer in a numbered list", two items |
+| `MQC_RULE_cod_syntax_location` | `134106` | numbered, `count: 3` | "Answer in a numbered list of three items", since 2026-11-07 (section 9.9.5.1) |
 | `MQC_RULE_gnd_no_falsehood` | `134203` | numbered, `count: 4` | "answer in a numbered list", four items |
 | `MQC_RULE_gnd_no_falsehood_unrounded` | `134207` | numbered, `count: 4` | The same prompt, without the system instruction |
 | `MQC_RULE_mat_open_enumeration` | `134402` | numbered, `count: 3` | "answer in a numbered list", three items |
