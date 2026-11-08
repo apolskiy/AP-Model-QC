@@ -8337,3 +8337,86 @@ nothing only because its reports are identical.
 The reasons are now grouped by the check and what it reported. `115768` step
 18 asserts that two responses failed by one check on different words each get
 their own line; it failed before the change (`consumer_ci.md` section 9.5.5.6).
+
+## 2026-11-08: 134201 checks each region's figure, three sentences and one or two regions in each, judging only the summary
+
+**grok's `134201` finding was the judge's variance, not the model's.** Three of
+its five answers were byte-identical, and the judge, sent byte-identical
+requests, scored them 5, 5 and 2. The prompt asked for three sentences and
+exact figures and nothing else a check could read, so everything past the
+figures fell to *Proportionate summary*, whose anchors did not separate the
+answers the source allows. Its 2s named a criterion the rubric never stated,
+splicing the source, and the total, which the rule's comment called checked,
+was not.
+
+**The prompt now says how the sentences divide the report.** "Summarise the
+quarterly report above in three sentences. Each sentence names one or two
+regions." Every part that division makes exact is a check:
+- `A_GND_PAIR_NORTH_AMERICA`, `_EMEA`, `_JAPAN`, `_AUSTRALIA`: the region and
+  its figure in one sentence, matched case-insensitively, EMEA also as
+  "Europe, (the) Middle East and Africa";
+- `A_GND_FIGURE_TOTAL`: 87.4;
+- `A_GND_THREE_SENTENCES`: exactly three;
+- `A_GND_REGION_IN_EVERY_SENTENCE`: no sentence without a region;
+- `A_GND_AT_MOST_TWO_REGIONS`: no sentence naming three different regions, a
+  region named twice counting once.
+
+The judge grades `C_GND_SUMMARY_READS` alone, threshold 3. The four
+`A_GND_FIGURE_*` checks and `C_GND_SUMMARY_PROPORTION` are retired.
+
+**Adjacency was retired after its first live run.** The first redesign asked
+for a region "or a set of geographically adjacent regions" per sentence, and
+only the rubric said which: North America with EMEA. All 20 answers met every
+check and were judged 1 for adjacency, 15 of them for Japan with Australia,
+which gemini called "the Asia-Pacific area". The case measured whether a model
+guessed a definition it was never sent. Any two regions may now share a
+sentence, and the count is deterministic.
+
+**Unit preconditions came before each live run.** `115115` to `115125`
+simulate the answer and the judge: no answer and a dispatch error are never
+measured; a figure apart from its region, no total, two or four sentences, a
+sentence without a region and one naming three each fail at every judge score;
+the summary score decides at 3; right answers pass, Japan with Australia among
+them; the prompt states the division; every exemplar meets all eight checks.
+The shared builders moved to `judged_answer_support.py`, which `134106`'s cases
+now use too. Requirements `COR_0080` and `COR_0081`; test plan section 9.4.3.
+
+**`134201` was recorded again live on all four engines.**
+
+| Engine | Result |
+|---|---|
+| claude | 3 of 3 passed, summary 5, 3, 5 |
+| gemini | 3 of 3 passed, summary 3 each |
+| openai | 4 of 5 passed, `QC_LLM_INCONSISTENT`: one answer joins the report's sentences and restates the total, judged 1 |
+| grok | 0 of 5 passed, `QC_LLM_RUBRIC_FAILURE`: every answer joins the report's sentences with "and", judged 1 |
+
+Every answer met every check. Answers of the same text were judged the same.
+
+| Replay | Result |
+|---|---|
+| claude | 91 passed; `154103` fails, as before, and 3 skip behind it |
+| gemini | 94 passed and 1 passw (`134206`) |
+| openai | 91 passed; `134201` fails and 3 skip behind it |
+| grok | 91 passed; `134201` fails and 3 skip behind it |
+
+The registers hold 4 findings. The README counts 1146 candidate responses, 727
+judgements, 230 requirements and 241 preconditions, and its per-engine
+candidate line, left at 1170 and 285 to 297, now reads 1146 and 285 to 287.
+
+### Digressions the user spotted, and the fix
+
+* **A question was put before the material it turned on had been read.** The
+  fix: the request as sent, every response, the rubric and every judgement are
+  shown before a decision is asked for.
+* **Adjacency was judged against a definition only the judge was sent**, and
+  failed 20 of 20. The fix: any two regions may share a sentence, and how many
+  share one is counted.
+
+### Found while building, and fixed
+
+* `115317` failed on the README figures until they were recounted after the
+  live run, since the number recorded depends on whether a case passes.
+* R0801 between `115114` and `115123`: the loop over accepted answers moved to
+  `accepted()` in `judged_answer_support.py`.
+* **Code Quality & Compliance Audit:** preconditions 241 of 241, pylint
+  10.00/10, harness unit and system, each exit 0.

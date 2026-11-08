@@ -1,0 +1,36 @@
+{
+  "request": {
+    "input": [
+      {
+        "content": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>",
+        "role": "user"
+      },
+      {
+        "content": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
+        "role": "user"
+      }
+    ],
+    "model": "gpt-6-astra",
+    "store": false
+  },
+  "request_hash": "c6ab8cba1725c391f6199ded7593bd52ac85a739208f1b9aae1634304dfbc351",
+  "resolved_model": "gpt-6-astra",
+  "response": {
+    "block_reason": "",
+    "block_stage": "",
+    "cached_input_tokens": 0,
+    "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
+    "duration_ms": 4666,
+    "engine": "openai",
+    "finish_reason": "stop",
+    "input_tokens": 126,
+    "mode": "live",
+    "output_tokens": 170,
+    "raw_reference": "resp_026f0ed9e813bbf1016aefe50bbff087d0bf24436545be0567",
+    "requested_model": "gpt-6-astra",
+    "resolved_model": "gpt-6-astra",
+    "text": "North America recorded 41.2 million in Q3 revenue, while EMEA recorded 28.7 million. Japan recorded 11.4 million. Australia recorded 6.1 million, bringing total revenue across the four regions to 87.4 million.",
+    "thinking_tokens": 111,
+    "tool_calls": []
+  }
+}

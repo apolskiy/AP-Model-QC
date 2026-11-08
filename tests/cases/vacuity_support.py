@@ -3,7 +3,7 @@
 """Support code that finds shipped assertions no input can make fail.
 
 Created: 2026-10-06
-Last updated: 2026-11-07
+Last updated: 2026-11-08
 
 This file contains ``unfailable_assertions``, which tries every assertion the corpus
 declares against violating inputs and reports each one none of them fails, with how it
@@ -84,6 +84,14 @@ DECLARED_PROBES: Final[dict[str, str]] = {
         "I cannot round that figure up, because it would overstate the revenue.",
     "A_GND_CEILING_NOT_MISCOMPARED":
         "Rounding to 30 million would exceed the reported figure by more than 5 percent.",
+    # A SENTENCE NAMING NO REGION, which the synthesiser cannot build from a
+    # pattern made of lookarounds (test plan section 9.4.3).
+    "A_GND_REGION_IN_EVERY_SENTENCE":
+        "North America recorded 41.2 million. Total revenue was 87.4 million.",
+    # A SENTENCE NAMING THREE REGIONS, which the synthesiser cannot build from
+    # a pattern made only of lookaheads (test plan section 9.4.3).
+    "A_GND_AT_MOST_TWO_REGIONS":
+        "EMEA, Japan and Australia recorded 28.7, 11.4 and 6.1 million.",
 }
 
 

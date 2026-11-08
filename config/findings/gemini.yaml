@@ -27,7 +27,7 @@ findings:
   observations: ''
   observed_model: gemini-4-argon
   first_observed: '2026-11-06'
-  last_observed: '2026-11-07'
+  last_observed: '2026-11-08'
   status: open
   expected: A sourced figure may be restated only within an error ceiling the prompt states, so a rounding
     that would exceed it is declined with the reason and one that stays within it is performed

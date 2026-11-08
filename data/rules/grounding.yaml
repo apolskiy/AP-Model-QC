@@ -78,69 +78,142 @@
     threshold: 3.0
 
 # MQC_REQ_MDL_GND_0002, case 30011. Every stated figure, exactly.
+#
+# THE DIVISION OF THE REPORT IS CHECKED AND THE READING IS JUDGED, since
+# 2026-11-08 (test plan section 9.4.3). The judge scored three byte-identical
+# grok answers 5, 5 and 2 under one criterion, *Proportionate summary*, that
+# carried everything past the figures. The prompt now says each sentence names
+# one or two regions, so each region with its figure, the total, the sentence
+# count, a region in every sentence and no third region in one are exact, and
+# the judge grades only whether the sentences summarise. `A_GND_FIGURE_NORTH_AMERICA`
+# to `A_GND_FIGURE_AUSTRALIA`, `C_GND_SUMMARY_PROPORTION` and, after its first live
+# run, `C_GND_REGIONS_ADJACENT` are retired.
+#
+# A SENTENCE ENDS AT A TERMINATOR FOLLOWED BY WHITESPACE OR THE END, the
+# boundary `A_INS_WORD_CEILING` measures between, so the point in 41.2 does not
+# end one. A character inside a sentence is `(?:[^.!?]|[.!?](?=\S))`. The seven
+# regex checks read the answer as written: blanked, 41.2 is two numbers and no
+# terminator is left (test plan section 9.14).
 - rule_id: MQC_RULE_gnd_exact_values
   families: [source_fidelity]
   priority: 2
   priority_conditions: [P1_TIER_GUARANTEE, P2_RUBRIC_THRESHOLD]
   requirement_ids: [MQC_REQ_MDL_GND_0002]
   assertions:
-    # ALL FIVE FIGURES, INCLUDING THE TOTAL. Checked individually rather than
-    # as one pattern, because "which figure was altered" is the actionable
-    # part of the finding and a combined check would discard it.
-    - assertion_id: A_GND_FIGURE_NORTH_AMERICA
-      kind: contains
+    # THE DICTIONARY, one region and its figure per check, in one sentence and
+    # in either order, matched case-insensitively. A figure stands alone, so
+    # 41.2 is not found inside 141.2 or 41.25. Checked one by one, because
+    # "which figure was altered" is the actionable part of the finding.
+    - assertion_id: A_GND_PAIR_NORTH_AMERICA
+      kind: regex
       parameters:
-        value: "41.2"
+        literal_punctuation: true
+        pattern: '(?i)\bnorth\s+america\b(?:[^.!?]|[.!?](?=\S))*?(?<![\d.])41\.2(?!\.?\d)|(?<![\d.])41\.2(?!\.?\d)(?:[^.!?]|[.!?](?=\S))*?\bnorth\s+america\b'
+        present: true
       taxonomy_code: QC_LLM_SOURCE_ALTERATION
       severity: violation
       constraint_ref: GND_FIGURES_EXACT
-    - assertion_id: A_GND_FIGURE_EMEA
-      kind: contains
+    # EMEA OR ITS EXPANSION, "Europe, Middle East and Africa", with or without
+    # "the".
+    - assertion_id: A_GND_PAIR_EMEA
+      kind: regex
       parameters:
-        value: "28.7"
+        literal_punctuation: true
+        pattern: '(?i)\b(?:emea|europe,?\s+(?:the\s+)?middle\s+east,?\s+and\s+africa)\b(?:[^.!?]|[.!?](?=\S))*?(?<![\d.])28\.7(?!\.?\d)|(?<![\d.])28\.7(?!\.?\d)(?:[^.!?]|[.!?](?=\S))*?\b(?:emea|europe,?\s+(?:the\s+)?middle\s+east,?\s+and\s+africa)\b'
+        present: true
       taxonomy_code: QC_LLM_SOURCE_ALTERATION
       severity: violation
       constraint_ref: GND_FIGURES_EXACT
-    - assertion_id: A_GND_FIGURE_JAPAN
-      kind: contains
+    - assertion_id: A_GND_PAIR_JAPAN
+      kind: regex
       parameters:
-        value: "11.4"
+        literal_punctuation: true
+        pattern: '(?i)\bjapan\b(?:[^.!?]|[.!?](?=\S))*?(?<![\d.])11\.4(?!\.?\d)|(?<![\d.])11\.4(?!\.?\d)(?:[^.!?]|[.!?](?=\S))*?\bjapan\b'
+        present: true
       taxonomy_code: QC_LLM_SOURCE_ALTERATION
       severity: violation
       constraint_ref: GND_FIGURES_EXACT
-    - assertion_id: A_GND_FIGURE_AUSTRALIA
-      kind: contains
+    - assertion_id: A_GND_PAIR_AUSTRALIA
+      kind: regex
       parameters:
-        value: "6.1"
+        literal_punctuation: true
+        pattern: '(?i)\baustralia\b(?:[^.!?]|[.!?](?=\S))*?(?<![\d.])6\.1(?!\.?\d)|(?<![\d.])6\.1(?!\.?\d)(?:[^.!?]|[.!?](?=\S))*?\baustralia\b'
+        present: true
       taxonomy_code: QC_LLM_SOURCE_ALTERATION
       severity: violation
       constraint_ref: GND_FIGURES_EXACT
+    # THE TOTAL, which the comment above the four figure checks said was
+    # checked and was not until 2026-11-08.
+    - assertion_id: A_GND_FIGURE_TOTAL
+      kind: contains
+      parameters:
+        value: "87.4"
+      taxonomy_code: QC_LLM_SOURCE_ALTERATION
+      severity: violation
+      constraint_ref: GND_FIGURES_EXACT
+    - assertion_id: A_GND_THREE_SENTENCES
+      kind: regex
+      parameters:
+        literal_punctuation: true
+        pattern: '\A\s*(?:(?:[^.!?]|[.!?](?=\S))+[.!?](?:\s+|\Z)){3}\Z'
+        present: true
+      taxonomy_code: QC_LLM_LENGTH_VIOLATION
+      severity: violation
+      constraint_ref: GND_THREE_SENTENCES
+    # A SENTENCE RUNNING TO ITS END WITHOUT A REGION, starting at the text's
+    # start or after a terminator and whitespace.
+    - assertion_id: A_GND_REGION_IN_EVERY_SENTENCE
+      kind: regex
+      parameters:
+        literal_punctuation: true
+        pattern: '(?i)(?:\A\s*|(?<=[.!?])\s+)(?:(?!\b(?:north\s+america|emea|europe,?\s+(?:the\s+)?middle\s+east,?\s+and\s+africa|japan|australia)\b)(?:[^.!?]|[.!?](?=\S)))+(?:[.!?](?=\s|\Z)|\Z)'
+        present: false
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: GND_REGION_EACH_SENTENCE
+    # A SENTENCE NAMING THREE DIFFERENT REGIONS, found by three lookaheads that
+    # cannot pass a sentence's end, one alternative for each three of the four.
+    # The same region named twice counts once, so a comparison back to it is
+    # not a third region.
+    - assertion_id: A_GND_AT_MOST_TWO_REGIONS
+      kind: regex
+      parameters:
+        literal_punctuation: true
+        pattern: '(?i)(?:(?=(?:[^.!?]|[.!?](?=\S))*?\bnorth\s+america\b)(?=(?:[^.!?]|[.!?](?=\S))*?\b(?:emea|europe,?\s+(?:the\s+)?middle\s+east,?\s+and\s+africa)\b)(?=(?:[^.!?]|[.!?](?=\S))*?\bjapan\b)|(?=(?:[^.!?]|[.!?](?=\S))*?\bnorth\s+america\b)(?=(?:[^.!?]|[.!?](?=\S))*?\b(?:emea|europe,?\s+(?:the\s+)?middle\s+east,?\s+and\s+africa)\b)(?=(?:[^.!?]|[.!?](?=\S))*?\baustralia\b)|(?=(?:[^.!?]|[.!?](?=\S))*?\bnorth\s+america\b)(?=(?:[^.!?]|[.!?](?=\S))*?\bjapan\b)(?=(?:[^.!?]|[.!?](?=\S))*?\baustralia\b)|(?=(?:[^.!?]|[.!?](?=\S))*?\b(?:emea|europe,?\s+(?:the\s+)?middle\s+east,?\s+and\s+africa)\b)(?=(?:[^.!?]|[.!?](?=\S))*?\bjapan\b)(?=(?:[^.!?]|[.!?](?=\S))*?\baustralia\b))'
+        present: false
+      taxonomy_code: QC_LLM_INSTRUCTION_DRIFT
+      severity: violation
+      constraint_ref: GND_REGION_EACH_SENTENCE
   rubric:
+    # Every exemplar meets all eight checks, so each anchor differs only in
+    # what the judge decides.
     criteria:
-      - criterion_id: C_GND_SUMMARY_PROPORTION
-        name: Proportionate summary
+      - criterion_id: C_GND_SUMMARY_READS
+        name: Reads as a summary
         description: >-
-          Whether three sentences carrying every figure still read as a
-          summary rather than a list. Reproducing the figures is the
-          assertion's job; this scores whether it was done readably.
+          Whether the sentences relate the figures to each other or to the
+          total, rather than restate the report sentence by sentence. The
+          figures, the regions, the sentence count and the regions in each
+          sentence are checked separately and are not scored here.
         anchors:
           1:
-            description: A bare list of numbers, or figures dropped to fit.
+            description: Restates the report sentence by sentence.
             exemplar: >-
-              North America led with roughly 41 million, ahead of EMEA at about 29
-              million. Japan and Australia contributed 11 and 6 million. The total came
-              to around 87 million.
+              North America recorded 41.2 million and EMEA recorded 28.7 million. Japan
+              recorded 11.4 million. Australia recorded 6.1 million, and total revenue
+              was 87.4 million.
           3:
-            description: Readable, with one figure awkwardly placed.
-            exemplar: >-
-              Revenue by region: 41.2, 28.7, 11.4, 6.1. These are North America, EMEA,
-              Japan and Australia respectively. Together they total 87.4 million.
-          5:
-            description: Three sentences that summarise and carry every figure.
+            description: Relates some figures; at least one sentence only restates.
             exemplar: >-
               North America led Q3 with 41.2 million, ahead of EMEA at 28.7 million.
-              Japan contributed 11.4 million and Australia 6.1 million. The four regions
-              total 87.4 million.
+              Japan recorded 11.4 million. Australia recorded 6.1 million, for a total
+              of 87.4 million.
+          5:
+            description: Every sentence relates its figures to the others or to the total.
+            exemplar: >-
+              North America led Q3 with 41.2 million, ahead of EMEA at 28.7 million.
+              Japan added 11.4 million, the third largest region. Australia contributed
+              6.1 million, bringing the four-region total to 87.4 million.
     threshold: 3.0
 
 # MQC_REQ_MDL_GND_0003, case 30012. The glossary contradicts the obvious assumption,

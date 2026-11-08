@@ -195,6 +195,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_COR_0076` | A generated ticket reads the judgements of the judge the engine roster configures first and any other judge's only alphabetically after it, so another judge fills only an observation the configured judge left without a judgement, and the reproduction command names the configured judge where it holds the pair | consumer_ci.md section 9.5.5.8.2 |
 | `MQC_REQ_CAS_COR_0078` | The syntax-location case's prompt states that its excerpt is Python 3.14 and how its lines are counted, and asks for the error, the line and the cause as a three-item numbered list | model_evaluation_test_plan.md section 9.9.5 |
 | `MQC_REQ_CAS_COR_0079` | The syntax-location case checks the list, the error and the line, and its judge grades the cause against a level 1 anchor naming a wrong cause | model_evaluation_test_plan.md section 9.9.5.1 |
+| `MQC_REQ_CAS_COR_0080` | The exact-values case's prompt asks for three sentences, each naming one or two regions, with every figure exactly as the report states it | model_evaluation_test_plan.md section 9.4.3 |
+| `MQC_REQ_CAS_COR_0081` | The exact-values case checks each region with its figure in one sentence, matched case-insensitively, the total, three sentences, a region in every sentence and no third region in one; its judge grades only the summary, and each anchor's exemplar meets every check | model_evaluation_test_plan.md section 9.4.3 |
 | `MQC_REQ_CAS_COR_0059` | A generated ticket carries a summary, the prompt as sent to the evaluated engine, that engine's response or responses, and the judge's response where the rule authors a rubric; a ticket exists only where its finding reproduced on the latest run | consumer_ci.md section 9.5.5.12 |
 | `MQC_REQ_CAS_COR_0060` | Every text a rule declares for a `source_phrase_absent` check appears verbatim in a context document of a task that rule grades, so the two copies of a planted passage cannot drift | model_evaluation_test_plan.md section 9.10.7.3 |
 | `MQC_REQ_CAS_COR_0061` | A check whose subject is punctuation reads the answer as written and declares `literal_punctuation`, so a bullet marker, a sentence terminator, an opening brace, a long dash and the dot of a method call each still decide; every other check reads the punctuation-blanked reading, and a code literal matched as a substring is blanked on both sides so an answer preserving the source in a different quote style passes | model_evaluation_test_plan.md section 9.14 |
@@ -729,6 +731,17 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115112` | N | `a_wrong_cause_in_item_three_fails_on_the_judge` (9.9.5.1) |
 | `115113` | B | `a_checked_answer_passes_from_judge_score_three` (9.9.5.1) |
 | `115114` | P | `all_three_items_right_pass_the_syntax_location_case` (9.9.5.1) |
+| `115115` | N | `an_exact_values_answer_never_given_fails_unjudged` (9.4.3) |
+| `115116` | N | `an_exact_values_dispatch_error_is_skipped_unevaluated` (9.4.3) |
+| `115117` | N | `a_figure_apart_from_its_region_fails_its_pair` (9.4.3) |
+| `115118` | N | `an_answer_without_the_total_fails_its_check` (9.4.3) |
+| `115119` | N | `two_or_four_sentences_fail_the_sentence_count` (9.4.3) |
+| `115120` | N | `a_sentence_naming_no_region_fails_its_check` (9.4.3) |
+| `115121` | N | `a_sentence_naming_three_regions_fails_its_check` (9.4.3) |
+| `115122` | B | `the_summary_score_decides_at_three` (9.4.3) |
+| `115123` | P | `every_check_met_passes_the_exact_values_case` (9.4.3) |
+| `115124` | N | `the_exact_values_prompt_states_how_sentences_divide` (9.4.3) |
+| `115125` | N | `each_exact_values_exemplar_meets_every_check` (9.4.3) |
 | `115000` | P | `the_shipped_corpus_loads_and_passes_referential_integrity` |
 | `115001` | N | `a_constraint_kind_outside_the_registry_is_reported` |
 | `115002` | P | `the_ablation_control_states_no_constraint_and_checks_none` |
@@ -787,7 +800,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115784` | N | `a_shipped_rule_claiming_p0_or_p1_with_a_rubric_is_reported` (8.1.3) |
 | `115802` | P | `the_judging_flag_reaches_the_pipeline_call` |
 
-**Inventory: 71 cases, 59 negative, 11 positive, 1 boundary.**
+**Inventory: 82 cases, 68 negative, 12 positive, 2 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set
@@ -1553,6 +1566,102 @@ exemplars, the ambiguity being real where nothing states the precision.
 
 `MQC_CAS_UNI_115025` runs the two gates against the answers the engines gave
 and the answers a model could plausibly give, in both directions.
+
+#### 9.4.3 `134201` checks each region with its figure, three sentences and one or two regions in each, and judges the summary
+
+Decided 2026-11-08 at the project owner's ruling.
+
+**What was wrong.** grok's `134201` was recorded as answering inconsistently,
+2 of 5 passing. Three of its five answers were byte-identical, and the judge,
+sent byte-identical requests for them, scored them 5, 5 and 2. The finding was
+the judge's variance, not the model's.
+
+**Why it happened.** The prompt asked for three sentences and exact figures,
+and nothing else a check could read, so everything past the figures fell to one
+judged criterion, *Proportionate summary*. Its anchors did not separate the
+answers the source allows: the level 3 exemplar was closer to a list than the
+level 1 one, the level 1 one rounded figures that the checks already govern,
+and the judge's reasons for a 2 named a criterion the rubric never stated,
+splicing the source. The checks also left the total unread, although the
+rule's own comment said all five figures were checked.
+
+**Adjacency, the first redesign's judged criterion, was retired after its first
+live run.** The prompt asked that each sentence name a region or a set of
+geographically adjacent regions, and the rubric alone said which: North America
+with EMEA, and nothing else. All 20 answers across the four engines met every
+check and were scored 1 for adjacency, 15 of them for putting Japan with
+Australia, which gemini called "the Asia-Pacific area" and "geographically
+adjacent". The case measured whether a model guessed a definition it was never
+sent. Any two regions may now share a sentence.
+
+**What must hold.** The prompt states how the sentences divide the report, and
+everything that division makes exact is checked; the judge grades only what
+needs a reading.
+
+```
+Summarise the quarterly report above in three sentences. Each sentence names
+one or two regions.
+
+Reproduce every revenue figure exactly as the report states it. Do not
+round, convert or restate a figure in different units.
+```
+
+| Part | Read by | Holds when |
+|---|---|---|
+| Each region with its figure | `A_GND_PAIR_NORTH_AMERICA`, `A_GND_PAIR_EMEA`, `A_GND_PAIR_JAPAN`, `A_GND_PAIR_AUSTRALIA` | The region and its figure stand in one sentence, in either order: north america 41.2, emea 28.7, japan 11.4, australia 6.1 |
+| The total | `A_GND_FIGURE_TOTAL` | 87.4 appears |
+| Three sentences | `A_GND_THREE_SENTENCES` | The answer is exactly three sentences |
+| A region in every sentence | `A_GND_REGION_IN_EVERY_SENTENCE` | No sentence runs to its end without naming one of the four regions |
+| No more than two regions in a sentence | `A_GND_AT_MOST_TWO_REGIONS` | No sentence names three different regions; a region named twice counts once |
+| A summary, not a restatement | `C_GND_SUMMARY_READS` | The judge scores 3 or more |
+
+**The regions are a dictionary, matched case-insensitively.** Each region and
+its figure is one entry, and a match compares the sentence and the entry as if
+both were lower case. EMEA also matches its expansion, "Europe, Middle East and
+Africa", with or without "the". A figure stands alone: 41.2 is not matched
+inside 141.2 or 41.25.
+
+**A sentence ends at a terminator followed by whitespace or the end**, the
+boundary `A_INS_WORD_CEILING` measures between (section 9.14), so the point in
+41.2 does not end one. The four pairs and the three sentence checks read the
+answer as written, since a blanked reading turns 41.2 into two numbers and
+leaves no terminator to count.
+
+**Two regions at most is counted, not judged.** Four regions in three sentences
+means one sentence holds two, and any two may share it. `A_GND_AT_MOST_TWO_REGIONS`
+holds one alternative for each three of the four regions, each three lookaheads
+that cannot pass a sentence's end, so the same region named twice, as in a
+comparison back to it, is not a third. A total naming all four regions fails
+it; a total stated as "the four regions" does not.
+
+**The judge grades one criterion**, whether the sentences summarise. Each
+exemplar passes all eight checks, so the anchors differ only in what the judge
+decides.
+
+| Criterion | Level | Anchor |
+|---|---|---|
+| *Reads as a summary* | 1 | Restates the report sentence by sentence |
+| | 3 | Relates some figures; at least one sentence only restates |
+| | 5 | Every sentence relates its figures to the others or to the total |
+
+**`A_GND_FIGURE_NORTH_AMERICA` to `A_GND_FIGURE_AUSTRALIA`,
+`C_GND_SUMMARY_PROPORTION` and `C_GND_REGIONS_ADJACENT` are retired.** Each
+figure check is now a pair, which holds the figure and also the region beside
+it.
+
+| ID | Answer | Outcome |
+|---|---|---|
+| `115115` | No response: the provider returned no text | Fails with `QC_LLM_NO_OUTPUT`; no assertion runs and no judge is asked |
+| `115116` | Response error: the dispatch returned no response, the provider unavailable | Skipped with the harness code, recorded `environmental`; nothing is evaluated |
+| `115117` | A figure rounded, missing, or in a sentence without its region | Fails that region's pair, judged at every score from 1 to 5 |
+| `115118` | Every region with its figure, and no total | Fails `A_GND_FIGURE_TOTAL`, judged at every score |
+| `115119` | Two sentences, or four | Fails `A_GND_THREE_SENTENCES`, judged at every score |
+| `115120` | A sentence naming no region, grok's own answer among them | Fails `A_GND_REGION_IN_EVERY_SENTENCE`, judged at every score |
+| `115121` | A sentence naming three or four regions, claude's own answer among them | Fails `A_GND_AT_MOST_TWO_REGIONS`, judged at every score |
+| `115122` | Every check met, the summary scored 1 to 5 | 1 and 2 fail, 3, 4 and 5 pass |
+| `115123` | Every check met: the level 5 exemplar, in lower case, with EMEA spelled out, or with Japan and Australia sharing a sentence and North America named twice beside EMEA | Passes, judged 5 |
+| `115124` | The prompt as the corpus holds it | States three sentences, one or two regions in each, and exact figures |
+| `115125` | Each anchor's exemplar | Passes all eight checks, so the anchors differ only in what the judge decides |
 
 ### 9.5 Corpus files are guarded, not trusted
 
@@ -3238,7 +3347,7 @@ a reasonable thing for an employer to write.
 
 ---
 
-### 9.14 Ten checks read the answer as written, because punctuation is their subject
+### 9.14 A check whose subject is punctuation reads the answer as written
 
 Added 2026-10-30, with the harness ruling that **punctuation is never a reason
 for failure** (harness `tier3_evaluation.md` section 5.1.1). A deterministic
@@ -3292,6 +3401,18 @@ weakening would have been silent. **The brackets and the colon are the slice**,
 which puts it in the same class as the nine above rather than beside its two
 neighbours: there the quotation marks around a key are how a model writes it,
 and here the punctuation is the construct the answer was told to preserve.
+
+**Seven more read the answer as written since 2026-11-08**, the checks of
+`134201` (section 9.4.3), which makes sixteen in force. A sentence terminator
+is what the sentence checks count and divide on, and the point of a figure is
+part of the figure.
+
+| Assertion | What it is about | Blanked |
+|---|---|---|
+| `A_GND_PAIR_NORTH_AMERICA`, `_EMEA`, `_JAPAN`, `_AUSTRALIA` | A region and its figure within one sentence | 41.2 reads as 41 and 2, so the pair never matches and a right answer **fails** |
+| `A_GND_THREE_SENTENCES` | Exactly three sentences | No terminator is left to count, so every answer **fails** |
+| `A_GND_REGION_IN_EVERY_SENTENCE` | A sentence naming no region | The whole answer reads as one sentence, so one region anywhere **passes** it |
+| `A_GND_AT_MOST_TWO_REGIONS` | A sentence naming three different regions | The whole answer reads as one sentence, so every answer naming all four regions **fails** |
 
 ##### What reports it
 

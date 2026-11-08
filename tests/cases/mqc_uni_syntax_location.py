@@ -3,7 +3,7 @@
 """Unit preconditions that the syntax-location case checks the error and line, judging the cause.
 
 Created: 2026-11-07
-Last updated: 2026-11-07
+Last updated: 2026-11-08
 
 This file contains ``TestMQCSyntaxLocationGrading``, nine cases that put simulated
 answers through ``tests.cases.graded_support.observe`` for ``134106``, with the
@@ -38,24 +38,22 @@ Specified by ``docs/testing/model_evaluation_test_plan.md`` section 9.9.5.1.
 # ------------------------------------------------------------ end of cases
 
 import re
-from typing import Any, Final
+from typing import Final
 
 import pytest
 
 from cmn.case_steps import step
-from execution.dispatch import DispatchOutcome
 
-from tests.cases import graded_support
-from tests.cases.graded_support import observe
-from tests.cases.instrument_support import SimulatedGradedConfig
+from tests.cases.judged_answer_support import (
+    accepted, dispatch_error_is_skipped, unanswered_fails_unjudged,
+)
 from tests.cases.syntax_location_support import (
-    ERROR_CHECK, LINE_CHECKS, LIST_CHECK, RIGHT, RULE, SCORES, TASK, WRONG_CAUSE,
-    answered, failed_gates, fixed_judge, observed, refused,
+    ERROR_CHECK, LINE_CHECKS, LIST_CHECK, PAIR, RIGHT, RULE, SCORES, TASK, WRONG_CAUSE,
+    answered, failed_gates, observed, refused,
 )
 
 pytestmark = pytest.mark.unit
 
-_UNAVAILABLE: Final[str] = "QC_HARNESS_PROVIDER_UNAVAILABLE"
 # THE RUBRIC'S THRESHOLD, which a score equal to it clears.
 _THRESHOLD: Final[int] = 3
 
@@ -76,20 +74,7 @@ class TestMQCSyntaxLocationGrading:
         Returns:
             None
         """
-        step(1, "observe an answer carrying no text")
-        result, seen = observed(monkeypatch, answered(""))
-        assert not result.passed, "an answer never given passed"
-
-        step(2, "read the code it carried")
-        assert "QC_LLM_NO_OUTPUT" in result.taxonomy_codes, (
-            f"an answer never given carried {result.taxonomy_codes}, not QC_LLM_NO_OUTPUT"
-        )
-
-        step(3, "read whether any assertion ran")
-        assert not result.assertion_results, "assertions ran against an answer never given"
-
-        step(4, "read whether the judge was asked")
-        assert not seen, "the judge was asked to score an answer never given"
+        unanswered_fails_unjudged(lambda outcome: observed(monkeypatch, outcome), f"{TASK}::{RULE}")
 
     def MQC_CAS_UNI_115107_a_syntax_location_dispatch_error_is_skipped_unevaluated(
         self, monkeypatch: pytest.MonkeyPatch
@@ -104,33 +89,7 @@ class TestMQCSyntaxLocationGrading:
         Returns:
             None
         """
-        recorded: list[Any] = []
-        evaluated: list[Any] = []
-        monkeypatch.setattr(
-            graded_support, "evaluate_observation",
-            lambda *args, **kwargs: evaluated.append(args),
-        )
-        outcome = DispatchOutcome(
-            case_id=f"{TASK}::{RULE}", engine="gemini", mode="live", duration_ms=12,
-            duration_kind="measured", attempts=3, rate_limit_encounters=0,
-            taxonomy_code=_UNAVAILABLE,
-        )
-        monkeypatch.setattr(graded_support, "dispatch_case", lambda *args, **kwargs: outcome)
-        monkeypatch.setattr(graded_support, "record_observation_step", lambda *args, **kwargs: None)
-        keep = recorded.append
-        monkeypatch.setattr(graded_support, "record_observation", lambda entry, *rest: keep(entry))
-
-        step(1, "observe a dispatch the provider could not serve")
-        with pytest.raises(pytest.skip.Exception, match=_UNAVAILABLE):
-            observe(SimulatedGradedConfig("claude"), TASK, RULE, judge=fixed_judge([], 5))
-
-        step(2, "read what was recorded")
-        assert [(entry.skip_reason, entry.taxonomy_code) for entry in recorded] == [
-            ("environmental", _UNAVAILABLE)
-        ], f"recorded {recorded}, not one environmental skip carrying {_UNAVAILABLE}"
-
-        step(3, "read whether anything was evaluated")
-        assert not evaluated, "a dispatch error was evaluated as an answer"
+        dispatch_error_is_skipped(monkeypatch, PAIR)
 
     def MQC_CAS_UNI_115108_an_answer_given_as_no_list_fails_the_list_check(
         self, monkeypatch: pytest.MonkeyPatch
@@ -279,17 +238,4 @@ class TestMQCSyntaxLocationGrading:
             "1. Syntax error: '(' was never closed.\n2. Line 2 (offset 20 in Python 3.14).\n"
             "3. The parenthesis opened by sorted( is never closed after reverse=True.",
         )
-        number = 0
-        for answer in answers:
-            number += 1
-            step(number, f"observe {answer!r}, judged 5")
-            result, seen = observed(monkeypatch, answered(answer))
-            assert not failed_gates(result), f"{answer!r} failed {failed_gates(result)}"
-
-            number += 1
-            step(number, f"read whether {answer!r} was judged")
-            assert seen, f"{answer!r} was never judged"
-
-            number += 1
-            step(number, f"read whether {answer!r} passed")
-            assert result.passed, f"{answer!r} failed although every check held"
+        accepted(lambda answer: observed(monkeypatch, answered(answer)), answers)

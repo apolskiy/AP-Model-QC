@@ -40,16 +40,27 @@
   tags: [grounding, fabrication]
 
 # MQC_REQ_MDL_GND_0002, case 30011. Every figure is checked for alteration.
+#
+# THE PROMPT SAYS HOW THE SENTENCES DIVIDE THE REPORT, since 2026-11-08, so the
+# division is checked and only the summary is judged (test plan section 9.4.3).
+# Four regions in three sentences puts two in one, and any two may share.
 - task_id: MQC_TASK_gnd_exact_values
   rubric_ids: [MQC_RULE_gnd_exact_values]
   user_prompt: |
-    Summarise the quarterly report above in three sentences.
+    Summarise the quarterly report above in three sentences. Each sentence names
+    one or two regions.
 
     Reproduce every revenue figure exactly as the report states it. Do not
     round, convert or restate a figure in different units.
   constraints:
     - constraint_id: GND_FIGURES_EXACT
       text: Reproduce every revenue figure exactly as stated
+      kind: requirement
+    - constraint_id: GND_THREE_SENTENCES
+      text: Summarise the report in three sentences
+      kind: count
+    - constraint_id: GND_REGION_EACH_SENTENCE
+      text: Each sentence names one or two regions
       kind: requirement
   context_documents:
     - document_id: DOC_quarterly_q3

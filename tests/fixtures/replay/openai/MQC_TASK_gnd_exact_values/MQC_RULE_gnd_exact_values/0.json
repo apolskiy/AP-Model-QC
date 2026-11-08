@@ -6,31 +6,31 @@
         "role": "user"
       },
       {
-        "content": "Summarise the quarterly report above in three sentences.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
+        "content": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
         "role": "user"
       }
     ],
     "model": "gpt-6-astra",
     "store": false
   },
-  "request_hash": "24d4f080a8e12c56598ed8bd2121e8f71e8c6079403f31d86a995a59825b2738",
+  "request_hash": "c6ab8cba1725c391f6199ded7593bd52ac85a739208f1b9aae1634304dfbc351",
   "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 3886,
+    "duration_ms": 7022,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 117,
+    "input_tokens": 126,
     "mode": "live",
-    "output_tokens": 158,
-    "raw_reference": "resp_018a3a04d1ff7b71016aed3adc10cc87d081f7f545dac36586",
+    "output_tokens": 169,
+    "raw_reference": "resp_0cfb18565284b2e5016aefe4e0827487d0891713f721ab9a9f",
     "requested_model": "gpt-6-astra",
     "resolved_model": "gpt-6-astra",
-    "text": "In Q3, North America recorded 41.2 million in revenue, while EMEA recorded 28.7 million. Japan recorded 11.4 million, and Australia recorded 6.1 million. Total revenue across the four regions was 87.4 million.",
-    "thinking_tokens": 97,
+    "text": "North America recorded 41.2 million in Q3 revenue, while EMEA recorded 28.7 million.\nJapan recorded 11.4 million, and Australia recorded 6.1 million.\nTotal revenue across the four regions was 87.4 million, with North America contributing the most.",
+    "thinking_tokens": 103,
     "tool_calls": []
   }
 }

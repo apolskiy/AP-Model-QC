@@ -40,6 +40,32 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### 134201 checks each region's figure, three sentences and one or two regions in each, judging only the summary, 2026-11-08
+
+**Why it was needed.** The judge scored three byte-identical grok answers to
+`134201` 5, 5 and 2. The prompt left everything past the figures to one
+criterion, *Proportionate summary*, whose anchors did not separate the answers
+the source allows, and the total was never checked. A first redesign judged
+whether regions sharing a sentence were geographically adjacent, a definition
+only the judge was sent, and all 20 answers across four engines failed it.
+
+**What changed.** The prompt asks for three sentences, each naming one or two
+regions, with every figure exact (test plan section 9.4.3,
+`MQC_REQ_CAS_COR_0080`). Checks read each region with its figure in one
+sentence, the total, the sentence count, a region in every sentence and no
+third region in one; the judge grades only whether the sentences summarise
+(`MQC_REQ_CAS_COR_0081`). The four `A_GND_FIGURE_*` checks,
+`C_GND_SUMMARY_PROPORTION` and `C_GND_REGIONS_ADJACENT` are retired.
+`115115` to `115125` simulate the answer and the judge, and those guarding the
+rule failed before it changed. Section 9.14 counts sixteen checks reading the
+answer as written.
+
+`134201` was recorded again live on all four engines: claude and gemini pass 3
+of 3, openai passes 4 of 5 and is inconsistent, and grok fails 5 of 5 on the
+summary. The README counts 230 requirements, 241 preconditions, 1146 candidate
+responses, 727 judgements and 4 findings, and its per-engine candidate line,
+left at 1170 and 285 to 297, reads 1146 and 285 to 287.
+
 ### A ticket's reason quotes each response only against its own words, 2026-11-08
 
 A vendor reading "Why it fails" compares each quoted report with the response
