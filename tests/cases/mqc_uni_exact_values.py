@@ -5,15 +5,16 @@
 Created: 2026-11-08
 Last updated: 2026-11-08
 
-This file contains ``TestMQCExactValuesGrading``, eleven cases on ``134201``. Nine put
+This file contains ``TestMQCExactValuesGrading``, twelve cases on ``134201``. Ten put
 simulated answers through ``tests.cases.graded_support.observe``, with the dispatch
 replaced by the answer and the judge by one awarding a fixed score. They check that no
 answer and a dispatch error are never measured as answers; that a figure apart from its
 region, a missing total, two or four sentences, a sentence naming no region, or one
 naming three fails its check at every judge score; that the summary score decides at
-the threshold of 3; and that answers meeting every check pass, any two regions sharing
-a sentence. Two read the corpus: the prompt states how the sentences divide the
-report, and each anchor's exemplar meets every check.
+the threshold of 3; that answers meeting every check pass, any two regions sharing
+a sentence; and that the judge is sent the prompt's definition of relating the figures.
+Two read the corpus: the prompt states how the sentences divide the report and that
+each relates its figures, and each anchor's exemplar meets every check.
 
 **These run in the ``unit`` precondition gate**, ahead of the graded case, and call no
 engine and no judge. A failure is an instrument defect, **not a model finding**: the
@@ -37,6 +38,7 @@ Specified by ``docs/testing/model_evaluation_test_plan.md`` section 9.4.3.
 #   115122  the_summary_score_decides_at_three
 #   115123  every_check_met_passes_the_exact_values_case
 #   115124  the_exact_values_prompt_states_how_sentences_divide
+#   115126  the_exact_values_judge_grades_what_the_prompt_asks
 #   115125  each_exact_values_exemplar_meets_every_check
 # ------------------------------------------------------------ end of cases
 
@@ -48,8 +50,9 @@ from cmn.case_steps import step
 from evaluation.assertions import run_assertions
 
 from tests.cases.exact_values_support import (
-    CASE_ID, EVERY_CHECK, PAIR, PAIR_CHECKS, PAIRED, REGION_CHECK, RIGHT, RULE,
-    SENTENCE_CHECK, SUMMARY, TASK, TOTAL_CHECK, TWO_CHECK, answered, observed, refused,
+    CASE_ID, EVERY_CHECK, NOT_RELATED, PAIR, PAIR_CHECKS, PAIRED, REGION_CHECK, RELATES,
+    RIGHT, RULE, SENTENCE_CHECK, SUMMARY, TASK, TOTAL_CHECK, TWO_CHECK, answered, observed,
+    refused,
 )
 from tests.cases.graded_support import case_for
 from tests.cases.judged_answer_support import (
@@ -251,7 +254,7 @@ class TestMQCExactValuesGrading:
     def MQC_CAS_UNI_115124_the_exact_values_prompt_states_how_sentences_divide(
         self,
     ) -> None:
-        """The prompt asks for three sentences, one or two regions in each, figures exactly.
+        """The prompt asks for three sentences, one or two regions in each, related, exact.
 
         Design: ``model_evaluation_test_plan.md`` section 9.4.3.
 
@@ -271,6 +274,38 @@ class TestMQCExactValuesGrading:
         assert "exactly as the report states it" in sent, (
             f"the prompt does not ask for the figures exactly: {sent!r}"
         )
+
+        step(4, "read whether the prompt asks each sentence to relate its figures")
+        assert f"Each sentence {RELATES}." in sent, (
+            f"the prompt does not ask for what the judge grades: {sent!r}"
+        )
+
+    def MQC_CAS_UNI_115126_the_exact_values_judge_grades_what_the_prompt_asks(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The judge is sent the prompt's definition of relating, and that "and" is not one.
+
+        Design: ``model_evaluation_test_plan.md`` section 9.4.3.
+
+        Args:
+            monkeypatch (pytest.MonkeyPatch): pytest's patcher.
+
+        Returns:
+            None
+        """
+        step(1, "observe the right answer and read the judge request built for it")
+        _, seen = observed(monkeypatch, answered(RIGHT))
+        assert len(seen) == 1, f"the judge was sent {len(seen)} requests, not 1"
+        sent = " ".join(seen[0].rendered().split())
+
+        step(2, "read the definition in the instruction and in the criterion")
+        assert sent.count(RELATES) == 2, (
+            f"the judge request carries the definition {sent.count(RELATES)} times, not "
+            f"once in the instruction and once in the criterion: {sent!r}"
+        )
+
+        step(3, "read that joining figures is not relating")
+        assert NOT_RELATED in sent, f"the judge is not told what is not relating: {sent!r}"
 
     def MQC_CAS_UNI_115125_each_exact_values_exemplar_meets_every_check(self) -> None:
         """The rule carries the eight checks, and every anchor's exemplar meets all of them.

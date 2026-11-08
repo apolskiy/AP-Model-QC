@@ -6,30 +6,30 @@
         "role": "user"
       },
       {
-        "content": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
+        "content": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions. Each sentence relates its figures to another figure or\nto the total, by comparison, ranking, difference, or contribution to the\ntotal.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
         "role": "user"
       }
     ],
     "model": "grok-4.7"
   },
-  "request_hash": "da85989f819e4970414824b143ae68b52e5649ca282a629f3c3c99fd94e8a90d",
+  "request_hash": "a766c52820d3c8bf294092269f06f9f1bcc1d68b9c366893d5e683f103406ae4",
   "resolved_model": "grok-4.7",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 1152,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 5245,
+    "duration_ms": 23521,
     "engine": "grok",
     "finish_reason": "stop",
-    "input_tokens": 1357,
+    "input_tokens": 1385,
     "mode": "live",
-    "output_tokens": 48,
-    "raw_reference": "002f7b32-67a8-91c7-b50a-371185b2d772",
+    "output_tokens": 65,
+    "raw_reference": "808adf3a-d0fb-9a5c-82f5-50671d3d4371",
     "requested_model": "grok-4.7",
     "resolved_model": "grok-4.7",
-    "text": "North America recorded 41.2 million and EMEA recorded 28.7 million. Japan recorded 11.4 million. Australia recorded 6.1 million, and total revenue was 87.4 million across these four regions.",
-    "thinking_tokens": 412,
+    "text": "North America recorded 41.2 million, which was higher than the 28.7 million EMEA recorded. Japan recorded 11.4 million, exceeding the 6.1 million Australia recorded. North America contributed 41.2 million to the total revenue of 87.4 million, the largest regional figure.",
+    "thinking_tokens": 1357,
     "tool_calls": []
   }
 }

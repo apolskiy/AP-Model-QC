@@ -8420,3 +8420,72 @@ candidate line, left at 1170 and 285 to 297, now reads 1146 and 285 to 287.
   `accepted()` in `judged_answer_support.py`.
 * **Code Quality & Compliance Audit:** preconditions 241 of 241, pylint
   10.00/10, harness unit and system, each exit 0.
+
+## 2026-11-08: 134201 asks each sentence to relate its figures, as its judge grades
+
+**openai's `134201` finding was the case's, not the model's.** Its 4 of 5 rested
+on one judgement. The criterion graded whether the sentences relate the figures,
+which the prompt never asked for, and the judge read one sentence two ways:
+"North America recorded 41.2 million in Q3 revenue, while EMEA recorded 28.7
+million." relates the two figures in the judgements of openai's answers 3, 4
+and 5, and restates them in those of answers 1 and 2. Answer 2 scored 1 on that
+reading. grok's 0 of 5 was graded against the same unstated requirement. This
+is the defect `134106` had on 2026-11-07, and the fix is the same: the prompt
+asks for what the judge grades.
+
+**The prompt asks each sentence to relate its figures, and says how.** It adds
+"Each sentence relates its figures to another figure or to the total, by
+comparison, ranking, difference, or contribution to the total." The criterion
+`C_GND_SUMMARY_READS` uses the same words, references the new constraint
+`GND_FIGURES_RELATED`, and says that figures joined by "and" or "while" are not
+related; its level 1 and 3 anchors say so too.
+
+**Unit preconditions came before the live run.** `115124` reads the prompt for
+the sentence, and `115126` reads the judge request built for the level 5
+exemplar: the definition appears twice, in the instruction and in the
+criterion, and the exclusion once. Both failed against the committed corpus,
+which carried neither. Requirements `COR_0080` and `COR_0081` restated; test plan
+section 9.4.3.
+
+**`134201` was recorded again live on all four engines** and passes 3 of 3 on
+each. Every answer met every check and was judged 5, and the judge's reasons
+named the relation in each sentence. Each comparison holds against the report:
+claude's "nearly half of the 87.4 million total" is 41.2 of 87.4, and openai's
+"North America and EMEA together contributed more than half" is 69.9 of 87.4.
+
+| Replay | Result |
+|---|---|
+| claude | 91 passed; `154103` fails, as before, and 3 skip behind it |
+| openai | 95 passed |
+| gemini | 94 passed and 1 passw (`134206`) |
+| grok | 95 passed |
+
+The registers drop openai's and grok's `134201`, leaving 2 findings. The README
+counts 242 preconditions, 1142 candidate responses and 723 judgements, 708 by
+gemini at 177 per engine. Its observations line, left at 297, 295, 293 and 285,
+reads 287 for claude and 285 for the others, and it says findings are filed once
+the project is complete, and only those confirmed as model faults.
+
+### Digressions the user spotted, and the fix
+
+* **A finding resting on one disputed judgement was put forward for review as a
+  ticket.** The fix: no ticket is filed until the project is complete, and each
+  is first confirmed to be the model's fault, not the harness's or the case's.
+* **The fix was presented as new when `134106` had already set it.** The fix:
+  a judged criterion's case is first compared with the cases fixed before it.
+
+### Found while building, and fixed
+
+* R3 refused the new constraint until the criterion referenced it, since a
+  constraint sent to the model must be checked by something.
+* `115602` reported `115126` in no matrix row, and `115748` the two requirements
+  stated differently in the plan and the matrix, until both were restated.
+* `115317` read the test plan inventory at 82 cases and the README's population
+  sentences as missing once written as words; the inventory reads 83 and the
+  sentences carry their counts as figures.
+* Two of gemini's rationales end at "(" in an otherwise valid reply. The adapter
+  parses the whole reply strictly, so the text is the judge's own; both scores
+  agree with the answers they grade.
+* **Code Quality & Compliance Audit:** preconditions 242 of 242, exit 0;
+  pylint 10.00/10 in both repositories, exit 0; harness unit 1052 of 1052 and
+  system 24 of 24, exit 0.

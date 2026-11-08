@@ -89,6 +89,11 @@
 # to `A_GND_FIGURE_AUSTRALIA`, `C_GND_SUMMARY_PROPORTION` and, after its first live
 # run, `C_GND_REGIONS_ADJACENT` are retired.
 #
+# RELATING IS ASKED FOR AND DEFINED IN THE PROMPT, since the second live run of
+# 2026-11-08: the judge read openai's "while" as relating in three judgements
+# and as restating in two, the prompt having asked only to summarise. The
+# criterion uses the prompt's words, and says "and" or "while" is not relating.
+#
 # A SENTENCE ENDS AT A TERMINATOR FOLLOWED BY WHITESPACE OR THE END, the
 # boundary `A_INS_WORD_CEILING` measures between, so the point in 41.2 does not
 # end one. A character inside a sentence is `(?:[^.!?]|[.!?](?=\S))`. The seven
@@ -190,26 +195,32 @@
     criteria:
       - criterion_id: C_GND_SUMMARY_READS
         name: Reads as a summary
+        constraint_ref: GND_FIGURES_RELATED
         description: >-
-          Whether the sentences relate the figures to each other or to the
-          total, rather than restate the report sentence by sentence. The
-          figures, the regions, the sentence count and the regions in each
-          sentence are checked separately and are not scored here.
+          Whether each sentence relates its figures to another figure or to
+          the total, by comparison, ranking, difference, or contribution to the
+          total, as the prompt asks. Figures joined by "and" or "while" are not
+          related. The figures, the regions, the sentence count and the regions
+          in each sentence are checked separately and are not scored here.
         anchors:
           1:
-            description: Restates the report sentence by sentence.
+            description: >-
+              Every sentence only restates the report; figures joined by "and"
+              or "while" are not related.
             exemplar: >-
               North America recorded 41.2 million and EMEA recorded 28.7 million. Japan
               recorded 11.4 million. Australia recorded 6.1 million, and total revenue
               was 87.4 million.
           3:
-            description: Relates some figures; at least one sentence only restates.
+            description: >-
+              At least one sentence relates its figures; at least one only
+              restates.
             exemplar: >-
               North America led Q3 with 41.2 million, ahead of EMEA at 28.7 million.
               Japan recorded 11.4 million. Australia recorded 6.1 million, for a total
               of 87.4 million.
           5:
-            description: Every sentence relates its figures to the others or to the total.
+            description: Every sentence relates its figures to another figure or to the total.
             exemplar: >-
               North America led Q3 with 41.2 million, ahead of EMEA at 28.7 million.
               Japan added 11.4 million, the third largest region. Australia contributed

@@ -6,31 +6,31 @@
         "role": "user"
       },
       {
-        "content": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
+        "content": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions. Each sentence relates its figures to another figure or\nto the total, by comparison, ranking, difference, or contribution to the\ntotal.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
         "role": "user"
       }
     ],
     "model": "gpt-6-astra",
     "store": false
   },
-  "request_hash": "c6ab8cba1725c391f6199ded7593bd52ac85a739208f1b9aae1634304dfbc351",
+  "request_hash": "4494498e999c181f3e2c24e27a64d85570e3b050d4ed6a25addb558530c5cf6f",
   "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 6470,
+    "duration_ms": 7240,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 126,
+    "input_tokens": 154,
     "mode": "live",
-    "output_tokens": 204,
-    "raw_reference": "resp_0db6429844ac827d016aefe4fa5fe087d08e801ca82ae14a97",
+    "output_tokens": 208,
+    "raw_reference": "resp_0a468cadd98a9a30016af00eee053087d0ab44f079314fde68",
     "requested_model": "gpt-6-astra",
     "resolved_model": "gpt-6-astra",
-    "text": "North America recorded 41.2 million, while EMEA recorded 28.7 million. Japan recorded 11.4 million. Australia recorded 6.1 million, bringing total Q3 revenue across all four regions to 87.4 million.",
-    "thinking_tokens": 147,
+    "text": "North America recorded 41.2 million, the highest revenue among the four regions. EMEA recorded 28.7 million, exceeding Japan\u2019s 11.4 million. Australia recorded 6.1 million, the smallest regional contribution to total revenue of 87.4 million.",
+    "thinking_tokens": 145,
     "tool_calls": []
   }
 }

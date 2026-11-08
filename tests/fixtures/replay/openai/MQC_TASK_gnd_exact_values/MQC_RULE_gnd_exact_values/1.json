@@ -6,31 +6,31 @@
         "role": "user"
       },
       {
-        "content": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
+        "content": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions. Each sentence relates its figures to another figure or\nto the total, by comparison, ranking, difference, or contribution to the\ntotal.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units.",
         "role": "user"
       }
     ],
     "model": "gpt-6-astra",
     "store": false
   },
-  "request_hash": "c6ab8cba1725c391f6199ded7593bd52ac85a739208f1b9aae1634304dfbc351",
+  "request_hash": "4494498e999c181f3e2c24e27a64d85570e3b050d4ed6a25addb558530c5cf6f",
   "resolved_model": "gpt-6-astra",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 5027,
+    "duration_ms": 4817,
     "engine": "openai",
     "finish_reason": "stop",
-    "input_tokens": 126,
+    "input_tokens": 154,
     "mode": "live",
-    "output_tokens": 191,
-    "raw_reference": "resp_0d48397ba83969a2016aefe4efe3b087d0a5f702c4e991e4f7",
+    "output_tokens": 217,
+    "raw_reference": "resp_0c42761f4dc18ec9016af00edbea5087d0be0ed8476050130c",
     "requested_model": "gpt-6-astra",
     "resolved_model": "gpt-6-astra",
-    "text": "North America recorded 41.2 million in Q3 revenue, while EMEA recorded 28.7 million. Japan recorded 11.4 million, and Australia recorded 6.1 million. Total revenue across all four regions, including North America and EMEA, was 87.4 million.",
-    "thinking_tokens": 124,
+    "text": "North America recorded 41.2 million, the largest regional contribution to total revenue of 87.4 million. EMEA recorded 28.7 million, more than Japan\u2019s 11.4 million. Australia recorded 6.1 million, the smallest regional contribution to the total.",
+    "thinking_tokens": 153,
     "tool_calls": []
   }
 }

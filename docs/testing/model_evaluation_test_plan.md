@@ -195,8 +195,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_COR_0076` | A generated ticket reads the judgements of the judge the engine roster configures first and any other judge's only alphabetically after it, so another judge fills only an observation the configured judge left without a judgement, and the reproduction command names the configured judge where it holds the pair | consumer_ci.md section 9.5.5.8.2 |
 | `MQC_REQ_CAS_COR_0078` | The syntax-location case's prompt states that its excerpt is Python 3.14 and how its lines are counted, and asks for the error, the line and the cause as a three-item numbered list | model_evaluation_test_plan.md section 9.9.5 |
 | `MQC_REQ_CAS_COR_0079` | The syntax-location case checks the list, the error and the line, and its judge grades the cause against a level 1 anchor naming a wrong cause | model_evaluation_test_plan.md section 9.9.5.1 |
-| `MQC_REQ_CAS_COR_0080` | The exact-values case's prompt asks for three sentences, each naming one or two regions, with every figure exactly as the report states it | model_evaluation_test_plan.md section 9.4.3 |
-| `MQC_REQ_CAS_COR_0081` | The exact-values case checks each region with its figure in one sentence, matched case-insensitively, the total, three sentences, a region in every sentence and no third region in one; its judge grades only the summary, and each anchor's exemplar meets every check | model_evaluation_test_plan.md section 9.4.3 |
+| `MQC_REQ_CAS_COR_0080` | The exact-values case's prompt asks for three sentences, each naming one or two regions and relating its figures to another figure or to the total by comparison, ranking, difference, or contribution to the total, with every figure exactly as the report states it | model_evaluation_test_plan.md section 9.4.3 |
+| `MQC_REQ_CAS_COR_0081` | The exact-values case checks each region with its figure in one sentence, matched case-insensitively, the total, three sentences, a region in every sentence and no third region in one; its judge grades only whether each sentence relates its figures, sent the prompt's definition and told that figures joined by and or while are not related, and each anchor's exemplar meets every check | model_evaluation_test_plan.md section 9.4.3 |
 | `MQC_REQ_CAS_COR_0059` | A generated ticket carries a summary, the prompt as sent to the evaluated engine, that engine's response or responses, and the judge's response where the rule authors a rubric; a ticket exists only where its finding reproduced on the latest run | consumer_ci.md section 9.5.5.12 |
 | `MQC_REQ_CAS_COR_0060` | Every text a rule declares for a `source_phrase_absent` check appears verbatim in a context document of a task that rule grades, so the two copies of a planted passage cannot drift | model_evaluation_test_plan.md section 9.10.7.3 |
 | `MQC_REQ_CAS_COR_0061` | A check whose subject is punctuation reads the answer as written and declares `literal_punctuation`, so a bullet marker, a sentence terminator, an opening brace, a long dash and the dot of a method call each still decide; every other check reads the punctuation-blanked reading, and a code literal matched as a substring is blanked on both sides so an answer preserving the source in a different quote style passes | model_evaluation_test_plan.md section 9.14 |
@@ -742,6 +742,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115123` | P | `every_check_met_passes_the_exact_values_case` (9.4.3) |
 | `115124` | N | `the_exact_values_prompt_states_how_sentences_divide` (9.4.3) |
 | `115125` | N | `each_exact_values_exemplar_meets_every_check` (9.4.3) |
+| `115126` | N | `the_exact_values_judge_grades_what_the_prompt_asks` (9.4.3) |
 | `115000` | P | `the_shipped_corpus_loads_and_passes_referential_integrity` |
 | `115001` | N | `a_constraint_kind_outside_the_registry_is_reported` |
 | `115002` | P | `the_ablation_control_states_no_constraint_and_checks_none` |
@@ -800,7 +801,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115784` | N | `a_shipped_rule_claiming_p0_or_p1_with_a_rubric_is_reported` (8.1.3) |
 | `115802` | P | `the_judging_flag_reaches_the_pipeline_call` |
 
-**Inventory: 82 cases, 68 negative, 12 positive, 2 boundary.**
+**Inventory: 83 cases, 69 negative, 12 positive, 2 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set
@@ -1594,13 +1595,27 @@ Australia, which gemini called "the Asia-Pacific area" and "geographically
 adjacent". The case measured whether a model guessed a definition it was never
 sent. Any two regions may now share a sentence.
 
-**What must hold.** The prompt states how the sentences divide the report, and
-everything that division makes exact is checked; the judge grades only what
-needs a reading.
+**Relating the figures is asked for, after the second live run.** The judge
+graded whether the sentences relate the figures, which the prompt never asked
+for, and read one sentence two ways: openai's "North America recorded 41.2
+million in Q3 revenue, while EMEA recorded 28.7 million." relates the two
+figures in three judgements and restates them in two. One of the two scored its
+answer 1, and openai's `134201` was recorded inconsistent, 4 of 5, on that
+reading alone. The prompt now asks each sentence to relate its figures and
+says how, and the criterion carries the same words and says that figures
+joined by "and" or "while" are not related. The same fix gave `134106` its
+item 3 (section 9.9.5).
+
+**What must hold.** The prompt states how the sentences divide the report and
+what each must do with its figures, and everything that division makes exact is
+checked; the judge grades only what needs a reading, against the words the
+prompt used.
 
 ```
 Summarise the quarterly report above in three sentences. Each sentence names
-one or two regions.
+one or two regions. Each sentence relates its figures to another figure or
+to the total, by comparison, ranking, difference, or contribution to the
+total.
 
 Reproduce every revenue figure exactly as the report states it. Do not
 round, convert or restate a figure in different units.
@@ -1613,7 +1628,7 @@ round, convert or restate a figure in different units.
 | Three sentences | `A_GND_THREE_SENTENCES` | The answer is exactly three sentences |
 | A region in every sentence | `A_GND_REGION_IN_EVERY_SENTENCE` | No sentence runs to its end without naming one of the four regions |
 | No more than two regions in a sentence | `A_GND_AT_MOST_TWO_REGIONS` | No sentence names three different regions; a region named twice counts once |
-| A summary, not a restatement | `C_GND_SUMMARY_READS` | The judge scores 3 or more |
+| Each sentence relates its figures | `C_GND_SUMMARY_READS` | The judge scores 3 or more |
 
 **The regions are a dictionary, matched case-insensitively.** Each region and
 its figure is one entry, and a match compares the sentence and the entry as if
@@ -1634,15 +1649,16 @@ that cannot pass a sentence's end, so the same region named twice, as in a
 comparison back to it, is not a third. A total naming all four regions fails
 it; a total stated as "the four regions" does not.
 
-**The judge grades one criterion**, whether the sentences summarise. Each
-exemplar passes all eight checks, so the anchors differ only in what the judge
-decides.
+**The judge grades one criterion**, whether each sentence relates its figures,
+in the prompt's words, and references the constraint `GND_FIGURES_RELATED`.
+Each exemplar passes all eight checks, so the anchors differ only in what the
+judge decides.
 
 | Criterion | Level | Anchor |
 |---|---|---|
-| *Reads as a summary* | 1 | Restates the report sentence by sentence |
-| | 3 | Relates some figures; at least one sentence only restates |
-| | 5 | Every sentence relates its figures to the others or to the total |
+| *Reads as a summary* | 1 | Every sentence only restates the report; figures joined by "and" or "while" are not related |
+| | 3 | At least one sentence relates its figures; at least one only restates |
+| | 5 | Every sentence relates its figures to another figure or to the total |
 
 **`A_GND_FIGURE_NORTH_AMERICA` to `A_GND_FIGURE_AUSTRALIA`,
 `C_GND_SUMMARY_PROPORTION` and `C_GND_REGIONS_ADJACENT` are retired.** Each
@@ -1660,8 +1676,9 @@ it.
 | `115121` | A sentence naming three or four regions, claude's own answer among them | Fails `A_GND_AT_MOST_TWO_REGIONS`, judged at every score |
 | `115122` | Every check met, the summary scored 1 to 5 | 1 and 2 fail, 3, 4 and 5 pass |
 | `115123` | Every check met: the level 5 exemplar, in lower case, with EMEA spelled out, or with Japan and Australia sharing a sentence and North America named twice beside EMEA | Passes, judged 5 |
-| `115124` | The prompt as the corpus holds it | States three sentences, one or two regions in each, and exact figures |
+| `115124` | The prompt as the corpus holds it | States three sentences, one or two regions in each, each relating its figures, and exact figures |
 | `115125` | Each anchor's exemplar | Passes all eight checks, so the anchors differ only in what the judge decides |
+| `115126` | The judge request built for the level 5 exemplar | Carries the definition of relating twice, in the instruction and in the criterion, and says that figures joined by "and" or "while" are not related |
 
 ### 9.5 Corpus files are guarded, not trusted
 

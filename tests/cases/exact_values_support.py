@@ -45,6 +45,14 @@ EVERY_CHECK: Final[frozenset[str]] = (
 )
 SUMMARY: Final[str] = "C_GND_SUMMARY_READS"
 
+# WHAT RELATING MEANS, in the words the prompt and the criterion share.
+RELATES: Final[str] = (
+    "relates its figures to another figure or to the total, by comparison, ranking, "
+    "difference, or contribution to the total"
+)
+# WHAT IS NOT RELATING, which the criterion states and the prompt need not.
+NOT_RELATED: Final[str] = 'Figures joined by "and" or "while" are not related.'
+
 # North America with EMEA, Japan alone, Australia alone, the total beside a region.
 RIGHT: Final[str] = (
     "North America led Q3 with 41.2 million, ahead of EMEA at 28.7 million. Japan added "

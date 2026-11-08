@@ -44,11 +44,15 @@
 # THE PROMPT SAYS HOW THE SENTENCES DIVIDE THE REPORT, since 2026-11-08, so the
 # division is checked and only the summary is judged (test plan section 9.4.3).
 # Four regions in three sentences puts two in one, and any two may share.
+# THE PROMPT ASKS FOR WHAT THE JUDGE GRADES, in the words the rubric uses, so
+# relating the figures is an instruction the model was given.
 - task_id: MQC_TASK_gnd_exact_values
   rubric_ids: [MQC_RULE_gnd_exact_values]
   user_prompt: |
     Summarise the quarterly report above in three sentences. Each sentence names
-    one or two regions.
+    one or two regions. Each sentence relates its figures to another figure or
+    to the total, by comparison, ranking, difference, or contribution to the
+    total.
 
     Reproduce every revenue figure exactly as the report states it. Do not
     round, convert or restate a figure in different units.
@@ -61,6 +65,9 @@
       kind: count
     - constraint_id: GND_REGION_EACH_SENTENCE
       text: Each sentence names one or two regions
+      kind: requirement
+    - constraint_id: GND_FIGURES_RELATED
+      text: Each sentence relates its figures to another figure or to the total
       kind: requirement
   context_documents:
     - document_id: DOC_quarterly_q3

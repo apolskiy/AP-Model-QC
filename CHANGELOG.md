@@ -40,6 +40,31 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### 134201 asks each sentence to relate its figures, as its judge grades, 2026-11-08
+
+**Why it was needed.** The judge graded whether `134201`'s sentences relate the
+figures to each other or to the total, which the prompt never asked for, and
+read one sentence two ways: openai's "North America recorded 41.2 million in Q3
+revenue, while EMEA recorded 28.7 million." related the figures in three
+judgements and restated them in two. openai's `134201` was recorded
+inconsistent, 4 of 5, on that reading alone, and grok's 0 of 5 was graded
+against the same unstated requirement.
+
+**What changed.** The prompt asks each sentence to relate its figures to
+another figure or to the total, by comparison, ranking, difference, or
+contribution to the total (`MQC_REQ_CAS_COR_0080`). The criterion carries the
+same words, references the new constraint `GND_FIGURES_RELATED`, and says that
+figures joined by "and" or "while" are not related (`MQC_REQ_CAS_COR_0081`).
+`115124` reads the prompt for it, and `115126` reads the built judge request for
+the definition and the exclusion; both failed against the committed corpus.
+
+`134201` was recorded again live on all four engines and passes 3 of 3 on each,
+every answer meeting every check and judged 5. openai's and grok's findings
+are removed. The README counts 242 preconditions, 1142 candidate responses, 723
+judgements (708 by the configured judge, 177 per engine) and 2 findings, and
+its observations line, left at 297, 295, 293 and 285, reads 287 for claude and
+285 for the others. It says findings are filed once the project is complete.
+
 ### 134201 checks each region's figure, three sentences and one or two regions in each, judging only the summary, 2026-11-08
 
 **Why it was needed.** The judge scored three byte-identical grok answers to

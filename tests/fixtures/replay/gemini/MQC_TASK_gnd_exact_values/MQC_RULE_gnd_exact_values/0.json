@@ -12,7 +12,7 @@
             "text": "<document id=DOC_quarterly_q3>\nQ3 revenue by region. North America recorded 41.2 million. EMEA\nrecorded 28.7 million. Japan recorded 11.4 million. Australia recorded\n6.1 million. Total revenue was 87.4 million across these four regions.\n</document>"
           },
           {
-            "text": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units."
+            "text": "Summarise the quarterly report above in three sentences. Each sentence names\none or two regions. Each sentence relates its figures to another figure or\nto the total, by comparison, ranking, difference, or contribution to the\ntotal.\n\nReproduce every revenue figure exactly as the report states it. Do not\nround, convert or restate a figure in different units."
           }
         ],
         "role": "user"
@@ -20,23 +20,23 @@
     ],
     "model": "gemini-4-argon"
   },
-  "request_hash": "5642950c282f8a71a5ddd60c39a29b1d2e48061482257db7f12d53605ae3b6fb",
+  "request_hash": "85f842df52a5e0d5392a80cbc1f39b8af2093661671abd160d63b910e627a23b",
   "resolved_model": "gemini-4-argon",
   "response": {
     "block_reason": "",
     "block_stage": "",
     "cached_input_tokens": 0,
     "case_id": "MQC_TASK_gnd_exact_values::MQC_RULE_gnd_exact_values",
-    "duration_ms": 9900,
+    "duration_ms": 4374,
     "engine": "gemini",
     "finish_reason": "stop",
-    "input_tokens": 151,
+    "input_tokens": 179,
     "mode": "live",
-    "output_tokens": 69,
-    "raw_reference": "LeXvasi_I7_cjMcPy9fauQk",
+    "output_tokens": 92,
+    "raw_reference": "CA_wauX0Nq3XjMcPl5CCiAY",
     "requested_model": "gemini-4-argon",
     "resolved_model": "gemini-4-argon",
-    "text": "In the Q3 quarterly report, North America recorded 41.2 million and EMEA recorded 28.7 million in revenue. Furthermore, Japan recorded 11.4 million. Finally, Australia recorded 6.1 million, bringing the total revenue to 87.4 million across these four regions.",
+    "text": "In Q3, North America ranked as the highest-earning region by contributing 41.2 million toward the total revenue of 87.4 million. EMEA followed as the second-largest contributor to the 87.4 million total, recording 28.7 million in revenue. Finally, Japan recorded 11.4 million, outperforming Australia, which recorded the lowest figure at 6.1 million.",
     "thinking_tokens": 0,
     "tool_calls": []
   }
