@@ -8322,3 +8322,18 @@ since `115810` keeps the diagnosis out of them.
 The empty `observations` on the same entry is intended: a run that states no
 population leaves it empty, and the ticket counts the population from the
 recordings (section 9.5.5.9).
+
+## 2026-11-08: A ticket's reason quotes each response only against its own words
+
+**gemini's `134106` ticket attributed response 1's sentence to responses 1 to
+5.** `_tally` in `tools/ticket_reasons.py` grouped failing responses by check,
+keeping the first response's report and appending every later response to it,
+so "The check reported: ..." quoted response 1 for all five. The responses
+below were quoted correctly, so the page contradicted itself. The ticket left
+when `134106` was redesigned, but the grouping remained, and any check whose
+report varies between responses would misquote again; claude's `154103` shows
+nothing only because its reports are identical.
+
+The reasons are now grouped by the check and what it reported. `115768` step
+18 asserts that two responses failed by one check on different words each get
+their own line; it failed before the change (`consumer_ci.md` section 9.5.5.6).

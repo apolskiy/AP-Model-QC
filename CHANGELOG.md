@@ -40,6 +40,15 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A ticket's reason quotes each response only against its own words, 2026-11-08
+
+A vendor reading "Why it fails" compares each quoted report with the response
+it names, and gemini's `134106` ticket attributed response 1's sentence to
+responses 1 to 5. `_tally` in `tools/ticket_reasons.py` grouped the failing
+responses by check alone and kept the first response's report. It now groups
+them by the check and what it reported. `MQC_CAS_UNI_115768` asserts it and
+failed before the change (`consumer_ci.md` section 9.5.5.6).
+
 ### A bug file's diagnosis ends before pytest's introspection of the assert, 2026-11-07
 
 A bug file's `actual` is what the run said, and claude's `154103` carried

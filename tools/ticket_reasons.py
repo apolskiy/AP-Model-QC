@@ -3,7 +3,7 @@
 """Why a ticket's response fails, and the rule its Expected section states.
 
 Created: 2026-10-20
-Last updated: 2026-11-05
+Last updated: 2026-11-08
 
 This file contains ``failure_reasons``, which returns one sentence per distinct
 reason the failing observations fail, grouped by the check, tool expectation or
@@ -197,8 +197,8 @@ def _tally(
 
     Returns:
         tuple: How many observations were measured, how many were recorded, how
-        many failed, each failed check with what it reported and the
-        observations it fired on, and each failing judged score with its
+        many failed, each failed check and what it reported with the
+        observations that reported it, and each failing judged score with its
         observations. A check failure decides an observation before its
         judgement, as the case itself does, and the indices are the recorded
         ones so a reason names the observation the Responses section shows.
@@ -217,8 +217,12 @@ def _tally(
         measured += 1
         if not passed:
             failing += 1
+            # KEYED BY THE CHECK AND WHAT IT REPORTED, since the reason quotes
+            # the report and a response is only quoted against its own words.
             for assertion_id, _, found in _FIRED.findall(detail):
-                fired.setdefault(assertion_id, (assertion_id, found, []))[2].append(index)
+                fired.setdefault(
+                    f"{assertion_id}\0{found}", (assertion_id, found, [])
+                )[2].append(index)
         elif judgement is not None and not judgement[0]:
             failing += 1
             scored.setdefault(judgement[1], []).append(index)

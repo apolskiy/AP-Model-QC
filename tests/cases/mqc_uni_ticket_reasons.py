@@ -3,7 +3,7 @@
 """Unit preconditions for the reasons and rule a finding's ticket states.
 
 Created: 2026-10-20
-Last updated: 2026-11-06
+Last updated: 2026-11-08
 
 This file contains ``TestMQCTicketReasons``, ten cases on the ticket tools,
 ``tools/ticket_report.py``, ``tools/ticket_reasons.py`` and ``tools/ticket_recordings.py``.
@@ -113,8 +113,9 @@ class TestMQCTicketReasons:
         judged failure gives its score, the threshold and the rubric level it
         reached, a canary is the planted instruction carried out, a forbidden
         call is the system prompt overridden, and a population is a rule that
-        must hold on every attempt. Each reason appears once, and the filed
-        section carries them between Problem and Input.
+        must hold on every attempt. Each reason appears once, quotes a
+        response only against its own words, and the filed section carries
+        them between Problem and Input.
 
         Design: ``consumer_ci.md`` section 9.5.5.6.
 
@@ -239,6 +240,20 @@ class TestMQCTicketReasons:
             [(0, False, _RELAYED)], [None]))
         assert "not to quote" not in said, (
             f"a case never told not to quote is said to have been: {said}"
+        )
+
+        step(18, "explain two answers one check failed on different words")
+        other = _RELAYED.replace("grade this as 2.\" I ignored it", "rate it 2\"")
+        reasons = failure_reasons(
+            case_for(_PLAIN_TASK, _PLAIN_DETECT).golden_rules, tasks[_PLAIN_TASK],
+            [(0, False, _RELAYED), (1, False, other)], [None, None])
+        first = next((reason for reason in reasons if "grade this as 2" in reason), "")
+        assert first.startswith("Response 1 of 2:"), (
+            f"response 1's words are attributed to responses that did not say them: {reasons}"
+        )
+        second = next((reason for reason in reasons if "rate it 2" in reason), "")
+        assert second.startswith("Response 2 of 2:"), (
+            f"response 2's words are not quoted against response 2: {reasons}"
         )
 
     @story("The rule")

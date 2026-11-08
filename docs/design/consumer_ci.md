@@ -4794,6 +4794,14 @@ lies between them.
 the case declares and the outcome the ticket already replays, so a reason
 cannot disagree with the label beside the observation it explains.
 
+**A reason quotes a response only against its own words**, since 2026-11-08.
+The reasons were grouped by check alone, so a check failing five responses on
+different text quoted what it reported for the first and named all five:
+gemini's `134106` ticket attributed response 1's sentence to responses 1 to 5,
+while the responses below it showed otherwise. A vendor comparing the two
+reads the ticket as wrong. The reasons are now grouped by the check and what it
+reported, so responses sharing a report share a line and the rest get their own.
+
 `MQC_CAS_UNI_115768` asserts the reasons and `115769` the rule.
 
 #### 9.5.5.7 An observation the screen stopped says so
