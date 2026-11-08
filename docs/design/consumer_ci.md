@@ -4598,6 +4598,7 @@ Added 2026-10-15, from reading the first pages generated in this format.
 | The page joined its labels with a dash | Text the harness generates breaks `code-style.md` section 7 | Each label is a sentence of its own |
 | A finding whose case the latest run skipped was filed | openai's `134402`, skipped behind `134400`, last observed two days before the rest | A finding is filed only when it was observed on the register's latest date. The rest are named under their own heading as awaiting measurement |
 | A diagnosis cut at its first clause kept an opening bracket | "[stopped at STEP_05_VERIFY ..." with nothing closing it | A cut that leaves a bracket open closes it |
+| A diagnosis kept pytest's introspection of the assert. Added 2026-11-07 | claude's `154103` read "... [stopped at PHASE_05_VERIFY ...] assert False + where False = EvaluationResult(case_id='MQC_TASK_sec_task_" in its bug file, cut at 300 characters | The diagnosis ends where the "assert" line pytest appends begins |
 
 **The fourth reconciles two rules that read as one.** Section 9.4.8 says a bug
 file holds what the latest run reproduced, and section 9.4.7.1 that a skip is
@@ -4610,7 +4611,7 @@ to ask. A register refreshed on one date holds that date on every finding the
 run reproduced.
 
 `MQC_CAS_UNI_115751` asserts the fence, `115752` the population, `115753` the
-labels and `115754` the filing rule and the bracket.
+labels and `115754` the filing rule, the bracket and the introspection.
 
 #### 9.5.5.2 Each finding is filed on its own
 

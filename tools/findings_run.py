@@ -3,7 +3,7 @@
 """The measuring half of the findings recorder: what a run measured.
 
 Created: 2026-11-01
-Last updated: 2026-11-06
+Last updated: 2026-11-07
 
 This file contains ``results_directory``, which empties the directory a run
 writes its Allure results to, ``observe``, which runs the graded suite for one
@@ -50,6 +50,9 @@ _TEST_FRAME: Final[str] = "tests" + chr(92)
 _TEST_FRAME_POSIX: Final[str] = "tests/"
 _ERROR_LINE: Final[str] = chr(10) + "E "
 _IN_CASE: Final[str] = " in MQC_"
+# PYTEST'S INTROSPECTION OF THE ASSERT, "assert False" and its "+ where"
+# lines, which follows the message on a line of its own.
+_INTROSPECTION: Final[str] = chr(10) + "assert "
 
 
 def results_directory(scratch: Path) -> Path:
@@ -310,7 +313,7 @@ def _first_sentence(message: str, code: str) -> str:
     # THE ASSERTION, NOT THE TRACEBACK. pytest appends the frames that led
     # here, and a ticket wants what was observed rather than which line of
     # ours noticed it.
-    for frame in (_TEST_FRAME, _TEST_FRAME_POSIX, _ERROR_LINE, _IN_CASE):
+    for frame in (_TEST_FRAME, _TEST_FRAME_POSIX, _ERROR_LINE, _IN_CASE, _INTROSPECTION):
         if frame in body:
             body = body.split(frame)[0]
     collapsed = " ".join(body.split())

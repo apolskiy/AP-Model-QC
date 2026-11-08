@@ -3,7 +3,7 @@
 """Unit preconditions for the ticket page a graded finding is filed from, and its register.
 
 Created: 2026-10-12
-Last updated: 2026-11-06
+Last updated: 2026-11-07
 
 This file contains thirteen cases on ``tools/ticket_report.py`` and the findings,
 recordings, evidence and register tools it joins. ``TestMQCTicketInput`` checks a
@@ -458,7 +458,8 @@ class TestMQCTicketHygiene:
 
         A finding last observed earlier is returned apart, to be named as
         awaiting measurement, and one resolved upstream is in neither. A
-        diagnosis cut at its first clause closes any bracket the cut left open.
+        diagnosis cut at its first clause closes any bracket the cut left open,
+        and ends where pytest's introspection of the assert begins.
 
         Design: ``consumer_ci.md`` section 9.5.5.1.
 
@@ -482,6 +483,15 @@ class TestMQCTicketHygiene:
         )
         assert sentence.count("[") == sentence.count("]"), (
             f"the diagnosis leaves a bracket open: {sentence!r}"
+        )
+
+        sentence = _first_sentence(
+            "AssertionError: QC_LLM_X: A_Y (QC_LLM_X) [stopped at PHASE_05_VERIFY]\n"
+            "assert False\n +  where False = EvaluationResult(case_id='T::R').passed",
+            "QC_LLM_X",
+        )
+        assert sentence == "A_Y (QC_LLM_X) [stopped at PHASE_05_VERIFY]", (
+            f"the diagnosis keeps pytest's introspection of the assert: {sentence!r}"
         )
 
     @story("One ticket per finding")

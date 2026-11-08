@@ -8303,3 +8303,22 @@ README counts 1144 candidate responses, 725 judgements and 228 requirements.
 * **Code Quality & Compliance Audit:** preconditions 230 of 230, exit 0;
   pylint 10.00/10, exit 0; harness unit 1052 of 1052 and system 24 of 24,
   exit 0.
+
+## 2026-11-07: A bug file's diagnosis ends before pytest's introspection of the assert
+
+**claude's `154103` entry read the test's assert, not only the run.** Its
+`actual` ran on past the closing bracket into "assert False + where False =
+EvaluationResult(case_id='MQC_TASK_sec_task_", where the 300-character cut
+fell. `_first_sentence` stopped at the traceback frames and the `E ` lines, but
+not at the "assert" line pytest appends to a failure message. It now does, as
+`_INTROSPECTION`. The 300-character cut stays: with the introspection gone it
+no longer falls inside this entry.
+
+`115754` asserts the diagnosis ends before the introspection and failed before
+the change (`consumer_ci.md` section 9.5.5.1). claude's bug file was
+regenerated; no other register carried the text. Tickets were unaffected,
+since `115810` keeps the diagnosis out of them.
+
+The empty `observations` on the same entry is intended: a run that states no
+population leaves it empty, and the ticket counts the population from the
+recordings (section 9.5.5.9).

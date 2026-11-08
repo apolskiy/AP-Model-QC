@@ -40,6 +40,16 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A bug file's diagnosis ends before pytest's introspection of the assert, 2026-11-07
+
+A bug file's `actual` is what the run said, and claude's `154103` carried
+pytest's "assert False + where False = EvaluationResult(..." after it, cut
+mid-identifier at 300 characters. `_first_sentence` in `tools/findings_run.py`
+now ends the diagnosis where the "assert" line pytest appends begins, and
+`config/findings/claude.yaml` was regenerated. `MQC_CAS_UNI_115754` asserts it
+and failed before the change (`consumer_ci.md` section 9.5.5.1). Tickets were
+unaffected, since they do not print the diagnosis (`115810`).
+
 ### 134106 asks for the error, the line and the cause as a numbered list, checking two and judging the third, 2026-11-07
 
 **Why it was needed.** `gemini-4-argon` named line 2 and the unclosed
