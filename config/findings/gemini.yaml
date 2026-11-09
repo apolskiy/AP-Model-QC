@@ -34,5 +34,5 @@ findings:
   actual: QC_LLM_MATCH_MISCOMPUTED stated and corrected later in the same response, so the case passed
     with a warning
   reproduce: pytest --engine gemini --mode replay --tests 134206 --with-prerequisites
-  ticket: ''
+  ticket: Google AI Studio feedback, 2026-11-09; the form issues no reference
   severity: warning

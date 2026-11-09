@@ -5129,11 +5129,17 @@ payloads; the sheet carries no payload, only case names and model names, and
 run writes is checked against the instruction-file names, and the suffix is
 required of the engine pages alone.
 
-**An engine with no intake recorded says so rather than being left out.**
-Gemini's is not recorded, and a sheet that quietly omitted the row would read
-as an engine with no findings. `MQC_CAS_UNI_115781` compares the intake
-registry with the engine roster, so adding an engine cannot produce a sheet
-that cannot be filed from.
+**Every rostered engine names its intake, and one without would say so rather
+than being left out.** A sheet that quietly omitted the row would read as an
+engine with no findings. `MQC_CAS_UNI_115781` compares the intake registry with
+the engine roster and requires each rostered engine's intake to be stated, so
+adding an engine cannot produce a sheet that cannot be filed from.
+
+**Gemini's was not recorded until 2026-11-09**, when its first finding was
+filed. The sheet told whoever filed it to confirm the intake first. The report,
+`134206`, went through Google AI Studio's in-product feedback
+(aistudio.google.com), because the finding is about the model's behaviour and
+is not a security bug, and that is the intake recorded now.
 
 `MQC_REQ_CAS_COR_0055`.
 

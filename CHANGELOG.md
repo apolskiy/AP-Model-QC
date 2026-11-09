@@ -40,6 +40,20 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### gemini's 134206 warning was filed, and the filing sheet names gemini's intake, 2026-11-09
+
+**Why it was needed.** The first finding went to a vendor, and the filing sheet
+had no intake for gemini: it told whoever filed to confirm one first, and
+nothing required a rostered engine to have one.
+
+**What changed.** `134206` was filed through Google AI Studio's in-product
+feedback, because it is a model behaviour finding and not a security bug. That
+is gemini's intake in `tools/ticket_files.py` now, and the register's `ticket`
+field records the filing, the form issuing no reference. `MQC_CAS_UNI_115781`
+requires every rostered engine to name its intake and tests the unknown-intake
+section against an engine outside the roster. `consumer_ci.md` section 9.5.5.10
+records it.
+
 ### Fixed the README's prose precondition count, which the figure check did not read, 2026-11-09
 
 **Why it was needed.** The section on the model gates said "246 of 246

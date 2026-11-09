@@ -3,7 +3,7 @@
 """Unit preconditions for the reasons and rule a finding's ticket states.
 
 Created: 2026-10-20
-Last updated: 2026-11-08
+Last updated: 2026-11-09
 
 This file contains ``TestMQCTicketReasons``, ten cases on the ticket tools,
 ``tools/ticket_report.py``, ``tools/ticket_reasons.py`` and ``tools/ticket_recordings.py``.
@@ -68,7 +68,7 @@ from tools.ticket_report import (
     page_for,
 )
 from tools.ticket_files import (
-    filing_sheet, intake_engines, is_warning, ticket_name, write_tickets,
+    filing_sheet, intake, intake_engines, is_warning, ticket_name, write_tickets,
 )
 from tools.ticket_reasons import failure_reasons, rule_lines
 from tools.ticket_recordings import (
@@ -717,18 +717,24 @@ class TestMQCTicketReasons:
             f"{[engine for engine in roster if engine not in intake_engines()]}"
         )
 
-        step(2, "an engine whose intake is unknown still gets a section saying so")
-        unknown = filing_sheet("2026-10-24", {"gemini": [
+        step(2, "every engine the ticket run covers names where its vendor takes a report")
+        assert all(intake(engine) for engine in roster), (
+            f"the sheet would send these engines' findings nowhere: "
+            f"{[engine for engine in roster if not intake(engine)]}"
+        )
+
+        step(3, "an engine whose intake is unknown still gets a section saying so")
+        unknown = filing_sheet("2026-10-24", {"unlisted": [
             {"case": "MQC_EVL_SEC_154501_does_not_relay_styled_resume_injection_when_"
                      "told_to_flag",
              "taxonomy_code": "QC_LLM_INCONSISTENT",
              "observations": "4 of 5 passed", "observed_model": "gemini-3-pro"},
         ]})
-        assert "## gemini" in unknown and "not recorded" in unknown, (
+        assert "## unlisted" in unknown and "not recorded" in unknown, (
             f"an engine with no intake was omitted or left unexplained: {unknown}"
         )
 
-        step(3, "five findings of one code in one layer on one engine are one report")
+        step(4, "five findings of one code in one layer on one engine are one report")
         same = [
             {"case": f"MQC_EVL_SEC_15450{index}_does_not_relay_styled_resume_injection",
              "taxonomy_code": "QC_LLM_INJECTION_SUSCEPTIBLE",
@@ -740,13 +746,13 @@ class TestMQCTicketReasons:
             f"five observations of one defect were counted as five reports: {sheet}"
         )
 
-        step(4, "and two codes on one engine are two")
+        step(5, "and two codes on one engine are two")
         mixed = same[:2] + [dict(same[2], taxonomy_code="QC_LLM_GOAL_HIJACK")]
         assert "3 finding(s) in 2 report(s)" in filing_sheet(
             "2026-10-24", {"claude": mixed}
         ), "two distinct causes were folded into one report"
 
-        step(5, "and one symptom code in two layers is two reports, not one")
+        step(6, "and one symptom code in two layers is two reports, not one")
         symptom = [
             {"case": "MQC_EVL_EVAL_134402_open_enumeration_satisfied_by_category_"
                      "equivalent",
@@ -765,19 +771,19 @@ class TestMQCTicketReasons:
             "QC_LLM_INCONSISTENT in SEC" in split
         ), f"a group does not name the layer that distinguishes it: {split}"
 
-        step(7, "an engine with nothing reproducing says so rather than vanishing")
+        step(8, "an engine with nothing reproducing says so rather than vanishing")
         empty = filing_sheet("2026-10-24", {"grok": []})
         assert "## grok" in empty and "No finding reproduces" in empty, (
             f"an engine with no finding to file left the sheet: {empty}"
         )
 
-        step(8, "every finding names the ticket file carrying its evidence")
+        step(9, "every finding names the ticket file carrying its evidence")
         case = same[0]["case"]
         assert f"claude/{ticket_name(case)}" in sheet, (
             f"a finding on the sheet does not name its evidence file: {sheet}"
         )
 
-        step(9, "and a sheet built from the shipped registers accounts for all of them")
+        step(10, "and a sheet built from the shipped registers accounts for all of them")
         # GENERATED HERE RATHER THAN READ FROM reports/, which `.gitignore`
         # excludes entirely. Reading the written sheet asserted something about
         # an untracked file: it passed on a disk where somebody had run the

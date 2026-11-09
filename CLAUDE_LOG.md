@@ -8674,3 +8674,27 @@ uncorrected README it reported "preconditions in prose: README says 246,
 actual is 252". The sentence was corrected after. The passing count in the
 sentence is not checked, as in the table row: the check reads the figure and
 leaves the claim about an outcome alone.
+
+## 2026-11-09: gemini's 134206 warning was filed, and gemini's intake is recorded
+
+**The first finding went to a vendor.** gemini's `134206` warning, the ceiling
+comparison stated wrongly and corrected in the same answer on 3 of 3
+observations of `gemini-4-argon`, was filed through Google AI Studio's
+in-product feedback. It is a finding about model behaviour, not a security bug,
+so the vulnerability programmes were not the place. The tickets were
+regenerated first, so the filed text carries the summary of 2026-11-09. claude
+had nothing to file: its `154103` finding left the register on 2026-11-08, when
+the case was converted.
+
+**The register records the filing.** The `ticket` field reads "Google AI Studio
+feedback, 2026-11-09; the form issues no reference", since the form returns no
+identifier to quote.
+
+### Found while building, and fixed
+
+**Nothing required a rostered engine to name an intake.** gemini's was the
+empty string, and the sheet said to confirm it before filing, which left the
+answer to whoever filed. `MQC_CAS_UNI_115781` now requires every rostered
+engine's intake to be stated; it failed on gemini before the intake was
+recorded. Its unknown-intake step used gemini as the example and now uses an
+engine outside the roster.

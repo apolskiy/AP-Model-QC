@@ -166,9 +166,10 @@ def drop_engine_output(directory: Path, engine: str) -> list[Path]:
 # WHERE EACH VENDOR TAKES A REPORT ABOUT ITS MODEL'S BEHAVIOUR, which is not a
 # security intake: these are quality findings about output, and three of the
 # four vendors put them outside their bounty programmes
-# (``consumer_ci.md`` section 9.5.5.10). An engine whose intake is unknown
-# carries the empty string and the sheet says so, because an omitted row reads
-# as an engine with no findings.
+# (``consumer_ci.md`` section 9.5.5.10). Every rostered engine names one, which
+# `MQC_CAS_UNI_115781` requires; an engine whose intake is unknown would carry
+# the empty string and the sheet would say so, because an omitted row reads as
+# an engine with no findings.
 _INTAKE: Final[dict[str, str]] = {
     "claude": (
         "Anthropic support, or modelbugbounty@anthropic.com for model "
@@ -179,7 +180,10 @@ _INTAKE: Final[dict[str, str]] = {
         "of scope for its bounty programmes"
     ),
     "grok": "safety@x.ai, which xAI names for model output issues. Out of scope for HackerOne",
-    "gemini": "",
+    "gemini": (
+        "Google AI Studio, in-product feedback (aistudio.google.com), for model "
+        "behaviour that is not a security bug"
+    ),
 }
 
 _SHEET_MARK: Final[str] = (
