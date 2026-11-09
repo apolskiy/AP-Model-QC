@@ -8577,3 +8577,26 @@ itself. That is the rubric as written, and 4 clears the threshold of 3.0. The
 arithmetic in each rationale checks.
 
 **The finding stays a warning, not filed** until the project is complete.
+
+## 2026-11-09: A ticket opens with a summary quoting the prompt, the incorrect responses and any judge at odds
+
+**The ticket summary was rebuilt, as decided on 2026-11-08 and deferred until
+every finding was reviewed.** The problem statement was one generic sentence,
+with the prompt, the wrong words and any disagreeing judge further down the
+page. `tools/ticket_summary.py` now writes a summary under it, in the excerpt
+form chosen: the prompt whole, each incorrect response by the words that
+decided it, every response where the case failed, and each judgement whose
+verdict disagrees with its response's checks. Full texts stay in the body.
+
+**Identical responses judged on opposite sides of the threshold are flagged**,
+on the ticket and on the filing sheet, as decided the same day: the text is one
+answer, so the judge separated them, and the finding is reviewed as possibly
+ours before it is filed.
+
+**Unit cases came first**, in a new module, `mqc_uni_ticket_summary.py`,
+because `ticket_report.py` is at 816 lines of its 900 line runway and block
+1157xx holds one identifier: `115827` and `115828` assert the summary for a
+warning and a failure, and `115829` the flag. Requirements
+`MQC_REQ_CAS_CI_0079` and `0080`, design `consumer_ci.md` section 9.5.5.14.
+gemini's `134206` ticket, generated outside `reports/`, opens with its prompt and
+its three stated-then-corrected sentences, and no judgement disagrees.

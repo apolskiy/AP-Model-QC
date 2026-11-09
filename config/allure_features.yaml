@@ -113,6 +113,7 @@ modules:
   tests/cases/mqc_uni_findings_run.py: Findings
   tests/cases/mqc_uni_ticket_reasons.py: Findings
   tests/cases/mqc_uni_ticket_report.py: Findings
+  tests/cases/mqc_uni_ticket_summary.py: Findings
   tests/cases/mqc_uni_passw_findings.py: Findings
   tests/cases/mqc_uni_unreached_observations.py: Recording coverage
   tests/cases/mqc_uni_ticket_reproduction.py: Findings

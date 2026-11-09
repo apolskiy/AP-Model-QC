@@ -18,10 +18,10 @@ changed that day and whose recordings answer the old ones.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 95 graded cases specified |
-| `docs/testing/rtm_model.csv` | 231 requirements, traced |
+| `docs/testing/rtm_model.csv` | 233 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 83 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **243 cases, 243 passing**, each recording its numbered steps |
+| Preconditions (`CAS`, `UNI`) | **246 cases, 246 passing**, each recording its numbered steps |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **95 written**: 46 evaluator, 41 security, 8 tool |
@@ -133,7 +133,7 @@ and a pass with a warning is a pass in every band.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 1080 harness test cases, each executed once per run, and 243 of 243 preconditions pass;
+separately from what it measures. 1080 harness test cases, each executed once per run, and 246 of 246 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate
@@ -250,6 +250,12 @@ python -m tools.ticket_report --engine gemini
 `--out-dir` writes elsewhere. `reports/` is gitignored, so tickets are
 regenerated rather than committed, and an engine with no filed finding has its
 old page and directory removed.
+
+**Each ticket opens with a summary**: the prompt whole, each incorrect response
+by the words that decided it, every response where the case failed, any
+judgement at odds with its response's checks, and a flag where identical
+responses were judged on opposite sides of the threshold, which the filing
+sheet repeats (`consumer_ci.md` section 9.5.5.14).
 
 **Each ticket carries** the problem, the request exactly as sent, every recorded
 response with why it passed or failed, the judge prompt and score of each judged

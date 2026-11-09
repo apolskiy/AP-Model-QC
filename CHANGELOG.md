@@ -40,6 +40,24 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A ticket opens with a summary quoting the prompt, the incorrect responses and any judge at odds, 2026-11-09
+
+**Why it was needed.** A ticket's problem statement was one generic sentence.
+The prompt, the words that were wrong and a judge that disagreed with the
+checks were further down the page or in the appendix, and nothing named
+identical responses the judge scored on opposite sides of the threshold, which
+are the judge's doing rather than the model's.
+
+**What changed.** `tools/ticket_summary.py` writes a summary under the problem
+statement: the prompt whole; each incorrect response by the words that decided
+it, a warning by what it stated and what corrected it, and every response where
+the case failed; each judgement whose verdict disagrees with its response's
+checks; and a flag on identical responses judged apart, repeated on the filing
+sheet. `consumer_ci.md` section 9.5.5.14 specifies it, requirements
+`MQC_REQ_CAS_CI_0079` and `0080` trace it, and `MQC_CAS_UNI_115827` to `115829`
+in `mqc_uni_ticket_summary.py` assert it. The README states the summary and
+counts 246 preconditions and 233 requirements.
+
 ### The README describes the model gates as they stand, 2026-11-09
 
 **Why it was needed.** The section "Why The Model Gates Are Red" expected every

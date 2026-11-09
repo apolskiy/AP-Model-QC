@@ -1143,6 +1143,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115806` | N | `a_ticket_shows_the_system_instruction_first` (9.5.5.13) |
 | `115807` | N | `a_ticket_reproduces_without_the_repository` (9.5.5.13) |
 | `115808` | N | `a_ticket_reproduces_through_a_live_repository_run` (9.5.5.13) |
+| `115827` | P | `a_warning_summary_quotes_the_prompt_and_corrections` (9.5.5.14) |
+| `115828` | P | `a_failure_summary_lists_all_and_a_disagreeing_judge` (9.5.5.14) |
+| `115829` | N | `identical_responses_judged_apart_are_flagged` (9.5.5.14) |
 | `115809` | N | `a_judge_that_decided_the_finding_is_in_the_body` (9.5.5.13) |
 | `115810` | N | `a_ticket_does_not_print_the_register_diagnosis` (9.5.5.13) |
 | `115811` | N | `a_ticket_states_the_population_it_quotes` (9.5.5.13) |
@@ -1191,7 +1194,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 159 cases, 116 negative, 34 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 162 cases, 117 negative, 36 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -5339,6 +5342,36 @@ tickets they generate into a temporary directory, and `reports/tickets/`
 waits for the live run.
 
 `MQC_CAS_UNI_115805` to `115811` assert the parts above on generated tickets.
+
+#### 9.5.5.14 A ticket opens with a summary quoting the prompt, the incorrect responses and any judge at odds
+
+Added 2026-11-09 at the project owner's instruction: a ticket summary quotes
+the prompt, the incorrect responses, every response where the case failed, and
+the judgements where they are present and different. The problem statement
+above it was one generic sentence, and the prompt, the words that were wrong and
+a judge that disagreed were each further down the page or in the appendix.
+
+| Part | Holds |
+|---|---|
+| Prompt | The user prompt the case sent, whole, on one line |
+| Incorrect | The count of incorrect responses. **A warning** lists only the responses that carried it, each by the words it stated and the words that corrected it. **A failed case** lists every response: a failed check by what it reported, a judged failure by its score and rationale, a pass by its opening, each with the response's first 200 characters |
+| Judgements | Each judgement whose verdict disagrees with its response's checks: the checks failed and the judge passed it. Otherwise "none disagree with the outcome" |
+| Identical responses judged differently | Responses whose text is the same up to whitespace and which the judge scored on opposite sides of the threshold |
+
+**The summary quotes and never stands in for the evidence** (section
+9.5.5.12): every response stays whole in the body below it.
+
+**A judge disagreeing with the checks is a signal about this instrument.**
+Where it happens on a consistent basis, the case or the harness is examined
+before anything is filed.
+
+**Identical responses judged apart are the judge's doing, not the model's.**
+The text is one answer, so the verdict separating them came from the judge. The
+ticket and its line on the filing sheet both say so, and the finding is reviewed
+as possibly ours before it is filed.
+
+`MQC_CAS_UNI_115827` and `115828` assert the summary for a warning and for a
+failure, and `115829` the flag on the ticket and the filing sheet.
 
 ### 9.6 What the register does not try to be
 

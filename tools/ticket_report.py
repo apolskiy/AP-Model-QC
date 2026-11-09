@@ -3,13 +3,14 @@
 """The ticket report, which writes each engine's filed findings as pages ready to submit.
 
 Created: 2026-10-05
-Last updated: 2026-11-06
+Last updated: 2026-11-09
 
 This file contains ``page_for``, which builds one engine's findings page,
 ``finding_section``, which writes one finding's defect report with its problem,
-the request as sent, every recorded response, the expected rule and a replay
-command, and ``main``, which writes a page per engine and one ticket file per
-filed finding under ``reports/tickets/``.
+a summary quoting the prompt and the incorrect responses, the request as sent,
+every recorded response, the expected rule and a replay command, and
+``main``, which writes a page per engine and one ticket file per filed finding
+under ``reports/tickets/``.
 
 It is run by hand, normally after ``tools.findings`` has updated a register.
 
@@ -90,6 +91,7 @@ from tools.ticket_reproduction import (
     reproduce_through_repository,
 )
 from tools.ticket_responses import failing_count, responses_block
+from tools.ticket_summary import judge_split, summary_lines
 
 _DEFAULT_OUT: Final[Path] = Path("reports") / "tickets"
 _ENGINES: Final[tuple[str, ...]] = ("gemini", "openai", "claude", "grok")
@@ -481,7 +483,9 @@ def finding_section(
 ) -> list[str]:
     """Return the defect report for one finding.
 
-    In order: the problem and why it fails, the test case step by step, the
+    In order: the problem and why it fails, the summary quoting the prompt,
+    the incorrect responses and any judgement at odds with its checks, the
+    test case step by step, the
     request as sent with its system instruction first, every response quoted
     whole, what was expected, the reproduction without this repository, the
     reproduction through it, the facts table, and the appendix holding what
@@ -511,6 +515,11 @@ def finding_section(
     shown = responses_block(engine, responses, *observed)
     out = [heading(case), "", *_claim_lines(
         entry, task, rules, observed[:2], _stamp_population(entry, rules, observed[:2]))]
+    # THE SUMMARY QUOTES BEFORE THE EVIDENCE, and never stands in for it
+    # (section 9.5.5.14); a judge split travels to the filing sheet with the entry.
+    out.extend(summary_lines((task or {}).get("user_prompt"), responses,
+                             observed[0], observed[1], is_warning(entry)))
+    entry["judge_split"] = judge_split(responses, observed[1])
     out.extend(case_steps(task, rules, request, len(responses)))
     out.extend(_input_block(task, request))
     if entry.get("observed_model"):

@@ -3,7 +3,7 @@
 """One ticket file per filed finding, for submitting each to its vendor alone.
 
 Created: 2026-10-15
-Last updated: 2026-11-06
+Last updated: 2026-11-09
 
 This file contains ``page_name`` and ``ticket_name``, which name an engine's
 findings page and one finding's ticket file, ``write_tickets``, which writes a
@@ -19,7 +19,7 @@ without the generated mark on its first line is never removed.
 files written are what a person submits to a vendor, one finding each, and the
 sheet is where they start.
 
-Design: ``docs/design/consumer_ci.md`` sections 9.5.5.2 and 9.5.5.10.
+Design: ``docs/design/consumer_ci.md`` sections 9.5.5.2, 9.5.5.10 and 9.5.5.14.
 """
 
 import argparse
@@ -376,7 +376,10 @@ def _finding_line(engine: str, entry: dict[str, Any]) -> str:
     case = str(entry.get("case", ""))
     population = str(entry.get("observations") or "").strip()
     measured = f", {population}" if population else ", every observation"
+    # A JUDGE SPLIT IS NAMED WHERE THE FINDING IS FILED FROM (section 9.5.5.14).
+    split = str(entry.get("judge_split") or "")
+    flagged = f" **Identical responses judged differently:** {split}" if split else ""
     return (
         f"- `{case}`{measured}, model `{entry.get('observed_model', '')}`. "
-        f"Evidence: `{engine}/{ticket_name(case)}`"
+        f"Evidence: `{engine}/{ticket_name(case)}`{flagged}"
     )
