@@ -323,9 +323,12 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
         # count included a withdrawn entry, which still carries `- case:` and
         # its original taxonomy code: a retracted claim would have stayed in a
         # total a reader reads as current. `consumer_ci.md` section 9.4.1.
+        # THE NOUN AGREES WITH THE COUNT, since 2026-11-08, when the register
+        # reached one finding and "**1 findings**" was the only spelling the
+        # pattern read.
         (
             "model findings",
-            r"\*\*(\d+) findings\*\*",
+            r"\*\*(\d+) findings?\*\*",
             open_findings(findings),
         ),
         # THE SUBSET THE METHOD EXISTS FOR. Stated at eleven of twenty when the
@@ -343,7 +346,7 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
             # to catch a second copy, and it stopped matching the day
             # eleven findings were withdrawn. THE VERB AGREES WITH THE COUNT,
             # as below: pinning "carry" left no grammatical way to write one.
-            r"\*\*(\d+) of the \d+ findings carr(?:y|ies) a disagreement population\*\*",
+            r"\*\*(\d+) of the \d+ findings? carr(?:y|ies) a disagreement population\*\*",
             findings_with_population(findings),
         ),
         (
