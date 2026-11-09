@@ -13,7 +13,7 @@
 #
 # REPLAY ONLY, LIKE EVERY GATE. This workflow offers no credential and needs
 # none: a gate measures recorded transcripts, so a push costs no quota and a
-# third party running it spends nothing. Live legs are the weekly ladder's,
+# third party running it spends nothing. Live legs are the scheduled ladder's,
 # behind the `live` environment and its required reviewer.
 name: gate-grok
 

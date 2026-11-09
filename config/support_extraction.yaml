@@ -30,7 +30,7 @@ not_yet_extracted:
     reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _explain"
     expires_on: 2026-12-31
   tests/cases/mqc_uni_engine_jobs.py:
-    reason: "Predates the rule of 2026-10-05. 5 definition(s) to extract: function _rostered_engines, function _target_problems, function _weekly_problems, ..."
+    reason: "Predates the rule of 2026-10-05. 4 definition(s) to extract: function _rostered_engines, function _target_problems, function _band_problems, ..."
     expires_on: 2026-12-31
   tests/cases/mqc_uni_excerpts.py:
     reason: "Predates the rule of 2026-10-05. 1 definition(s) to extract: function _execute_excerpt"

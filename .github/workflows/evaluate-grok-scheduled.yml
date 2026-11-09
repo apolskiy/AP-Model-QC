@@ -1,0 +1,97 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# The scheduled attribution ladder for grok: monthly, and on a model change.
+#
+# ONE WORKFLOW PER ENGINE, so this engine has its own status, its own run
+# history and its own artifacts. A combined result would average over four
+# vendors' products, which nobody ships against and nobody files. Design
+# `consumer_ci.md` section 4.18.
+#
+# THREE THINGS START IT. The monthly schedule, as a fallback for inactivity;
+# the daily probe, when this engine's model version changes; and a person.
+# Only the schedule asks first: a model change or a person means it.
+#
+# THE SCHEDULE ASKS BEFORE IT SPENDS. `decide` reads this engine's evaluation
+# runs and skips the ladder when its live rung already finished inside the
+# window, whatever started that run (section 4.18.3). A history it cannot read
+# fails the job and spends nothing.
+#
+# EACH ENGINE ON A DAY OF ITS OWN, 02:00 UTC: gemini the 1st, openai the 2nd,
+# claude the 3rd, grok the 4th; this one the 4th. The gap being far longer
+# than a ladder takes keeps an overrun a finding rather than a collision
+# (section 4.18.2). The live environment requires a reviewer, so a scheduled
+# run waits for approval before it spends.
+name: evaluate-grok-scheduled
+
+run-name: >-
+  evaluate grok: ${{ github.event_name == 'schedule' && 'monthly'
+  || inputs.reason || github.event_name }}
+
+on:
+  schedule:
+    - cron: "0 2 4 * *"
+  workflow_dispatch:
+    inputs:
+      max_spend:
+        description: "USD ceiling for this run. The monthly cap is $20 per provider"
+        required: false
+        default: "4.00"
+        type: string
+      reason:
+        description: "Why this run was started; the probe passes 'model version changed'"
+        required: false
+        default: "dispatched"
+        type: string
+
+# NOT cancel-in-progress. A cancelled live run yields partial artifacts, which
+# A6 forbids presenting as complete. Keyed on this engine alone, which is what
+# `testing-standards.md` section 2 endorses concurrency for: preventing overlap
+# between runs of the same thing.
+concurrency:
+  group: evaluate-live-grok
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  decide:
+    name: decide whether this month needs grok evaluated
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-26.04
+    outputs:
+      evaluate: ${{ steps.decide.outputs.evaluate }}
+      reason: ${{ steps.decide.outputs.reason }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+      - name: Install this repository and its harness
+        run: python -m pip install --quiet --editable "."
+      - name: Decide
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: >-
+          python -m tools.recent_evaluation
+          --engine grok
+          --repository "$REPOSITORY"
+          --current-run "$RUN_ID"
+          --output "$GITHUB_OUTPUT"
+          --summary "$GITHUB_STEP_SUMMARY"
+
+  ladder:
+    name: grok
+    needs: decide
+    if: >-
+      ${{ !cancelled() && (needs.decide.result == 'skipped'
+      || needs.decide.outputs.evaluate == 'true') }}
+    uses: ./.github/workflows/evaluate-engine.yml
+    with:
+      max_spend: ${{ inputs.max_spend || '4.00' }}
+      engine: grok
+    secrets: inherit

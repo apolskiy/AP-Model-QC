@@ -22,11 +22,11 @@
 #
 # TO MAKE IT BEHAVE LIKE THE GEMINI-JUDGED RUN, add the schedule its caller
 # carries and the `workflow_run` dispatch from the probe, and rename this file
-# to `evaluate-grok-by-claude-weekly.yml`, which is a paired change with
+# to `evaluate-grok-by-claude-scheduled.yml`, which is a paired change with
 # whatever dispatches it. **What that costs:** rung 2 spends one claude request
 # per judged case and nothing on candidates, since the responses are a
 # recording; rung 3 spends on both. The monthly cap is $20 per provider, and a
-# second judge on every engine weekly is a second judge bill, not a second
+# second judge on every engine monthly is a second judge bill, not a second
 # candidate bill. Section 7.7.3.
 #
 # RUNG 1 IS NOT REPEATED FOR A SECOND JUDGE. It replays both halves, so it

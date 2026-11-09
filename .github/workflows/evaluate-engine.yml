@@ -13,7 +13,7 @@
 #   3  live candidate,    live judge     ->  THE MODEL moved
 #
 # ONE ENGINE PER CALL, AND NOTHING AGGREGATES. These are the products of
-# different companies evaluated against one harness: a combined weekly result
+# different companies evaluated against one harness: a combined result
 # is an average over three vendors, which answers no question anybody asks.
 # Each engine has its own caller, its own schedule, its own status and its own
 # history, and engine against engine is a comparison of those rather than a

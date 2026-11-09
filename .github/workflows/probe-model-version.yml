@@ -13,7 +13,7 @@
 #
 # WHAT IT COSTS: one metadata call per engine, no prompt. Detecting a provider's
 # change on the morning it happens is what makes a later regression
-# attributable: the same regression found in a weekly run covers seven days of
+# attributable: the same regression found in a monthly run covers a month of
 # candidate causes.
 #
 # THE NAME CARRIES NO CADENCE, deliberately. The harness file was
@@ -22,9 +22,12 @@
 name: probe-model-version
 
 on:
-  # NO SCHEDULE YET, AND THE SLOT IS RESERVED RATHER THAN USED, for the reason
-  # the weekly callers give: a cron firing before the known findings are triaged
-  # buys a result nobody is reading. Section 4.18.3.
+  # DAILY AT 01:00 UTC, since 2026-11-09, the known findings being triaged.
+  # An hour before the monthly evaluation slots, so a model change dispatches
+  # its engine first and that month's scheduled run then finds it and skips.
+  # Section 4.18.3.
+  schedule:
+    - cron: "0 1 * * *"
   workflow_dispatch:
 
 permissions:
@@ -136,7 +139,7 @@ jobs:
           git commit -m "Record model version change: ${{ steps.probe.outputs.changed_engines }}"
           git push
 
-  # A CHANGE DISPATCHES THAT ENGINE'S OWN WEEKLY CALLER, and only that one. A
+  # A CHANGE DISPATCHES THAT ENGINE'S OWN SCHEDULED CALLER, and only that one. A
   # version move at one provider says nothing about the others, and dispatching
   # four would spend quota to re-measure three unchanged models.
   #
@@ -146,7 +149,7 @@ jobs:
   # reports and which the retired harness probe had. Harness
   # `harness_ci_pipeline.md` section 8.9.
   dispatch:
-    name: dispatch the changed engine's weekly ladder
+    name: dispatch the changed engine's scheduled ladder
     needs: [resolve, probe]
     if: needs.resolve.outputs.green == 'true' && needs.probe.outputs.changed_engines != ''
     runs-on: ubuntu-26.04
@@ -158,7 +161,7 @@ jobs:
         shell: bash
         run: |
           for engine in ${CHANGED//,/ }; do
-            gh workflow run "evaluate-${engine}-weekly.yml" \
+            gh workflow run "evaluate-${engine}-scheduled.yml" \
               --repo "${{ github.repository }}" \
               --field reason="model version changed"
           done

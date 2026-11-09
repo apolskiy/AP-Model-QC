@@ -81,7 +81,7 @@ pytestmark = pytest.mark.unit
 # `consumer_ci.md` section 4.19.
 _GATE = "gate-target.yml"
 # THE LADDER ITSELF, which one workflow per engine calls. The rungs moved
-# here on 2026-10-03: a combined weekly result averages over three
+# here on 2026-10-03: a combined result averages over three
 # vendors' products, so each engine has its own caller and its own
 # history. Design `consumer_ci.md` section 4.18.
 _LIVE = "evaluate-engine.yml"
@@ -414,8 +414,8 @@ class TestMQCAttributionLadder:
         Returns:
             None
         """
-        weekly = _load(_LIVE)
-        jobs = _jobs(weekly)
+        ladder = _load(_LIVE)
+        jobs = _jobs(ladder)
 
         for name in _RUNGS:
             assert name in jobs, (

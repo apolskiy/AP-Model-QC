@@ -8614,3 +8614,48 @@ passing: 95 passed, 0 failed, 0 skipped, exit 0. No dependent skips on any
 engine, so the row's general clause, any dependent whose foundation fails, has
 no instance. The ruling stands: such a dependent is recorded outside CI, one at
 a time.
+
+## 2026-11-09: Each engine is evaluated monthly unless already measured, and the probe runs daily
+
+**Weekly became monthly for cost.** At four engines a weekly live ladder spends
+every week to re-measure models that mostly did not change. The daily probe
+dispatches an engine the day its model changes, so the schedule only has to
+catch a change the probe missed, and a month bounds that. The callers were
+renamed `evaluate-<engine>-scheduled.yml`: the name states the trigger and not
+its period, which had already changed once before a cron was written.
+
+**The skip is a query over run history, not a record of versions.** On a
+schedule, `tools/recent_evaluation.py` lists the engine's scheduled and
+claude-judged dispatch runs from the last 27 days and skips the ladder when one
+of them holds the live rung concluded success or failure. A failed rung counts,
+because it measured the model. A rung skipped, cancelled or never approved does
+not, nor does the run asking. 27 days is shorter than the shortest month, so
+last month's scheduled run never makes this month's skip. A history that cannot
+be read exits 4: running would spend on a guess and skipping would drop a month
+on one. A local recording leaves no run history and is not seen, which costs one
+redundant run at most, and the reviewer can decline it.
+
+**The withheld schedule's first condition is met by the reviewer.** Section
+4.18.3 withheld the cron because a run always red for known findings would fire
+into nobody's attention. The `live` environment has required reviewers, so a
+scheduled run waits for a person before it spends.
+
+### Found while building, and fixed
+
+**The probe dispatched an input no caller declared.** It ran `gh workflow run
+evaluate-<engine>-weekly.yml --field reason="model version changed"`, and the
+callers declared only `max_spend`. GitHub refuses undeclared inputs, so the
+first change the probe detected would have dispatched nothing. It had never
+fired, because the probe was dispatch-only and no model changed while it ran.
+Every scheduled caller declares `reason` now, and `MQC_CAS_UNI_115835` compares
+the fields the probe dispatches with the inputs each caller declares.
+
+**A skipped month said nothing on its run page.** The decision went only to the
+job outputs, so a run whose ladder was skipped showed a skipped job and no
+reason. `--summary` writes the decision and the run that made it redundant to
+the step summary, and `MQC_CAS_UNI_115833` asserts it.
+
+**Not changed here: the harness quarantine window is 21 days**, set as three
+weekly runs in the harness `cmn/quarantine.py`. Against a monthly cadence an
+entry expires before the next scheduled run. That is a harness default and is
+raised there rather than changed from this repository.

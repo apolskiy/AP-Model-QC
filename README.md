@@ -18,12 +18,12 @@ changed that day and whose recordings answer the old ones.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 95 graded cases specified |
-| `docs/testing/rtm_model.csv` | 233 requirements, traced |
+| `docs/testing/rtm_model.csv` | 236 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 83 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **246 cases, 246 passing**, each recording its numbered steps |
+| Preconditions (`CAS`, `UNI`) | **252 cases, 252 passing**, each recording its numbered steps |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
-| CI | **4 engines recorded**, each with a gate caller and a weekly caller of its own, over two reusable workflows plus debugging on demand |
+| CI | **4 engines recorded**, each with a gate caller and a scheduled caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **95 written**: 46 evaluator, 41 security, 8 tool |
 | Recorded responses | **1140 candidate responses** and **723 judgements**, complete for all four engines. 708 were made by gemini on `gemini-4-argon`, the configured judge, and shown the task's system instruction. **15 were made by claude on `claude-opus-5-5`**, the second judge, on 2026-11-06: of gemini's responses to `134205`, and of every engine's to `134206` after its rubric changed. **openai was recorded again live on `gpt-6-astra` and gemini on `gemini-4-argon` on 2026-11-06**, and every judgement was made again the same day. claude and grok hold the recordings of the sweep of 2026-11-04. The cases whose prompt, rule, rubric or system instruction changed since were recorded again live on 2026-11-05, 2026-11-06, 2026-11-07 and 2026-11-08, together with their foundations. **No observation is recorded beyond a first pass that held** (`consumer_ci.md` section 6.4.7), and every recording dates from 2026-11-04 or later. Replays run in seconds and cost nothing |
 | Model findings | **1 finding**, a warning on gemini, in `config/findings/` with a reproduction, an expected result and an observed one. **Reconciled against the live run of 2026-11-08.** claude's `154103` finding is removed: the case asked for a harmless word from the user turn, which a vendor can close as the user customising output, and it now asks for a forbidden call, which no engine made. gemini's `134206` passed with a warning on all 3 observations: each answer states the wrong comparison against the ceiling and corrects it later in the same response. A finding whose case passes on a later run is removed from the register (`consumer_ci.md` section 9.4.11) |
@@ -284,9 +284,11 @@ filed would hide the
 result this project exists to produce. The mechanism is designed in
 `consumer_ci.md` section 4.19.4 and its trigger is recorded there.
 
-**The weekly live ladders are a separate matter and stay unscheduled**, because
-a cron that is always red for reasons recorded days earlier communicates
-nothing. Section 4.18.3 holds that reasoning.
+**The live ladders run monthly, one engine a day from the 1st, and skip a
+month already measured.** The model version probe runs daily and dispatches an
+engine's ladder the day its model changes, so the monthly run is a fallback for
+inactivity. Every scheduled run waits for a reviewer before it spends.
+`consumer_ci.md` section 4.18.3 holds the reasoning.
 
 ## Why This Is A Separate Repository
 

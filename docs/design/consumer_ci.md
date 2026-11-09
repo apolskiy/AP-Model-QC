@@ -1185,6 +1185,12 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
 | `115789` | P | `the_probe_resolves_a_green_harness_before_it_dispatches` (4.23.5) |
 | `115790` | N | `a_dispatching_job_reading_no_green_pairing_is_reported` (4.23.5) |
+| `115830` | P | `an_engine_unevaluated_in_the_window_is_evaluated` (4.18.3) |
+| `115831` | P | `a_live_rung_finished_in_the_window_skips_the_run` (4.18.3) |
+| `115832` | N | `runs_that_did_not_measure_in_the_window_do_not_count` (4.18.3) |
+| `115833` | N | `an_unreadable_history_refuses` (4.18.3) |
+| `115834` | P | `each_scheduled_caller_fires_monthly_and_asks_first` (4.18.3) |
+| `115835` | P | `the_probe_fires_daily_and_dispatches_declared_inputs` (4.18.3, 4.23.3) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1194,7 +1200,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 162 cases, 117 negative, 36 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 168 cases, 119 negative, 40 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1792,7 +1798,7 @@ than after an overwrite.
 
 #### 4.17.2 A live leg with no credential skips, and never fails
 
-The weekly ladder runs live, so each engine's leg needs that engine's key.
+The scheduled ladder runs live, so each engine's leg needs that engine's key.
 A leg whose secret is absent **skips**: an absent credential is our
 configuration, not a finding about a model, and `framework-rules.md` section 4
 resolves a `QC_HARNESS_*` condition to skip or broken and never to a failure.
@@ -1850,12 +1856,12 @@ happened to start together. The replay gate needs none of this and gets it
 anyway, because the ordering is a property of the call graph rather than of the
 mode.
 
-**The weekly ladder is a workflow per engine**, staggered across the day, which
+**The scheduled ladder is a workflow per engine**, staggered across days, which
 section 4.18 specifies. The gap recorded here on 2026-10-03 proposed per-engine
 jobs inside one weekly workflow and was superseded the same day: a job per
 engine still leaves one run, one status and one history covering three vendors.
 
-### 4.18 One weekly workflow per engine, staggered, because nothing aggregates
+### 4.18 One scheduled workflow per engine, staggered, because nothing aggregates
 
 Added 2026-10-03 at the project owner's instruction, superseding the dated gap
 section 4.17 recorded a few hours earlier. That gap proposed per-engine **jobs**
@@ -1863,7 +1869,7 @@ inside one weekly workflow; the instruction is stronger and better founded:
 **separate engines, separate evaluations.**
 
 **There is nothing to aggregate.** These are the products of different
-companies, evaluated against one harness and one corpus. A combined weekly
+companies, evaluated against one harness and one corpus. A combined
 result is an average over three vendors, which answers no question anybody
 asks: nobody ships against it, nobody files it, and nobody can read a regression
 out of it.
@@ -1898,26 +1904,24 @@ the gate.
 
 #### 4.18.2 The stagger is the serialisation, and that removes a mechanism
 
-Eight hours apart in roster order, **reserved and not yet active** per
-section 4.18.3:
+A day apart in roster order, monthly since 2026-11-09:
 
 | Engine | Fires |
 |---|---|
-| `gemini` | Monday 02:00 UTC |
-| `openai` | Monday 10:00 UTC |
-| `claude` | Monday 18:00 UTC |
-| `grok` | **Tuesday** 02:00 UTC |
+| `gemini` | Day 1 of the month, 02:00 UTC |
+| `openai` | Day 2, 02:00 UTC |
+| `claude` | Day 3, 02:00 UTC |
+| `grok` | Day 4, 02:00 UTC |
 
-**The fourth engine rolls the day over rather than narrowing the gap, and that
-choice is the whole argument below.** Eight hours into one day holds three
-engines, so a fourth could either take a 6-hour spacing across Monday or
-continue the sequence onto Tuesday. Narrowing it would trade the property this
-section exists to establish — that the gap is far longer than a ladder takes,
-so an overrun is a finding rather than a collision — for a tidier table.
-**The day is the cheap thing to spend; the invariant is not.**
+**Until 2026-11-09 the slots were weekly and eight hours apart**, reserved and
+never written: Monday 02:00, 10:00 and 18:00 UTC, and Tuesday 02:00 for the
+fourth engine. That table rolled the day over rather than narrowing the gap, so
+that the gap stayed far longer than a ladder takes. A monthly cadence leaves
+room for a whole day between engines, which keeps the same property with more
+margin.
 
 **Serialisation becomes a property of the clock rather than of a lock.** With
-the three never overlapping by schedule, there is no cross-engine concurrency
+the engines never overlapping by schedule, there is no cross-engine concurrency
 group, no `needs:` chain between engines, and therefore no cancellation and no
 coupling. `testing-standards.md` section 2 warns that a concurrency group holds
 one pending job and cancels the rest; the stagger needs no group at all.
@@ -1927,52 +1931,79 @@ keyed on the engine prevents a second run of the same engine starting while one
 is live, which is precisely the use that section endorses: "correct only for
 preventing overlap *between* runs."
 
-**And a run that overruns its window is visible rather than contended.** Eight
-hours is far longer than a ladder takes, so a leg still running when the next
-engine fires is a finding about pacing or about a provider, not a scheduling
-accident.
+**And a run that overruns its window is visible rather than contended.** A day
+is far longer than a ladder takes, so a leg still running when the next engine
+fires is a finding about pacing or about a provider, not a scheduling accident.
 
-#### 4.18.3 The schedule stays withheld, and two things gate its return
+#### 4.18.3 The schedule is monthly, and it declines a month already measured
 
-Each engine's workflow carries `workflow_dispatch` alone. The slot is reserved
-and documented in the file, and the cron is not written yet.
+Each engine's scheduled caller, `evaluate-<engine>-scheduled.yml`, fires
+monthly on its slot in section 4.18.2 and on `workflow_dispatch`. The schedule
+was withheld until 2026-11-09 on two conditions; this section records how each
+was met.
 
-**A live firing spends real money**, so a schedule is worth having only once
-something is reading its output. Two conditions gate it, and neither is a
-matter of taste.
+**A live firing spends real money**, so the cadence is the lowest one that
+still bounds how stale a measurement gets. A model change does not wait for the
+schedule: the probe in section 4.23 fires daily and dispatches the changed
+engine's caller the day it sees the change. **The schedule is a fallback for
+inactivity**, so it only has to catch a model that changed without the probe
+seeing it, and a month bounds that.
 
-**One: the findings already known have to be triaged.** The gate's replay
-reports **24 findings across four engines** — 2 for `gemini`, 8 for `openai`,
-10 for `claude` and 4 for `grok`, the last added when that engine was recorded
-on 2026-10-04. A weekly live run would report at least those, so every firing
-would be red for reasons recorded days earlier. **A cron that is always red communicates nothing**, and
-the remedy is the quarantine mechanism of 2026-10-02 rather than a threshold:
-each finding is accepted into its engine's quarantine with a reason and a
-ticket, or it is a defect in our corpus.
+**One: a firing is read by somebody.** The gate's replay reports known findings
+across the four engines, so a live run reports at least those. The condition
+was that a cron always red for reasons recorded earlier communicates nothing.
+**Every scheduled run waits for a required reviewer** on the `live`
+environment before any rung spends, so a firing reaches a person and does not
+spend into nobody's attention. The quarantine mechanism of 2026-10-02 remains
+the remedy for known findings, and it does not gate the schedule.
 
-**Two: the weekly must decline when anything else has already evaluated this
-engine.** The weekly is a **fallback for inactivity**, not a model-update
-tracker. Any evaluation of that engine inside the window makes it redundant,
-whatever prompted the earlier one:
+**Two: the scheduled run declines when anything else has already evaluated
+this engine.** Any evaluation of that engine inside the window makes the
+scheduled run redundant, whatever prompted the earlier one:
 
-| What already ran this cycle | The weekly |
+| What already ran this window | The scheduled run |
 |---|---|
-| An evaluation after that vendor shipped a model | **Skip** |
+| An evaluation after that vendor shipped a model, dispatched by the probe | **Skip** |
 | An evaluation after the harness was updated | **Skip** |
 | An evaluation after the corpus or a test changed | **Skip** |
 | Nothing | Run. This is the only case the cron exists for |
 
 **Stating it as "were there any runs in between" rather than "did the model
 change" is what makes it cheap.** The run does not have to know why an earlier
-evaluation happened, or which model version it measured, or keep a record
-comparing versions: it asks whether this engine was evaluated since the window
-opened, and that is in the workflow's own run history, well inside retention
-for a weekly window. **A rule about causes would need a state store; a rule
-about activity needs a query.**
+evaluation happened, or which model version it measured: it asks whether this
+engine was evaluated since the window opened, and that is in the workflows' own
+run history. **A rule about causes would need a state store; a rule about
+activity needs a query.**
 
-**So one condition is left gating the cron**, which is the triage above: until
-the known findings are quarantined or fixed, every firing is red for reasons
-recorded days earlier, and a cron that is always red communicates nothing.
+**`tools/recent_evaluation.py` is the query**, run by a `decide` job ahead of
+the ladder on a schedule only. A dispatch is somebody asking, so it never
+declines.
+
+| Question | Answer |
+|---|---|
+| Which runs | Runs of the engine's scheduled caller and of its claude-judged dispatch caller, created on or after the window opened |
+| How long the window is | 27 days, shorter than the shortest month, so the previous month's scheduled run never makes this one redundant |
+| What counts as evaluated | A completed run holding the job `<engine> / 3 - the model (live, live) on <engine>, judged by <judge>` that concluded success or failure |
+| What does not count | The run asking; a live rung skipped, cancelled or never reached, which includes a run nobody approved; a run before the window; another engine's rung |
+| A history that cannot be read | Exit 4, `QC_HARNESS_DEPENDENCY_UNMET`, and the ladder does not run: a guess in either direction is wrong, and the reviewer re-runs it |
+| What it writes | `evaluate=true` or `evaluate=false` and the reason naming the run, its trigger and its conclusion, to the job's outputs and to the run summary |
+
+**A failed live rung counts as evaluated.** It measured the model, and its
+result is a finding already on the record; a second run in the same month
+re-measures an unchanged model.
+
+**What the query cannot see is a local run.** A recording made from a
+workstation leaves no Actions history, so the scheduled run proceeds after one.
+That costs one redundant run at most, and the reviewer's approval is where it
+is declined by hand.
+
+**The probe's dispatch carried an input no caller declared, until 2026-11-09.**
+It passed `--field reason="model version changed"` to callers declaring only
+`max_spend`, which `gh workflow run` refuses, so the first version change the
+probe saw would have dispatched nothing. It had never fired, because the probe
+was dispatch-only. Every scheduled caller declares `reason` now, and
+`MQC_CAS_UNI_115835` compares the fields dispatched with the inputs each caller
+declares.
 
 #### 4.18.4 Two extractions this needed, and one duplication it caused
 
@@ -1989,7 +2020,7 @@ comparing against a stale copy of a reader reports about the copy.
 | New | Holds |
 |---|---|
 | `evaluate-engine.yml` | The ladder, taking the engine as an input |
-| `evaluate-<engine>-weekly.yml` | One caller per engine, each with its own concurrency group and no cron |
+| `evaluate-<engine>-scheduled.yml` | One caller per engine, each with its own concurrency group and, since 2026-11-09, a monthly cron |
 | `mqc_uni_engine_jobs.py` | `115709` and `115710`, and the three helpers that read the topology |
 | `workflow_support.py` | The readers both case modules share |
 
@@ -2080,12 +2111,12 @@ established it was reachable for the case it existed to catch.
 |---|---|
 | What the tuple is now | `tuple(engine_roster())`, read from the installed harness package |
 | Why insertion order is kept | The roster is ordered and the gate's calls chain in that order; a set would lose it |
-| What that changes | Rostering an engine makes this repository red until the engine has a gate caller, a weekly caller and a credential offer |
+| What that changes | Rostering an engine makes this repository red until the engine has a gate caller, a scheduled caller and a credential offer |
 
 **Three things, and the third is the one that would have been missed.** A live
 leg whose credential is absent refuses at preflight (section 4.17.2), which is
 correct and is reported as our configuration rather than as a finding. It is
-also quiet: the weekly caller exists, the run starts, and the result is a skip
+also quiet: the scheduled caller exists, the run starts, and the result is a skip
 nobody asked for. `evaluate-engine.yml` offers every provider's key explicitly,
 so a new engine needs a line there, and `MQC_CAS_UNI_115710` now requires the
 variable each rostered adapter declares to be among them.
@@ -2139,7 +2170,8 @@ and this subsection is why — not an omission anybody needs to rediscover.
 
 **This does not relax the schedule condition in section 4.18.3.** A gate is read
 by somebody who just pushed, so a red with a known cause is informative. A cron
-firing weekly into nobody's attention is not, and it stays withheld.
+firing into nobody's attention is not, which is why each scheduled run waits
+for a reviewer.
 
 ### 4.21 A graded invocation names every graded layer, or it measures part of a run
 
@@ -2223,7 +2255,7 @@ a report per vendor job than this incoherent mumbo jumbo."
 
 | Fault | What the site showed |
 |---|---|
-| **Four engines merged into one report** | A figure averaged over four vendors, which section 4.18 already refused for the weekly result and nobody ships against |
+| **Four engines merged into one report** | A figure averaged over four vendors, which section 4.18 already refused for the scheduled result and nobody ships against |
 | **The latest *successful* run of each workflow** | Runs from **2026-10-09 to 2026-10-16**, because the gates had been red for days, so the newest green ones were a week old |
 
 The second produced a site that could not be read at all: **289 cases, and 49
@@ -2395,16 +2427,22 @@ repository.
 
 #### 4.23.3 What it dispatches, which is this repository's own caller
 
-A changed engine dispatches that engine's weekly caller,
-`evaluate-<engine>-weekly.yml`, whose headers have named "the `workflow_run`
+A changed engine dispatches that engine's scheduled caller,
+`evaluate-<engine>-scheduled.yml`, whose headers have named "the `workflow_run`
 dispatch from the probe" since they were written. **One engine only**: a
 version move at one provider says nothing about the others, and dispatching
 four would spend quota to re-measure three unchanged models.
 
-**Section 4.18.3 already stated the condition this completes.** A weekly run
-and an update-triggered run are the same measurement, so a weekly caller
-declines when the engine has already been evaluated since its model last
-changed. The baseline here is what makes that comparison possible.
+**Section 4.18.3 states the condition this completes.** A scheduled run and
+an update-triggered run are the same measurement, so a scheduled run declines
+when the engine's live rung already finished inside its window. The baseline
+here is what makes a change detectable.
+
+**The probe fires daily at 01:00 UTC, since 2026-11-09.** It costs one metadata
+call per engine and no prompt, and a change found the day it happens leaves one
+day of candidate causes where a monthly run would leave a month. The hour is
+ahead of the scheduled slots, so a change dispatches its engine first and that
+month's scheduled run finds the measurement and skips.
 
 **`grok` is in scope and was not before.** The engine was rostered 2026-10-04
 and has had callers here since 2026-10-05; the harness dispatch enumerated
@@ -3068,7 +3106,7 @@ cannot live there.
 | Workflow | Rungs | Trigger |
 |---|---|---|
 | `gate-target.yml`, called by one `gate-<target>.yml` for each target | 1 | Every push and pull request |
-| `evaluate-engine.yml`, called by one weekly and one claude-judged dispatch caller for each engine | 1, then 2, then 3 | Weekly, and on dispatch |
+| `evaluate-engine.yml`, called by one scheduled and one claude-judged dispatch caller for each engine | 1, then 2, then 3 | Monthly unless already measured, and on dispatch |
 
 **The names moved and this table did not, until 2026-10-25.** It read
 `gate-on-change.yml` and `evaluate-live-weekly.yml`, which are the harness's
@@ -3079,7 +3117,7 @@ with it.** A step of the ladder is a rung and a CI job is a job
 (`code-style.md` section 7.1), and this section called its rungs jobs
 throughout.
 
-**Rung 1 runs in both, deliberately.** In the gate it is the gate; in the weekly
+**Rung 1 runs in both, deliberately.** In the gate it is the gate; in the scheduled
 run it is the precondition that decides whether spending quota is worth it. It
 is free, so running it twice costs nothing and removes the need to reason about
 a result carried between workflows.
@@ -3130,7 +3168,7 @@ the only workflow at the time, and the wording carried that accident forward.
 | `evaluate-engine.yml` | **Every rung that is not rung 1** | **Quota spent to measure a model with an instrument nobody verified** |
 
 **The argument is strongest exactly where it was missing.** A gate running
-against a red harness wastes a few seconds of runner time. The weekly run
+against a red harness wastes a few seconds of runner time. The scheduled run
 spends provider quota, and the findings it produces are attributed to the model
 under test, which is the misattribution the resolve job exists to prevent.
 
@@ -3241,16 +3279,21 @@ the three other filenames already outside the listed cadences. A check is what
 would make the suffix safe to read, and until there is one this paragraph is
 the whole of the enforcement.
 
-#### 7.7.5 The gemini callers keep their filenames for now
+#### 7.7.5 The gemini callers carry the trigger, not the judge, in their filenames
 
 The judge belongs in the names and it is in the **job and rung** names today:
-`2 - the judge (replay, live) on openai, judged by claude`. The four
-`evaluate-<engine>-weekly.yml` files are **not** renamed yet, because a filename
-is a cross-workflow reference and the harness probe dispatches these by name
-(`harness_ci_pipeline.md` section 2.1, which also records that renaming a
-workflow twice costs a dangling reference in between). The probe moves to this
-repository at the next step of the probe and calibration plan, and the rename
-happens with it: one rename rather than two.
+`2 - the judge (replay, live) on openai, judged by claude`. The four callers
+were `evaluate-<engine>-weekly.yml`, a name describing a cron they never had,
+and were **renamed `evaluate-<engine>-scheduled.yml` on 2026-11-09**, when the
+probe here became their only dispatcher by name and the schedule arrived.
+
+**`scheduled` names the trigger and not its period**, for the reason the probe's
+filename carries no cadence (section 4.23.1): the period moved from weekly to
+monthly before the cron was ever written, and a name stating it would have been
+wrong twice. The harness `harness_ci_pipeline.md` section 2.1 lists the
+cadences in use and `scheduled` is not among them; the harness
+`harness_open_questions.md` records that nothing enforces that set, and only
+`-on-demand` changes how a run is counted.
 
 ## 8. The Operator Runbook
 

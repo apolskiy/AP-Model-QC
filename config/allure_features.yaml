@@ -92,6 +92,7 @@ modules:
   tests/cases/mqc_uni_run_conclusions.py: Consumer CI
   tests/cases/mqc_uni_operator_commands.py: Consumer CI
   tests/cases/mqc_uni_version_probe.py: Consumer CI
+  tests/cases/mqc_uni_scheduled_evaluation.py: Consumer CI
 
   # Which harness this case set runs against, and whether it followed.
   tests/cases/mqc_uni_harness_follow.py: Harness pairing

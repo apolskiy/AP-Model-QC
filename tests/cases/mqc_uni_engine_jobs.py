@@ -3,7 +3,7 @@
 """Unit preconditions for whether each engine is evaluated, named and reported on its own.
 
 Created: 2026-10-03
-Last updated: 2026-10-24
+Last updated: 2026-11-09
 
 This file contains ``TestMQCEngineAttribution``, two cases over the workflow
 definitions and the engine roster. ``115709`` checks every graded job names the one
@@ -57,7 +57,7 @@ pytestmark = pytest.mark.unit
 _GATE = "gate-target.yml"
 _GATE_CALLER = "gate-{engine}.yml"
 _LIVE = "evaluate-engine.yml"
-_WEEKLY_CALLER = "evaluate-{engine}-weekly.yml"
+_SCHEDULED_CALLER = "evaluate-{engine}-scheduled.yml"
 
 
 
@@ -86,7 +86,7 @@ def _target_problems(kind: str, pattern: str, called: str) -> list[str]:
     """Report a target that is not a workflow of its own.
 
     Args:
-        kind (str): ``gate`` or ``weekly``, for the message.
+        kind (str): ``gate`` or ``scheduled``, for the message.
         pattern (str): The caller filename, with an ``{engine}`` placeholder.
         called (str): The workflow a caller is expected to invoke.
 
@@ -117,31 +117,6 @@ def _target_problems(kind: str, pattern: str, called: str) -> list[str]:
             problems.append(
                 f"{name} has no concurrency group of its own, so one target's "
                 f"run could supersede another's"
-            )
-    return problems
-
-
-def _weekly_problems() -> list[str]:
-    """Report a weekly caller carrying a schedule the design withholds.
-
-    A live firing spends real money, and `consumer_ci.md` section 4.18.3 names
-    what has to exist first: the known findings triaged, and a run that
-    declines when this target was already evaluated in the window.
-
-    Returns:
-        list[str]: One entry per premature schedule.
-    """
-    problems: list[str] = []
-    for engine in _rostered_engines():
-        name = _WEEKLY_CALLER.format(engine=engine)
-        if not (WORKFLOWS / name).is_file():
-            continue
-        triggers = load(name).get("on") or load(name).get(True) or {}
-        if isinstance(triggers, dict) and "schedule" in triggers:
-            problems.append(
-                f"{name} carries a schedule, and section 4.18.3 withholds one "
-                f"until the known findings are triaged and a run declines when "
-                f"this target was already evaluated in the window"
             )
     return problems
 
@@ -233,7 +208,7 @@ class TestMQCEngineAttribution:
         Four properties:
 
         * the per-target gate takes its engine from an input, never a literal,
-        * every rostered target has a gate caller **and** a weekly caller,
+        * every rostered target has a gate caller **and** a scheduled caller,
         * each caller names its target and keys its own concurrency group,
         * the artifacts a graded job uploads are keyed by the engine, because
           two targets sharing an artifact name is one name and the later
@@ -257,8 +232,7 @@ class TestMQCEngineAttribution:
 
         problems = _band_problems(gate)
         problems.extend(_target_problems("gate", _GATE_CALLER, _GATE))
-        problems.extend(_target_problems("weekly", _WEEKLY_CALLER, _LIVE))
-        problems.extend(_weekly_problems())
+        problems.extend(_target_problems("scheduled", _SCHEDULED_CALLER, _LIVE))
 
         assert not problems, (
             "targets do not each have a workflow of their own: "
@@ -281,7 +255,7 @@ class TestMQCEngineAttribution:
 
         * the roster read yields something, so a silent empty read cannot pass
           this vacuously,
-        * each engine has a gate caller and a weekly caller, which
+        * each engine has a gate caller and a scheduled caller, which
           `MQC_CAS_UNI_115709` checks over the same roster-derived list,
         * the live workflow offers the credential variable its adapter
           declares, which is the one of the three that fails quietly.

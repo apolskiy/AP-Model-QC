@@ -119,7 +119,7 @@ so nobody is tempted to.
 | Run one case or a few, right now | `debug-cases-on-demand` | No | Only if you ask |
 | Stabilize cases against a harness in flight | `debug-cases-on-demand` from your `stabilization-*` branch | No | Only if you ask |
 | Check a branch before opening a pull request | Push it. One `gate-<engine>` per target runs itself | Yes, on the pull request | No |
-| Regression across one target, live | `evaluate-<engine>-weekly` | No | **Yes, all three rungs** |
+| Regression across one target, live | `evaluate-<engine>-scheduled`, which also fires monthly by itself | No | **Yes, all three rungs** |
 
 **The first two are the ones this page is really about.** They are manual, they
 yield no verdict, and nothing they do can colour a gate run on the same commit.
@@ -146,9 +146,9 @@ gate was red.
 
 **`<engine>` is one of the rostered targets, and the roster is the list.** There
 are four as this is written — `gemini`, `openai`, `claude`, `grok` — each with
-a gate caller and a weekly caller of its own, because a workflow run has one
+a gate caller and a scheduled caller of its own, because a workflow run has one
 conclusion and four targets inside it would make three passes and one failure a
-single red. The names are literal: `gate-grok`, `evaluate-grok-weekly`.
+single red. The names are literal: `gate-grok`, `evaluate-grok-scheduled`.
 
 **Do not read the count from this page.** `config/engines.yaml` in the harness
 is the roster, `MQC_CAS_UNI_115710` fails this repository if a rostered engine
@@ -279,9 +279,9 @@ shapes.
 
 | Artifact | Left by | Kept |
 |---|---|---|
-| `mqc-reports-cases-<engine>-replay-replay` | The weekly evaluation, replay leg | 90 days |
-| `mqc-reports-cases-<engine>-replay-live` | The weekly evaluation, judged leg | 90 days |
-| `mqc-reports-cases-<engine>-live-live` | The weekly evaluation, live leg | 90 days |
+| `mqc-reports-cases-<engine>-replay-replay` | The scheduled evaluation, replay leg | 90 days |
+| `mqc-reports-cases-<engine>-replay-live` | The scheduled evaluation, judged leg | 90 days |
+| `mqc-reports-cases-<engine>-live-live` | The scheduled evaluation, live leg | 90 days |
 | `mqc-reports-gate-<target>-*` | A gate run, per band | 90 days |
 | `scratch-debug-cases-<run id>` | `debug-cases-on-demand` | 14 days |
 
@@ -299,7 +299,7 @@ manual selection. What a subset costs is the verdict, never the ability to run.
 **From the command line**, which is the shorter path:
 
 ```
-gh run list --workflow evaluate-claude-weekly.yml --limit 5
+gh run list --workflow evaluate-claude-scheduled.yml --limit 5
 gh run download 1234567890 --name mqc-reports-cases-claude-replay-replay --dir results
 ```
 
@@ -457,7 +457,7 @@ anyway and records what it used.
 | `debug-cases-on-demand`, any branch | **Nothing. It runs** |
 | `gate-on-change` on `stabilization-*`, `expand-*`, `extend-*` | It runs, ungated, no verdict |
 | `gate-on-change` on `main` | **Exit 4. Nothing installs and nothing runs** |
-| `evaluate-<engine>-weekly` | **Exit 4. No rung starts** |
+| `evaluate-<engine>-scheduled` | **Exit 4. No rung starts** |
 
 **The last two rows are the point of the refusal.** A regression measures, so
 it needs an established instrument or it measures nothing worth having. A

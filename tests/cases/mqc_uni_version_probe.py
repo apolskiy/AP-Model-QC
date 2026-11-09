@@ -3,11 +3,11 @@
 """Preconditions on the model version probe this repository owns and dispatches.
 
 Created: 2026-10-29
-Last updated: 2026-10-29
+Last updated: 2026-11-09
 
 Its cases read ``.github/workflows/probe-model-version.yml``. The first checks
 that the probe resolves a green harness before it decides anything and that it
-dispatches the changed engine's own weekly caller, which has to exist for every
+dispatches the changed engine's own scheduled caller, which has to exist for every
 rostered engine. The second calls the shared
 ``cmn.ci_gating.ungated_dispatches`` with this root, which reports any job here
 that starts a spending workflow without reading a green pairing from a job it
@@ -86,7 +86,7 @@ class TestMQCVersionProbeShape:
         2026-10-04, so a quarter of the roster was unwatched.
 
         **The roster is the enumeration, not a list in this case.** An engine
-        added to ``config/engines.yaml`` must gain a weekly caller, and reading
+        added to ``config/engines.yaml`` must gain a scheduled caller, and reading
         the roster is what makes that a failure here rather than a gap nobody
         notices until a version moves.
 
@@ -139,8 +139,8 @@ class TestMQCVersionProbeShape:
             f"the dispatch job runs no workflow dispatch at all: {dispatch!r}"
         )
         target = dispatched.group(1)
-        assert target.endswith("-weekly.yml"), (
-            f"the dispatch does not name a weekly caller: {target!r}"
+        assert target.endswith("-scheduled.yml"), (
+            f"the dispatch does not name a scheduled caller: {target!r}"
         )
         assert _INTERPOLATION.search(target), (
             "the dispatched caller is a single literal, so a version move at "
@@ -153,11 +153,11 @@ class TestMQCVersionProbeShape:
             engine
             for engine in rostered
             if not (
-                _ROOT / ".github" / "workflows" / f"evaluate-{engine}-weekly.yml"
+                _ROOT / ".github" / "workflows" / f"evaluate-{engine}-scheduled.yml"
             ).is_file()
         ]
         assert not missing, (
-            "rostered engine(s) have no weekly caller for the probe to "
+            "rostered engine(s) have no scheduled caller for the probe to "
             f"dispatch, so a version move there would fail the step: {missing}"
         )
 

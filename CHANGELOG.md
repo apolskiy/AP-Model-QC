@@ -40,6 +40,29 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Each engine is evaluated monthly unless already measured, and the probe runs daily, 2026-11-09
+
+**Why it was needed.** The live ladders had no schedule, so an engine was
+measured only when somebody dispatched it, and the probe that would dispatch it
+on a model change was dispatch-only too. A weekly schedule had been designed
+and withheld; at four engines it spends every week to re-measure models that
+mostly did not change.
+
+**What changed.** The four callers were renamed `evaluate-<engine>-scheduled.yml`
+and fire monthly, one engine a day from the 1st at 02:00 UTC. On a schedule a
+`decide` job runs `tools/recent_evaluation.py` first and skips the ladder when
+that engine's live rung already finished, passing or failing, in the last 27
+days, stating the decision and the run that made it on the run summary; a
+history it cannot read stops the run with exit 4. `probe-model-version.yml`
+fires daily at 01:00 UTC and dispatches the changed engine's scheduled caller.
+**The probe's dispatch passed a `reason` input no caller declared**, which
+GitHub refuses, so its first detected change would have dispatched nothing;
+every scheduled caller declares it now. `consumer_ci.md` sections 4.18.2,
+4.18.3, 4.23.3 and 7.7.5 specify it, requirements `MQC_REQ_CAS_CI_0081` to
+`0083` trace it with `0031` and `0064` restated, and `MQC_CAS_UNI_115830` to
+`115835` in `mqc_uni_scheduled_evaluation.py` assert it. The README states the
+schedule and counts 252 preconditions and 236 requirements.
+
 ### A ticket opens with a summary quoting the prompt, the incorrect responses and any judge at odds, 2026-11-09
 
 **Why it was needed.** A ticket's problem statement was one generic sentence.

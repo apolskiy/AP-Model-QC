@@ -6,7 +6,7 @@
 # report built from four engines' results answers no question anybody asks: a
 # reviewer wants to know whether claude is sound, or gemini is, and a figure
 # averaged over four vendors is one nobody ships against. Section 4.18 refused
-# a combined weekly result for that reason, and this is the same decision
+# a combined result for that reason, and this is the same decision
 # applied to the report.
 #
 # AND EVERY REPORT IS ONE COMMIT'S. The first version took the latest
@@ -89,7 +89,7 @@ jobs:
           for engine in $ENGINES; do
             results="results/$engine"
             mkdir -p "$results"
-            for workflow in "gate-$engine" "evaluate-$engine-weekly"; do
+            for workflow in "gate-$engine" "evaluate-$engine-scheduled"; do
               run=$(gh run list --workflow "$workflow.yml" --branch main --limit 30 \
                 --json databaseId,headSha,status \
                 --jq "[.[] | select(.headSha == \"$COMMIT\" and .status == \"completed\")][0].databaseId" \
