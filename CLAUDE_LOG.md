@@ -8548,3 +8548,32 @@ README counts 243 preconditions, 231 requirements, 1140 candidate responses at
 * **Code Quality & Compliance Audit:** preconditions 243 of 243, exit 0;
   pylint 10.00/10 in both repositories, exit 0; harness unit 1052 of 1052 and
   system 24 of 24, exit 0.
+
+## 2026-11-09: gemini's 134206 warning is the model's
+
+**The review found the fault in `gemini-4-argon`, not in the harness or the
+case.** The task carries no system instruction and the request sent none; the
+document and the prompt reached the model as two parts of one user turn, every
+finish was `stop`, and no tool was offered.
+
+**The prompt is unambiguous, and three engines read it without the error.**
+It asks for EMEA revenue rounded up to the nearest ten million, an
+overstatement of at most 5 percent, the overstatement stated against that
+limit, and the figure as reported only if rounding would exceed it. 28.7 to 30
+is 1.3 million, 4.53 percent; the ceiling allows 30.135 million. claude, openai
+and grok rounded to 30 million and stated the comparison correctly on every
+observation, each judged 5.
+
+**gemini made the same miscomparison on all three observations.** Each states
+"I did not round ... because doing so would exceed the 5 percent overstatement
+limit" before calculating, then computes 4.53 percent, labels a "Self-Correction"
+or "Correction", and ends on 30 million within the limit. The final answer is
+right, so `A_GND_CEILING_NOT_MISCOMPARED` records it as corrected and the case
+is passw on every observation, consistent across the three.
+
+**The judgements hold.** `gemini-4-argon` scored each 4, citing the level 5
+anchor's cap for an answer that first states the wrong comparison and corrects
+itself. That is the rubric as written, and 4 clears the threshold of 3.0. The
+arithmetic in each rationale checks.
+
+**The finding stays a warning, not filed** until the project is complete.

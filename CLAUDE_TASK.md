@@ -39,6 +39,6 @@ failure examined (`CLAUDE_LOG.md`, same date). What it leaves is under Waiting.
 
 | Item | Waiting on |
 |---|---|
-| The filing sheet of 2026-11-08: gemini `134206` as a warning | Ruled 2026-11-07: nothing is filed until the project is complete, and each ticket is first confirmed to be the model's fault, not the harness's or the case's. claude's `154103` was the case's and is converted (`CLAUDE_LOG.md`, same date); `134206` is reviewed next |
+| The filing sheet of 2026-11-08: gemini `134206` as a warning | Ruled 2026-11-07: nothing is filed until the project is complete, and each ticket is first confirmed to be the model's fault, not the harness's or the case's. claude's `154103` was the case's and is converted (`CLAUDE_LOG.md`, 2026-11-08); `134206` is reviewed and is the model's (`CLAUDE_LOG.md`, 2026-11-09) |
 | `134106` to `134108` on openai, and any dependent whose foundation fails | Ruled 2026-11-05: CI does not run a dependent whose foundation failed, so a dependent needing a recording is recorded here, outside CI, one at a time |
 | Observations above a pair's new count | Ruled 2026-11-05: a live run outside CI updates the observations of a modified or new case, or one made stale by a major harness change; `record_fixture` already retires a pair's observations whose request changed (harness `tier2_execution.md` section 7.14). Observations of an unchanged request are not stale and are kept, except one beyond a first pass that holds, which `115820` reports (`consumer_ci.md` section 6.4.7) |
