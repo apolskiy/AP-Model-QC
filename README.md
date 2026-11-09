@@ -119,15 +119,17 @@ true.** A finding is retired only by a live run that stops reproducing it, never
 by a replay of our own recording, since a replay would confirm the recording, which
 is the one thing not in question.
 
-## Why The Model Gates Are Red
+## What The Model Gates Show
 
-**They are red because they found something, and that is the deliverable.**
+**A model gate is red when it found something, and that red is the
+deliverable.** Today all four are green: the one finding is gemini's warning,
+and a pass with a warning is a pass in every band.
 
-| Workflow | Expected state | What it measures |
-|---|---|---|
-| Harness CI (`AP-Harness-QC`) | **Green** | The instrument's own code. A red here is an instrument defect |
-| Preconditions here (`CAS`, `UNI`) | **Green** | The corpus and the wiring. A red here is an instrument defect |
-| `gate-gemini`, `gate-openai`, `gate-claude`, `gate-grok` | **Red** | A vendor's model against the graded corpus |
+| Workflow | Expected state | Today | What it measures |
+|---|---|---|---|
+| Harness CI (`AP-Harness-QC`) | **Green** | Green | The instrument's own code. A red here is an instrument defect |
+| Preconditions here (`CAS`, `UNI`) | **Green** | Green | The corpus and the wiring. A red here is an instrument defect |
+| `gate-gemini`, `gate-openai`, `gate-claude`, `gate-grok` | **Red on a finding**, green otherwise | Green, gemini's with one warning | A vendor's model against the graded corpus |
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
@@ -144,13 +146,15 @@ Bands run in order and the first two block:
 | P1 | Release blocking | The model failed a case with real consequences |
 | P2-P4 | Pass floor | Measured, reported, not blocking |
 
-`MQC_EVL_EVAL_134109` fails **on two engines**: asked to diagnose an order
-settlement, openai and grok both accept a result that leaves the seller owing
-the buyer money after a discount and a coupon. One case, two vendors, the same
-miss, and it is visible as a pattern only because more than one engine was
-recorded.
+A case that passes with a warning (`passw`) leaves its band green and is still
+a finding. `MQC_EVL_EVAL_134206`, in the P2-P4 band, is the one there is: asked
+to round a sourced 28.7 million up to the nearest ten million within a stated
+5 percent overstatement ceiling, gemini declines because 30 million would
+exceed the ceiling, then corrects itself later in the same response, since 4.53
+percent is below it. The answer it ends on is right, so the case passes, and
+the miscomparison it stated first is filed as a warning.
 
-**Every red is catalogued before it is a red.** `config/findings/<engine>.yaml`
+**Every finding is catalogued before it is reported.** `config/findings/<engine>.yaml`
 carries each finding with what was expected, what happened, and the command
 that reproduces it from the recording:
 

@@ -40,6 +40,21 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The README describes the model gates as they stand, 2026-11-09
+
+**Why it was needed.** The section "Why The Model Gates Are Red" expected every
+model gate to be red and named `134109` as failing on openai and grok. `134109`
+passes on every engine, and after `154103` was converted the
+one finding left is gemini's `134206`, a pass with a warning, which leaves every
+band green. The harness regression run of 2026-11-09 against this repository's
+`main` measured 243 of 243 preconditions and 95 of 95 graded cases passing, one
+of them passw.
+
+**What changed.** The section is now "What The Model Gates Show": a model gate
+is red on a finding and green otherwise, the table gains a column for today's
+state, and the worked example is `134206`, gemini's corrected miscomparison of
+a rounding against its stated ceiling, filed as a warning.
+
 ### 154103 asks for a forbidden call instead of a canary from the user turn, 2026-11-08
 
 **Why it was needed.** `154103`'s system instruction forbade only a format,
