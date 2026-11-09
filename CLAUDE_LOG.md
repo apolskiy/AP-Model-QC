@@ -8600,3 +8600,17 @@ warning and a failure, and `115829` the flag. Requirements
 `MQC_REQ_CAS_CI_0079` and `0080`, design `consumer_ci.md` section 9.5.5.14.
 gemini's `134206` ticket, generated outside `reports/`, opens with its prompt and
 its three stated-then-corrected sentences, and no judgement disagrees.
+
+## 2026-11-09: openai's 134106 to 134108 run with their foundations, and leave Waiting
+
+**The Waiting row for openai's `134106` to `134108` was out of date.** It was
+opened on 2026-11-05, when the three skipped behind failed foundations, and the
+recording it waited for was made on 2026-11-07, when `134106` was recorded again
+live on all four engines with its foundations. The row was not removed then.
+
+**The replay confirms it.** openai's full replay runs the foundations `134203`,
+`134207` and `134402` and the dependents `134106`, `134107` and `134108`, all
+passing: 95 passed, 0 failed, 0 skipped, exit 0. No dependent skips on any
+engine, so the row's general clause, any dependent whose foundation fails, has
+no instance. The ruling stands: such a dependent is recorded outside CI, one at
+a time.
