@@ -40,6 +40,16 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The report publish runs on Node.js 24, without the deprecation warning, 2026-11-09
+
+**Why it was needed.** `actions/deploy-pages@v4` and
+`actions/upload-pages-artifact@v4` run on Node.js 20, which GitHub is retiring,
+so every publish carried a deprecation warning and would stop working when the
+runtime is removed.
+
+**What changed.** `publish-report-on-merge.yml` uses `deploy-pages@v5` and
+`upload-pages-artifact@v5`, which run on Node.js 24, with the same inputs.
+
 ### gemini's 134206 warning was filed, and the filing sheet names gemini's intake, 2026-11-09
 
 **Why it was needed.** The first finding went to a vendor, and the filing sheet

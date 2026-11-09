@@ -8698,3 +8698,22 @@ answer to whoever filed. `MQC_CAS_UNI_115781` now requires every rostered
 engine's intake to be stated; it failed on gemini before the intake was
 recorded. Its unknown-intake step used gemini as the example and now uses an
 engine outside the roster.
+
+## 2026-11-09: The Pages actions moved to v5, which run on Node.js 24
+
+**Every publish carried a deprecation warning.** `actions/deploy-pages@v4` runs
+on Node.js 20, which GitHub is retiring, and `actions/upload-pages-artifact@v4`
+calls `actions/upload-artifact` v4.6.2 pinned by commit, also on Node.js 20.
+The runner forced both onto Node.js 24 and said so on each run.
+
+**`publish-report-on-merge.yml` uses v5 of both now**, as the harness's
+`gate-on-change.yml` does from the same day. `deploy-pages` v5.0.1 declares
+`node24` and `upload-pages-artifact` v5.0.0 calls `upload-artifact` v7.0.0. The
+one input passed, `path`, is unchanged in v5.
+
+**Not the cause of the two stalled deploys of the same evening.** Runs
+42712035292 and 42716410615 built and uploaded their reports and stalled at
+"syncing_files" until the deploy timed out, with an artifact the size of the
+last good one: 22,469 files and 71.2 MB against 22,373 and 70.4 MB. The next
+publish, 42719902681, deployed in 1m49s on v4 unchanged, so the stalls were on
+GitHub's side and this change is about the runtime only.

@@ -150,11 +150,13 @@ jobs:
             done
             echo "</ul></body></html>"
           } > site/index.html
-      - uses: actions/upload-pages-artifact@v4
+      # V5 OF BOTH PAGES ACTIONS, since 2026-11-09: v4 ran on Node.js 20, which
+      # GitHub retires, and every publish carried the deprecation warning.
+      - uses: actions/upload-pages-artifact@v5
         if: steps.build.outputs.built != ''
         with:
           path: site
       - name: Deploy them
         id: deployment
         if: steps.build.outputs.built != ''
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
