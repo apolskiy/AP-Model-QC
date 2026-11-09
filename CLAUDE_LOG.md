@@ -8659,3 +8659,18 @@ the step summary, and `MQC_CAS_UNI_115833` asserts it.
 weekly runs in the harness `cmn/quarantine.py`. Against a monthly cadence an
 entry expires before the next scheduled run. That is a harness default and is
 raised there rather than changed from this repository.
+
+## 2026-11-09: The README figure check reads the precondition count in prose too
+
+**The scheduled-evaluation change left a stale figure on the front page.** It
+moved the table row to 252 preconditions and left "246 of 246 preconditions
+pass" in the section on the model gates. `MQC_CAS_UNI_115317` read one
+statement of the figure and the README makes two, so the check passed with the
+second one wrong. Found while regenerating the tickets.
+
+**The check failed first.** A second precondition pattern in `readme_figures`
+reads the total in that sentence against the design inventory; run against the
+uncorrected README it reported "preconditions in prose: README says 246,
+actual is 252". The sentence was corrected after. The passing count in the
+sentence is not checked, as in the table row: the check reads the figure and
+leaves the claim about an outcome alone.

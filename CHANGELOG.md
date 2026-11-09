@@ -40,6 +40,17 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Fixed the README's prose precondition count, which the figure check did not read, 2026-11-09
+
+**Why it was needed.** The section on the model gates said "246 of 246
+preconditions pass" after the six scheduled-evaluation cases took the count to
+252. `MQC_CAS_UNI_115317` read the figure in the table and not the same figure
+in that sentence, so the drift passed.
+
+**What changed.** The sentence states 252 of 252, and `readme_figures` in
+`tests/cases/pin_support.py` reads it as a second precondition figure, checking
+the total against the design inventory as the table row is checked.
+
 ### Each engine is evaluated monthly unless already measured, and the probe runs daily, 2026-11-09
 
 **Why it was needed.** The live ladders had no schedule, so an engine was

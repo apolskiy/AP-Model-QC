@@ -3,7 +3,7 @@
 """Support code for the harness-pin preconditions: GitHub API shapes and README figures.
 
 Created: 2026-10-05
-Last updated: 2026-11-07
+Last updated: 2026-11-09
 
 This file contains builders of the GitHub API shapes the resolver in
 ``tools/harness_pin.py`` reads, ``workflow_run``, ``unconcluded_runs`` and
@@ -288,6 +288,15 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
         (
             "preconditions",
             r"\*\*(\d+) cases, [^*]+\*\*",
+            inventoried_precondition_count(root),
+        ),
+        # THE SAME COUNT IN PROSE, since 2026-11-09. The section on the model
+        # gates restates it, and only the table row above was read: six cases
+        # were added, the row moved to 252 and the sentence stayed at 246. The
+        # total is checked and the passing count is not, as above.
+        (
+            "preconditions in prose",
+            r"\d+ of (\d+) preconditions pass",
             inventoried_precondition_count(root),
         ),
         ("requirements", r"\| (\d+) requirements, traced \|", traced),
