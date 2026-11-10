@@ -273,7 +273,7 @@ jobs:
       # of its own, and taking its gating from a neighbour would move with it.
       # Design section 3.12.1.1.
       - name: Take the record the preconditions job wrote
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: preconditions-${{ matrix.os }}
           path: reports/
@@ -341,7 +341,7 @@ jobs:
       # dispatched again and a P0 failure skips its dependents here rather than
       # failing them.
       - name: Take the outcomes P0 established
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: carry-after-p0-${{ inputs.engine }}-${{ matrix.os }}
           path: reports/
@@ -353,7 +353,7 @@ jobs:
       # of its own, and taking its gating from a neighbour would move with it.
       # Design section 3.12.1.1.
       - name: Take the record the preconditions job wrote
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: preconditions-${{ matrix.os }}
           path: reports/
@@ -417,7 +417,7 @@ jobs:
             "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
           python -m pip install --quiet --no-deps --editable "."
       - name: Take the outcomes P0 and P1 established
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: carry-after-p1-${{ inputs.engine }}-${{ matrix.os }}
           path: reports/
@@ -432,7 +432,7 @@ jobs:
       # of its own, and taking its gating from a neighbour would move with it.
       # Design section 3.12.1.1.
       - name: Take the record the preconditions job wrote
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: preconditions-${{ matrix.os }}
           path: reports/
@@ -492,7 +492,7 @@ jobs:
       # the same condition the bands upload under.
       - name: Collect each band's report
         if: always()
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: >-
             ${{ needs.resolve.outputs.gated == 'true'

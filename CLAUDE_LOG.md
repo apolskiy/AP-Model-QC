@@ -8717,3 +8717,17 @@ one input passed, `path`, is unchanged in v5.
 last good one: 22,469 files and 71.2 MB against 22,373 and 70.4 MB. The next
 publish, 42719902681, deployed in 1m49s on v4 unchanged, so the stalls were on
 GitHub's side and this change is about the runtime only.
+
+### download-artifact moved to v7, the last action on Node.js 20
+
+**The v5 bump left one action on Node.js 20.** The harness's gate run
+42722001683, the first on the Pages v5 actions, still warned for
+`actions/download-artifact@v6`, which declares `node20` and which
+`gate-target.yml` uses six times. The bump had read only the warning on this
+repository's publish run and did not check every action the workflows use.
+
+**`gate-target.yml` uses `download-artifact@v7`.** v7 changes only the
+runtime. v8 also makes a digest mismatch fail the run by default, a change of
+behaviour nothing asked for, so it was not taken. Every action both
+repositories use, and every action a composite one calls, now declares
+`node24`.

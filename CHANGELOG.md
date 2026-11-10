@@ -40,6 +40,16 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The gates download their results on Node.js 24, 2026-11-09
+
+**Why it was needed.** `actions/download-artifact@v6`, used six times in
+`gate-target.yml`, runs on Node.js 20 and carries the same deprecation warning
+the Pages actions did.
+
+**What changed.** `gate-target.yml` uses `download-artifact@v7`, which changes
+only the runtime from v6. Every action the workflows use now runs on Node.js
+24, including those composite actions call.
+
 ### The report publish runs on Node.js 24, without the deprecation warning, 2026-11-09
 
 **Why it was needed.** `actions/deploy-pages@v4` and
