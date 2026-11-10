@@ -8731,3 +8731,38 @@ runtime. v8 also makes a digest mismatch fail the run by default, a change of
 behaviour nothing asked for, so it was not taken. Every action both
 repositories use, and every action a composite one calls, now declares
 `node24`.
+
+## 2026-11-09: A report publish no longer cancels one already deploying
+
+**Earlier the same evening the two stalled publishes were called GitHub's side,
+and that was wrong.** Publish run 42724148397, on `deploy-pages@v5`, stalled the
+same way, which made it three of four. Reading every Pages deployment of the
+evening by its statuses showed what the three had in common: each surviving
+run's deploy came after an earlier publish run had been cancelled while its
+own deployment was `in_progress`, syncing files. The publish group set
+`cancel-in-progress: true`, and the four gates finishing minutes apart start
+four publish runs, so each cancelled the one before it, sometimes midway
+through a deployment.
+
+**The evidence is a correlation, not a mechanism.** The publish that succeeded
+at 23:22 also followed a deployment cancelled in progress, so a cancellation
+does not stall the next deploy every time. It is the one difference from the
+publishes that deployed in about a minute, the artifact was the same size
+throughout, and GitHub's own Pages starter workflow sets
+`cancel-in-progress: false` so that a deployment is never cancelled midway.
+
+**The group stays and no longer cancels.** A running publish finishes; runs
+waiting behind it collapse to the newest, so the site still ends on the last
+commit, at the cost of waiting about two minutes for one already running.
+Section 4.22.1 records it and requirement `MQC_REQ_CAS_CI_0084` traces it.
+
+**The case failed first.** `MQC_CAS_UNI_430005`, in `mqc_uni_grouping.py`
+beside `430002` because `mqc_uni_workflows.py` is 29 lines short of its runway
+ceiling, reads every workflow that deploys Pages and reports one that cancels a
+run in progress at the workflow or job level. Run before the workflow changed,
+it named `publish-report-on-merge.yml`.
+
+**Not changed here: the harness's `gate-on-change.yml` deploys its Allure
+report under a workflow-level `cancel-in-progress: true`**, there to stop a
+superseded gate. Its deploys have not stalled, and changing a gate's
+concurrency is a harness decision, so it is raised rather than changed.

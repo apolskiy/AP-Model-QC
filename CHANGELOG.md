@@ -40,6 +40,22 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A report publish no longer cancels one already deploying, 2026-11-09
+
+**Why it was needed.** Each of the four gates finishing starts a publish run,
+and each run cancelled the one before it. Three of four publishes on
+2026-11-09 followed a run cancelled after its Pages deployment had begun
+syncing, and waited at `syncing_files` until the deploy timed out, leaving the
+site a commit behind.
+
+**What changed.** `publish-report-on-merge.yml` keeps its one concurrency
+group with `cancel-in-progress: false`: a running publish finishes, and runs
+waiting behind it collapse to the newest, so the site still ends on the last
+commit. `consumer_ci.md` section 4.22.1 records it, requirement
+`MQC_REQ_CAS_CI_0084` traces it, and `MQC_CAS_UNI_430005` requires every
+workflow deploying the site to let a running run finish. The README counts
+253 preconditions and 237 requirements.
+
 ### The gates download their results on Node.js 24, 2026-11-09
 
 **Why it was needed.** `actions/download-artifact@v6`, used six times in

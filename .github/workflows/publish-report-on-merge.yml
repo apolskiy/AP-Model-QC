@@ -31,13 +31,17 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# ONE DEPLOY AT A TIME. Four gates complete within minutes of each other and
-# two deploys of one site race. The later wins and the earlier is cancelled,
-# which is correct here: every engine's report is rebuilt on each run, so the
-# loser would have published a subset of what the winner holds.
+# ONE DEPLOY AT A TIME, AND A RUNNING ONE FINISHES. Four gates complete within
+# minutes of each other and two deploys of one site would race, so they share
+# a group. A run already going is NOT cancelled: until 2026-11-09 it was, and
+# three publishes of four that evening each followed a run cancelled after its
+# Pages deployment began syncing, and waited at "syncing_files" until timeout.
+# Runs waiting in the group still collapse to the newest, and every run
+# rebuilds every engine's report, so the site ends on the last commit either
+# way. MQC_CAS_UNI_430005.
 concurrency:
   group: publish-report
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read

@@ -1099,6 +1099,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `430000` | P | `every_case_module_declares_its_capability` (harness CMN 16.3) |
 | `430001` | P | `the_declared_epic_is_this_repositorys_own` (harness CMN 16.5) |
 | `430002` | P | `the_report_publishes_where_no_proposal_reaches` (harness CI 7.4) |
+| `430005` | N | `a_pages_deploy_is_never_cancelled_midway` (4.22.1) |
 | `430003` | P | `a_graded_result_carries_its_band_as_its_suite_root` (harness CMN 16.8) |
 | `430004` | P | `a_run_here_writes_the_shared_failure_categories` (harness CMN 16.9) |
 | `115736` | P | `the_finding_reader_carries_the_questions` |
@@ -1200,7 +1201,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 168 cases, 119 negative, 40 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 169 cases, 120 negative, 40 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2244,6 +2245,29 @@ would therefore be four deploys of one site racing on every push, and the site
 would hold whichever target finished last rather than the suite.
 
 `publish-report-on-merge.yml` runs on their completion on the default branch.
+
+**Its runs share one concurrency group, and a running one is never cancelled.**
+Each gate finishing starts a publish run, so four arrive within minutes. Until
+2026-11-09 each cancelled the one before it. A run cancelled after its Pages
+deployment had begun syncing left the next deploy reporting `syncing_files`
+until `deploy-pages` timed out at ten minutes. Three of the four publishes that
+evening failed this way, each after an earlier run's deployment was cancelled
+while in progress. The fourth succeeded after one such cancellation too, so a
+cancelled deployment does not stall the next every time; it is the one
+difference between those runs and the earlier publishes that deployed in about
+a minute, and the artifact was the same size throughout. GitHub's own Pages
+starter workflow sets `cancel-in-progress: false` so that a deployment is
+never cancelled midway.
+
+| | Cancel in progress | Let it finish |
+|---|---|---|
+| A deploy already syncing | Stopped midway, and the next waits on it | Completes |
+| Runs waiting behind it | Replaced by the newest | Replaced by the newest |
+| What the site ends on | The last commit, when the deploy succeeds | The last commit |
+
+The cost is a publish that waits for one already running, about two minutes.
+`MQC_CAS_UNI_430005` requires that every workflow deploying the site lets a
+running run finish.
 
 #### 4.22.2 One report per engine, and every report one commit's
 

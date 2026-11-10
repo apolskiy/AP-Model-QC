@@ -3,15 +3,16 @@
 """Unit preconditions for the grouping tree this repository's results are read by.
 
 Created: 2026-10-24
-Last updated: 2026-10-28
+Last updated: 2026-11-09
 
-This file contains five cases, each calling a harness implementation over
-this repository. ``TestMQCGroupingDeclaration`` checks that every collected
+This file contains six cases, five calling a harness implementation over this
+repository and one reading its workflows. ``TestMQCGroupingDeclaration`` checks that every collected
 case module declares the capability it measures and that the declaration names
 no module this repository does not hold; ``TestMQCGroupingEpic`` that the epic
 is this repository's own rather than the harness's;
 ``TestMQCGroupingPublication`` that the report is rendered and published from a
-workflow no proposal can reach; and ``TestMQCGroupingBandsAndCategories`` that
+workflow no proposal can reach, and that a deploy under way is never cancelled
+midway; and ``TestMQCGroupingBandsAndCategories`` that
 a graded result carries the band it was graded in as the root a report's Suites
 tab is navigated by, that a precondition carries a root of its own, and that a
 run here writes the failure classification the Categories tab is built from.
@@ -45,6 +46,7 @@ Specified by the harness ``harness_test_taxonomy.md`` section 16 and
 #   430001  the_declared_epic_is_this_repositorys_own
 # TestMQCGroupingPublication
 #   430002  the_report_publishes_where_no_proposal_reaches
+#   430005  a_pages_deploy_is_never_cancelled_midway
 # TestMQCGroupingBandsAndCategories
 #   430003  a_graded_result_carries_its_band_as_its_suite_root
 #   430004  a_run_here_writes_the_shared_failure_categories
@@ -73,6 +75,7 @@ from cmn.report_categories import (
 from cmn.workflow_standards import report_publication_gaps
 
 from tests.cases.grouping_support import published_results
+from tests.cases.workflow_support import WORKFLOWS, jobs, load
 
 pytestmark = pytest.mark.unit
 
@@ -162,6 +165,45 @@ class TestMQCGroupingPublication:
             f"{len(gaps)} gap(s) between this repository's workflows and what "
             f"section 7.4 states, so the readiness view is stale, absent, or a "
             f"proposal's: {gaps}"
+        )
+
+    def MQC_CAS_UNI_430005_a_pages_deploy_is_never_cancelled_midway(self) -> None:
+        """A workflow that deploys the site waits for a running deploy rather than cancelling it.
+
+        **Four gates finishing start four publish runs.** With
+        ``cancel-in-progress: true`` each cancelled the one before it. Three
+        of four publishes on 2026-11-09 followed a run cancelled after its
+        deployment began syncing, and waited at ``syncing_files`` until they
+        timed out. Queued runs still collapse to the newest, so the site ends
+        on the last commit either way.
+
+        Design: ``consumer_ci.md`` section 4.22.1.
+
+        Returns:
+            None
+        """
+        cancelling = []
+        for path in sorted(WORKFLOWS.glob("*.yml")):
+            loaded = load(path.name)
+            deploying = [
+                name for name, job in jobs(loaded).items()
+                if any("actions/deploy-pages" in str(each.get("uses", ""))
+                       for each in job.get("steps") or [])
+            ]
+            levels = [loaded.get("concurrency")] + [
+                jobs(loaded)[name].get("concurrency") for name in deploying
+            ]
+            if deploying and any(
+                isinstance(level, dict) and level.get("cancel-in-progress") is True
+                for level in levels
+            ):
+                cancelling.append(path.name)
+
+        step(1, "find no workflow that deploys the site and cancels a run in progress")
+        assert not cancelling, (
+            f"these workflows deploy the site and cancel a run in progress, so a "
+            f"deploy stopped midway leaves the next one waiting until it times "
+            f"out: {cancelling}"
         )
 
 
