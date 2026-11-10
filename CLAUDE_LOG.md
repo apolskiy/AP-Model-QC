@@ -8766,3 +8766,67 @@ it named `publish-report-on-merge.yml`.
 report under a workflow-level `cancel-in-progress: true`**, there to stop a
 superseded gate. Its deploys have not stalled, and changing a gate's
 concurrency is a harness decision, so it is raised rather than changed.
+
+## 2026-11-10: Rung 2 calibrates the judge, one case per family
+
+**What was wrong.** Both manual evaluations of 2026-11-09 failed at rung 2's
+calibration step. **Why.** The step selected `-k calibration` and no case
+carried the name, so pytest collected nothing and exited 5. Calibration was
+designed in both repositories and built in neither.
+
+**The harness half came first**, in two commits: `evaluation.calibration.calibrate`
+sends each exemplar alone with its criterion under a calibration identifier,
+and `cmn.calibration_runs` collects a `calibration` case only where the marker
+expression names it, under a live judge. Without the second, a graded
+calibration case would have run in every gate and every rung.
+
+**One case per family, at P1.** Seven families carry exemplars, 186 in all;
+`tool_compliance` carries none and has no case. A family case reads as one
+claim about the judge, where one per rule would have put 40 cases into the
+inventory for one question. P1 under `P1_UNINTERPRETABLE_MEASUREMENT`, because
+a judge off its anchors makes every judged score of the run unreadable.
+
+**The channel is built from a plan naming live mode and no fixture root**,
+rather than from the graded plan with its flags turned off. With no root,
+`--fill-gaps` has nothing to read and recording has nowhere to write, so the
+property holds by construction rather than by two flags staying false.
+
+**The family mapping had to learn calibration.** `MQC_CAS_UNI_115415` requires
+every graded case a matrix row names to resolve to a family, and a calibration
+case dispatches no task and rule pair. `case_families_from_suite` now also
+reads the family a case passes to `assert_calibrated`; before that change the
+check named all seven cases.
+
+**The unit cases failed first**, at import, and an injection per guarded
+defect was caught by its case: another family's cases sent (`115032`), a case
+in tolerance listed (`115033`), a channel that records (`115034`), a harness
+event raised instead of skipped (`115035`), and an empty family passing
+(`115036`).
+
+### Digressions the user spotted, and the fix
+
+**The deselection was built in the harness and never called here.** The
+harness's own `conftest.py` calls `deselect_unrequested_calibration`, and this
+repository's did not, so `-m "evaluator or tool or sec"` collected the seven
+calibration cases. The first full unit run found it the expensive way:
+`MQC_CAS_UNI_115757` runs the P1 band in a subprocess, the calibration cases
+were in it, their channel is live by construction and the local credential
+file supplied a key, so the subprocess called the gemini judge until the
+case's 600 second timeout broke it. The channel records nothing, so no file
+changed. **Fixed** by calling it first among the selectors in `conftest.py`.
+`MQC_CAS_UNI_115037` failed first, naming all seven cases as collected by the
+graded selection; it collects in a separate process with `--collect-only`,
+which calls nothing.
+
+**Three checks read the new cases as something else.** `115711` reported
+helpers defined in the two case modules, now in `calibration_support.py` and
+`calibration_unit_support.py`. `115777` counted rung 2's graded invocations
+by layer marker and missed `-m calibration`, which grades by the judge and
+names it, so the check counts it. `115317` counted 102 cases per model, and
+the calibration cases face no model, so `graded_case_count` leaves out modules
+marked `calibration` and `calibration_case_count` checks the README's row for
+them.
+
+**Open: no registered code names a judge off its anchors.** A failing
+calibration case states the misplaced exemplars plainly and carries no code.
+Registering one is a harness taxonomy change, so it is raised rather than made.

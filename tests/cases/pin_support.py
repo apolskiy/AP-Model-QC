@@ -3,7 +3,7 @@
 """Support code for the harness-pin preconditions: GitHub API shapes and README figures.
 
 Created: 2026-10-05
-Last updated: 2026-11-09
+Last updated: 2026-11-10
 
 This file contains builders of the GitHub API shapes the resolver in
 ``tools/harness_pin.py`` reads, ``workflow_run``, ``unconcluded_runs`` and
@@ -301,6 +301,12 @@ def readme_figures(root: Path) -> list[tuple[str, str, int]]:
         ),
         ("requirements", r"\| (\d+) requirements, traced \|", traced),
         ("graded cases", r"\*\*(\d+) written\*\*", graded),
+        # THE JUDGE'S OWN CASES, apart from the model's, since 2026-11-10.
+        (
+            "calibration cases",
+            r"\| Judge calibration \| \*\*(\d+) cases",
+            calibration_case_count(root),
+        ),
         # THE SAME COUNT, A DIFFERENT CLAIM, and the one a reader of the front
         # page is actually asking about: how many cases each model faces.
         ("cases per model", r"\*\*(\d+) graded cases against each model\*\*", graded),
@@ -406,17 +412,53 @@ def graded_case_count(root: Path) -> int:
         root (Path): The repository root.
 
     Returns:
-        int: The count of graded case callables.
+        int: The count of graded case callables measuring a model. A module
+        marked ``calibration`` measures the judge and is counted by
+        ``calibration_case_count`` instead (``consumer_ci.md`` section 7.4.1).
     """
-    graded = 0
-    for source in sorted((root / "tests" / "cases").glob("*.py")):
-        if source.stem.startswith("mqc_uni_") or source.stem == "graded_support":
+    return sum(
+        cases for cases, calibrates in _graded_modules(root) if not calibrates
+    )
+
+
+def calibration_case_count(root: Path) -> int:
+    """Return the number of calibration cases, which measure the judge rather than a model.
+
+    Args:
+        root (Path): The repository root.
+
+    Returns:
+        int: The count of case callables in modules marked ``calibration``.
+    """
+    return sum(cases for cases, calibrates in _graded_modules(root) if calibrates)
+
+
+def _graded_modules(root: Path) -> list[tuple[int, bool]]:
+    """Return each graded module's case count and whether it is marked ``calibration``.
+
+    **Parsed rather than matched**, so a name inside a string literal is data.
+
+    Args:
+        root (Path): The repository root.
+
+    Returns:
+        list[tuple[int, bool]]: One entry per graded case module.
+    """
+    modules: list[tuple[int, bool]] = []
+    for source in sorted((root / "tests" / "cases").glob("mqc_*.py")):
+        if source.stem.startswith("mqc_uni_"):
             continue
         tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
-        graded += sum(
+        cases = sum(
             1
             for node in ast.walk(tree)
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
             and node.name.startswith("MQC_")
         )
-    return graded
+        calibrates = any(
+            isinstance(node, ast.Attribute) and node.attr == "calibration"
+            and isinstance(node.value, ast.Attribute) and node.value.attr == "mark"
+            for node in ast.walk(tree)
+        )
+        modules.append((cases, calibrates))
+    return modules

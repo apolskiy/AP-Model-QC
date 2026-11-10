@@ -3,12 +3,13 @@
 """Support code reading which corpus case each graded case observes, from the suite itself.
 
 Created: 2026-10-21
-Last updated: 2026-11-05
+Last updated: 2026-11-10
 
 This file contains ``case_rules_from_suite``, which parses every graded case module
 and returns the task and rule set each case dispatches through ``observe`` or
 ``observe_repeatedly``, ``case_families_from_suite``, which returns the
-evaluation family each case's rule set declares, and
+evaluation family each case's rule set declares, or the family a calibration
+case calibrates, and
 ``planted_mixed_population``, which builds a finding whose observations split
 into judged and unjudged from a copy of one case's recordings.
 
@@ -31,6 +32,10 @@ from tools.ticket_recordings import observation_outcomes, recorded_responses
 # and the rule set it observes. Parsed rather than matched, because a regex over
 # source lines also matches a docstring quoting the call.
 _OBSERVERS: Final[frozenset[str]] = frozenset({"observe", "observe_repeatedly"})
+
+# A CALIBRATION CASE'S CALL, whose string argument names the family it
+# calibrates (`consumer_ci.md` section 7.4.1).
+_CALIBRATOR: Final[str] = "assert_calibrated"
 
 
 def case_rules_from_suite(root: Path) -> dict[str, tuple[str, str]]:
@@ -104,11 +109,45 @@ def case_families_from_suite(root: Path) -> dict[str, str]:
         rules.rule_id: rules.families[0]
         for rules in shipped_corpus()[1] if rules.families
     }
-    return {
+    families = {
         case: family_by_rule[rule_id]
         for case, (_, rule_id) in case_rules_from_suite(root).items()
         if rule_id in family_by_rule
     }
+    families.update(_calibrated_families(root, set(family_by_rule.values())))
+    return families
+
+
+def _calibrated_families(root: Path, known: set[str]) -> dict[str, str]:
+    """Return the family each calibration case calibrates, from the call it makes.
+
+    A calibration case dispatches nothing, so it names no task and rule pair;
+    it names its family as a string argument to ``assert_calibrated``.
+    Design: ``consumer_ci.md`` section 7.4.1.
+
+    Args:
+        root (Path): This repository's root.
+        known (set[str]): The families the shipped rules declare first.
+
+    Returns:
+        dict[str, str]: Case name to the family it calibrates.
+    """
+    families: dict[str, str] = {}
+    for source in sorted((root / "tests" / "cases").glob("mqc_eval_*.py")):
+        tree = ast.parse(source.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.FunctionDef) or not node.name.startswith("MQC_"):
+                continue
+            for inner in ast.walk(node):
+                if not isinstance(inner, ast.Call):
+                    continue
+                name = getattr(inner.func, "id", None) or getattr(inner.func, "attr", None)
+                if name != _CALIBRATOR:
+                    continue
+                for entry in inner.args:
+                    if isinstance(entry, ast.Constant) and entry.value in known:
+                        families[node.name] = str(entry.value)
+    return families
 
 
 def planted_mixed_population(

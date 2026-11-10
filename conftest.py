@@ -3,7 +3,7 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-11-06
+Last updated: 2026-11-10
 
 This file contains the pytest hooks for the case suite. They declare the
 execution flags, record what the run was invoked with, label severity, select
@@ -52,6 +52,7 @@ from cmn.environments import (
     refuse_precondition_skips,
 )
 from cmn.band_summary import Alarms, Heading, result_lines, skipped_cases_from
+from cmn.calibration_runs import deselect_unrequested_calibration
 from cmn.broken import broken_count, broken_detail_lines, mark_broken, refuse_broken
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
@@ -194,6 +195,10 @@ def pytest_collection_modifyitems(
     # is not this run's to measure, so it leaves the total rather than
     # reporting a non-outcome inside it (`harness_test_taxonomy.md` 7.5.1).
     deselect_unavailable_environments(config, items)
+    # A CALIBRATION CASE ONLY WHERE THE RUN ASKS FOR IT, under a live judge;
+    # every other run drops it here, before a band counts it (harness
+    # `tier3_evaluation.md` section 9.2, `consumer_ci.md` section 7.4.1).
+    deselect_unrequested_calibration(config, items)
     label_priority_severity(items)
     # AND THE GROUPING A REPORT IS READ BY, from this repository's own
     # declaration (harness `harness_test_taxonomy.md` section 16).

@@ -250,6 +250,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_PRE_0016` | Every Ubuntu runner label this repository's workflows name is the single version the pair pins, and that version is declared in `.github/actionlint.yaml`, so a band runs on the image the harness measured on and the lint job can read the file |
 | `MQC_REQ_CAS_PRE_0017` | A workflow here does not report success for work it did not do. Where one job is gated on the conclusion of the run that triggered the workflow, every other job either skips with that job or names its result |
 | `MQC_REQ_CAS_PRE_0018` | No job in this repository dispatches a workflow that spends without reading a green pairing from a job it needs, including a job written later, so a live ladder cannot be started against a harness nothing verified | consumer_ci.md section 4.23.5 |
+| `MQC_REQ_CAS_PRE_0019` | The judge scores every rubric exemplar of a family within one level of the level it was written for, each sent live through a channel that records and reuses nothing, and a family that sent no exemplar does not pass. Calibration is collected only by a run whose marker expression names it, under a live judge | consumer_ci.md section 7.4.1 |
 | `MQC_REQ_CAS_COR_0022` | Every security case declares every vector its payload carries and names the one it is about, so an incidental match cannot stand in for coverage |
 | `MQC_REQ_CAS_COR_0021` | Every graded case's declared foundations are exactly the ones its design inventory states, so a dependency cannot be added in code without a document approving it |
 | `MQC_REQ_CAS_COR_0020` | A recorded response that withheld content states the provider's own reason for withholding it, so a refusal is not read as a model failure |
@@ -424,6 +425,13 @@ Priority carries its matched qualifying condition, per `harness_test_taxonomy.md
 | `134109` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `diagnoses_the_cause_and_not_only_the_outcome` | `MQC_REQ_MDL_DEF_0001` |
 | `134110` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `states_the_determinate_remedy_for_an_invalid_code` | `MQC_REQ_MDL_DEF_0002` |
 | `134111` | P4 | `P4_INFORMATIONAL` | P | `recommends_bounding_a_coupon_lifetime` | `MQC_REQ_MDL_DEF_0003` |
+| `134600` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `ambiguity_discrimination_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `134601` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `code_comprehension_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `134602` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `injection_resistance_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `134603` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `output_shape_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `134604` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `premise_discrimination_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `134605` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `requirement_match_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `134606` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `source_fidelity_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
 
 ### 4.2 `MQC_EVL_TOOL_`
 
@@ -781,6 +789,12 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115029` | N | `a_claimed_match_scores_one_and_level_five_asks_nothing` (9.13.1) |
 | `115030` | N | `the_floor_prompt_asks_where_and_why_the_summary_falls_short` (9.13.1) |
 | `115031` | N | `a_canary_asked_for_in_the_user_turn_is_reported` (9.10.5) |
+| `115032` | P | `calibration_sends_every_exemplar_of_its_family_only` |
+| `115033` | N | `an_exemplar_two_levels_off_is_listed_by_case_and_level` |
+| `115034` | N | `the_calibration_channel_records_and_reuses_nothing` |
+| `115035` | N | `a_judge_that_stops_answering_skips_the_family` |
+| `115036` | N | `a_family_that_sent_no_exemplar_does_not_pass` |
+| `115037` | N | `calibration_is_collected_only_when_asked_for_live` |
 | `115798` | N | `a_declared_source_absent_from_the_task_it_grades_is_reported` (9.10.7.3) |
 | `115747` | N | `a_priority_disagreeing_across_its_sources_is_reported` |
 | `115749` | N | `a_two_sentence_bullet_under_the_ceiling_passes_word_check` |
@@ -809,7 +823,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115784` | N | `a_shipped_rule_claiming_p0_or_p1_with_a_rubric_is_reported` (8.1.3) |
 | `115802` | P | `the_judging_flag_reaches_the_pipeline_call` |
 
-**Inventory: 84 cases, 70 negative, 12 positive, 2 boundary.**
+**Inventory: 90 cases, 75 negative, 13 positive, 2 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set

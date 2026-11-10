@@ -266,12 +266,11 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          pytest -m "evaluator or tool or sec" \
+          pytest -m calibration \
             --engine ${{ inputs.engine }} \
             --mode replay \
             --judge-mode live \
             --judge-engine ${{ inputs.judge }} \
-            -k calibration \
             --max-spend "${{ inputs.max_spend }}" \
             --junitxml=reports/junit_calibration.xml \
             --alluredir=reports/allure-results

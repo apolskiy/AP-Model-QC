@@ -40,6 +40,30 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Rung 2 calibrates the judge, one case per family, 2026-11-10
+
+**Why it was needed.** Rung 2 of `evaluate-engine.yml` selected calibration
+with `-k calibration`, and no case carried that name: calibration was designed
+and never built here. The step collected nothing and pytest exited 5, so both
+manual evaluations of 2026-11-09 failed there and the portfolio had no result
+to show.
+
+**What changed.** `tests/cases/mqc_eval_calibration.py` holds seven P1 cases,
+`MQC_EVL_EVAL_134600` to `134606`, one per family whose rules carry exemplars.
+Each sends every exemplar of its family to the judge through the harness
+`calibrate`, over a channel that records and reuses nothing, and fails listing
+each exemplar scored more than one level from its anchor. They carry the
+`calibration` marker, so the harness collects them only under `-m calibration`
+with a live judge: `conftest.py` calls the harness's
+`deselect_unrequested_calibration`, and rung 2's step now selects
+`-m calibration`. `MQC_CAS_UNI_115032` to `115036` hold the support code with
+a stand-in judge, and `115037` holds the selection by collecting in a separate
+process. The README's graded count stays the 95 each model faces, and the
+calibration cases are counted on a row of their own. `consumer_ci.md` section
+7.4.1 specifies it and `MQC_REQ_CAS_PRE_0019` traces it. The README counts 102
+graded cases specified, 259 preconditions, 238 requirements and the harness's
+1097 cases.
+
 ### A report publish no longer cancels one already deploying, 2026-11-09
 
 **Why it was needed.** Each of the four gates finishing starts a publish run,

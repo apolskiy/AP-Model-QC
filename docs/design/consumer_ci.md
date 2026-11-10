@@ -3162,6 +3162,52 @@ known-correct by construction and neither of two verdicts is. A job reporting
 the first alone would tell an operator that something moved and leave them
 without a way to decide what to do about it.
 
+#### 7.4.1 One calibration case per family, run only where rung 2 asks for it
+
+Added 2026-11-10. The rung 2 step that runs calibration selected it with
+`-k calibration`, and no case carried that name, so the step collected nothing
+and pytest exited 5. **Both manual evaluations failed there**, and the
+portfolio had no result to show.
+
+**`tests/cases/mqc_eval_calibration.py` holds one case per family**, seven in
+all, `MQC_EVL_EVAL_134600` to `134606`. A family whose shipped rules carry no
+exemplar has no case: `tool_compliance` grades by assertion alone.
+
+| What a case does | How |
+|---|---|
+| Takes every shipped case whose rule's first family is its own and whose rule carries a rubric | `calibration_support.calibrate_family` |
+| Sends each exemplar to the judge, alone with its criterion and its task's material | The harness `calibrate`, `tier3_evaluation.md` section 9.1 |
+| Passes when every exemplar scores within one level of the level it was written for | The harness tolerance |
+| Fails listing each exemplar scored further away, by case, criterion and level | `calibration_failures` |
+| Skips with the code where the judge stops answering | A harness event, never a finding about a model or a judge |
+| Fails where the family sent no exemplar at all | A case that measured nothing does not pass |
+
+**Its channel neither records nor reuses a judgement.** It is built from a plan
+naming live mode and no fixture root, so `--fill-gaps` has nothing to read and
+nothing is written: a calibration judgement is a measurement of today's judge,
+and a stored one would measure the judge on the day it was stored. The
+calibration identifiers already keep it off the graded judgement files
+(harness `tier3_evaluation.md` section 9.1.1); this keeps it off disk entirely.
+
+**It runs only under `-m calibration` with a live judge.** Each case carries
+the `calibration` marker beside `evaluator`, and `conftest.py` calls the
+harness's `deselect_unrequested_calibration` first among the selectors, which
+deselects it from every run whose marker expression does not name the marker
+and refuses one that does under a judge that is not live
+(`tier3_evaluation.md` section 9.2). So the
+gates and rungs 1 and 3, which select `-m "evaluator or tool or sec"`, never
+collect it, and rung 2's calibration step selects `-m calibration`.
+
+**The README counts them apart.** "Graded cases against each model" is the
+95 a model faces; the calibration cases measure the judge, and
+`pin_support.calibration_case_count` counts them on a row of their own, from
+the modules marked `calibration`.
+
+**P1, under `P1_UNINTERPRETABLE_MEASUREMENT`.** A judge that no longer means
+what the anchors say makes every judged score uninterpretable, so a failure
+blocks the rung. Its cost is one judge call per exemplar, 186 at the time of
+writing, paced by the judge's roster spacing.
+
 ### 7.5 A red rung 2 does not refresh anything
 
 **Drift that changes no outcome** is recorded, and the judgements may be

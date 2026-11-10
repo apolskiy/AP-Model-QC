@@ -3,7 +3,7 @@
 """Unit preconditions for whether a graded run says which judge graded it.
 
 Created: 2026-10-21
-Last updated: 2026-10-24
+Last updated: 2026-11-10
 
 This file contains one case over the ladder and its callers: rungs 2 and 3 name
 the judge on every graded invocation and carry it in their job names, rung 1
@@ -61,6 +61,9 @@ _JUDGE_REFERENCE = "inputs.judge"
 # started by hand and is counted, so it never carries this. Section 7.7.4.
 _ON_DEMAND = "-on-demand"
 
+# THE SELECTION RUNG 2'S CALIBRATION STEP MAKES, which names no layer marker.
+_CALIBRATION_SELECTION = "-m calibration"
+
 # THE ENGINES BOTH JUDGES SCORE, read from the roster rather than listed.
 _ROSTERED_ENGINES = frozenset({"claude", "gemini", "grok", "openai"})
 
@@ -109,7 +112,12 @@ class TestMQCJudgeDimension:
                              ("model", True)):
             lines = _run_lines(jobs[rung], _repository_root())
             named = [line for line in lines if _JUDGE_FLAG in line]
-            graded = [line for line in lines if _selects_a_graded_marker(line)]
+            # A CALIBRATION STEP GRADES TOO, by the judge alone, so it names
+            # the judge like any other (`consumer_ci.md` section 7.4.1).
+            graded = [
+                line for line in lines
+                if _selects_a_graded_marker(line) or _CALIBRATION_SELECTION in line
+            ]
             assert graded, f"rung {rung!r} makes no graded invocation to check"
             if grades:
                 assert len(named) == len(graded), (

@@ -17,11 +17,12 @@ changed that day and whose recordings answer the old ones.
 
 | Piece | State |
 |---|---|
-| `docs/testing/model_evaluation_test_plan.md` | 95 graded cases specified |
-| `docs/testing/rtm_model.csv` | 237 requirements, traced |
+| `docs/testing/model_evaluation_test_plan.md` | 102 graded cases specified: the 95 measured against each model, and 7 calibrating the judge |
+| `docs/testing/rtm_model.csv` | 238 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 83 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **253 cases, 253 passing**, each recording its numbered steps |
+| Preconditions (`CAS`, `UNI`) | **259 cases, 259 passing**, each recording its numbered steps |
+| Judge calibration | **7 cases, one per family with exemplars**, sending each of 186 exemplars to the live judge in rung 2 of `evaluate-engine.yml` and nowhere else (`consumer_ci.md` section 7.4.1) |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a scheduled caller of its own, over two reusable workflows plus debugging on demand |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **95 written**: 46 evaluator, 41 security, 8 tool |
@@ -133,7 +134,7 @@ and a pass with a warning is a pass in every band.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 1080 harness test cases, each executed once per run, and 253 of 253 preconditions pass;
+separately from what it measures. 1097 harness test cases, each executed once per run, and 259 of 259 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate
