@@ -134,7 +134,7 @@ and a pass with a warning is a pass in every band.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 1106 harness test cases, each executed once per run, and 263 of 263 preconditions pass;
+separately from what it measures. 1108 harness test cases, each executed once per run, and 263 of 263 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate

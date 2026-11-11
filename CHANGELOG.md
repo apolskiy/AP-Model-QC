@@ -40,6 +40,19 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The probe asks every engine the harness supports, 2026-11-11
+
+**Why it was needed.** Every probe run asked no engine and reported no change:
+the harness probe looked for its roster at `config/engines.yaml` in the
+working directory, which this repository does not carry, and read the absent
+file as an empty roster. `config/model_baseline.json` stayed `{}`.
+
+**What changed.** Nothing in this repository. The harness probe now walks the
+roster the installed harness carries and exits 3 on a roster naming no engine
+(harness `tier2_execution.md` section 5.3.1), and this repository's probe
+picks that up through its pin on harness `main`. The README counts the
+harness's 1108 cases.
+
 ### The probe runs weekly from an environment of its own, 2026-11-11
 
 **Why it was needed.** The probe job named the `live` environment, whose
