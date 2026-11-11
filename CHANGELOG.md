@@ -40,6 +40,31 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Calibration is the CAL layer, and a family's judged cases rest on it, 2026-11-11
+
+**Why it was needed.** A calibration case was a graded P1 case, so a judge off
+its anchors failed with exit 1, the status that means a model underperformed,
+and a red rung 2 pointed at the candidate engine. Rung 2 also ran calibration
+and judging as two steps, so a family whose judge had just failed calibration
+was still judged and reported, and nobody could read those scores. And the
+judge's calls counted against nothing: `--max-spend` held the candidate's
+spend only, and rung 2 calls no candidate.
+
+**What changed.** The seven cases moved to `tests/cases/mqc_cal_calibration.py`
+as `MQC_EVL_CAL_174600` to `174606`, in the harness `CAL` layer, with no
+priority and no `evaluator` marker; `134600` to `134606` are retired. A
+failure carries `QC_HARNESS_JUDGE_UNCALIBRATED` and exits 3. `conftest.py`
+calls `calibration_support.rest_on_family_calibration`, which makes each
+judged case depend on its family's calibration case where a run collects one,
+so a failed calibration skips that family's judged cases and no other's. Rung
+2 is one invocation, `-m "calibration or evaluator or tool or sec"`. Both judge
+channels carry the run's dispatch session as their budget, so judge calls count
+against `--max-spend`. `MQC_CAS_UNI_115038` to `115040` hold the wiring, the
+budget and the failure code; `MQC_REQ_CAS_PRE_0020` and `0021` trace them;
+`consumer_ci.md` sections 7.4.1 to 7.4.3 specify them. The README counts 95
+graded cases specified and 7 calibration cases, 262 preconditions, 240
+requirements and the harness's 1106 cases.
+
 ### Rung 2 calibrates the judge, one case per family, 2026-11-10
 
 **Why it was needed.** Rung 2 of `evaluate-engine.yml` selected calibration

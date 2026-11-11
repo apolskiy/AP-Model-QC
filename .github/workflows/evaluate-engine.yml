@@ -257,7 +257,12 @@ jobs:
             "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
           python -m pip install --quiet --no-deps --editable "."
 
-      - name: Calibration, against the anchors the exemplars were written for
+      # CALIBRATION AND THE JUDGED CASES IN ONE INVOCATION, so each family's
+      # judged cases rest on its calibration case: a family whose judge failed
+      # calibration is skipped rather than reported, and the run exits 3
+      # (`consumer_ci.md` section 7.4.2). The judge's calls count against
+      # --max-spend, as the candidate's would (section 7.4.3).
+      - name: Calibration and the graded layers, stored responses judged live
         env:
           # EVERY JUDGE'S KEY IS OFFERED AND THE NAMED ONE READS ITS OWN, the
           # arrangement rung 3 already uses for candidates. A judge whose key
@@ -266,26 +271,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          pytest -m calibration \
-            --engine ${{ inputs.engine }} \
-            --mode replay \
-            --judge-mode live \
-            --judge-engine ${{ inputs.judge }} \
-            --max-spend "${{ inputs.max_spend }}" \
-            --junitxml=reports/junit_calibration.xml \
-            --alluredir=reports/allure-results
-
-      - name: Graded layers, stored responses judged live
-        if: always()
-        env:
-          # EVERY JUDGE'S KEY IS OFFERED AND THE NAMED ONE READS ITS OWN, the
-          # arrangement rung 3 already uses for candidates. A judge whose key
-          # is absent refuses at preflight, which is our configuration rather
-          # than a finding (section 4.17.2).
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          pytest -m "evaluator or tool or sec" \
+          pytest -m "calibration or evaluator or tool or sec" \
             --engine ${{ inputs.engine }} \
             --mode replay \
             --judge-mode live \

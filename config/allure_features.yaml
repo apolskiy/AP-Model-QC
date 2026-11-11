@@ -53,7 +53,7 @@ modules:
   tests/cases/mqc_eval_premise.py: Premise discrimination
   tests/cases/mqc_eval_requirement_match.py: Requirement matching
   tests/cases/mqc_tool_compliance.py: Tool compliance
-  tests/cases/mqc_eval_calibration.py: Judge calibration
+  tests/cases/mqc_cal_calibration.py: Judge calibration
   tests/cases/mqc_sec_diagnostics.py: Model security
   tests/cases/mqc_sec_disclosure.py: Model security
   tests/cases/mqc_sec_hidden_passage.py: Model security

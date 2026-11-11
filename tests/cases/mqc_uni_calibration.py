@@ -3,15 +3,18 @@
 """Unit preconditions on the support code that calibrates the judge, one family at a time.
 
 Created: 2026-11-10
-Last updated: 2026-11-10
+Last updated: 2026-11-11
 
-This file contains ``TestMQCCalibrationSupport``, five cases on
+This file contains ``TestMQCCalibrationSupport``, nine cases on
 ``tests/cases/calibration_support.py``. They check that a family's calibration
 sends every exemplar of that family's rubrics and nothing from another family,
 that an exemplar scored two levels away is listed by its case, criterion and
 level, that the calibration channel is built from a plan that records and
 reuses nothing, that a judge which stops answering skips the family with its
-code, and that a family which sent no exemplar does not pass.
+code, that a family which sent no exemplar does not pass, that calibration is
+collected only where a run asks for it live, that a family's judged cases
+rest on its calibration case, that both judge channels spend against the
+run's ceiling, and that a misplaced exemplar fails with the harness code.
 
 **These run in the ``unit`` precondition gate**, ahead of the calibration
 cases they support, and call no provider: a stand-in judge answers in place of
@@ -32,33 +35,61 @@ Specified by ``docs/design/consumer_ci.md`` section 7.4.1.
 #   115035  a_judge_that_stops_answering_skips_the_family
 #   115036  a_family_that_sent_no_exemplar_does_not_pass
 #   115037  calibration_is_collected_only_when_asked_for_live
+#   115038  a_judged_case_rests_on_its_family_calibration_case
+#   115039  both_judge_channels_spend_against_the_run_ceiling
+#   115040  a_misplaced_exemplar_fails_with_the_uncalibrated_code
 # ------------------------------------------------------------ end of cases
 
 from typing import Any
 
 import pytest
 
+from cmn.dependencies import declared_dependencies, reset_dependency_state
 from cmn.grouping import story
 
-from tests.cases import calibration_support
+from tests.cases import calibration_support, suite_support
 from tests.cases.calibration_support import (
+    assert_calibrated,
     calibrate_family,
     calibration_failures,
     calibration_plan,
     family_rubric_cases,
+    rest_on_family_calibration,
 )
 from tests.cases.calibration_unit_support import (
+    CollectedCase,
     StandInJudge,
     StoppedJudge,
+    built_plans,
     collect_calibration,
+    collection_calls,
     rubric_exemplars,
 )
+from tests.cases.graded_support import (
+    dispatch_session,
+    judge_binding,
+    repository_root,
+    shipped_corpus,
+)
+from tests.cases.instrument_support import SimulatedGradedConfig
+from tests.cases.suite_support import case_rules_from_suite, judged_case_families
 
 pytestmark = pytest.mark.unit
 
 _FAMILY = "ambiguity_discrimination"
 _UNCALIBRATED_FAMILY = "tool_compliance"
-_CALIBRATION_IDS = tuple(f"MQC_EVL_EVAL_1346{index:02d}" for index in range(7))
+_CALIBRATION_IDS = tuple(f"MQC_EVL_CAL_1746{index:02d}" for index in range(7))
+_FAMILY_CALIBRATION = (
+    "MQC_EVL_CAL_174600_ambiguity_discrimination_exemplars_score_at_their_levels"
+)
+
+# RUNG 2'S ONE SELECTION, calibration and the judged layers together, so the
+# cascade spans both (`consumer_ci.md` section 7.4.2).
+_RUNG_TWO = "calibration or evaluator or tool or sec"
+
+# A CEILING NO OTHER CASE SETS, so the cached channel this case builds is
+# keyed apart from every channel a graded case builds.
+_CEILING = 7.25
 
 
 class TestMQCCalibrationSupport:
@@ -205,22 +236,166 @@ class TestMQCCalibrationSupport:
         Returns:
             None
         """
-        status, output = collect_calibration("evaluator or tool or sec", "--mode", "replay")
-        collected = [case for case in _CALIBRATION_IDS if case in output]
-        assert not collected, (
-            f"the graded selection collected calibration cases {collected}, so a gate "
-            f"or rung 1 or 3 would call a live judge: exit {status}"
-        )
+        # AN EMPTY EXPRESSION SELECTS EVERYTHING, so only the harness hook
+        # keeps the cases out of it, which the graded selection alone would not
+        # show: the cases carry no graded marker for it to miss.
+        for markexpr in ("", "evaluator or tool or sec"):
+            status, output = collect_calibration(
+                markexpr, "--mode", "replay", "--judge-mode", "live"
+            )
+            collected = [case for case in _CALIBRATION_IDS if case in output]
+            assert not collected, (
+                f"-m {markexpr!r} collected calibration cases {collected}, so a gate "
+                f"or rung 1 or 3 would call a live judge: exit {status}"
+            )
 
-        status, output = collect_calibration("calibration", "--mode", "replay")
+        status, output = collect_calibration(_RUNG_TWO, "--mode", "replay")
         assert status != 0 and "QC_HARNESS_PARSER_ERROR" in output, (
             f"asking for calibration under a replayed judge was not refused: exit {status}"
         )
 
         status, output = collect_calibration(
-            "calibration", "--mode", "replay", "--judge-mode", "live"
+            _RUNG_TWO, "--mode", "replay", "--judge-mode", "live"
         )
-        assert status == 0, f"asking for calibration live did not collect: exit {status}"
+        assert status == 0, f"rung 2's selection did not collect: exit {status}"
         assert all(case in output for case in _CALIBRATION_IDS), (
-            "asking for calibration under a live judge did not collect all seven cases"
+            "rung 2's selection under a live judge did not collect all seven cases"
         )
+
+    @story("A family's judged cases rest on its calibration")
+    def MQC_CAS_UNI_115038_a_judged_case_rests_on_its_family_calibration_case(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A judged case depends on its family's collected calibration case, and nothing else does.
+
+        Design: ``consumer_ci.md`` section 7.4.2.
+
+        Args:
+            monkeypatch (pytest.MonkeyPatch): Makes building the mapping fail,
+                to show a run collecting no calibration case never builds it.
+
+        Returns:
+            None
+        """
+        root = repository_root()
+        rules = {rules.rule_id: rules for rules in shipped_corpus()[1]}
+        suite = case_rules_from_suite(root)
+        judged = sorted(
+            name for name, (_, rule_id) in suite.items()
+            if rules[rule_id].rubric is not None and rules[rule_id].families
+            and rules[rule_id].families[0] == _FAMILY
+        )
+        unjudged = sorted(
+            name for name, (_, rule_id) in suite.items() if rules[rule_id].rubric is None
+        )
+        assert judged and unjudged, "the corpus has no judged or no unjudged case to wire"
+
+        # 1. THE MAPPING NAMES THE CALIBRATION CASE AND EVERY JUDGED CASE, and
+        # no case a judge never reads.
+        families = judged_case_families(root)
+        assert families.get(_FAMILY_CALIBRATION) == _FAMILY
+        assert all(families.get(name) == _FAMILY for name in judged), (
+            f"judged {_FAMILY} cases missing from the mapping: "
+            f"{[name for name in judged if name not in families]}"
+        )
+        assert not [name for name in unjudged if name in families], (
+            "a case graded by assertion alone was mapped to a family"
+        )
+
+        # 2. THE COLLECTED JUDGED CASE RESTS ON THE CALIBRATION CASE.
+        items = [
+            CollectedCase(judged[0], "evaluator"),
+            CollectedCase(unjudged[0], "evaluator"),
+            CollectedCase(_FAMILY_CALIBRATION, "calibration"),
+        ]
+        reset_dependency_state()
+        try:
+            assert rest_on_family_calibration(items, root) == 1
+            assert declared_dependencies(items[0]) == ["174600"]
+            assert not declared_dependencies(items[1])
+            assert items[2].get_closest_marker("base") is not None
+
+            # 3. A RUN COLLECTING NO CALIBRATION CASE NEVER BUILDS THE MAPPING.
+            def _refused(root_given: Any) -> dict[str, str]:
+                raise LookupError(f"the mapping was built for {root_given}")
+
+            monkeypatch.setattr(suite_support, "judged_case_families", _refused)
+            alone = [CollectedCase(judged[0], "evaluator")]
+            assert rest_on_family_calibration(alone, root) == 0
+            assert not declared_dependencies(alone[0])
+        finally:
+            reset_dependency_state()
+
+        # 4. AND THE COLLECTION HOOK WIRES IT, after every selector and before
+        # the cascade is ordered.
+        calls = collection_calls(root)
+        assert "rest_on_family_calibration" in calls, (
+            "conftest.py's collection hook does not wire judged cases to calibration"
+        )
+        wired = calls.index("rest_on_family_calibration")
+        assert calls.index("select_named_tests") < wired < calls.index(
+            "arrange_dependencies"
+        ), f"the wiring runs out of order: {calls}"
+
+    @story("The judge spends against the run's ceiling")
+    def MQC_CAS_UNI_115039_both_judge_channels_spend_against_the_run_ceiling(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The graded and calibration channels carry the run's session as their budget.
+
+        Design: ``consumer_ci.md`` section 7.4.3.
+
+        Args:
+            monkeypatch (pytest.MonkeyPatch): Replaces both channel builders.
+
+        Returns:
+            None
+        """
+        plans = built_plans(monkeypatch)
+        config = SimulatedGradedConfig("claude", judge_mode="live", max_spend=_CEILING)
+        session = dispatch_session(config)
+        assert session.max_spend == _CEILING
+
+        judge_binding(config, "gemini")
+        calibration_support.calibration_channel.cache_clear()
+        try:
+            calibration_support.calibration_channel("claude", False, "gemini", _CEILING)
+        finally:
+            calibration_support.calibration_channel.cache_clear()
+
+        assert len(plans) == 2, f"{len(plans)} channels were built, not the graded and calibration"
+        for which, plan in zip(("graded", "calibration"), plans):
+            assert plan.budget is session, (
+                f"the {which} judge channel spends against "
+                f"{plan.budget!r}, not the run's session, so --max-spend does not count it"
+            )
+
+    @story("A misplaced exemplar fails with the harness code")
+    def MQC_CAS_UNI_115040_a_misplaced_exemplar_fails_with_the_uncalibrated_code(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A misplaced family fails with QC_HARNESS_JUDGE_UNCALIBRATED, naming each exemplar.
+
+        Design: ``consumer_ci.md`` section 7.4.1.
+
+        Args:
+            monkeypatch (pytest.MonkeyPatch): Answers the live calibration.
+
+        Returns:
+            None
+        """
+        calibrated = calibrate_family(
+            _FAMILY, StandInJudge(lambda level: 5 if level == 1 else level),
+            judge_engine="stand-in",
+        )
+        failures = calibration_failures(calibrated)
+        assert failures, "the stand-in misplaced nothing"
+        monkeypatch.setattr(
+            calibration_support, "calibrate_family_live", lambda config, family: calibrated
+        )
+
+        with pytest.raises(AssertionError) as raised:
+            assert_calibrated(None, _FAMILY)
+        message = str(raised.value)
+        assert message.startswith("QC_HARNESS_JUDGE_UNCALIBRATED: "), message[:120]
+        assert all(failure in message for failure in failures)

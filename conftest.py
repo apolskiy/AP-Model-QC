@@ -3,11 +3,12 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-11-10
+Last updated: 2026-11-11
 
 This file contains the pytest hooks for the case suite. They declare the
 execution flags, record what the run was invoked with, label severity, select
-the requested bands and order the cascade at collection, skip a case whose
+the requested bands, rest each judged case on its family's calibration case
+and order the cascade at collection, skip a case whose
 foundation did not hold, record each assertion as a verification step, and at
 the end of the session publish what the run established, refuse a skipped
 precondition or a broken case, and print the band lines.
@@ -179,7 +180,7 @@ def pytest_configure(config: Any) -> None:
 def pytest_collection_modifyitems(
     session: pytest.Session, config: pytest.Config, items: list[pytest.Item]
 ) -> None:
-    """Label severity, select the requested bands, then order the cascade.
+    """Label severity, select the bands, rest judged cases on calibration, order the cascade.
 
     Args:
         session (pytest.Session): The run, which an unresolved selection
@@ -217,6 +218,13 @@ def pytest_collection_modifyitems(
     select_modules(config, items)
     select_traced_cases(config, items)
     select_named_tests(config, items)
+    # A FAMILY'S JUDGED CASES REST ON ITS CALIBRATION CASE, where the run
+    # collected one: after every selector, so a dropped case is not wired, and
+    # before the cascade is ordered (`consumer_ci.md` section 7.4.2). Loaded
+    # here, after the rewrite registration, as `pytest_sessionstart` loads it.
+    importlib.import_module("tests.cases.calibration_support").rest_on_family_calibration(
+        items, config.rootpath
+    )
     # ONE EXECUTION PER IDENTIFIER, judged on what will run. An identifier
     # collected twice refuses the run (harness design section 7.8.5).
     refuse_repeated_cases(items)

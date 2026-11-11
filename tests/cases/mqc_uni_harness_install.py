@@ -3,7 +3,7 @@
 """Unit preconditions for how this case set reaches the installed harness, never by path.
 
 Created: 2026-09-28
-Last updated: 2026-11-02
+Last updated: 2026-11-11
 
 This file contains ten cases. ``TestMQCHarnessLocatedByInstall`` checks no file locates
 harness material by directory adjacency and that the engine roster resolves from the
@@ -232,7 +232,7 @@ class TestMQCOptionsReachTheHarness:
         Returns:
             None
         """
-        built = _channel("gemini", "live", True, False, True, "openai")
+        built = _channel("gemini", "live", True, False, True, ("openai", 0.0))
 
         assert built.plan.candidate_engine == "openai", (
             "the channel was built from a plan naming no candidate engine, so "
@@ -241,12 +241,12 @@ class TestMQCOptionsReachTheHarness:
 
         # AND THE TWO CONFIGURATIONS ARE DISTINCT, which the cache must respect.
         assert (
-            _channel("gemini", "live", True, False, True, "gemini").plan
+            _channel("gemini", "live", True, False, True, ("gemini", 0.0)).plan
             .candidate_engine
             == "gemini"
         )
         assert (
-            _channel("gemini", "live", True, False, True, "openai").plan
+            _channel("gemini", "live", True, False, True, ("openai", 0.0)).plan
             .candidate_engine
             == "openai"
         )

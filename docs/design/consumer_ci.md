@@ -3169,9 +3169,18 @@ Added 2026-11-10. The rung 2 step that runs calibration selected it with
 and pytest exited 5. **Both manual evaluations failed there**, and the
 portfolio had no result to show.
 
-**`tests/cases/mqc_eval_calibration.py` holds one case per family**, seven in
-all, `MQC_EVL_EVAL_134600` to `134606`. A family whose shipped rules carry no
+**`tests/cases/mqc_cal_calibration.py` holds one case per family**, seven in
+all, `MQC_EVL_CAL_174600` to `174606`. A family whose shipped rules carry no
 exemplar has no case: `tool_compliance` grades by assertion alone.
+
+**They are the harness `CAL` layer since 2026-11-11** (harness
+`tier3_evaluation.md` section 9.3). They were written as graded P1 cases,
+`MQC_EVL_EVAL_134600` to `134606`, and a judge off its anchors failed with
+exit 1, the status that means a model underperformed, so a red rung 2 pointed
+at the candidate engine. Those identifiers are retired. A calibration case
+carries no priority and no `evaluator` marker, and its failure carries
+`QC_HARNESS_JUDGE_UNCALIBRATED`, built by the harness
+`uncalibrated_message`, and exits 3.
 
 | What a case does | How |
 |---|---|
@@ -3189,24 +3198,80 @@ and a stored one would measure the judge on the day it was stored. The
 calibration identifiers already keep it off the graded judgement files
 (harness `tier3_evaluation.md` section 9.1.1); this keeps it off disk entirely.
 
-**It runs only under `-m calibration` with a live judge.** Each case carries
-the `calibration` marker beside `evaluator`, and `conftest.py` calls the
-harness's `deselect_unrequested_calibration` first among the selectors, which
-deselects it from every run whose marker expression does not name the marker
-and refuses one that does under a judge that is not live
-(`tier3_evaluation.md` section 9.2). So the
-gates and rungs 1 and 3, which select `-m "evaluator or tool or sec"`, never
-collect it, and rung 2's calibration step selects `-m calibration`.
+**It runs only where a marker expression names `calibration`, with a live
+judge.** Each case carries the `calibration` marker alone, and `conftest.py`
+calls the harness's `deselect_unrequested_calibration` first among the
+selectors, which deselects it from every run whose marker expression does not
+name the marker and refuses one that does under a judge that is not live
+(`tier3_evaluation.md` section 9.2). So the gates and rungs 1 and 3, which
+select `-m "evaluator or tool or sec"`, never collect it, and rung 2 selects
+`-m "calibration or evaluator or tool or sec"` in one invocation (section
+7.4.2).
 
 **The README counts them apart.** "Graded cases against each model" is the
 95 a model faces; the calibration cases measure the judge, and
 `pin_support.calibration_case_count` counts them on a row of their own, from
 the modules marked `calibration`.
 
-**P1, under `P1_UNINTERPRETABLE_MEASUREMENT`.** A judge that no longer means
-what the anchors say makes every judged score uninterpretable, so a failure
-blocks the rung. Its cost is one judge call per exemplar, 186 at the time of
-writing, paced by the judge's roster spacing.
+**A failure exits 3, and a skip does too.** A judge that no longer means what
+the anchors say makes every judged score of its family uninterpretable, which
+is an instrument defect rather than a model finding. Its cost is one judge
+call per exemplar, 186 at the time of writing, paced by the judge's roster
+spacing and counted against `--max-spend` (section 7.4.3).
+
+#### 7.4.2 A family's judged cases rest on its calibration case, in one invocation
+
+Added 2026-11-11. **A failed calibration exits 3 and did not stop its family
+being judged.** Rung 2 ran calibration and the judged cases as two steps, so
+the second step reported a pass or a fail for every judged case of a family
+whose judge had just failed it, and nobody could read either.
+
+**Each judged case depends on its family's calibration case**, through the
+harness `rest_judged_cases_on_calibration` (harness `tier3_evaluation.md`
+section 9.4). `calibration_support.rest_on_family_calibration` hands it the
+collected items and a mapping from case to family, which
+`suite_support.judged_case_families` builds from the corpus.
+
+| Case | In the mapping |
+|---|---|
+| A calibration case | Yes, with the family it calibrates |
+| A graded case whose rule carries a rubric | Yes, with its rule's first family |
+| A graded case whose rule carries none | No: it is graded by assertion alone and runs whatever calibration found |
+
+**Built only where a calibration case was collected.** Every gate and rungs 1
+and 3 collect none, so they neither parse the suite for the mapping nor gain a
+dependency. `conftest.py` calls it after every selector and before
+`arrange_dependencies`, which orders each calibration case ahead of the cases
+resting on it.
+
+**So rung 2 is one pytest invocation.** The cascade reads outcomes within a
+session, and two steps would need `--carry-outcomes` to pass the calibration
+outcomes to the judged step. One invocation is simpler and reports both in one
+artifact. A family whose calibration held is judged and reported; a family
+whose calibration failed is skipped with `QC_HARNESS_DEPENDENCY_UNMET`; and
+the run exits 3 for the failed calibration.
+
+| Calibration of a family | Its judged cases | Rung 2 exits |
+|---|---|---|
+| Held | Judged and reported | As the judged cases decide |
+| Failed, `QC_HARNESS_JUDGE_UNCALIBRATED` | Skipped, `QC_HARNESS_DEPENDENCY_UNMET` | 3 |
+| Skipped, the judge unreachable | Skipped, `QC_HARNESS_DEPENDENCY_UNMET` | 3 |
+
+#### 7.4.3 Both judge channels spend against the run's ceiling
+
+Added 2026-11-11. **The judge spent outside `--max-spend`.** The ceiling was
+the candidate session's (section 4.15), and the graded judge channel and the
+calibration channel each carried a plan with no budget, so rung 2, which calls
+no candidate, ran with a ceiling nothing counted against.
+
+**Each plan carries the run's session** as its `budget` (harness
+`tier2_execution.md` section 7.7.3). `graded_support._channel` and
+`calibration_support.calibration_channel` take the candidate engine and the
+ceiling, which are hashable and so fit their caches, and look the session up
+through `graded_support.run_session`, the cache `dispatch_session` reads. So
+the judge and the candidate draw on one total, and a judge call that would
+start past the ceiling is refused with `QC_HARNESS_BUDGET_EXHAUSTED` before
+anything is sent.
 
 ### 7.5 A red rung 2 does not refresh anything
 

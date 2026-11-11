@@ -8830,3 +8830,52 @@ them.
 **Open: no registered code names a judge off its anchors.** A failing
 calibration case states the misplaced exemplars plainly and carries no code.
 Registering one is a harness taxonomy change, so it is raised rather than made.
+Closed 2026-11-11 by the entry below.
+
+## 2026-11-11: Calibration is the CAL layer, and a family's judged cases rest on it
+
+**What was wrong.** Three things, each found by reading what a red rung 2
+would report. A calibration case was graded at P1, so a judge off its anchors
+exited 1 and the run's status blamed the candidate engine. Calibration and
+judging were two steps, so a family whose judge failed calibration was judged
+anyway and its scores reported. And the judge spent outside `--max-spend`,
+which only the candidate's session counted. **Why.** Calibration was built as
+one more graded layer, and the harness had no ungraded blocking layer, no
+dependency from a judged case to its calibration, and no budget on a judge
+plan. The harness gained all three first, in four commits.
+
+**The cases moved rather than changed.** Same seven families, same support
+code, renumbered `174600` to `174606` in `mqc_cal_calibration.py`; the old
+identifiers are retired, never rebound. The CAL module carries only the
+`calibration` marker, so no graded selection can name it by accident.
+
+**The mapping is built only where a calibration case was collected.** Every
+gate and rungs 1 and 3 collect none, and `rest_on_family_calibration` returns
+before parsing the suite, so they pay nothing. Where a run does collect one,
+`suite_support.judged_case_families` maps calibration cases and cases whose
+rule carries a rubric; a case graded by assertion alone is left out, since a
+judge's calibration says nothing about it.
+
+**The judge's budget is looked up, not passed.** Both channels are cached and
+a session is not hashable, so each takes the candidate engine and the ceiling
+and reads the session from the cache `dispatch_session` reads. `_channel`
+takes the two as one pair, which kept it within pylint's six arguments.
+`MQC_CAS_UNI_115206` called it with the candidate alone and broke on the
+unpacking, so its three calls pass the pair; what it asserts is unchanged.
+
+**Rung 2 became one invocation**, so the cascade reads calibration outcomes in
+the same session as the judged cases. `--carry-outcomes` across two steps
+would have worked too, at the cost of a second artifact and a second place to
+get the order wrong.
+
+**The new cases failed first**, against stubs, on behaviour: no mapping, no
+budget, the old failure message, and the module not yet renamed. Eight
+injections were each caught by their case: the conftest call removed, an
+unjudged case mapped, the mapping built with no calibration collected, nothing
+wired (`115038`); either channel carrying no budget, the graded channel
+ignoring the ceiling (`115039`); the failure without its code (`115040`).
+
+**The README row lost its label once.** The calibration row was relabelled
+with its layer, and `MQC_CAS_UNI_115317` reads the count after the exact label
+"Judge calibration", so it reported the README as stating no calibration
+cases. **Fixed** by keeping the label and naming the layer in the text.

@@ -251,6 +251,8 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_PRE_0017` | A workflow here does not report success for work it did not do. Where one job is gated on the conclusion of the run that triggered the workflow, every other job either skips with that job or names its result |
 | `MQC_REQ_CAS_PRE_0018` | No job in this repository dispatches a workflow that spends without reading a green pairing from a job it needs, including a job written later, so a live ladder cannot be started against a harness nothing verified | consumer_ci.md section 4.23.5 |
 | `MQC_REQ_CAS_PRE_0019` | The judge scores every rubric exemplar of a family within one level of the level it was written for, each sent live through a channel that records and reuses nothing, and a family that sent no exemplar does not pass. Calibration is collected only by a run whose marker expression names it, under a live judge | consumer_ci.md section 7.4.1 |
+| `MQC_REQ_CAS_PRE_0020` | Where a run collects a family's calibration case, every case of that family whose rule carries a rubric depends on it, so a calibration that does not hold skips its family's judged cases and no other family's; a run collecting no calibration case gains no dependency, and a calibration failure carries QC_HARNESS_JUDGE_UNCALIBRATED | consumer_ci.md section 7.4.2 |
+| `MQC_REQ_CAS_PRE_0021` | The graded judge channel and the calibration channel each carry the run's dispatch session as their budget, so every judge call is counted against --max-spend with the candidate's | consumer_ci.md section 7.4.3 |
 | `MQC_REQ_CAS_COR_0022` | Every security case declares every vector its payload carries and names the one it is about, so an incidental match cannot stand in for coverage |
 | `MQC_REQ_CAS_COR_0021` | Every graded case's declared foundations are exactly the ones its design inventory states, so a dependency cannot be added in code without a document approving it |
 | `MQC_REQ_CAS_COR_0020` | A recorded response that withheld content states the provider's own reason for withholding it, so a refusal is not read as a model failure |
@@ -425,13 +427,13 @@ Priority carries its matched qualifying condition, per `harness_test_taxonomy.md
 | `134109` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `diagnoses_the_cause_and_not_only_the_outcome` | `MQC_REQ_MDL_DEF_0001` |
 | `134110` | P2 | `P2_DOCUMENTED_BEHAVIOUR` | N | `states_the_determinate_remedy_for_an_invalid_code` | `MQC_REQ_MDL_DEF_0002` |
 | `134111` | P4 | `P4_INFORMATIONAL` | P | `recommends_bounding_a_coupon_lifetime` | `MQC_REQ_MDL_DEF_0003` |
-| `134600` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `ambiguity_discrimination_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
-| `134601` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `code_comprehension_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
-| `134602` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `injection_resistance_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
-| `134603` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `output_shape_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
-| `134604` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `premise_discrimination_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
-| `134605` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `requirement_match_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
-| `134606` | P1 | `P1_UNINTERPRETABLE_MEASUREMENT` | P | `source_fidelity_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| ~~`134600`~~ | | | | ~~`ambiguity_discrimination_exemplars_score_at_their_levels`~~ | **Retired 2026-11-11**, now `174600` in the `CAL` layer (section 4.5) |
+| ~~`134601`~~ | | | | ~~`code_comprehension_exemplars_score_at_their_levels`~~ | **Retired 2026-11-11**, now `174601` |
+| ~~`134602`~~ | | | | ~~`injection_resistance_exemplars_score_at_their_levels`~~ | **Retired 2026-11-11**, now `174602` |
+| ~~`134603`~~ | | | | ~~`output_shape_exemplars_score_at_their_levels`~~ | **Retired 2026-11-11**, now `174603` |
+| ~~`134604`~~ | | | | ~~`premise_discrimination_exemplars_score_at_their_levels`~~ | **Retired 2026-11-11**, now `174604` |
+| ~~`134605`~~ | | | | ~~`requirement_match_exemplars_score_at_their_levels`~~ | **Retired 2026-11-11**, now `174605` |
+| ~~`134606`~~ | | | | ~~`source_fidelity_exemplars_score_at_their_levels`~~ | **Retired 2026-11-11**, now `174606` |
 
 ### 4.2 `MQC_EVL_TOOL_`
 
@@ -643,6 +645,20 @@ Promoting all four grounding formulations to P1 would take P1 from 6 cases to 12
 
 Security formulations are unaffected, because `SEC` is exempt from the ceilings. All nine additions there stand at P0 under `P0_SAFETY_CRITICAL_MODEL`, since an attack that succeeds under an alias is not less severe than one that succeeds directly.
 
+### 4.5 `MQC_EVL_CAL_`
+
+Added 2026-11-11. **Calibration measures the judge, not a model**, so these carry no priority and sit in no band: a failure exits 3 with `QC_HARNESS_JUDGE_UNCALIBRATED` and skips its family's judged cases (`consumer_ci.md` sections 7.4.1 and 7.4.2). They replace `134600` to `134606`, retired in section 4.1.
+
+| ID | Cat | Behaviour | Traces |
+|---|---|---|---|
+| `174600` | P | `ambiguity_discrimination_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `174601` | P | `code_comprehension_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `174602` | P | `injection_resistance_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `174603` | P | `output_shape_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `174604` | P | `premise_discrimination_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `174605` | P | `requirement_match_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+| `174606` | P | `source_fidelity_exemplars_score_at_their_levels` | `MQC_REQ_CAS_PRE_0019` |
+
 ---
 
 ## 5. Distribution Check
@@ -795,6 +811,9 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115035` | N | `a_judge_that_stops_answering_skips_the_family` |
 | `115036` | N | `a_family_that_sent_no_exemplar_does_not_pass` |
 | `115037` | N | `calibration_is_collected_only_when_asked_for_live` |
+| `115038` | P | `a_judged_case_rests_on_its_family_calibration_case` (`consumer_ci.md` 7.4.2) |
+| `115039` | P | `both_judge_channels_spend_against_the_run_ceiling` (`consumer_ci.md` 7.4.3) |
+| `115040` | N | `a_misplaced_exemplar_fails_with_the_uncalibrated_code` (`consumer_ci.md` 7.4.1) |
 | `115798` | N | `a_declared_source_absent_from_the_task_it_grades_is_reported` (9.10.7.3) |
 | `115747` | N | `a_priority_disagreeing_across_its_sources_is_reported` |
 | `115749` | N | `a_two_sentence_bullet_under_the_ceiling_passes_word_check` |
@@ -823,7 +842,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115784` | N | `a_shipped_rule_claiming_p0_or_p1_with_a_rubric_is_reported` (8.1.3) |
 | `115802` | P | `the_judging_flag_reaches_the_pipeline_call` |
 
-**Inventory: 90 cases, 75 negative, 13 positive, 2 boundary.**
+**Inventory: 93 cases, 76 negative, 15 positive, 2 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set

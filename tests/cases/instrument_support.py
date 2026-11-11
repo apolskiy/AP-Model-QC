@@ -3,7 +3,7 @@
 """Support code for the instrument preconditions, the readers and doubles they assert against.
 
 Created: 2026-10-05
-Last updated: 2026-10-21
+Last updated: 2026-11-11
 
 This file contains readers of what the designs and suite declare, ``designed_foundations``
 and ``declared_foundations`` for the security foundations, ``named_pairs_in``,
@@ -201,7 +201,14 @@ class SimulatedGradedConfig:
     the helpers conclude from a given command line, which needs no session.
     """
 
-    def __init__(self, judge_engine: str, observations: int = 0, *, judge_mode: str = "") -> None:
+    def __init__(
+        self,
+        judge_engine: str,
+        observations: int = 0,
+        *,
+        judge_mode: str = "",
+        max_spend: float = 0.0,
+    ) -> None:
         """Hold the flags these cases vary, with the rest at their defaults.
 
         Args:
@@ -210,6 +217,7 @@ class SimulatedGradedConfig:
                 unnamed.
             judge_mode (str): What ``--judge-mode`` was given, empty to follow
                 ``--mode``.
+            max_spend (float): What ``--max-spend`` was given, zero for none.
 
         Returns:
             None
@@ -222,7 +230,7 @@ class SimulatedGradedConfig:
             "--observations": observations,
             "--keep-connection": False,
             "--fill-gaps": False,
-            "--max-spend": 0.0,
+            "--max-spend": max_spend,
         }
         self.option = SimpleNamespace()
 

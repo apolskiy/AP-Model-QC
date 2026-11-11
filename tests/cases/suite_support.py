@@ -3,13 +3,14 @@
 """Support code reading which corpus case each graded case observes, from the suite itself.
 
 Created: 2026-10-21
-Last updated: 2026-11-10
+Last updated: 2026-11-11
 
 This file contains ``case_rules_from_suite``, which parses every graded case module
 and returns the task and rule set each case dispatches through ``observe`` or
 ``observe_repeatedly``, ``case_families_from_suite``, which returns the
 evaluation family each case's rule set declares, or the family a calibration
-case calibrates, and
+case calibrates, ``judged_case_families``, the same restricted to calibration
+cases and cases a judge grades, and
 ``planted_mixed_population``, which builds a finding whose observations split
 into judged and unjudged from a copy of one case's recordings.
 
@@ -118,6 +119,34 @@ def case_families_from_suite(root: Path) -> dict[str, str]:
     return families
 
 
+def judged_case_families(root: Path) -> dict[str, str]:
+    """Return the family of every calibration case and every case a judge grades.
+
+    A graded case is judged where its rule carries a rubric, and its family is
+    the rule's first. A case graded by assertion alone is omitted, so it rests
+    on no calibration. Design: ``consumer_ci.md`` section 7.4.2.
+
+    Args:
+        root (Path): This repository's root.
+
+    Returns:
+        dict[str, str]: Case name to family, for the harness
+        ``rest_judged_cases_on_calibration``.
+    """
+    judged_rules = {
+        rules.rule_id: rules.families[0]
+        for rules in shipped_corpus()[1]
+        if rules.families and rules.rubric is not None
+    }
+    families = {
+        case: judged_rules[rule_id]
+        for case, (_, rule_id) in case_rules_from_suite(root).items()
+        if rule_id in judged_rules
+    }
+    families.update(_calibrated_families(root, set(judged_rules.values())))
+    return families
+
+
 def _calibrated_families(root: Path, known: set[str]) -> dict[str, str]:
     """Return the family each calibration case calibrates, from the call it makes.
 
@@ -133,7 +162,7 @@ def _calibrated_families(root: Path, known: set[str]) -> dict[str, str]:
         dict[str, str]: Case name to the family it calibrates.
     """
     families: dict[str, str] = {}
-    for source in sorted((root / "tests" / "cases").glob("mqc_eval_*.py")):
+    for source in sorted((root / "tests" / "cases").glob("mqc_cal_*.py")):
         tree = ast.parse(source.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
             if not isinstance(node, ast.FunctionDef) or not node.name.startswith("MQC_"):

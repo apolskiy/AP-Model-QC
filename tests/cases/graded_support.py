@@ -3,7 +3,7 @@
 """Support code that dispatches and evaluates a graded case, written once for every case.
 
 Created: 2026-09-25
-Last updated: 2026-11-06
+Last updated: 2026-11-11
 
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
@@ -256,6 +256,19 @@ def dispatch_session(config: Any) -> DispatchSession:
     )
 
 
+def run_session(engine: str, ceiling: float) -> DispatchSession:
+    """Return the run's session for an engine and ceiling, the one ``dispatch_session`` returns.
+
+    Args:
+        engine (str): The candidate engine, ``--engine``.
+        ceiling (float): ``--max-spend``, zero for none.
+
+    Returns:
+        DispatchSession: The cached session.
+    """
+    return _session(engine, ceiling)
+
+
 @lru_cache(maxsize=4)
 def _session(engine: str, ceiling: float) -> DispatchSession:
     """Build one session for an engine and ceiling, from the roster and flags.
@@ -343,7 +356,7 @@ def _channel(
     record: bool,
     keep: bool,
     fill: bool = False,
-    candidate: str = "",
+    run: tuple[str, float] = ("", 0.0),
 ) -> Any:
     """Return one judge channel, built once per distinct configuration.
 
@@ -362,15 +375,20 @@ def _channel(
         fill (bool): Whether to replay a judgement already recorded rather
             than asking again. **Part of the cache key**, because two
             channels differing only in this are different configurations.
-        candidate (str): Which engine produced what is graded. **Part of the
-            cache key for the same reason**, and the reason is sharper here:
-            a channel cached under one candidate and handed to a run grading
-            another would address the first engine's judgement files, which is
-            the collision section 7.9.3 of the harness design records.
+        run (tuple[str, float]): The candidate engine and ``--max-spend``,
+            zero for no ceiling. The candidate is which engine produced what
+            is graded, **part of the cache key for the same reason**, and the
+            reason is sharper here: a channel cached under one candidate and
+            handed to a run grading another would address the first engine's
+            judgement files, which is the collision section 7.9.3 of the
+            harness design records. The pair keys the run's session, which
+            the plan carries as its budget so every judge call counts against
+            the ceiling (``consumer_ci.md`` section 7.4.3).
 
     Returns:
         Any: The :class:`JudgeChannel`.
     """
+    candidate, ceiling = run
     return judge_channel_from_roster(
         packaged_roster_path(),
         engine or None,
@@ -384,6 +402,7 @@ def _channel(
             # another one, read for its mode and record flag; setting the
             # flag only there left the channel filling nothing.
             fill_gaps=fill,
+            budget=_session(candidate, ceiling),
         ),
     )
 
@@ -426,7 +445,7 @@ def judge_binding(config: Any, candidate_engine: str) -> Any:
         plan.record,
         bool(config.getoption("--keep-connection")),
         plan.fill_gaps,
-        candidate_engine,
+        (candidate_engine, float(config.getoption("--max-spend") or 0.0)),
     )
     return JudgeBinding(
         invoke=channel.invoke,
@@ -461,7 +480,7 @@ def judge_stopped(config: Any, candidate_engine: str) -> Optional[str]:
         plan.record,
         bool(config.getoption("--keep-connection")),
         plan.fill_gaps,
-        candidate_engine,
+        (candidate_engine, float(config.getoption("--max-spend") or 0.0)),
     )
     return getattr(channel, "stopped", None)
 
