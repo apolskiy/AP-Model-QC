@@ -8879,3 +8879,29 @@ ignoring the ceiling (`115039`); the failure without its code (`115040`).
 with its layer, and `MQC_CAS_UNI_115317` reads the count after the exact label
 "Judge calibration", so it reported the README as stating no calibration
 cases. **Fixed** by keeping the label and naming the layer in the text.
+
+## 2026-11-11: The probe runs weekly from an environment of its own
+
+**What was wrong.** Every scheduled probe waited for a reviewer. The first, on
+2026-11-10, was still waiting the next evening; the second fired at 07:33 UTC
+and ran at 17:29 once approved. **Why.** The probe job named `live`, and
+`live` has carried a required reviewer since 2026-10-04 so that a scheduled
+ladder spends only with a person watching. The probe sends no prompt and
+inherited the gate without needing it.
+
+**The probe has an environment of its own, `version_probe`**, holding the four
+provider keys and no reviewer. The keys still sit behind an environment, so a
+workflow naming neither cannot reach them. `MQC_CAS_UNI_115836` keeps the
+unreviewed environment that narrow: the probe names it, no other job does, and
+the probe job runs no test. Limiting its deployments to `main` is a repository
+setting no case can read. The project owner chose the name.
+
+**Weekly was decided by the project owner**, Mondays at 01:00 UTC.
+`MQC_CAS_UNI_115835` was renamed with the cadence and now requires one cron on a
+single weekday. The probe's hour still precedes the scheduled slots, but only a
+Monday that is an engine's slot gets the dispatch first; on any other day the
+scheduled run measures the change itself.
+
+**Both cases failed first**, against the daily cron and the `live` environment.
+Two injections were each caught by `115836`: `evaluate-engine.yml` naming
+`version_probe`, and a pytest step added to the probe job.

@@ -18,10 +18,10 @@ changed that day and whose recordings answer the old ones.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 95 graded cases specified, measured against each model, and 7 calibration cases measuring the judge |
-| `docs/testing/rtm_model.csv` | 240 requirements, traced |
+| `docs/testing/rtm_model.csv` | 241 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 83 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **262 cases, 262 passing**, each recording its numbered steps |
+| Preconditions (`CAS`, `UNI`) | **263 cases, 263 passing**, each recording its numbered steps |
 | Judge calibration | **7 cases, one per family with exemplars**, in the `CAL` layer, sending each of 186 exemplars to the live judge in rung 2 of `evaluate-engine.yml` and nowhere else. They measure the judge: a failure exits 3 and skips that family's judged cases, and the judge's calls count against `--max-spend` (`consumer_ci.md` sections 7.4.1 to 7.4.3) |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a scheduled caller of its own, over two reusable workflows plus debugging on demand |
@@ -134,7 +134,7 @@ and a pass with a warning is a pass in every band.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 1106 harness test cases, each executed once per run, and 262 of 262 preconditions pass;
+separately from what it measures. 1106 harness test cases, each executed once per run, and 263 of 263 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate
@@ -286,9 +286,10 @@ result this project exists to produce. The mechanism is designed in
 `consumer_ci.md` section 4.19.4 and its trigger is recorded there.
 
 **The live ladders run monthly, one engine a day from the 1st, and skip a
-month already measured.** The model version probe runs daily and dispatches an
-engine's ladder the day its model changes, so the monthly run is a fallback for
-inactivity. Every scheduled run waits for a reviewer before it spends.
+month already measured.** The model version probe runs weekly and dispatches an
+engine's ladder when its model changes, so the monthly run is a fallback for
+inactivity. Every scheduled ladder waits for a reviewer before it spends; the
+probe sends no prompt and does not wait.
 `consumer_ci.md` section 4.18.3 holds the reasoning.
 
 ## Why This Is A Separate Repository

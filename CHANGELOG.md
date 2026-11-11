@@ -40,6 +40,23 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The probe runs weekly from an environment of its own, 2026-11-11
+
+**Why it was needed.** The probe job named the `live` environment, whose
+required reviewer exists so a scheduled ladder spends only with a person
+watching. The probe sends no prompt, yet every firing waited for that
+approval: the first scheduled probe, on 2026-11-10, was still waiting a day
+later, and the second ran ten hours after it fired.
+
+**What changed.** The probe job names `version_probe`, an environment holding
+the four provider keys with no reviewer, and the ladder it dispatches still
+waits on `live`. The probe fires weekly, Mondays at 01:00 UTC, instead of
+daily, so a model change is detected within the week. `MQC_CAS_UNI_115835` now
+requires a weekly cron, and `MQC_CAS_UNI_115836` requires that the probe alone
+names `version_probe` and runs no test, traced by `MQC_REQ_CAS_CI_0085`;
+`consumer_ci.md` sections 4.23.3 and 4.23.6 specify them. The README counts 263
+preconditions and 241 requirements.
+
 ### Calibration is the CAL layer, and a family's judged cases rest on it, 2026-11-11
 
 **Why it was needed.** A calibration case was a graded P1 case, so a judge off

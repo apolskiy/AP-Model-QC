@@ -22,12 +22,12 @@
 name: probe-model-version
 
 on:
-  # DAILY AT 01:00 UTC, since 2026-11-09, the known findings being triaged.
-  # An hour before the monthly evaluation slots, so a model change dispatches
-  # its engine first and that month's scheduled run then finds it and skips.
-  # Section 4.18.3.
+  # WEEKLY, MONDAYS AT 01:00 UTC, since 2026-11-11; daily from 2026-11-09.
+  # The hour is before the monthly evaluation slots, so on a Monday that is an
+  # engine's slot a model change dispatches it first and the scheduled run
+  # then finds it and skips. Sections 4.18.3 and 4.23.3.
   schedule:
-    - cron: "0 1 * * *"
+    - cron: "0 1 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -92,8 +92,11 @@ jobs:
     if: needs.resolve.outputs.green == 'true'
     runs-on: ubuntu-26.04
     # Secrets live in an environment, which makes them unreachable from any
-    # workflow that does not name it. That is A1 made structural.
-    environment: live
+    # workflow that does not name it. That is A1 made structural. This one has
+    # no required reviewer and no other job names it: the probe sends no
+    # prompt and spends nothing to approve, and the ladder it dispatches still
+    # waits on `live`. Section 4.23.6.
+    environment: version_probe
     outputs:
       changed_engines: ${{ steps.probe.outputs.changed_engines }}
     steps:

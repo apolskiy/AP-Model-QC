@@ -8,7 +8,7 @@
 # `consumer_ci.md` section 4.18.
 #
 # THREE THINGS START IT. The monthly schedule, as a fallback for inactivity;
-# the daily probe, when this engine's model version changes; and a person.
+# the weekly probe, when this engine's model version changes; and a person.
 # Only the schedule asks first: a model change or a person means it.
 #
 # THE SCHEDULE ASKS BEFORE IT SPENDS. `decide` reads this engine's evaluation

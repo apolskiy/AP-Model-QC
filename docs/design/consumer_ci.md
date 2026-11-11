@@ -1191,7 +1191,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115832` | N | `runs_that_did_not_measure_in_the_window_do_not_count` (4.18.3) |
 | `115833` | N | `an_unreadable_history_refuses` (4.18.3) |
 | `115834` | P | `each_scheduled_caller_fires_monthly_and_asks_first` (4.18.3) |
-| `115835` | P | `the_probe_fires_daily_and_dispatches_declared_inputs` (4.18.3, 4.23.3) |
+| `115835` | P | `the_probe_fires_weekly_and_dispatches_declared_inputs` (4.18.3, 4.23.3) |
+| `115836` | P | `the_probe_alone_reads_keys_from_an_environment_of_its_own` (4.23.6) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1201,7 +1202,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 169 cases, 120 negative, 40 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 170 cases, 120 negative, 41 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1945,7 +1946,7 @@ was met.
 
 **A live firing spends real money**, so the cadence is the lowest one that
 still bounds how stale a measurement gets. A model change does not wait for the
-schedule: the probe in section 4.23 fires daily and dispatches the changed
+schedule: the probe in section 4.23 fires weekly and dispatches the changed
 engine's caller the day it sees the change. **The schedule is a fallback for
 inactivity**, so it only has to catch a model that changed without the probe
 seeing it, and a month bounds that.
@@ -2462,11 +2463,21 @@ an update-triggered run are the same measurement, so a scheduled run declines
 when the engine's live rung already finished inside its window. The baseline
 here is what makes a change detectable.
 
-**The probe fires daily at 01:00 UTC, since 2026-11-09.** It costs one metadata
-call per engine and no prompt, and a change found the day it happens leaves one
-day of candidate causes where a monthly run would leave a month. The hour is
-ahead of the scheduled slots, so a change dispatches its engine first and that
-month's scheduled run finds the measurement and skips.
+**The probe fires weekly, Mondays at 01:00 UTC, since 2026-11-11.** It costs
+one metadata call per engine and no prompt, and a change found within the week
+it happens leaves a week of candidate causes where a monthly run would leave a
+month.
+
+**Daily was the cadence from 2026-11-09, and weekly was decided on 2026-11-11
+by the project owner.** Detection is a week coarser and the run history a
+seventh of the size. The probe no longer waits for a reviewer at either
+cadence: section 4.23.6.
+
+**The hour keeps it ahead of the scheduled slots on the days they share.** When
+a Monday falls on an engine's slot in section 4.18.2, a change dispatches that
+engine first and the scheduled run finds the measurement and skips. On any
+other day the scheduled run measures the change itself, which is the same
+measurement.
 
 **`grok` is in scope and was not before.** The engine was rostered 2026-10-04
 and has had callers here since 2026-10-05; the harness dispatch enumerated
@@ -2503,6 +2514,40 @@ it.
 
 `MQC_CAS_UNI_115789` and `115790`, `MQC_REQ_CAS_CI_0064` and
 `MQC_REQ_CAS_PRE_0018`.
+
+#### 4.23.6 The probe reads its keys from an environment of its own
+
+Added 2026-11-11. **The probe job names the `version_probe` environment, which
+holds the four provider keys and no required reviewer.** It named `live` until
+then, and `live` carries a required reviewer so that a scheduled ladder spends
+only with a person watching (section 4.18.3). The probe inherited that gate
+without needing it: its first scheduled firing, on 2026-11-10, was still
+waiting for approval the next evening, and the second ran ten hours after it
+fired.
+
+**What each environment guards.**
+
+| Environment | Reviewer | Held by | What a firing costs |
+|---|---|---|---|
+| `live` | Required | Every job that runs a graded case live | A ladder, up to `--max-spend` |
+| `version_probe` | None | The probe job alone | One metadata call per engine, no prompt |
+
+**Keys still live in an environment**, so a workflow naming neither cannot
+reach them, which is why the probe named one at all. What the probe gives up is the approval, and the probe spends
+nothing to approve. The ladder it dispatches still names `live` and still waits.
+
+**Two conditions keep the unreviewed environment that cheap.** No other job
+names `version_probe`, so a later workflow cannot borrow its keys to spend
+without review; and the probe job runs no test, so a graded invocation added
+to it cannot reach a provider unreviewed. `MQC_CAS_UNI_115836` asserts both,
+with the probe's own environment, against every workflow here. Its
+deployments are limited to `main` in the repository settings, which no file
+here can check.
+
+**The name says what it probes.** `version_probe` names the version check the
+job makes, beside `probe-model-version.yml`.
+
+`MQC_CAS_UNI_115836`, `MQC_REQ_CAS_CI_0085`.
 
 ### 4.24 The failure lister is the harness's, called from here
 

@@ -1,18 +1,19 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Unit preconditions for the monthly evaluation and the daily probe that triggers one.
+"""Unit preconditions for the monthly evaluation and the weekly probe that triggers one.
 
 Created: 2026-11-09
-Last updated: 2026-11-09
+Last updated: 2026-11-11
 
-This file contains ``TestMQCScheduledEvaluation``, six cases over
+This file contains ``TestMQCScheduledEvaluation``, seven cases over
 ``tools/recent_evaluation.py`` and the workflows it serves. A scheduled
 evaluation skips itself when its engine's live rung already ran inside the
 window, whatever started that run; a run outside the window, a live rung that
 never finished, and the run asking do not count; and a history that cannot be
 read refuses rather than guessing. Each engine's scheduled caller fires
 monthly on a day of its own and asks before it spends, and the probe fires
-daily and dispatches only inputs the caller declares.
+weekly, dispatches only inputs the caller declares, and alone reads its keys
+from the ``version_probe`` environment.
 
 **These run in the ``unit`` precondition gate.** A failure is an instrument
 defect, **not a model finding**: the run exits 3 and no graded case executes,
@@ -31,7 +32,8 @@ Specified by ``docs/design/consumer_ci.md`` section 4.18.3.
 #   115832  runs_that_did_not_measure_in_the_window_do_not_count
 #   115833  an_unreadable_history_refuses
 #   115834  each_scheduled_caller_fires_monthly_and_asks_first
-#   115835  the_probe_fires_daily_and_dispatches_declared_inputs
+#   115835  the_probe_fires_weekly_and_dispatches_declared_inputs
+#   115836  the_probe_alone_reads_keys_from_an_environment_of_its_own
 # ------------------------------------------------------------ end of cases
 
 import re
@@ -44,7 +46,7 @@ from cmn.case_steps import step
 from cmn.config import load_engines, packaged_roster_path
 from cmn.grouping import story
 
-from tests.cases.workflow_support import jobs, load, run_lines
+from tests.cases.workflow_support import WORKFLOWS, jobs, load, run_lines
 from tools.recent_evaluation import WINDOW_DAYS, main, redundant_by
 
 pytestmark = pytest.mark.unit
@@ -53,6 +55,7 @@ _ROOT: Path = Path(__file__).resolve().parents[2]
 _TODAY = date(2026, 11, 9)
 _SINCE = date(2026, 10, 13)
 _RUNG = "gemini / 3 - the model (live, live) on gemini, judged by gemini"
+_PROBE_ENVIRONMENT = "version_probe"
 
 # A PROBE-DISPATCHED RUN THAT MEASURED, one that waited for a reviewer and
 # never ran its live rung, one from before the window, and the run asking.
@@ -202,10 +205,10 @@ class TestMQCScheduledEvaluation:
         assert len(set(days)) == len(rostered), days
 
     @story("Each engine is evaluated monthly and asks first")
-    def MQC_CAS_UNI_115835_the_probe_fires_daily_and_dispatches_declared_inputs(
+    def MQC_CAS_UNI_115835_the_probe_fires_weekly_and_dispatches_declared_inputs(
         self,
     ) -> None:
-        """A daily cron, the scheduled caller as target, and only inputs that caller declares.
+        """A weekly cron, the scheduled caller as target, and only inputs that caller declares.
 
         Design: ``consumer_ci.md`` sections 4.18.3 and 4.23.
 
@@ -225,11 +228,43 @@ class TestMQCScheduledEvaluation:
             if fields - declared:
                 undeclared[engine] = sorted(fields - declared)
 
-        step(1, "find one daily cron")
-        assert len(crons) == 1 and crons[0][2:] == ["*", "*", "*"], crons
+        step(1, "find one weekly cron, on a single weekday")
+        assert len(crons) == 1 and len(crons[0]) == 5 and crons[0][2:4] == ["*", "*"] \
+            and re.fullmatch(r"[0-6]", crons[0][4]), crons
 
         step(2, "find the dispatch naming the scheduled caller")
         assert "evaluate-${engine}-scheduled.yml" in dispatch, dispatch
 
         step(3, "find every dispatched field declared by every caller")
         assert fields and not undeclared, (fields, undeclared)
+
+    @story("Each engine is evaluated monthly and asks first")
+    def MQC_CAS_UNI_115836_the_probe_alone_reads_keys_from_an_environment_of_its_own(
+        self,
+    ) -> None:
+        """The probe's keys come from ``version_probe``, and no other job names it.
+
+        Design: ``consumer_ci.md`` section 4.23.6.
+
+        Returns:
+            None
+        """
+        probe = jobs(load("probe-model-version.yml"))["probe"]
+        elsewhere: list[str] = []
+        for workflow in sorted(WORKFLOWS.glob("*.yml")):
+            for name, job in jobs(load(workflow.name)).items():
+                if workflow.name == "probe-model-version.yml" and name == "probe":
+                    continue
+                if job.get("environment") == _PROBE_ENVIRONMENT:
+                    elsewhere.append(f"{workflow.name} job {name!r}")
+        spending = [line for line in run_lines(probe, _ROOT)
+                    if "pytest" in line or "--mode live" in line]
+
+        step(1, f"find the probe job in the {_PROBE_ENVIRONMENT!r} environment")
+        assert probe.get("environment") == _PROBE_ENVIRONMENT, probe.get("environment")
+
+        step(2, "find no other job naming that environment")
+        assert not elsewhere, elsewhere
+
+        step(3, "find the probe running no test")
+        assert not spending, spending

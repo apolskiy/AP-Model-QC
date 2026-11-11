@@ -25,7 +25,7 @@ opens prevents nothing.
 
 | Document | Holds |
 |---|---|
-| `docs/design/consumer_ci.md` | This repository's CI topology: the gate and scheduled workflows per engine, the monthly schedule and the daily probe, harness pinning and branch pairing, the debug workflow, artifact keying |
+| `docs/design/consumer_ci.md` | This repository's CI topology: the gate and scheduled workflows per engine, the monthly schedule and the weekly probe, harness pinning and branch pairing, the debug workflow, artifact keying |
 
 **The harness holds the rest.** This repository owns cases and data, not
 architecture, so there is no module design here. `DESIGN.md` and the tier
