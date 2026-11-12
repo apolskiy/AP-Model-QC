@@ -77,6 +77,7 @@ from cmn.pytest_support import (
     label_grouping,
     label_priority_severity,
     publish_run_provenance,
+    publish_run_spend,
 )
 from cmn.dependencies import (
     adopt_prerequisites,
@@ -105,25 +106,37 @@ _RUN_PROVENANCE: dict[str, str] = {}
 
 
 @pytest.fixture(name="mqc_run_provenance", scope="session", autouse=True)
-def fixture_mqc_run_provenance(record_testsuite_property: Any) -> None:
-    """Carry the run's provenance into the JUnit report's root element.
+def fixture_mqc_run_provenance(
+    record_testsuite_property: Any, pytestconfig: pytest.Config
+) -> Iterator[None]:
+    """Carry the run's provenance into the JUnit report, and its spend after the last case.
 
     **A fixture rather than a hook, because pytest offers no other route.**
     ``record_testsuite_property`` is a session-scoped fixture, so the only way
     to reach it is to depend on it, and autouse is what makes that happen on a
     run that requested nothing.
 
-    The mapping comes from :data:`_RUN_PROVENANCE` rather than being rebuilt,
-    for the reason stated where it is declared.
+    The provenance comes from :data:`_RUN_PROVENANCE` rather than being
+    rebuilt, for the reason stated where it is declared. The spend, by role,
+    is the run's dispatch session's, published after the yield, which pytest
+    runs before it writes the JUnit report (``consumer_ci.md`` section 7.4.4).
 
     Args:
         record_testsuite_property (Any): pytest's recorder, which writes a
             property under the report's root element.
+        pytestconfig (pytest.Config): The run's configuration.
 
-    Returns:
-        None
+    Yields:
+        None: The run's cases execute while this is suspended.
     """
     publish_run_provenance(record_testsuite_property, _RUN_PROVENANCE)
+    yield
+    session = importlib.import_module("tests.cases.graded_support").dispatch_session(
+        pytestconfig
+    )
+    publish_run_spend(
+        record_testsuite_property, pytestconfig, _RUN_PROVENANCE, session.spend_summary()
+    )
 
 
 def pytest_addoption(parser: Any) -> None:

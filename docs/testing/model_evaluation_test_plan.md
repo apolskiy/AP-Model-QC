@@ -254,6 +254,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_PRE_0019` | The judge scores every rubric exemplar of a family within one level of the level it was written for, each sent live through a channel that records and reuses nothing, and a family that sent no exemplar does not pass. Calibration is collected only by a run whose marker expression names it, under a live judge | consumer_ci.md section 7.4.1 |
 | `MQC_REQ_CAS_PRE_0020` | Where a run collects a family's calibration case, every case of that family whose rule carries a rubric depends on it, so a calibration that does not hold skips its family's judged cases and no other family's; a run collecting no calibration case gains no dependency, and a calibration failure carries QC_HARNESS_JUDGE_UNCALIBRATED | consumer_ci.md section 7.4.2 |
 | `MQC_REQ_CAS_PRE_0021` | The graded judge channel and the calibration channel each carry the run's dispatch session as their budget, so every judge call is counted against --max-spend with the candidate's | consumer_ci.md section 7.4.3 |
+| `MQC_REQ_CAS_PRE_0022` | Every run publishes, after its last case, the candidate, judge and total spend of its dispatch session, its ceiling and any unpriced model, as JUnit properties and in the Allure environment file after the provenance | consumer_ci.md section 7.4.4 |
 | `MQC_REQ_CAS_COR_0022` | Every security case declares every vector its payload carries and names the one it is about, so an incidental match cannot stand in for coverage |
 | `MQC_REQ_CAS_COR_0021` | Every graded case's declared foundations are exactly the ones its design inventory states, so a dependency cannot be added in code without a document approving it |
 | `MQC_REQ_CAS_COR_0020` | A recorded response that withheld content states the provider's own reason for withholding it, so a refusal is not read as a model failure |
@@ -815,6 +816,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115038` | P | `a_judged_case_rests_on_its_family_calibration_case` (`consumer_ci.md` 7.4.2) |
 | `115039` | P | `both_judge_channels_spend_against_the_run_ceiling` (`consumer_ci.md` 7.4.3) |
 | `115040` | N | `a_misplaced_exemplar_fails_with_the_uncalibrated_code` (`consumer_ci.md` 7.4.1) |
+| `115041` | P | `a_run_publishes_its_spend_by_role_after_its_last_case` (`consumer_ci.md` 7.4.4) |
 | `115798` | N | `a_declared_source_absent_from_the_task_it_grades_is_reported` (9.10.7.3) |
 | `115747` | N | `a_priority_disagreeing_across_its_sources_is_reported` |
 | `115749` | N | `a_two_sentence_bullet_under_the_ceiling_passes_word_check` |
@@ -843,7 +845,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115784` | N | `a_shipped_rule_claiming_p0_or_p1_with_a_rubric_is_reported` (8.1.3) |
 | `115802` | P | `the_judging_flag_reaches_the_pipeline_call` |
 
-**Inventory: 93 cases, 76 negative, 15 positive, 2 boundary.**
+**Inventory: 94 cases, 76 negative, 16 positive, 2 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set

@@ -13,9 +13,11 @@ carrying real pytest marks that the dependency cascade reads;
 :class:`StandInChannel` and ``built_plans``, which replace both judge channel
 builders and keep the plan each channel was built from;
 ``collection_calls``, which lists what ``conftest.py``'s collection hook calls;
-``rubric_exemplars``, which lists the exemplars of some cases' rubrics; and
+``rubric_exemplars``, which lists the exemplars of some cases' rubrics;
 ``collect_calibration``, which collects the calibration cases in a separate
-pytest process under a given selection.
+pytest process under a given selection; and ``publish_one_precondition``,
+which runs one precondition in a separate pytest process and returns the
+``PublishedRun`` it wrote, its JUnit properties and its Allure environment.
 
 ``mqc_uni_calibration.py`` passes the judges to ``calibrate_family`` in place
 of a live channel, so its cases call no provider. ``collect_calibration`` runs
@@ -28,8 +30,10 @@ wrong schema produces a ``KeyError`` here instead of a passing case.
 import ast
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Iterator, Optional
+from xml.etree import ElementTree
 
 import pytest
 
@@ -37,6 +41,11 @@ from tests.cases import calibration_support, graded_support
 
 _ROOT = Path(__file__).resolve().parents[2]
 _CALIBRATION_MODULE = "tests/cases/mqc_cal_calibration.py"
+# ONE PRECONDITION THAT CALLS NO PROVIDER, so the child run is quick and free.
+_PUBLISHED_CASE = (
+    "tests/cases/mqc_uni_scheduled_evaluation.py::TestMQCScheduledEvaluation::"
+    "MQC_CAS_UNI_115830_an_engine_unevaluated_in_the_window_is_evaluated"
+)
 
 
 def rubric_exemplars(cases: list[Any]) -> list[tuple[str, str, int]]:
@@ -78,23 +87,27 @@ def built_plans(monkeypatch: Any) -> list[Any]:
     return plans
 
 
-def collection_calls(root: Path) -> list[str]:
-    """Return the names ``conftest.py``'s collection hook calls, in source order.
+def collection_calls(root: Path, function: str = "pytest_collection_modifyitems") -> list[str]:
+    """Return the names a ``conftest.py`` function calls, in source order, and where it yields.
 
     Args:
         root (Path): This repository's root.
+        function (str): The function to read, by default the collection hook.
 
     Returns:
-        list[str]: Each called name, in the order the hook calls them.
+        list[str]: Each called name, in the order the function calls them,
+        with ``yield`` where the function yields.
     """
     tree = ast.parse((root / "conftest.py").read_text(encoding="utf-8"))
     for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef) and node.name == "pytest_collection_modifyitems":
-            calls = [inner for inner in ast.walk(node) if isinstance(inner, ast.Call)]
-            calls.sort(key=lambda call: (call.lineno, call.col_offset))
+        if isinstance(node, ast.FunctionDef) and node.name == function:
+            marks = [inner for inner in ast.walk(node)
+                     if isinstance(inner, (ast.Call, ast.Yield))]
+            marks.sort(key=lambda mark: (mark.lineno, mark.col_offset))
             return [
-                str(getattr(call.func, "id", None) or getattr(call.func, "attr", ""))
-                for call in calls
+                "yield" if isinstance(mark, ast.Yield) else
+                str(getattr(mark.func, "id", None) or getattr(mark.func, "attr", ""))
+                for mark in marks
             ]
     return []
 
@@ -116,6 +129,49 @@ def collect_calibration(markexpr: str, *options: str) -> tuple[int, str]:
         timeout=300, check=False,
     )
     return finished.returncode, finished.stdout + finished.stderr
+
+
+@dataclass(frozen=True)
+class PublishedRun:
+    """What a child pytest run wrote: its exit status and both artifacts' fields."""
+
+    status: int
+    junit: dict[str, str]
+    environment: list[tuple[str, str]]
+    output: str
+
+
+def publish_one_precondition(destination: Path, ceiling: str) -> PublishedRun:
+    """Run one precondition in a child pytest with a ceiling, and read what it published.
+
+    Args:
+        destination (Path): Where the JUnit report and the Allure results go.
+        ceiling (str): The ``--max-spend`` to run with.
+
+    Returns:
+        PublishedRun: The JUnit root properties and the ``environment.properties``
+        lines, in the order written; empty where a file was not written.
+    """
+    report = destination / "junit.xml"
+    results = destination / "allure-results"
+    finished = subprocess.run(
+        [sys.executable, "-m", "pytest", _PUBLISHED_CASE, "-q", "--no-header",
+         "-p", "no:randomly", "-p", "no:cacheprovider", "--max-spend", ceiling,
+         f"--junitxml={report}", f"--alluredir={results}"],
+        cwd=_ROOT, capture_output=True, text=True, encoding="utf-8",
+        timeout=300, check=False,
+    )
+    junit: dict[str, str] = {}
+    if report.is_file():
+        for prop in ElementTree.parse(report).getroot().iter("property"):
+            junit[str(prop.get("name"))] = str(prop.get("value"))
+    environment_file = results / "environment.properties"
+    lines = (environment_file.read_text(encoding="utf-8").splitlines()
+             if environment_file.is_file() else [])
+    environment = [(name, value) for name, separator, value in
+                   (line.partition("=") for line in lines) if separator]
+    return PublishedRun(finished.returncode, junit, environment,
+                        finished.stdout + finished.stderr)
 
 
 class StandInJudge:

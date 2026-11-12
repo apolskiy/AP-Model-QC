@@ -8905,3 +8905,29 @@ scheduled run measures the change itself.
 **Both cases failed first**, against the daily cron and the `live` environment.
 Two injections were each caught by `115836`: `evaluate-engine.yml` naming
 `version_probe`, and a pytest step added to the probe job.
+
+## 2026-11-11: Each run publishes what it spent, by role
+
+**What was missing.** No artifact recorded what a run cost. **Why.** The
+session kept one running total and nothing published it. Where the candidate
+and the judge share a provider key, the provider's bill cannot split it
+either, and rung 2 spends on the judge alone.
+
+**The harness keeps the judge's share apart** (harness `RunSpend`,
+`publish_run_spend`). The session fixture here publishes after the last case:
+it reads the run's dispatch session after `yield` and passes its
+`spend_summary()` to `publish_run_spend`. Candidate, judge and total spend in
+USD, the ceiling and any unpriced model go out as `mqc.` JUnit properties and
+at the end of `environment.properties`, after the provenance. Nothing is
+written to a tracked file. A session without a price table reads `unpriced`.
+
+**`MQC_CAS_UNI_115041` runs one precondition in a child pytest** with
+`--max-spend 1.5`, `--junitxml` and `--alluredir`, and reads both artifacts. It
+also requires that the fixture reads the session and publishes only after
+`yield`. Session teardown runs before pytest writes the JUnit report, so the
+properties still land in it. `MQC_REQ_CAS_PRE_0022` traces the case, and
+`consumer_ci.md` section 7.4.4 specifies it.
+
+**The case failed first**, against the unchanged fixture. Three injections
+were each caught: the spend never published, a fresh session published in
+place of the run's, and the spend published before the run's cases.

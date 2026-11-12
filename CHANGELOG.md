@@ -40,6 +40,22 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Each run publishes what it spent, by role, 2026-11-11
+
+**Why it was needed.** No artifact said what a run cost. Where the judge and
+the candidate share a provider key, the provider's bill cannot separate them
+either, and rung 2 spends on the judge alone.
+
+**What changed.** The session fixture in `conftest.py` publishes the run's
+dispatch session's spend after the last case, through the harness
+`publish_run_spend`: candidate, judge and total spend in USD, the ceiling, and
+any unpriced model, as JUnit properties and in the Allure environment file
+after the provenance. A run with no `--max-spend` reads `unpriced`. Nothing is
+written to a tracked file. `MQC_CAS_UNI_115041` runs one precondition in a
+child pytest and reads both artifacts; `MQC_REQ_CAS_PRE_0022` traces it;
+`consumer_ci.md` section 7.4.4 specifies it. The README counts 264
+preconditions, 242 requirements and the harness's 1111 cases.
+
 ### The probe asks every engine the harness supports, 2026-11-11
 
 **Why it was needed.** Every probe run asked no engine and reported no change:

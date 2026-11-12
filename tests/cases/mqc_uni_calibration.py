@@ -5,7 +5,7 @@
 Created: 2026-11-10
 Last updated: 2026-11-11
 
-This file contains ``TestMQCCalibrationSupport``, nine cases on
+This file contains ``TestMQCCalibrationSupport``, ten cases on
 ``tests/cases/calibration_support.py``. They check that a family's calibration
 sends every exemplar of that family's rubrics and nothing from another family,
 that an exemplar scored two levels away is listed by its case, criterion and
@@ -14,7 +14,8 @@ reuses nothing, that a judge which stops answering skips the family with its
 code, that a family which sent no exemplar does not pass, that calibration is
 collected only where a run asks for it live, that a family's judged cases
 rest on its calibration case, that both judge channels spend against the
-run's ceiling, and that a misplaced exemplar fails with the harness code.
+run's ceiling, that a misplaced exemplar fails with the harness code, and
+that a run publishes its spend by role after its last case.
 
 **These run in the ``unit`` precondition gate**, ahead of the calibration
 cases they support, and call no provider: a stand-in judge answers in place of
@@ -38,6 +39,7 @@ Specified by ``docs/design/consumer_ci.md`` section 7.4.1.
 #   115038  a_judged_case_rests_on_its_family_calibration_case
 #   115039  both_judge_channels_spend_against_the_run_ceiling
 #   115040  a_misplaced_exemplar_fails_with_the_uncalibrated_code
+#   115041  a_run_publishes_its_spend_by_role_after_its_last_case
 # ------------------------------------------------------------ end of cases
 
 from typing import Any
@@ -63,6 +65,7 @@ from tests.cases.calibration_unit_support import (
     built_plans,
     collect_calibration,
     collection_calls,
+    publish_one_precondition,
     rubric_exemplars,
 )
 from tests.cases.graded_support import (
@@ -399,3 +402,42 @@ class TestMQCCalibrationSupport:
         message = str(raised.value)
         assert message.startswith("QC_HARNESS_JUDGE_UNCALIBRATED: "), message[:120]
         assert all(failure in message for failure in failures)
+
+    @story("Both judge channels spend against the run's ceiling")
+    def MQC_CAS_UNI_115041_a_run_publishes_its_spend_by_role_after_its_last_case(
+        self, tmp_path: Any
+    ) -> None:
+        """A run writes its spend by role to JUnit and to the Allure environment file.
+
+        Design: ``consumer_ci.md`` section 7.4.4.
+
+        Args:
+            tmp_path (Any): pytest's temporary directory, for the child's artifacts.
+
+        Returns:
+            None
+        """
+        published = publish_one_precondition(tmp_path, "1.5")
+        spend = {
+            "candidate_spend_usd": "0.0000", "judge_spend_usd": "0.0000",
+            "total_spend_usd": "0.0000", "max_spend_usd": "1.5000",
+            "unpriced_models": "none",
+        }
+
+        assert published.status == 0, published.output[-2000:]
+        junit = {name: value for name, value in published.junit.items() if name in
+                 {f"mqc.{field}" for field in spend}}
+        assert junit == {f"mqc.{name}": value for name, value in spend.items()}, junit
+        names = [name for name, _ in published.environment]
+        assert names[-len(spend):] == list(spend), names
+        assert dict(published.environment[-len(spend):]) == spend, published.environment
+        assert "engine" in names[:-len(spend)], (
+            f"the provenance was not written ahead of the spend: {names}"
+        )
+
+        # AFTER THE LAST CASE. A run that spends nothing publishes the same
+        # figures either side of the yield, so the order is read from source.
+        calls = collection_calls(repository_root(), "fixture_mqc_run_provenance")
+        assert "yield" in calls and "publish_run_spend" in calls, calls
+        assert calls.index("yield") < calls.index("dispatch_session") \
+            < calls.index("publish_run_spend"), calls

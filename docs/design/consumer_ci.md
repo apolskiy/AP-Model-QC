@@ -3318,6 +3318,33 @@ the judge and the candidate draw on one total, and a judge call that would
 start past the ceiling is refused with `QC_HARNESS_BUDGET_EXHAUSTED` before
 anything is sent.
 
+#### 7.4.4 Each run publishes what it spent, by role
+
+Added 2026-11-11. **A rung's cost was readable only from the providers'
+bills**, and where the judge and the candidate share a key, not even there. The
+session from section 7.4.3 holds the run's total and the judge's share (harness
+`tier2_execution.md` section 7.7.3), and nothing wrote either down.
+
+**The session fixture in `conftest.py` publishes them after the run's last
+case**, through the harness `publish_run_spend`, from
+`graded_support.dispatch_session`, which is the session both judge channels and
+the candidate path charge. Teardown of a session fixture runs before pytest
+writes its JUnit report, so the figures are final when written.
+
+| Artifact | Carries |
+|---|---|
+| JUnit, under the root `<testsuite>` | `mqc.candidate_spend_usd`, `mqc.judge_spend_usd`, `mqc.total_spend_usd`, `mqc.max_spend_usd`, `mqc.unpriced_models` |
+| `environment.properties` in the Allure results | The provenance fields, then the same five |
+
+**Every run publishes them**, rung or gate. A run with no `--max-spend` loads
+no price table, so its spend fields read `unpriced`; every live rung sets a
+ceiling, so its figures are priced. **No tracked file records them**: the
+figures belong to one run's artifacts (harness `cmn_verdict_and_cli.md` section
+5.6.4).
+
+`MQC_CAS_UNI_115041` runs one precondition in a child pytest with a ceiling,
+then reads both artifacts. Requirement `MQC_REQ_CAS_PRE_0022`.
+
 ### 7.5 A red rung 2 does not refresh anything
 
 **Drift that changes no outcome** is recorded, and the judgements may be
