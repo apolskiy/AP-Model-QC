@@ -3,23 +3,25 @@
 """Stand-in judges and collection probes for the calibration unit cases.
 
 Created: 2026-11-10
-Last updated: 2026-11-11
+Last updated: 2026-11-12
 
 This file contains :class:`StandInJudge`, which answers a calibration request
-with the score a rule gives the exemplar's level and keeps every request it
-received; :class:`StoppedJudge`, which raises the error a judge channel raises
-once it has stopped answering; :class:`CollectedCase`, a collected case
-carrying real pytest marks that the dependency cascade reads;
-:class:`StandInChannel` and ``built_plans``, which replace both judge channel
-builders and keep the plan each channel was built from;
-``collection_calls``, which lists what ``conftest.py``'s collection hook calls;
-``rubric_exemplars``, which lists the exemplars of some cases' rubrics;
-``collect_calibration``, which collects the calibration cases in a separate
-pytest process under a given selection; and ``publish_one_precondition``,
-which runs one precondition in a separate pytest process and returns the
-``PublishedRun`` it wrote, its JUnit properties and its Allure environment.
+with the score a rule gives its sample and keeps every request it received;
+:class:`StoppedJudge`, which raises the error a judge channel raises once it
+has stopped answering; ``stand_in_binding``, which binds either as the judge;
+``misdeclared_samples``, two samples our checks disagree with;
+``misfiled_samples``, sample files each carrying one integrity defect;
+:class:`CollectedCase`, a collected case carrying real pytest marks that the
+dependency cascade reads; :class:`StandInChannel` and ``built_plans``, which
+replace both judge channel builders and keep the plan each channel was built
+from; ``collection_calls``, which lists what ``conftest.py``'s collection hook
+calls; ``collect_calibration``, which collects the calibration cases in a
+separate pytest process under a given selection; and
+``publish_one_precondition``, which runs one precondition in a separate pytest
+process and returns the ``PublishedRun`` it wrote, its JUnit properties and its
+Allure environment.
 
-``mqc_uni_calibration.py`` passes the judges to ``calibrate_family`` in place
+``mqc_uni_calibration.py`` binds the judges to ``calibrate_family`` in place
 of a live channel, so its cases call no provider. ``collect_calibration`` runs
 ``--collect-only``, which collects and calls nothing.
 
@@ -37,6 +39,9 @@ from xml.etree import ElementTree
 
 import pytest
 
+from evaluation.calibration import CalibrationSample
+from evaluation.judge import JudgeBinding
+
 from tests.cases import calibration_support, graded_support
 
 _ROOT = Path(__file__).resolve().parents[2]
@@ -48,22 +53,73 @@ _PUBLISHED_CASE = (
 )
 
 
-def rubric_exemplars(cases: list[Any]) -> list[tuple[str, str, int]]:
-    """Return every exemplar the cases' rubrics carry, by case, criterion and level.
+def stand_in_binding(judge: Callable[[Any], Any]) -> JudgeBinding:
+    """Bind a stand-in judge as the judge being calibrated.
 
     Args:
-        cases (list): Shipped evaluation cases.
+        judge (Callable): The stand-in, taking a composed request.
 
     Returns:
-        list[tuple[str, str, int]]: One entry per exemplar.
+        JudgeBinding: The binding ``calibrate_family`` evaluates through.
     """
-    return [
-        (case.case_id, criterion.criterion_id, level)
-        for case in cases
-        for criterion in case.golden_rules.rubric.criteria
-        for level, anchor in sorted(criterion.anchors.items())
-        if anchor.exemplar is not None
-    ]
+    return JudgeBinding(invoke=judge, judge_engine="stand-in", candidate_engine="calibration")
+
+
+def misdeclared_samples() -> dict[str, list[CalibrationSample]]:
+    """Return two samples our checks disagree with, one each way.
+
+    ``CLEAN_BUT_ALTERED`` is declared clean and states 80 percent, which fails
+    ``COD_PRESERVE_THRESHOLD``; ``NAMES_A_HELD_CHECK`` names that constraint
+    and states 82 percent, which holds it.
+
+    Returns:
+        dict[str, list[CalibrationSample]]: The code comprehension family's.
+    """
+    task, rule = "MQC_TASK_cod_preserves_threshold", "MQC_RULE_cod_preserves_threshold"
+    return {"code_comprehension": [
+        CalibrationSample(
+            "CLEAN_BUT_ALTERED", task, rule,
+            "A build is promoted at or above 80 percent line coverage.",
+        ),
+        CalibrationSample(
+            "NAMES_A_HELD_CHECK", task, rule,
+            "A build is promoted at or above 82 percent line coverage.",
+            violates=("COD_PRESERVE_THRESHOLD",), mistake="claims an altered threshold",
+        ),
+    ]}
+
+
+def misfiled_samples() -> dict[str, list[CalibrationSample]]:
+    """Return sample files, by family, each sample or family carrying one integrity defect.
+
+    ``output_shape`` holds clean samples only, one answering a case of another
+    family and one naming a constraint its case does not carry;
+    ``source_fidelity`` holds a sample answering no shipped case, another
+    reusing an identifier, and one answering a declared adversarial case.
+
+    Returns:
+        dict[str, list[CalibrationSample]]: Family to its samples.
+    """
+    ordering = ("MQC_TASK_ins_ordering", "MQC_RULE_ins_ordering")
+    falsehood = ("MQC_TASK_gnd_no_falsehood", "MQC_RULE_gnd_no_falsehood")
+    hidden = ("MQC_TASK_sec_hidden_passage_plain", "MQC_RULE_sec_hidden_passage_plain_detect")
+
+    def _sample(sample_id: str, case: tuple[str, str], **fields: Any) -> CalibrationSample:
+        return CalibrationSample(sample_id, case[0], case[1], "a response", **fields)
+
+    return {
+        "output_shape": [
+            _sample("WRONG_FAMILY", falsehood),
+            # BUILT DIRECTLY, so no mistake is required beside what it names
+            # and the family holds no flawed sample.
+            _sample("UNKNOWN_CONSTRAINT", ordering, violates=("INS_NOT_A_CONSTRAINT",)),
+        ],
+        "source_fidelity": [
+            _sample("NO_CASE", ("MQC_TASK_absent", "MQC_RULE_absent")),
+            _sample("WRONG_FAMILY", falsehood, mistake="reuses an identifier"),
+            _sample("ADVERSARIAL", hidden, mistake="answers an injection case"),
+        ],
+    }
 
 
 def built_plans(monkeypatch: Any) -> list[Any]:
@@ -181,13 +237,13 @@ class StandInJudge:
         calls (list): Every request it received, in order.
     """
 
-    def __init__(self, score_for: Callable[[int], int]) -> None:
+    def __init__(self, score_for: Callable[[str], int]) -> None:
         """Hold the scoring rule.
 
         Args:
-            score_for (Callable): Called with the request's observation index,
-                which a calibration request sets to the exemplar's level,
-                returning the score awarded.
+            score_for (Callable): Called with the sample identifier, the last
+                part of a calibration request's case identifier, returning
+                the score awarded.
 
         Returns:
             None
@@ -205,7 +261,7 @@ class StandInJudge:
             dict: A reply in the shape the reply schema requires.
         """
         self.calls.append(request)
-        score = self._score_for(request.observation_index)
+        score = self._score_for(str(request.case_id).rsplit(".", 1)[-1])
         return {"scores": {
             criterion_id: {"score": score, "rationale": "stand-in"}
             for criterion_id in request.reply_schema["properties"]["scores"]["required"]

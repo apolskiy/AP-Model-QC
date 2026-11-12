@@ -412,8 +412,8 @@ def judge_binding(config: Any, candidate_engine: str) -> Any:
 
     **One judge, by scope.** A3.2 records why: divergence between judges is a
     finding about judges, and acting on it needs a judge over the judges, which
-    does not bottom out. What checks this one is calibration against exemplars,
-    whose levels were authored and are therefore known-correct.
+    does not bottom out. What checks this one is calibration against authored
+    samples, whose mistakes are stated and therefore known.
 
     Args:
         config (Any): pytest's configuration.

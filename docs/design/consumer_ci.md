@@ -3233,12 +3233,12 @@ question.
 | Signal | Says |
 |---|---|
 | Verdict moved under a live judge | The drift changed an outcome |
-| Exemplar scored away from its anchor | The judge no longer means what the scale says |
+| A calibration sample's stated mistake missed, or a clean sample marked down | The judge no longer catches what the rubric asks it to |
 
-**Only the second can say which judge is right**, because an exemplar is
-known-correct by construction and neither of two verdicts is. A job reporting
-the first alone would tell an operator that something moved and leave them
-without a way to decide what to do about it.
+**Only the second can say which judge is right**, because a calibration sample
+states its mistake and neither of two verdicts does. A job reporting the first
+alone would tell an operator that something moved and leave them without a way
+to decide what to do about it.
 
 #### 7.4.1 One calibration case per family, run only where rung 2 asks for it
 
@@ -3247,27 +3247,77 @@ Added 2026-11-10. The rung 2 step that runs calibration selected it with
 and pytest exited 5. **Both manual evaluations failed there**, and the
 portfolio had no result to show.
 
-**`tests/cases/mqc_cal_calibration.py` holds one case per family**, seven in
-all, `MQC_EVL_CAL_174600` to `174606`. A family whose shipped rules carry no
-exemplar has no case: `tool_compliance` grades by assertion alone.
+**Redesigned 2026-11-12.** The cases sent every rubric exemplar to the judge on
+its own criterion and failed a family whose exemplar the judge placed two
+levels from its label. The first live run, OpenAI and Grok each judged by
+Claude, failed four exemplars, and all four were labeling defects: a level 1
+prohibition exemplar that broke no prohibition, a level 1 exemplar that fit
+level 3, overlapping level 1 and level 3 anchors, and a level 5 rewrite that
+copied its source. The judge's scores were defensible each time, so the
+method measured the labels. The harness replaced it (harness
+`tier3_evaluation.md` section 9); this section follows.
 
-**They are the harness `CAL` layer since 2026-11-11** (harness
-`tier3_evaluation.md` section 9.3). They were written as graded P1 cases,
-`MQC_EVL_EVAL_134600` to `134606`, and a judge off its anchors failed with
-exit 1, the status that means a model underperformed, so a red rung 2 pointed
-at the candidate engine. Those identifiers are retired. A calibration case
-carries no priority and no `evaluator` marker, and its failure carries
-`QC_HARNESS_JUDGE_UNCALIBRATED`, built by the harness
-`uncalibrated_message`, and exits 3.
+**`tests/cases/mqc_cal_calibration.py` holds one case per calibrated family**,
+six in all, `MQC_EVL_CAL_174607` to `174612`, each reading its family's
+samples from `data/calibration/<family>.yaml`. The exemplar cases
+`174600` to `174606` are retired.
+
+**They are the harness `CAL` layer** (harness `tier3_evaluation.md` section
+9.3). A calibration case carries no priority and no `evaluator` marker, and
+its failure carries `QC_HARNESS_JUDGE_UNCALIBRATED`, built by the harness
+`uncalibrated_message`, and exits 3, the status of an instrument defect rather
+than a model finding.
 
 | What a case does | How |
 |---|---|
-| Takes every shipped case whose rule's first family is its own and whose rule carries a rubric | `calibration_support.calibrate_family` |
-| Sends each exemplar to the judge, alone with its criterion and its task's material | The harness `calibrate`, `tier3_evaluation.md` section 9.1 |
-| Passes when every exemplar scores within one level of the level it was written for | The harness tolerance |
-| Fails listing each exemplar scored further away, by case, criterion and level | `calibration_failures` |
+| Reads its family's calibration samples, each answering one shipped case of that family | `calibration_support.calibration_samples` |
+| Evaluates each sample through the graded path unchanged: our checks, then the judge on the whole rubric | The harness `calibrate_sample`, `tier3_evaluation.md` section 9.1 |
+| Passes when every sample agrees: a clean one holds every check and clears every criterion, a flawed one fails exactly the checks it names and drops a criterion below the threshold | The harness agreement rule |
+| Fails listing each sample that disagreed, with its mistake and every criterion's score | `calibration_failures` |
 | Skips with the code where the judge stops answering | A harness event, never a finding about a model or a judge |
-| Fails where the family sent no exemplar at all | A case that measured nothing does not pass |
+| Fails where the family holds no sample | A case that measured nothing does not pass |
+
+##### 7.4.1.1 What a calibration sample is
+
+**A sample is an authored response, clean or carrying one or two stated
+mistakes.** No engine produces it: the judge is calibrated against input whose
+mistakes are known, so that a miss names the mistake the judge did not see.
+
+| Field | Holds |
+|---|---|
+| `sample_id` | Unique across every family's file |
+| `task_id`, `rule_id` | The shipped case it answers, whose rule's first family is the file's |
+| `response` | The text the judge is shown as the candidate output |
+| `violates` | The constraints its mistake breaks that a check reads, or a check's own identifier where the check names no constraint; empty for a clean sample and for a judgement-only one |
+| `mistake` | What is wrong, in one plain statement; empty for a clean sample |
+
+**A flawed sample's mistake is one its rubric judges.** The rubric names no
+constraint, so a mistake the rubric does not measure gives the judge no reason
+to mark it down, and a judge clearing it is right. The `ins_combined` rubric
+asks whether meeting the constraints cost content, so a fourth bullet breaks a
+constraint its judge does not score; `ins_ordering` scores a change listed out
+of order and a change dropped, so its samples carry those mistakes.
+
+| Family | Case | Clean | Checkable mistake | Judgement-only mistake |
+|---|---|---|---|---|
+| `ambiguity_discrimination` | `amb_threshold_warning` | Warns of availability, 0.4 short, and says the incident gate held | No warning given (`AMB_WARN_BEFORE_PROCEEDING`) | Warns that the incident gate, which held, failed |
+| `code_comprehension` | `cod_preserves_threshold` | 82 percent, at or above | Threshold stated as 80 percent (`COD_PRESERVE_THRESHOLD`) | None: the rubric scores a loosened "above" at 3, on the threshold |
+| `output_shape` | `ins_ordering` | Both measured changes first, all four listed | A change without a figure listed first (`INS_MEASURABLES_FIRST`) | A change dropped, the order kept |
+| `premise_discrimination` | `prm_cap_exceeded` | No match: 15 years against a ceiling of 9 | Experience restated as at least 9 years (`PRM_CAP_REPORTED_TRUTHFULLY`) | Reports a match, restating no figure |
+| `requirement_match` | `mat_at_floor` | 78 percent mandatory, 85.3 percent combined, clearing by 0.3 | No fractional credit, so 70 percent and no combined figure (`MAT_FRACTIONAL_CREDIT`, `MAT_COMBINED_WHEN_IN_BAND`) | None: a margin unremarked scores 3 |
+| `source_fidelity` | `gnd_no_falsehood` | 47.1 percent, derived from 41.2 and 87.4 | The share rounded to 47.2 percent, against the system instruction's half-up rounding (`GND_ARITHMETIC_TRUE`) | The share correct, derived in item 4 from figures that do not give it |
+
+**Not calibrated.** `injection_resistance` is decided by our deterministic
+checks first, and a declared adversarial case is never sent to the judge, so a
+sample there would measure nothing; its exemplar case `174602` is retired
+without a successor. `tool_compliance` carries no rubric: a forbidden tool
+call is a check, not a judgement.
+
+**Our checks' half needs no judge.** `MQC_CAS_UNI_115042` evaluates every
+sample with the judge withheld and asserts that the checks fail exactly what
+each names, so a defective sample is found in the unit gate at no spend; and
+`115046` holds each sample to a shipped case of its family, to that case's
+constraints and checks, and to an identifier no other sample carries.
 
 **Its channel neither records nor reuses a judgement.** It is built from a plan
 naming live mode and no fixture root, so `--fill-gaps` has nothing to read and
@@ -3291,10 +3341,10 @@ select `-m "evaluator or tool or sec"`, never collect it, and rung 2 selects
 `pin_support.calibration_case_count` counts them on a row of their own, from
 the modules marked `calibration`.
 
-**A failure exits 3, and a skip does too.** A judge that no longer means what
-the anchors say makes every judged score of its family uninterpretable, which
+**A failure exits 3, and a skip does too.** A judge that misses a stated
+mistake makes every judged score of its family uninterpretable, which
 is an instrument defect rather than a model finding. Its cost is one judge
-call per exemplar, 186 at the time of writing, paced by the judge's roster
+call per sample, 16 at the time of writing, paced by the judge's roster
 spacing and counted against `--max-spend` (section 7.4.3).
 
 #### 7.4.2 A family's judged cases rest on its calibration case, in one invocation

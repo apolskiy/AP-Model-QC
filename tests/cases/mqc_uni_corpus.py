@@ -649,14 +649,13 @@ class TestMQCCorpus:
     def MQC_CAS_UNI_115006_an_authored_anchor_without_an_exemplar_is_reported(
         self, corpus: tuple[list[TaskDataSet], list[GoldenRuleSet]]
     ) -> None:
-        """An uncalibrated rubric accepts whatever the judge does.
+        """An anchor without an exemplar states a level and never shows one.
 
-        An anchor states what a level means; an exemplar shows it. Calibration
-        sends each exemplar through the judge and compares the returned score
-        against the level it was written for, and **that comparison is the only
-        thing in the system that can say which judge is right** when two
-        disagree. A fixture comparison says a score moved; an exemplar
-        comparison says the judge no longer means what the anchors say.
+        An anchor states what a level means; an exemplar shows it, to the
+        author writing the anchor and, at level 5, to the reader of a ticket
+        report, which prints it as what a correct response reads like. Judge
+        calibration does not read exemplars: it reads authored samples whose
+        mistakes are stated (``consumer_ci.md`` section 7.4.1.1).
 
         Returns:
             None
@@ -679,7 +678,7 @@ class TestMQCCorpus:
         assert counted, "no anchors were read, so nothing is being checked"
         assert not missing, (
             f"{len(missing)} of {counted} anchors carry no exemplar, so "
-            f"calibration cannot measure drift against them: "
+            f"they state a level without showing one: "
             + ", ".join(missing[:6])
         )
 
@@ -691,8 +690,8 @@ class TestMQCCorpus:
 
         Assertions are conjunctive, so an exemplar written to score 5 that
         fails its own rule's assertions is incoherent: the case could never
-        award that level however well the judge read it, and calibration would
-        report drift every time the judge behaved correctly.
+        award that level however well the judge read it, and a ticket report
+        would print it as a correct response.
 
         **Levels 1 and 3 are deliberately unconstrained.** A response can be
         assertion-clean and still worthless, which is exactly what a rubric is

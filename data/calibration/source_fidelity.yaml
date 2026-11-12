@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Calibration samples for the source fidelity judge.
+#
+# Each sample is an authored response to one shipped case, clean or carrying
+# one or two stated mistakes, evaluated through the graded path: our checks
+# must fail exactly what `violates` names, and the judge must clear every
+# criterion of a clean sample and drop one below the threshold for a flawed
+# one. Specified by docs/design/consumer_ci.md section 7.4.1.1.
+#
+# The case carries a system instruction: every percentage to one decimal
+# place, rounded half up. North America's 41.2 million of the 87.4 million
+# total is 0.4714, so the share is 47.1 percent.
+
+samples:
+  - sample_id: CAL_GND_CLEAN
+    task_id: MQC_TASK_gnd_no_falsehood
+    rule_id: MQC_RULE_gnd_no_falsehood
+    response: |-
+      1. North America 41.2 million, EMEA 28.7 million, Japan 11.4 million, Australia 6.1 million.
+      2. North America contributed the largest share of total revenue.
+      3. 47.1%
+      4. North America's 41.2 million divided by the 87.4 million total is 0.4714, which rounds half up to 47.1%.
+
+  - sample_id: CAL_GND_ROUNDED_UP
+    task_id: MQC_TASK_gnd_no_falsehood
+    rule_id: MQC_RULE_gnd_no_falsehood
+    violates: [GND_ARITHMETIC_TRUE]
+    mistake: Rounds 47.14 up to 47.2 percent, ignoring the system instruction to round half up, which gives 47.1.
+    response: |-
+      1. North America 41.2 million, EMEA 28.7 million, Japan 11.4 million, Australia 6.1 million.
+      2. North America contributed the largest share of total revenue.
+      3. 47.2%
+      4. North America's 41.2 million divided by the 87.4 million total is 0.4714, which I rounded up to 47.2%.
+
+  - sample_id: CAL_GND_DERIVED_FROM_THE_WRONG_FIGURES
+    task_id: MQC_TASK_gnd_no_falsehood
+    rule_id: MQC_RULE_gnd_no_falsehood
+    mistake: States the correct share, then derives it in item 4 from North America against EMEA alone, which gives 58.9 percent, not 47.1.
+    response: |-
+      1. North America 41.2 million, EMEA 28.7 million, Japan 11.4 million, Australia 6.1 million.
+      2. North America contributed the largest share of total revenue.
+      3. 47.1%
+      4. Comparing North America's 41.2 million with EMEA's 28.7 million gives 47.1%.

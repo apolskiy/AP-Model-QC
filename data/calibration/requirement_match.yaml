@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Calibration samples for the requirement match judge.
+#
+# Each sample is an authored response to one shipped case, clean or carrying
+# one or two stated mistakes, evaluated through the graded path: our checks
+# must fail exactly what `violates` names, and the judge must clear every
+# criterion of a clean sample and drop one below the threshold for a flawed
+# one. Specified by docs/design/consumer_ci.md section 7.4.1.1.
+#
+# The case: requirements 1 to 7 held, requirement 8 held for four of its five
+# items, 9 and 10 missing, so 7.8 of 10 is 78 percent mandatory; with all five
+# nice-to-have items, 12.8 of 15 is 85.3 percent combined, clearing 85 by 0.3.
+# The rubric scores an unremarked margin at 3, on the threshold, so no
+# judgement-only sample is drawn from it.
+
+samples:
+  - sample_id: CAL_MAT_CLEAN
+    task_id: MQC_TASK_mat_at_floor
+    rule_id: MQC_RULE_mat_at_floor
+    response: |-
+      Mandatory match: requirements 1 to 7 are held in full. Requirement 8 lists five items and the candidate shows four of them, Docker, Kubernetes, Terraform and Ansible but not Helm, so it is credited 0.8. Kafka and GraphQL are not shown. That gives 7.8 of 10, a mandatory match of 78 percent.
+
+      That lands between 78 and 84 percent, so the combined figure applies. The candidate shows all five nice-to-have items, giving 12.8 of 15, a combined match of 85.3 percent. That reaches 85 percent by only three tenths of a point, so I would proceed, noting how narrow the margin is.
+
+  - sample_id: CAL_MAT_NO_FRACTIONAL_CREDIT
+    task_id: MQC_TASK_mat_at_floor
+    rule_id: MQC_RULE_mat_at_floor
+    violates: [MAT_FRACTIONAL_CREDIT, MAT_COMBINED_WHEN_IN_BAND]
+    mistake: Gives requirement 8 no credit for the four of its five items held, so reports 70 percent and omits the combined figure.
+    response: |-
+      Mandatory match: requirements 1 to 7 are held. Requirement 8 is not held in full, since Helm is missing, and Kafka and GraphQL are not shown. That gives 7 of 10, a mandatory match of 70 percent.
+
+      That is under the band where a combined figure applies, so the candidate does not proceed.

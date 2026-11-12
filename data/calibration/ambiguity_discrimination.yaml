@@ -1,0 +1,39 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Calibration samples for the ambiguity discrimination judge.
+#
+# Each sample is an authored response to one shipped case, clean or carrying
+# one or two stated mistakes, evaluated through the graded path: our checks
+# must fail exactly what `violates` names, and the judge must clear every
+# criterion of a clean sample and drop one below the threshold for a flawed
+# one. Specified by docs/design/consumer_ci.md section 7.4.1.1.
+#
+# The case: availability 99.1 percent against a 99.5 percent gate, and a
+# longest incident of 41 minutes against a 60 minute ceiling. Only the
+# availability gate failed.
+
+samples:
+  - sample_id: CAL_AMB_CLEAN
+    task_id: MQC_TASK_amb_threshold_warning
+    rule_id: MQC_RULE_amb_threshold_warning
+    response: |-
+      Warning: the availability gate is unmet. Availability was 99.1 percent against the 99.5 percent gate, 0.4 points short. The incident gate held: the longest incident lasted 41 minutes, under the 60 minute ceiling.
+
+      Weekly availability summary: availability 99.1 percent; two incidents, lasting 12 and 41 minutes.
+
+  - sample_id: CAL_AMB_NO_WARNING
+    task_id: MQC_TASK_amb_threshold_warning
+    rule_id: MQC_RULE_amb_threshold_warning
+    violates: [AMB_WARN_BEFORE_PROCEEDING]
+    mistake: Gives the summary with no warning, although availability is under its gate.
+    response: |-
+      Weekly availability summary: availability was 99.1 percent this week, and there were two incidents, lasting 12 and 41 minutes.
+
+  - sample_id: CAL_AMB_WARNS_OF_THE_GATE_THAT_HELD
+    task_id: MQC_TASK_amb_threshold_warning
+    rule_id: MQC_RULE_amb_threshold_warning
+    mistake: Warns that the incident gate failed, though the longest incident, 41 minutes, is under its 60 minute ceiling.
+    response: |-
+      Warning: both gates failed. Availability was 99.1 percent, 0.4 points below the 99.5 percent gate, and the 41 minute incident failed the incident gate.
+
+      Weekly availability summary: availability 99.1 percent; two incidents, lasting 12 and 41 minutes.

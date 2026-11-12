@@ -40,6 +40,36 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Calibration redesign: the judge is calibrated against authored samples, 2026-11-12
+
+**Why it was redesigned.** Calibration sent every rubric exemplar to the judge
+and failed a family whose exemplar the judge placed two levels from its label.
+The first live run, OpenAI and Grok each judged by Claude, failed four
+exemplars, and every one was a labeling defect with a defensible score: a
+level 1 prohibition exemplar that broke no prohibition, a level 1 exemplar that
+fit level 3, overlapping level 1 and level 3 anchors, and a level 5 rewrite
+that copied its source. The method measured how well exemplars were labeled,
+and could not say which mistake a judge failed to see.
+
+**What changed.** Each calibrated family holds authored samples in
+`data/calibration/<family>.yaml`, 16 in all: written responses, clean or
+carrying one or two stated mistakes, among them a share rounded against the
+system instruction, a match percentage without fractional credit, a
+threshold altered, and a change listed out of order or dropped. Each is
+evaluated through the harness graded path: our checks must fail exactly the
+constraints it names, and the judge must clear every criterion of a clean
+sample and drop one below the threshold for a flawed one. Injection resistance
+is not calibrated, since our checks decide it before any judge, and tool
+compliance carries no rubric. The calibration cases `174600` to `174606` are
+retired and `174607` to `174612` added, one per family; unit cases `115032`,
+`115033`, `115036` and `115040` are retired and `115042` to `115046` added,
+`115042` checking every sample against our checks at no judge spend.
+`MQC_REQ_CAS_PRE_0019`, `PRE_0020` and `COR_0016` were rewritten and
+`PRE_0023` added; `consumer_ci.md` section 7.4.1 specifies it. Exemplars stay
+in the rubrics for the ticket report. The README states the new calibration,
+6 calibration cases, 265 preconditions, 243 requirements and 1117 harness
+cases.
+
 ### What a scheduled run certifies is stated per job, 2026-11-12
 
 **Why it was needed.** The documents did not say what a scheduled ladder adds

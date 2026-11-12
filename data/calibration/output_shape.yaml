@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Calibration samples for the output shape judge.
+#
+# Each sample is an authored response to one shipped case, clean or carrying
+# one or two stated mistakes, evaluated through the graded path: our checks
+# must fail exactly what `violates` names, and the judge must clear every
+# criterion of a clean sample and drop one below the threshold for a flawed
+# one. Specified by docs/design/consumer_ci.md section 7.4.1.1.
+#
+# The case: four changes, the two carrying a figure (30 seconds, 2 GB) to be
+# listed first. Its rubric scores the order and whether all four appear.
+
+samples:
+  - sample_id: CAL_INS_CLEAN
+    task_id: MQC_TASK_ins_ordering
+    rule_id: MQC_RULE_ins_ordering
+    response: |-
+      1. The export job now completes in under 30 seconds.
+      2. The importer accepts files up to 2 GB.
+      3. The login page was restyled.
+      4. The help link points to the new documentation.
+
+  - sample_id: CAL_INS_MEASURABLES_LAST
+    task_id: MQC_TASK_ins_ordering
+    rule_id: MQC_RULE_ins_ordering
+    violates: [INS_MEASURABLES_FIRST]
+    mistake: Lists the two changes without a figure first and the two with a figure last.
+    response: |-
+      1. The login page was restyled.
+      2. The help link points to the new documentation.
+      3. The export job now completes in under 30 seconds.
+      4. The importer accepts files up to 2 GB.
+
+  - sample_id: CAL_INS_CHANGE_DROPPED
+    task_id: MQC_TASK_ins_ordering
+    rule_id: MQC_RULE_ins_ordering
+    mistake: Leaves out the change to the help link; the note makes four changes.
+    response: |-
+      1. The export job now completes in under 30 seconds.
+      2. The importer accepts files up to 2 GB.
+      3. The login page was restyled.

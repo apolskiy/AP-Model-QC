@@ -8945,3 +8945,42 @@ as a precondition for spending; skipping them on a matching commit pair and
 package set was weighed and not built, because the saving is CI minutes only.
 The live rungs measure a judge or model change behind an unchanged name. The
 README carries the same in one paragraph, and no workflow changed.
+
+## 2026-11-12: Calibration redesign
+
+**Calibration was redesigned as per the project owner's review and
+instruction.** Rung 2 of the OpenAI and Grok ladders, each judged by Claude,
+failed calibration on four exemplars. Reviewed one by one, all four were
+rubric defects and Claude's scores were defensible:
+`C_INS_PROHIBITION_NATURAL` level 1 broke no prohibition,
+`C_COD_WHO_IS_AFFECTED` level 1 fit level 3, `C_GND_CEILING_ARITHMETIC`
+level 3 matched the level 1 description, and `C_MAT_STATED_REWRITE_QUALITY`
+level 5 copied its source. The owner's ruling: a judge is calibrated against
+well-defined artificial input, responses that break no constraint and
+responses that break one or two at a time, each naming exactly the mistake it
+carries; rubrics name no constraint, and the sample does; judgement-only
+mistakes are what the judge is for, so they are calibrated too; injection is
+decided by our deterministic checks first, and a forbidden tool call is never
+judged, so neither is calibrated. Only calibration changed: replay and live
+judgement were left as they are. The harness redesign is in its
+`tier3_evaluation.md` section 9.
+
+**A flawed sample's mistake is one its rubric judges.** The rubrics score the
+quality a constraint protects, not the constraint: `ins_combined` asks whether
+meeting the ceilings cost content, so a fourth bullet breaks a constraint its
+judge has no reason to mark down. The samples were therefore drawn from cases
+whose rubric scores the mistake: `ins_ordering` for order and a dropped
+change, `gnd_no_falsehood` for a share rounded against its system instruction
+and for a share derived from the wrong figures, `mat_at_floor` for a match
+percentage without fractional credit, `prm_cap_exceeded`,
+`amb_threshold_warning` and `cod_preserves_threshold`. Two families carry no
+judgement-only sample, because their rubric scores the candidate mistake at
+3, on the threshold: a loosened "above" in `cod_preserves_threshold` and an
+unremarked margin in `mat_at_floor`. Words per sentence and bullet count are
+not calibrated for the same reason: no rubric scores them.
+
+**Sixteen samples, every one agreeing with our checks** with the judge
+withheld, which `115042` holds in the unit gate. Seven injections into the
+support code and the samples were each caught. The calibration cases are new
+identifiers, `174607` to `174612`, since their behavior changed, and
+`174602`, injection, has no successor.
