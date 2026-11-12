@@ -3191,6 +3191,39 @@ run it is the precondition that decides whether spending quota is worth it. It
 is free, so running it twice costs nothing and removes the need to reason about
 a result carried between workflows.
 
+#### 7.3.1 What a scheduled run certifies when no code changed
+
+Added 2026-11-12. **Code is certified when it changes, not on a schedule.** A
+commit to this repository runs its gate (`gate-<target>.yml`, preconditions
+and rung 1), and a harness commit runs this repository's suite against it
+through the harness's `regress-consumers-on-merge.yml`. No code change waits
+for a ladder to be certified.
+
+**So a scheduled ladder usually fires on code that is already certified**, and
+its first three jobs repeat what the last green gate established. Its last two
+jobs are the measurement it exists for:
+
+| Job | What it certifies | When the code is unchanged since its last green gate | Spends |
+|---|---|---|---|
+| `resolve` | The paired harness commit has a green gate | Confirms the same pairing | Nothing |
+| `preconditions` | The corpus loads, joins and passes referential integrity | Repeats the gate's result | CI minutes |
+| `deterministic` (rung 1) | Our code reproduces every frozen outcome | Repeats the gate's result | CI minutes |
+| `judge` (rung 2) | The live judge still grades the recorded responses as it did | **New measurement**: whether the judge moved | Judge API calls |
+| `model` (rung 3) | The engine's live responses still pass | **New measurement**: whether the model moved | Candidate and judge API calls |
+
+**The two replay jobs stay, as a precondition for spending.** On unchanged code
+they add one thing: they catch a change underneath it, from a ranged runtime
+dependency, the runner image or a Python patch release, before the live rungs
+spend on a broken instrument. Skipping them safely would need proof that the
+gate ran on the same commit pair with the same installed packages. That was
+weighed on 2026-11-12 and not built, because the saving is CI minutes and no
+API spend.
+
+**Unchanged code is the case a scheduled run exists for** (section 4.18.3,
+its last row). A provider can change a model's behaviour behind an unchanged
+name and version string, which the probe in section 4.23 cannot see; rungs 2
+and 3 measure it. The scheduled run is not a re-certification of our code.
+
 ### 7.4 What rung 2 reports, and what calibration adds
 
 Rung 2 re-judges stored responses with the live judge and compares the verdict.

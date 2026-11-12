@@ -8931,3 +8931,17 @@ properties still land in it. `MQC_REQ_CAS_PRE_0022` traces the case, and
 **The case failed first**, against the unchanged fixture. Three injections
 were each caught: the spend never published, a fresh session published in
 place of the run's, and the spend published before the run's cases.
+
+## 2026-11-12: What a scheduled run certifies, stated per job
+
+**What was missing.** No document said what a scheduled ladder adds when the
+code has not changed since its last green gate. **Why.** Section 7.3 justified
+repeating rung 1 by its cost alone, and the purpose of the live rungs on
+unchanged code was implied by section 4.18.3 rather than stated.
+
+**Section 7.3.1 now tables each job**: what it certifies, what it adds on
+unchanged code, and what it spends. The replay jobs repeat the gate and stay
+as a precondition for spending; skipping them on a matching commit pair and
+package set was weighed and not built, because the saving is CI minutes only.
+The live rungs measure a judge or model change behind an unchanged name. The
+README carries the same in one paragraph, and no workflow changed.

@@ -40,6 +40,21 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### What a scheduled run certifies is stated per job, 2026-11-12
+
+**Why it was needed.** The documents did not say what a scheduled ladder adds
+when no code changed, so its replay jobs read as a re-certification of code
+the gate had already certified.
+
+**What changed.** `consumer_ci.md` section 7.3.1 lists each job of a ladder,
+what it certifies, what it adds on unchanged code, and what it spends. Code is
+certified on change, by this repository's gate and by the harness's consumer
+regression. On unchanged code the replay jobs repeat a green gate and stay as a
+free precondition for spending, catching a dependency or runner change; the
+live rungs measure whether the judge or the model moved, which is what the
+scheduled run is for. The README states the same in one paragraph. No
+workflow changed.
+
 ### Each run publishes what it spent, by role, 2026-11-11
 
 **Why it was needed.** No artifact said what a run cost. Where the judge and

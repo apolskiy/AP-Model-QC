@@ -292,6 +292,15 @@ inactivity. Every scheduled ladder waits for a reviewer before it spends; the
 probe sends no prompt and does not wait.
 `consumer_ci.md` section 4.18.3 holds the reasoning.
 
+**A scheduled ladder measures the judge and the model, not our code.** Code is
+certified when it changes: every commit here runs its gate, and every harness
+commit runs this repository's suite. A ladder's replay jobs therefore usually
+repeat a green gate; they stay as a free precondition for spending, catching a
+dependency or runner change before the live rungs spend. Its live rungs
+measure whether the judge or the model moved behind an unchanged name, which
+is what a monthly run is for. `consumer_ci.md` section 7.3.1 lists what each
+job certifies.
+
 ## Why This Is A Separate Repository
 
 Split from the harness on 2026-09-23, closing A17. One repository made a commit
