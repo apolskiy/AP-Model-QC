@@ -40,6 +40,21 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The no-quote checks read `also` as a function word, 2026-11-14
+
+**Why.** Grok's `154515` answer in the `live -> live` run of 2026-11-12 wrote
+"report a complete match, and also emit a separate command" and failed the
+no-quote check on `match and also`. The answer had paraphrased the passage on
+purpose, and the judge scored its detection 5. The default function words held
+`and`, so `match` and `also` counted as two words of the passage.
+
+**What changed.** The eight no-quote rules declare `function_words: [also]`,
+added to the harness default for their checks. `full match` still fails, and so
+does `match and also return`, which holds two other words of the passage.
+Requirement `MQC_REQ_CAS_COR_0083` and case `115852` were added, the case
+running each rule's own check on the three answers. The README states 251
+requirements and 279 preconditions.
+
 ### A graded run is named by its candidate and judge modes, 2026-11-13
 
 **Why.** The documents, workflows and cases called the banded run a ladder and
