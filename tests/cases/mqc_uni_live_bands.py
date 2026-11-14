@@ -3,7 +3,7 @@
 """Unit preconditions for the regression run, banded as the gate is.
 
 Created: 2026-11-12
-Last updated: 2026-11-13
+Last updated: 2026-11-14
 
 This file contains ``TestMQCLiveBands``, five cases over ``evaluate-engine.yml``
 and its callers. Each stage is the gate's three band jobs with the stage's
@@ -18,7 +18,7 @@ defect, **not a model finding**: the run exits 3 and no graded case executes,
 and the module carries no priority marker, per the harness
 ``framework-rules.md`` section 3.3.
 
-Specified by ``docs/design/consumer_ci.md`` sections 7.8 and 7.4.5.
+Specified by ``docs/design/consumer_ci.md`` sections 6.5, 7.8 and 7.4.5.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -37,6 +37,12 @@ import pytest
 from cmn.case_steps import step
 from cmn.grouping import story
 
+from tests.cases.debug_support import (
+    DEBUG_ENVIRONMENT,
+    DEBUG_LIVE,
+    environment_of,
+    expected_environment,
+)
 from tests.cases.live_band_support import (
     BANDS,
     DEFAULT_OS,
@@ -127,7 +133,7 @@ class TestMQCLiveBands:
             if any(flag_value(line, "--mode") == "live"
                    or flag_value(line, "--judge-mode") == "live"
                    for line in run_lines(job, root))
-            and job.get("environment") != _LIVE_ENVIRONMENT
+            and environment_of(job) != expected_environment(workflow.name, name)
         ]
 
         step(1, "find all nine band jobs in the regression run")
@@ -145,7 +151,9 @@ class TestMQCLiveBands:
         step(5, "find each band's report stem and carried outcomes named for its stage's pair")
         assert not unpaired, unpaired
 
-        step(6, f"find every job running a case live naming the {_LIVE_ENVIRONMENT!r} environment")
+        step(6, f"find every job running a case live naming the {_LIVE_ENVIRONMENT!r} "
+                f"environment, the debug workflow's {DEBUG_LIVE!r} job naming "
+                f"{DEBUG_ENVIRONMENT!r}")
         assert not unguarded, unguarded
 
     @story("The regression run is banded as the gate is")

@@ -3,11 +3,14 @@
 """Write a dispatch input to the file the harness selection reads.
 
 Created: 2026-10-03
-Last updated: 2026-10-21
+Last updated: 2026-11-14
 
 This file contains ``main``, which reads the test identifiers from the
 ``REQUESTED`` environment variable, split on commas and newlines, and writes
-them one per line to the file named by ``--out``. An empty input is refused.
+them one per line to the file named by ``--out``. An empty input is refused,
+and so is one naming more entries than ``--max-entries`` where it is given:
+the debug workflow's live job passes 20 (``consumer_ci.md`` section 6.5), and
+nothing is written for a refused list.
 
 ``debug-cases-on-demand.yml`` runs it with the identifiers typed into the
 workflow dispatch form, and the pytest step that follows passes the file as
@@ -40,13 +43,15 @@ def main(argv: list[str]) -> int:
         argv (list[str]): Command line arguments.
 
     Returns:
-        int: ``0`` when a file was written, ``1`` when the input named nothing.
-        **An empty input is refused here** rather than reaching the harness,
-        because a dispatch with no tests named is a mistake at the form and a
-        clearer message is available at this end.
+        int: ``0`` when a file was written, ``1`` when the input named nothing
+        or more entries than ``--max-entries``. **An empty input is refused
+        here** rather than reaching the harness, because a dispatch with no
+        tests named is a mistake at the form and a clearer message is available
+        at this end.
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--max-entries", type=int, default=None)
     arguments = parser.parse_args(argv)
 
     requested = [
@@ -56,6 +61,12 @@ def main(argv: list[str]) -> int:
     ]
     if not requested:
         print("::error::no test identifiers were supplied")
+        return 1
+    if arguments.max_entries is not None and len(requested) > arguments.max_entries:
+        print(
+            f"::error::{len(requested)} tests were requested and this run takes at most "
+            f"{arguments.max_entries}; split the selection across runs"
+        )
         return 1
 
     arguments.out.parent.mkdir(parents=True, exist_ok=True)

@@ -116,7 +116,7 @@ so nobody is tempted to.
 
 | You want to | Use | Blocks a merge | Spends quota |
 |---|---|---|---|
-| Run one case or a few, right now | `debug-cases-on-demand` | No | Only if you ask |
+| Run one case or a few, right now | `debug-cases-on-demand`. Replay by default; `mode` `live` waits for the owner's approval, takes **at most 20 tests** and spends up to `max_spend`, $0.50 by default (section 2.3) | No | Only if you ask |
 | Stabilize cases against a harness in flight | `debug-cases-on-demand` from your `stabilization-*` branch | No | Only if you ask |
 | Check a branch before opening a pull request | Push it. One `gate-<engine>` per target runs itself | Yes, on the pull request | No |
 | Regression across one target, live | `evaluate-<engine>-scheduled`, which also fires monthly by itself. Inputs: `max_spend`, the ceiling for the whole regression run, $7.00 by default; `os`, `ubuntu-26.04` by default or `windows-latest`; `reason` | No | **Yes, `replay -> live` and `live -> live`, each as P0, P1 and P2-P4 bands** |
@@ -225,6 +225,25 @@ pairing yet**, such as somebody's feature branch or a specific commit. A commit
 SHA is accepted and is the precise thing to use when you are comparing two
 harness revisions against the same cases.
 
+### 2.3 A live debug run: at most 20 tests, after approval
+
+**Debug in replay first.** A new or changed case, or a new harness, is tried
+against the recordings already committed, which spends nothing. Run live only
+to record what replay cannot show: an engine answering unexpectedly, or the
+engine or the judge failing with an error, in a regression run.
+
+| `mode` | Job | Waits for | Takes | Spends |
+|---|---|---|---|---|
+| `replay` | `debug_replay` | Nothing | Any number of tests | Nothing |
+| `live` | `debug_live` | **The owner's approval**, in the run's page under Actions | **At most 20 tests** | Up to `max_spend`, $0.50 by default |
+
+**A live run of more than 20 tests is refused before anything is installed or
+spent.** A debug run is one or two cases; split a larger selection across runs.
+
+**What it recorded is in the artifact**, under `recordings/`, each file at its
+path in this repository. Download it and commit the recording you want as the
+case's base recording. `consumer_ci.md` section 6.5.
+
 ---
 
 ## 3. Dispatching It
@@ -263,7 +282,7 @@ The run is named for what it does, so the Actions list is readable without
 opening anything:
 
 ```
-DEBUG (no verdict) 115005,115006 on stabilization-10-14-2026
+DEBUG (no verdict) replay 115005,115006 on stabilization-10-14-2026
 ```
 
 ---
@@ -285,7 +304,7 @@ shapes.
 | `mqc-reports-cases-<engine>-live-live-<band>-by-<judge>` | The scheduled evaluation, live stage, one per band | 90 days |
 | `mqc-reports-calibration-<judge>` | A judge's calibration run | 90 days |
 | `mqc-reports-gate-<target>-*` | A gate run, per band | 90 days |
-| `scratch-debug-cases-<run id>` | `debug-cases-on-demand` | 14 days |
+| `scratch-debug-cases-<run id>` | `debug-cases-on-demand`; a live run adds `recordings/` | 14 days |
 
 **`mqc-reports-` is the durable prefix and `scratch-` is not.** A debug run is
 excluded from the record by three independent mechanisms: the name carries no

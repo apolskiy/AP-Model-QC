@@ -3,7 +3,7 @@
 """Unit preconditions for what this repository's CI workflows must and must not do.
 
 Created: 2026-09-26
-Last updated: 2026-11-13
+Last updated: 2026-11-14
 
 This file contains ten cases over the workflow definitions, read through
 ``workflow_support``. ``TestMQCWorkflowProperties`` checks the debug workflow yields no
@@ -58,6 +58,7 @@ from cmn.grouping import story
 from cmn.metadata import COLLECTED_PREFIX as _COLLECTOR_PREFIX
 from cmn.ci_gating import ungated_graded_jobs
 
+from tests.cases.debug_support import DEBUG_ENVIRONMENT, environment_of
 from tests.cases.workflow_support import (
     GRADED_MARKERS as _GRADED_MARKERS,
     WORKFLOWS as _WORKFLOWS,
@@ -507,6 +508,10 @@ class TestMQCResolveObligation:
         run producing a marked result costs nothing. An ungated live run has
         nothing to offer in exchange for the quota, so it does not start.
 
+        **The debug workflow is the exception**: every job in it that spends
+        names ``debug_live`` and waits for the owner's approval instead
+        (``consumer_ci.md`` sections 3.9.2 and 6.5).
+
         Returns:
             None
         """
@@ -520,6 +525,22 @@ class TestMQCResolveObligation:
                 )
             }
             if not spending:
+                continue
+
+            # THE DEBUG WORKFLOW WAITS FOR APPROVAL INSTEAD OF GREEN. It debugs
+            # the cases and harness versions a green gate has not passed yet,
+            # so its live job waits on the owner in debug_live. Sections 3.9.2
+            # and 6.5.
+            if workflow.name == _DEBUG:
+                unapproved = sorted(
+                    name for name in spending
+                    if environment_of(jobs[name]) != DEBUG_ENVIRONMENT
+                )
+                assert not unapproved, (
+                    f"{workflow.name} jobs {unapproved} spend without naming "
+                    f"{DEBUG_ENVIRONMENT!r}, so a debug run spends with neither "
+                    f"the green gate nor the owner's approval before it"
+                )
                 continue
 
             guards = {

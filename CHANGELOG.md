@@ -40,6 +40,29 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A live debug run waits for approval and runs at most 20 tests, 2026-11-14
+
+**Why.** The `live` environment is to admit `main` alone and ask nobody, so a
+regression run is not held at six approvals, and the debug workflow named it
+too while checking out any branch through `case_ref`. A live debug run also
+wrote its recordings into the runner's checkout and lost them with it, which
+is the unexpected answer or error it was run to capture, and its ceiling
+defaulted to $4.00 with no limit on how many tests it took.
+
+**What changed.** The debug workflow is two jobs. `debug_replay` names no
+environment and reaches no key. `debug_live` names the new `debug_live`
+environment, which carries the owner as required reviewer, refuses more than 20
+requested tests before anything is installed (`tools/write_test_list.py
+--max-entries`), defaults to a $0.50 ceiling, and copies every recording and
+judgement it wrote into its artifact under `recordings/`. The dispatch form, the
+run summary, `consumer_ci.md` section 6.5 and `docs/model_running_jobs.md`
+section 2.3 state the limit. Requirements `MQC_REQ_CAS_CI_0092` to `0094` and
+cases `115853` to `115855` were added. `MQC_REQ_CAS_CI_0010` and `0086` now
+state the debug workflow's exception: its live job waits for approval in
+`debug_live` instead of for green, and names `debug_live` instead of `live`;
+`115705` and `115837` check the same. The README states 254 requirements and
+282 preconditions.
+
 ### The no-quote checks read `also` as a function word, 2026-11-14
 
 **Why.** Grok's `154515` answer in the `live -> live` run of 2026-11-12 wrote

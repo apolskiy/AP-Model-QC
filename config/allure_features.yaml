@@ -87,6 +87,7 @@ modules:
   # This repository's own pipeline: the bands, the jobs and the pin.
   tests/cases/mqc_uni_band_carry.py: Consumer CI
   tests/cases/mqc_uni_band_gating.py: Consumer CI
+  tests/cases/mqc_uni_debug_workflow.py: Consumer CI
   tests/cases/mqc_uni_engine_jobs.py: Consumer CI
   tests/cases/mqc_uni_harness_pin.py: Consumer CI
   tests/cases/mqc_uni_judge_dimension.py: Consumer CI

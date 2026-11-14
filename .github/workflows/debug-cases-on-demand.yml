@@ -17,13 +17,20 @@
 # case did not pass; it does not say whether the case is wrong or the model is
 # wrong, and those prompt entirely different fixes. The rubric is what separates
 # them, which is the whole reason to spend a judge request here.
+#
+# TWO JOBS, ONE PER MODE (consumer_ci.md section 6.5). debug_replay replays the
+# candidate and the judge, names no environment and reaches no key, so it
+# spends nothing and needs nobody's approval. debug_live runs live in the
+# debug_live environment, which carries the owner as required reviewer, so it
+# waits for approval, runs AT MOST 20 TESTS, defaults to a $0.50 ceiling, and
+# keeps every recording it wrote in its artifact.
 name: debug-cases-on-demand
 
 on:
   workflow_dispatch:
     inputs:
       tests:
-        description: "Test identifiers or full test names, one per line. Not nodeids"
+        description: "Test identifiers or full test names, one per line. Not nodeids. Live: at most 20"
         required: true
         type: string
       case_ref:
@@ -37,9 +44,9 @@ on:
         default: ""
         type: string
       max_spend:
-        description: "USD ceiling for this run. The monthly cap is $20 per provider"
+        description: "USD ceiling for a live run, which is one or two cases. Replay spends nothing"
         required: false
-        default: "4.00"
+        default: "0.50"
         type: string
       engine:
         description: "Engine to run against"
@@ -48,7 +55,7 @@ on:
         type: choice
         options: [gemini, openai, claude, grok]
       mode:
-        description: "live or replay. Replay spends nothing: the judge replays too"
+        description: "replay spends nothing. live waits for approval and runs at most 20 tests"
         required: false
         default: replay
         type: choice
@@ -60,7 +67,7 @@ on:
         type: choice
         options: [judged, unjudged]
 
-run-name: "DEBUG (no verdict) ${{ inputs.tests }} on ${{ inputs.case_ref || github.ref_name }}"
+run-name: "DEBUG (no verdict) ${{ inputs.mode }} ${{ inputs.tests }} on ${{ inputs.case_ref || github.ref_name }}"
 
 permissions:
   contents: read
@@ -70,13 +77,12 @@ env:
   PYTHON_VERSION: "3.14"
 
 jobs:
-  debug:
-    name: debug
+  debug_replay:
+    name: debug, replay
+    if: inputs.mode == 'replay'
     runs-on: ubuntu-26.04
-    # Named because a live run needs a credential. Gating derives from
-    # selection mode and run context, neither of which a credential touches,
-    # so this stays ungated.
-    environment: live
+    # NO ENVIRONMENT AND NO KEY. Both sides replay, so nothing here can spend,
+    # and a branch is debugged without anybody's approval.
     steps:
       - uses: actions/checkout@v5
         with:
@@ -176,24 +182,15 @@ jobs:
         id: run
         continue-on-error: true
         env:
-          # EVERY ROSTERED ENGINE'S KEY, because the engine is a choice and
-          # live is one of the modes. A secret reaches a step only by name.
-          # Harness `harness_ci_pipeline.md` section 8.5.4.
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-          # THROUGH THE ENVIRONMENT. The engine and mode are choices from a
-          # list this workflow does not enforce in the shell, and the list is a
-          # path rather than free text somebody types.
+          # THROUGH THE ENVIRONMENT. The engine is a choice from a list this
+          # workflow does not enforce in the shell, and the list is a path
+          # rather than free text somebody types.
           SELECTION: reports/requested-tests.txt
           ENGINE: ${{ inputs.engine }}
-          RUN_MODE: ${{ inputs.mode }}
         run: |
           pytest --tests-file "${SELECTION}" \
-            --max-spend "${{ inputs.max_spend }}" \
             --engine "${ENGINE}" \
-            --mode "${RUN_MODE}" \
+            --mode replay \
             ${{ inputs.judge == 'unjudged' && '--judge-mode off' || '' }} \
             --judge-on-failure \
             --out-dir debug-artifacts/ \
@@ -218,10 +215,9 @@ jobs:
           PIN_SOURCE: ${{ steps.pin.outputs.source }}
           TESTS_REQUESTED: ${{ steps.resolve.outputs.count }}
           ENGINE: ${{ inputs.engine }}
-          RUN_MODE: ${{ inputs.mode }}
         run: |
           {
-            echo "# Case debug run"
+            echo "# Case debug run, replay"
             echo ""
             echo "**This run carries no verdict and gates nothing.**"
             echo "A hand-typed selection yields no verdict, whatever its result."
@@ -231,7 +227,7 @@ jobs:
             echo "| Case ref | ${CASE_REF_SHOWN} |"
             echo "| Harness | ${HARNESS_SHA} (${PIN_SOURCE}) |"
             echo "| Tests requested | ${TESTS_REQUESTED} |"
-            echo "| Engine, mode | ${ENGINE}, ${RUN_MODE} |"
+            echo "| Engine, mode | ${ENGINE}, replay |"
             echo "| Judged on failure | yes |"
             echo ""
             echo "### Reading the rubric on a failed case"
@@ -247,4 +243,148 @@ jobs:
             echo "**A replay run spends nothing.** The candidate and the judge"
             echo "both come from recordings; a failed case no live run has judged"
             echo "reports its judgement as unavailable. consumer_ci.md section 6.4."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  debug_live:
+    name: debug, live, at most 20 tests, after approval
+    if: inputs.mode == 'live'
+    runs-on: ubuntu-26.04
+    # WAITS FOR APPROVAL. debug_live carries the owner as required reviewer and
+    # admits any branch, because a debug run checks out case_ref; `live`, which
+    # the regression run names, admits main alone and asks nobody.
+    # consumer_ci.md section 6.5.
+    environment: debug_live
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.case_ref || github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # AT MOST 20 TESTS, REFUSED BEFORE ANYTHING IS INSTALLED OR SPENT. A
+      # debug run is one or two cases, and past 20 it is a regression run
+      # without its gates; split a larger selection across runs.
+      - name: Write the requested tests, at most 20
+        id: resolve
+        shell: bash
+        env:
+          REQUESTED: ${{ inputs.tests }}
+        run: |
+          python "${GITHUB_WORKSPACE}/tools/write_test_list.py" \
+            --out reports/requested-tests.txt --max-entries 20 >> "$GITHUB_OUTPUT"
+
+      # The resolver and the install, as debug_replay states them: PyYAML
+      # alone first, and THE GREEN GATE DOES NOT APPLY.
+      - name: Install PyYAML for the resolver
+        run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
+
+      - name: Resolve the harness to pin
+        id: pin
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HARNESS_REF: ${{ inputs.harness_ref }}
+          CASE_REF: ${{ inputs.case_ref || github.ref_name }}
+        run: |
+          if [ -n "${HARNESS_REF}" ]; then
+            {
+              echo "harness_repository=apolskiy/AP-Harness-QC"
+              echo "harness_sha=${HARNESS_REF}"
+              echo "source=input"
+            } >> "$GITHUB_OUTPUT"
+          else
+            python -m tools.harness_pin --case-branch "${CASE_REF}" || true
+            echo "source=mapping" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install the harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ steps.pin.outputs.harness_repository }}@${{ steps.pin.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+
+      - name: Run the selected cases live, judging failures
+        id: run
+        continue-on-error: true
+        env:
+          # EVERY ROSTERED ENGINE'S KEY, because the engine is a choice. A
+          # secret reaches a step only by name. Harness
+          # `harness_ci_pipeline.md` section 8.5.4.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          SELECTION: reports/requested-tests.txt
+          ENGINE: ${{ inputs.engine }}
+          MAX_SPEND: ${{ inputs.max_spend }}
+        run: |
+          pytest --tests-file "${SELECTION}" \
+            --max-spend "${MAX_SPEND}" \
+            --engine "${ENGINE}" \
+            --mode live \
+            ${{ inputs.judge == 'unjudged' && '--judge-mode off' || '' }} \
+            --judge-on-failure \
+            --out-dir debug-artifacts/ \
+            --junitxml=debug-artifacts/junit-debug.xml
+
+      # KEEP WHAT THIS RUN RECORDED. A live run writes its recordings and
+      # judgements into the checkout, which ends with the run, so every file
+      # it added or changed is copied into the artifact, path kept, to be
+      # downloaded and committed as a base recording. Whatever the outcome:
+      # an unexpected answer or an error is what this run is for.
+      - name: Keep the recordings this run wrote
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p debug-artifacts/recordings
+          git ls-files --modified --others --exclude-standard -- tests/fixtures/replay \
+            | while IFS= read -r recorded; do
+                cp --parents "${recorded}" debug-artifacts/recordings/
+              done
+          echo "kept $(find debug-artifacts/recordings -type f | wc -l) recorded file(s)"
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          # Does not begin with the collector prefix, so exclusion from the
+          # durable record does not depend on a negative match.
+          name: scratch-debug-cases-${{ github.run_id }}
+          path: debug-artifacts/
+          retention-days: 14
+
+      - name: Write the debug summary
+        if: always()
+        shell: bash
+        env:
+          CASE_REF_SHOWN: ${{ inputs.case_ref || github.ref_name }}
+          HARNESS_SHA: ${{ steps.pin.outputs.harness_sha }}
+          PIN_SOURCE: ${{ steps.pin.outputs.source }}
+          TESTS_REQUESTED: ${{ steps.resolve.outputs.count }}
+          ENGINE: ${{ inputs.engine }}
+          MAX_SPEND: ${{ inputs.max_spend }}
+        run: |
+          {
+            echo "# Case debug run, live"
+            echo ""
+            echo "**This run carries no verdict and gates nothing.**"
+            echo "A hand-typed selection yields no verdict, whatever its result."
+            echo ""
+            echo "**A live debug run takes at most 20 tests**, and a larger"
+            echo "selection is refused before anything is spent: split it across runs."
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Case ref | ${CASE_REF_SHOWN} |"
+            echo "| Harness | ${HARNESS_SHA} (${PIN_SOURCE}) |"
+            echo "| Tests requested | ${TESTS_REQUESTED} of at most 20 |"
+            echo "| Engine, mode | ${ENGINE}, live |"
+            echo "| Ceiling | \$${MAX_SPEND} |"
+            echo "| Judged on failure | yes |"
+            echo ""
+            echo "**The recordings this run wrote** are in the artifact under"
+            echo "recordings/, each at its path in this repository. Commit one to"
+            echo "make it the case's base recording. consumer_ci.md section 6.5."
           } >> "$GITHUB_STEP_SUMMARY"

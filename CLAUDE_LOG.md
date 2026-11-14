@@ -9126,3 +9126,51 @@ made a function word, went NOT CAUGHT, because the third answer then read
 3. The answer was changed to hold only `match` and `return` beside `and also`,
 and all four were then caught. The helpers moved to
 `tests/cases/declared_source_support.py`, a case module holding only cases.
+
+## 2026-11-14: A live debug run waits for approval, runs at most 20 tests, and keeps its recordings
+
+**A) What was wrong.** `consumer_ci.md` section 7.8.5 has `live` admit `main`
+alone with no reviewer, and the debug workflow named `live` while checking out
+any branch through `case_ref`, so a debug run started from `main` would run a
+branch's code with the provider keys. A live debug run also wrote its
+recordings into the runner's checkout, which ends with the run, and uploaded
+only its reports. **B) Why it happened.** The debug workflow was one job for
+both modes, so the one environment that held the keys had to serve the
+regression run and the debug run alike, and nothing named what a live run left
+behind.
+
+**The ruling.** Debugging is replay first, against recordings already made; a
+live debug run exists to record an unexpected answer or an error from a
+regression run as one case rather than a rerun stage, and it waits for the
+owner's approval. Two jobs, `debug_replay` and `debug_live`; `debug_live`
+defaults to $0.50 and takes at most 20 tests, stated in Actions and in the
+documents.
+
+**What changed.** `debug_replay` names no environment and reaches no key.
+`debug_live` names the `debug_live` environment, refuses more than 20
+requested tests before installing anything through `tools/write_test_list.py
+--max-entries 20`, and copies every file it added or changed under
+`tests/fixtures/replay/` into its artifact before the upload, whatever the
+outcome. `consumer_ci.md` section 6.5 is new; sections 3.9.2, 6.4 and 7.8.5 and
+`docs/model_running_jobs.md` section 2.3 say the same.
+
+**Cases.** `115853` to `115855` failed before the workflow changed, `115855`
+first as an error on the missing job and then, corrected, as a failure. 14
+injections were run; the first pass of one, the summary not stating the limit,
+went NOT CAUGHT, because the injection removed one of the summary's two
+statements of it and the case read every step of the job. The case now reads
+the summary step alone and the injection removes both, and all 14 were caught.
+
+**Two existing cases failed on the split, both correctly.** `115837` step 6
+required every job running a case live to name `live`, and `115705` required
+every spending workflow to have a job guarded by green; `debug_live` does
+neither, by design. `MQC_REQ_CAS_CI_0010` and `0086` were reworded to state the
+exception, and the cases now require `debug_live` for that one job (through
+`debug_support.expected_environment`) and, in the debug workflow, every
+spending job to name `debug_live` in place of the green guard. Five further
+injections, run per case, were all caught: `debug_live` naming `live` and naming
+nothing (both cases each), and calibration naming `debug_live` (`115837`).
+
+**Left to the owner**: creating the `debug_live` environment with the owner as
+required reviewer and the four provider keys, and on `live` removing the
+reviewer and limiting deployments to `main`.
