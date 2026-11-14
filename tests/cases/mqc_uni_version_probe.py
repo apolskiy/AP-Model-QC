@@ -3,7 +3,7 @@
 """Preconditions on the model version probe this repository owns and dispatches.
 
 Created: 2026-10-29
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
 Its cases read ``.github/workflows/probe-model-version.yml``. The first checks
 that the probe resolves a green harness before it decides anything and that it
@@ -15,7 +15,7 @@ calibration where one exists. The third calls the shared
 that starts a spending workflow without reading a green pairing from a job it
 needs.
 
-The probe decides whether to spend a live ladder's quota, so a defect here
+The probe decides whether to spend a live regression run's quota, so a defect here
 either spends against an unverified harness or dispatches a caller that is not
 there. Both would report success: a `gh workflow run` naming a file that does
 not exist fails the step, and a dispatch on an unverified harness produces a
@@ -74,7 +74,7 @@ _INTERPOLATION: re.Pattern = re.compile(r"\$\{[^}]|\$\{\{")
 _STATE_READ: str = "/actions/workflows/"
 _STATE_FIELD: str = r"--jq \.state"
 _ACTIVE: str = '= "active"'
-# WHAT A CHANGED ENGINE DISPATCHES: its ladder and, where it judges, its
+# WHAT A CHANGED ENGINE DISPATCHES: its regression run and, where it judges, its
 # calibration. The dispatch itself, not the filename, since the state read
 # names the file too.
 _DISPATCHED: tuple[str, ...] = ("evaluate-${engine}-scheduled.yml", "calibrate-${engine}.yml")
@@ -91,7 +91,7 @@ class TestMQCVersionProbeShape:
         **Both halves of the owner's ruling.** "Probe needs to live with the
         model and use green harness" names a location and a precondition, and
         the location alone is not the ruling: a probe here that dispatched on a
-        version comparison alone would spend a live ladder's quota against a
+        version comparison alone would spend a live regression run's quota against a
         harness nothing had verified.
 
         **The retired harness probe failed the second half of this case too.**
@@ -142,7 +142,7 @@ class TestMQCVersionProbeShape:
             f"harness probe dispatched into one holding no cases: {dispatch!r}"
         )
         # THE CALLER IS NAMED BY THE ENGINE, not written as one filename. A
-        # single literal would dispatch the same ladder whichever engine moved,
+        # single literal would dispatch the same regression run whichever engine moved,
         # which is what the retired harness probe did.
         #
         # THE DISPATCHED ARGUMENT, not the command text. Asserting that the
@@ -160,7 +160,7 @@ class TestMQCVersionProbeShape:
         )
         assert _INTERPOLATION.search(target), (
             "the dispatched caller is a single literal, so a version move at "
-            f"one provider would reach whichever ladder is named here rather "
+            f"one provider would reach whichever regression run is named here rather "
             f"than its own: {target!r}"
         )
 
@@ -193,7 +193,7 @@ class TestMQCVersionProbeShape:
         """
         dispatch = " ".join(run_lines(jobs(load(_PROBE_WORKFLOW))["dispatch"], _ROOT))
         # EACH DISPATCH AGAINST ITS OWN READ AND ITS OWN GUARD. Checked across
-        # the job, the calibration's read and guard covered for a ladder
+        # the job, the calibration's read and guard covered for a regression run
         # dispatch that read nothing: both injections went NOT CAUGHT.
         dispatched = re.findall(r'gh workflow run "([^"]+)"', dispatch)
         unread: list[str] = []
@@ -209,7 +209,7 @@ class TestMQCVersionProbeShape:
             elif f'[ "${{{read.group(1)}}}" {_ACTIVE} ]' not in dispatch[read.end():position]:
                 unguarded.append(target)
 
-        step(1, "find the changed engine's ladder and calibration dispatched")
+        step(1, "find the changed engine's regression run and calibration dispatched")
         assert sorted(dispatched) == sorted(_DISPATCHED), dispatched
 
         step(2, "find each workflow's state read before it is dispatched")
@@ -246,6 +246,6 @@ class TestMQCDispatchGating:
         reported = ungated_dispatches(_ROOT)
         assert not reported, (
             "job(s) would dispatch a workflow that spends without reading a "
-            "green pairing from a job they need, so a live ladder could run "
+            "green pairing from a job they need, so a live regression run could run "
             "against a harness nothing verified: " + "; ".join(reported)
         )

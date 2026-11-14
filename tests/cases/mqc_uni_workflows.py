@@ -3,11 +3,11 @@
 """Unit preconditions for what this repository's CI workflows must and must not do.
 
 Created: 2026-09-26
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
 This file contains ten cases over the workflow definitions, read through
 ``workflow_support``. ``TestMQCWorkflowProperties`` checks the debug workflow yields no
-verdict and is the only one to judge a failed case; ``TestMQCAttributionLadder`` that a
+verdict and is the only one to judge a failed case; ``TestMQCRegressionRun`` that a
 graded gate job needs no credential and a job running graded cases stands behind the
 preconditions;
 ``TestMQCResolveObligation`` that no workflow installs an unresolved harness or spends
@@ -34,7 +34,7 @@ takes to its own.
 # TestMQCWorkflowProperties
 #   115700  the_debug_workflow_yields_no_verdict_and_gates_nothing
 #   115701  only_the_debug_workflow_judges_a_failed_case
-# TestMQCAttributionLadder
+# TestMQCRegressionRun
 #   115702  a_graded_gate_job_that_needs_a_credential_is_reported
 #   115782  a_graded_job_not_gated_on_the_preconditions_is_reported
 # TestMQCResolveObligation
@@ -73,7 +73,7 @@ from tests.cases.workflow_support import (
 pytestmark = pytest.mark.unit
 
 
-# The workflows the ladder is split across, and the rungs in order.
+# The workflows the regression run is split across, and the stages in order.
 # THE GATE FOR ONE TARGET, which every per-target caller invokes. One
 # workflow per target, because a workflow run has a conclusion and three
 # engines in one gate made a red run when two passed. Design
@@ -184,7 +184,7 @@ def _reachable(jobs: dict[str, dict[str, Any]], start: str) -> set[str]:
 
     Returns:
         set[str]: The names reachable through ``needs``, excluding the start.
-        **Transitive, because a guard one rung down still guards.** Requiring a
+        **Transitive, because a guard one stage down still guards.** Requiring a
         direct dependency would force every job to name the resolve job whether
         or not it reads an output of it.
     """
@@ -298,8 +298,8 @@ class TestMQCWorkflowProperties:
             )
 
 
-class TestMQCAttributionLadder:
-    """Each rung holds everything fixed except one thing.
+class TestMQCRegressionRun:
+    """Each stage holds everything fixed except one thing.
 
     Designed in ``docs/design/consumer_ci.md`` section 7. A graded run has two
     moving parts, the candidate and the judge, and a job that moves both can
@@ -386,20 +386,21 @@ class TestMQCAttributionLadder:
                 )
 
     # `MQC_CAS_UNI_115703` WAS RETIRED ON 2026-11-12. It asserted the
-    # single-session rung jobs `deterministic`, `judge` and `model`, which the
-    # banded ladder replaced; `mqc_uni_live_bands.py` asserts the bands, the
+    # single-session stage jobs `deterministic`, `judge` and `model`, which the
+    # banded regression run replaced; `mqc_uni_live_bands.py` asserts the bands, the
     # chaining and the `live` environment (`consumer_ci.md` section 7.8.6).
 
-    @story("The ladder stands behind the preconditions")
+    @story("The regression run stands behind the preconditions")
     def MQC_CAS_UNI_115782_a_graded_job_not_gated_on_the_preconditions_is_reported(
         self,
     ) -> None:
         """Every job running graded cases reaches a precondition invocation.
 
-        **The ladder is the workflow that spends**, and its rungs were gated on
-        the resolver alone. Rung 1 is the precondition for spending, which is a
+        **The regression run is the workflow that spends**, and its stages were
+        gated on the resolver alone. ``replay -> replay`` is the precondition for
+        spending, which is a
         different question from whether the corpus loads at all, and nothing in
-        the ladder asked the second one: ``consumer_ci.md`` section 7.2.1.
+        the regression run asked the second one: ``consumer_ci.md`` section 7.2.1.
 
         **What that cost is on the record.** Two assertions naming a constraint
         no task sends broke the join on 2026-10-24, and four engine sweeps
@@ -407,8 +408,8 @@ class TestMQCAttributionLadder:
         case at a time and only a corpus-wide check sees a dangling reference.
 
         **The gate was already right.** Its bands take the preconditions job on
-        ``needs:`` (section 3.12), so this reads the ladder and the gate with
-        one rule rather than asserting the ladder alone.
+        ``needs:`` (section 3.12), so this reads the regression run and the gate with
+        one rule rather than asserting the regression run alone.
 
         **The checker is the harness's and is called with this root.**
         ``MQC_CMN_UNI_112189`` builds every shape it accepts and rejects under
@@ -445,7 +446,7 @@ class TestMQCResolveObligation:
         """An unverified instrument attributes its own defect to the model.
 
         **Section 3.1 step 3 was written as a property of the gate** because
-        the gate was the only workflow at the time, and the weekly ladder was
+        the gate was the only workflow at the time, and the weekly regression run was
         then written installing the harness without resolving it. This is
         written against the class instead: a case naming one workflow passes
         the moment a fourth is added with the same defect.
@@ -500,7 +501,7 @@ class TestMQCResolveObligation:
     def MQC_CAS_UNI_115705_a_spending_workflow_that_skips_the_green_gate_is_reported(
         self,
     ) -> None:
-        """A red pairing stops a spending ladder before its first rung.
+        """A red pairing stops a spending regression run before its first stage.
 
         **An ungated gate run still yields a marked artifact**, because a free
         run producing a marked result costs nothing. An ungated live run has
@@ -658,7 +659,7 @@ class TestMQCRefusalReachesTheRun:
     """A refusal is worth what the workflows do with it.
 
     ``MQC_CAS_UNI_115313`` establishes that the resolver refuses. These
-    establish that a refusal stops a regression run and does not stop a debug
+    establish that a refusal stops a run on ``main`` and does not stop a debug
     run, designed in ``docs/design/consumer_ci.md`` section 3.9.
     """
 

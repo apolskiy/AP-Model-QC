@@ -40,6 +40,36 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A graded run is named by its candidate and judge modes, 2026-11-13
+
+**Why.** The documents, workflows and cases called the banded run a ladder and
+its parts rung 1 to rung 3. A rung number does not say what it replays, and
+this project calls that run a regression run. "Calibration" was also read as
+covering the replay-on-both-sides run.
+
+**What changed.** A graded run is named by its pair, candidate mode first:
+`replay -> replay` verifies the harness and the cases, `replay -> live`
+measures the judge, `live -> live` is the regression, and `live -> replay` is
+refused. `evaluate-engine.yml` is the regression run, the three pairs in
+sequence, each a stage. Judge calibration is `replay -> live` over the
+calibration samples. `consumer_ci.md` section 7.0 states the names and what
+each pair is used for, the README carries the same table, and section 3.9 now
+says a run on `main` where it said regression run in a wider sense.
+
+Every name a band job uses carries its pair: the job identifiers
+(`replay-replay-p0` to `live-live-lower`), the display names
+(`live -> live on grok, P1, release blocking, judged by gemini`), the report
+stems and the carried-outcomes artifacts. The callers' job is `regression`.
+`tools/recent_evaluation.py` counts a `live -> live` stage by its new name and
+by `3 - the model (live, live) on <engine>`, the name runs before 2026-11-13
+carry, so the first month after the rename does not measure an engine twice.
+
+Case `115851` covers the old name; `115837` now asserts each band's report
+stem and carried artifact; `115831`, `115837` to `115839` and `115848` were
+renamed under their identifiers. Requirements `MQC_REQ_CAS_CI_0008`, `0011`,
+`0081`, `0086` and `0087` were reworded. The README states 278
+preconditions.
+
 ### The live ladder is banded as the gate is, and each judge is calibrated once, 2026-11-12
 
 **Why it was needed.** Rungs 2 and 3 each ran as one pytest session over every

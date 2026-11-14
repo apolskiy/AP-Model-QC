@@ -3,7 +3,7 @@
 """Unit preconditions for the remainder a live band may spend.
 
 Created: 2026-11-12
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
 This file contains ``TestMQCSpendRemaining``, three cases over
 ``tools/spend_remaining.py``. The remainder is the dispatch's ceiling less what
@@ -48,7 +48,7 @@ _UNMET = "QC_HARNESS_DEPENDENCY_UNMET"
 class TestMQCSpendRemaining:
     """A live band spends what the earlier live bands left of one ceiling."""
 
-    @story("One ceiling for the whole ladder")
+    @story("One ceiling for the whole regression run")
     def MQC_CAS_UNI_115841_the_remainder_is_the_ceiling_less_every_earlier_band(
         self, tmp_path: Path,
     ) -> None:
@@ -63,8 +63,8 @@ class TestMQCSpendRemaining:
             None
         """
         reports = tmp_path / "spent"
-        write_band_report(reports, "judge_p0", "1.2345")
-        write_band_report(reports, "judge_p1", "2.0000")
+        write_band_report(reports, "replay_live_p0", "1.2345")
+        write_band_report(reports, "replay_live_p1", "2.0000")
         output = tmp_path / "output.txt"
 
         step(1, "leave the whole ceiling to the first live band, which has no reports")
@@ -79,7 +79,7 @@ class TestMQCSpendRemaining:
             output.read_text(encoding="utf-8") == "remaining=3.76\n", output.read_text(
                 encoding="utf-8")
 
-    @story("One ceiling for the whole ladder")
+    @story("One ceiling for the whole regression run")
     def MQC_CAS_UNI_115842_an_exhausted_ceiling_refuses_the_band(self, tmp_path: Path) -> None:
         """A remainder of exactly zero refuses, as one below zero does.
 
@@ -92,10 +92,10 @@ class TestMQCSpendRemaining:
             None
         """
         exact = tmp_path / "exact"
-        write_band_report(exact, "judge_p0", "3.5000")
-        write_band_report(exact, "judge_p1", "3.5000")
+        write_band_report(exact, "replay_live_p0", "3.5000")
+        write_band_report(exact, "replay_live_p1", "3.5000")
         over = tmp_path / "over"
-        write_band_report(over, "judge_p0", "7.0100")
+        write_band_report(over, "replay_live_p0", "7.0100")
         output = tmp_path / "output.txt"
 
         step(1, "refuse a remainder of exactly zero with the budget code")
@@ -110,7 +110,7 @@ class TestMQCSpendRemaining:
         assert main(["--ceiling", _CEILING, "--reports", str(exact), "--earlier", "2",
                      "--output", str(output)]) == 4 and not output.exists()
 
-    @story("One ceiling for the whole ladder")
+    @story("One ceiling for the whole regression run")
     def MQC_CAS_UNI_115843_a_spend_that_cannot_be_read_refuses_the_band(
         self, tmp_path: Path,
     ) -> None:
@@ -125,11 +125,11 @@ class TestMQCSpendRemaining:
             None
         """
         unpriced = tmp_path / "unpriced"
-        write_band_report(unpriced, "judge_p0", "unpriced")
+        write_band_report(unpriced, "replay_live_p0", "unpriced")
         unpublished = tmp_path / "unpublished"
-        write_band_report(unpublished, "judge_p0", None)
+        write_band_report(unpublished, "replay_live_p0", None)
         short = tmp_path / "short"
-        write_band_report(short, "judge_p0", "0.5000")
+        write_band_report(short, "replay_live_p0", "0.5000")
         output = tmp_path / "output.txt"
 
         step(1, "refuse an earlier band whose total is unpriced")

@@ -3,12 +3,13 @@
 """Unit preconditions for whether a graded run says which judge graded it.
 
 Created: 2026-10-21
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
-This file contains one case over the banded ladder and its callers: rungs 2 and
-3 name the judge on every band invocation and in every band job name, rung 1
-names none, and each engine has one claude-judged caller passing it under a
-cadence that is not the debug one.
+This file contains one case over the banded regression run and its callers:
+the ``replay -> live`` and ``live -> live`` stages name the judge on every band
+invocation and in every band job name, ``replay -> replay`` names none, and
+each engine has one claude-judged caller passing it under a cadence that is
+not the debug one.
 
 **A second judge exists because gemini scored its own engine unchecked**, so
 each engine and judge pair is a separate run and the names are what tell two
@@ -18,8 +19,8 @@ runs apart.
 marker, per the harness ``framework-rules.md`` section 3.3.
 
 Specified by ``docs/design/consumer_ci.md`` sections 7.7, 7.7.1, 7.7.4 and
-7.8.6. ``MQC_CAS_UNI_115777`` asserted the single-session rung jobs and was
-retired when the rungs were banded.
+7.8.6. ``MQC_CAS_UNI_115777`` asserted the single-session stage jobs and was
+retired when the stages were banded.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -34,14 +35,23 @@ import pytest
 from cmn.case_steps import step
 from cmn.grouping import story
 
-from tests.cases.live_band_support import LADDER, RUNGS, band_invocation, call_inputs, flag_value
+from tests.cases.live_band_support import (
+    LIVE_LIVE,
+    REGRESSION_RUN,
+    REPLAY_LIVE,
+    REPLAY_REPLAY,
+    STAGES,
+    band_invocation,
+    call_inputs,
+    flag_value,
+)
 from tests.cases.workflow_support import WORKFLOWS, jobs, load, repository_root
 
 pytestmark = pytest.mark.unit
 
 # THE JUDGE AS A BAND PASSES IT, and as a band job's name resolves it. The
-# expression rather than the word "judge", which rung 2 carries whatever
-# grades it. Section 7.7.
+# expression rather than the word "judge", which a job's own name might carry
+# whatever grades it. Section 7.7.
 _JUDGE_REFERENCE = "${{ inputs.judge }}"
 _JUDGED_BY = f"judged by {_JUDGE_REFERENCE}"
 
@@ -56,14 +66,14 @@ _ROSTERED_ENGINES = ("claude", "gemini", "grok", "openai")
 class TestMQCJudgeDimension:
     """A graded run names the judge that produced its scores."""
 
-    @story("The ladder is banded as the gate is")
+    @story("The regression run is banded as the gate is")
     def MQC_CAS_UNI_115850_a_band_that_grades_without_naming_its_judge_is_reported(
         self,
     ) -> None:
-        """Rungs 2 and 3 name the judge on every band, rung 1 names none, a caller per pair.
+        """Stages judging live name the judge on every band; a caller per engine and judge.
 
-        **Rung 1 has no judge dimension**, at the project owner's reading: it
-        replays both halves, so the code reading a stored judgement does not
+        **``replay -> replay`` has no judge dimension**, at the project owner's
+        reading: it replays both halves, so the code reading a stored judgement does not
         vary with the engine that produced it. **And a claude-judged caller is
         never a debug workflow**, because the cadence in the filename is what
         ``run_context`` reads and ``on-demand`` yields no verdict.
@@ -74,11 +84,11 @@ class TestMQCJudgeDimension:
             None
         """
         root = repository_root()
-        ladder = load(LADDER)
-        defined = jobs(ladder)
+        regression = load(REGRESSION_RUN)
+        defined = jobs(regression)
         unnamed: list[str] = []
-        for rung, grades in (("deterministic", False), ("judge", True), ("model", True)):
-            for name in RUNGS[rung]["jobs"]:
+        for stage, grades in ((REPLAY_REPLAY, False), (REPLAY_LIVE, True), (LIVE_LIVE, True)):
+            for name in STAGES[stage]["jobs"]:
                 job = defined.get(name, {})
                 passed = flag_value(band_invocation(job, root), "--judge-engine")
                 shown = str(job.get("name", ""))
@@ -95,10 +105,10 @@ class TestMQCJudgeDimension:
                 for job in jobs(load(found.name)).values()
             ]
 
-        step(1, "find the judge declared as a ladder input")
-        assert "judge" in call_inputs(ladder), sorted(call_inputs(ladder))
+        step(1, "find the judge declared as a regression run input")
+        assert "judge" in call_inputs(regression), sorted(call_inputs(regression))
 
-        step(2, "find rungs 2 and 3 naming the judge on each band and rung 1 naming none")
+        step(2, "find the judge named on each band judging live, and none on replay -> replay")
         assert not unnamed, unnamed
 
         step(3, "find one counted claude-judged caller per engine")

@@ -1,14 +1,16 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-# Calibrates ONE judge and commits the record every ladder it judges reads.
+# Judge calibration for ONE judge: replay -> live over the calibration samples,
+# committing the record every regression run it judges reads.
 #
-# Specified by docs/design/consumer_ci.md section 7.4.5, and the record by the
-# harness `tier3_evaluation.md` section 9.4.2.
+# Specified by docs/design/consumer_ci.md sections 7.0 and 7.4.5, and the
+# record by the harness `tier3_evaluation.md` section 9.4.2.
 #
 # CALIBRATION MEASURES THE JUDGE, NOT THE CANDIDATE. The samples and the judge
-# model are the same whichever engine a ladder evaluates, so rung 2 calibrating
-# on every ladder run measured one judge four times. It runs here, once per
-# judge, and each live band reads the record from the default branch.
+# model are the same whichever engine a regression run evaluates, so
+# calibrating in every regression run's replay -> live stage measured one
+# judge four times. It runs here, once per judge, and each live band reads the
+# record from the default branch.
 #
 # ONE PLATFORM. Calibration measures the judge, which no platform changes
 # (section 7.8.3).
@@ -127,7 +129,7 @@ jobs:
             --alluredir=reports/allure-results
 
       # EVEN WHEN A FAMILY FAILED. A failed family is a measurement, and the
-      # record says so: a ladder reading it skips that family's judged cases,
+      # record says so: a regression run reading it skips that family's judged cases,
       # naming the failure and its date. Absent is red.
       - name: Commit the record to the branch this ran on
         if: always()

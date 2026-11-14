@@ -3,7 +3,7 @@
 """Calibration cases for whether the judge catches each stated mistake in a family's samples.
 
 Created: 2026-11-10
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
 This file contains ``TestMQCJudgeCalibration``, six cases, one per calibrated
 evaluation family: ambiguity discrimination (``174607``), code comprehension
@@ -14,14 +14,16 @@ through the graded path, and passes when every sample agrees: a clean one
 holds every check and clears every criterion, and a flawed one fails exactly
 the checks it names and drops a criterion below the threshold.
 
-**These run in rung 2 of the ladder only**, where the marker expression names
-``calibration`` under a live judge. The harness deselects them from every other
-run and refuses a run asking for them under a judge that is not live. They are
-the harness ``CAL`` layer: they measure the judge, not the model, so they carry
-no priority, and a failure or a skip exits 3. Each is the foundation its
-family's judged cases rest on, so a failure here skips them.
+**These run only in judge calibration**, ``replay -> live`` over the samples in
+``calibrate-judge.yml``, where the marker expression names ``calibration``
+under a live judge. The harness deselects them from every other run and
+refuses a run asking for them under a judge that is not live. They are the
+harness ``CAL`` layer: they measure the judge, not the model, so they carry no
+priority, and a failure or a skip exits 3. Each is the foundation its family's
+judged cases rest on, through the record judge calibration writes, so a
+failure here skips them in every regression run that judge grades.
 
-Specified by ``docs/design/consumer_ci.md`` sections 7.4.1 and 7.4.2 and
+Specified by ``docs/design/consumer_ci.md`` sections 7.4.1, 7.4.2 and 7.4.5 and
 inventoried in ``docs/testing/model_evaluation_test_plan.md`` section 4.5.
 """
 

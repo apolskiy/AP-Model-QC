@@ -43,18 +43,18 @@ inputs:
       `cmn_verdict_and_cli.md` section 7.1.4.
     required: false
     default: ""
-  # WHAT A LADDER RUNG VARIES, each defaulting to what the gate passes, so the
-  # gate's band jobs are unchanged. `consumer_ci.md` section 7.8.1.
+  # WHAT A REGRESSION RUN'S STAGE VARIES, each defaulting to what the gate
+  # passes, so the gate's band jobs are unchanged. `consumer_ci.md` section 7.8.1.
   mode:
-    description: "The candidate's mode: replay in the gate and rungs 1 and 2, live in rung 3"
+    description: "The candidate's mode, the first half of the stage's pair: replay in the gate, replay -> replay and replay -> live; live in live -> live"
     required: false
     default: "replay"
   judge_mode:
-    description: "The judge's mode, empty to follow the candidate's; live in rungs 2 and 3"
+    description: "The judge's mode, the second half of the pair, empty to follow the candidate's; live in replay -> live and live -> live"
     required: false
     default: ""
   judge_engine:
-    description: "The engine grading the band, empty for the roster's; rungs 2 and 3 name it"
+    description: "The engine grading the band, empty for the roster's; replay -> live and live -> live name it"
     required: false
     default: ""
   max_spend:

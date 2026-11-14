@@ -3,7 +3,7 @@
 """Unit preconditions for calibrating each judge once and reading its record.
 
 Created: 2026-11-12
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
 This file contains ``TestMQCCalibrationRecord``, three cases. Each judge has a
 calibration workflow of its own that runs ``-m calibration`` under a live judge
@@ -39,11 +39,11 @@ from cmn.grouping import story
 from tests.cases import calibration_support
 from tests.cases.live_band_support import (
     DEFAULT_OS,
-    LADDER,
+    REGRESSION_RUN,
     RECORD_PATH,
     dispatch_inputs,
     flag_value,
-    ladder_callers,
+    regression_callers,
     steps_running,
 )
 from tests.cases.workflow_support import WORKFLOWS, jobs, load, run_lines
@@ -55,7 +55,7 @@ _LIVE_ENVIRONMENT = "live"
 
 
 class TestMQCCalibrationRecord:
-    """A judge is calibrated once, and every ladder it judges reads the record."""
+    """A judge is calibrated once, and every regression run it judges reads the record."""
 
     @story("Calibration is the judge's")
     def MQC_CAS_UNI_115845_a_judge_without_its_calibration_workflow_is_reported(
@@ -70,8 +70,8 @@ class TestMQCCalibrationRecord:
         """
         judges = sorted({
             str((job.get("with") or {}).get("judge", ""))
-            for caller in ladder_callers().values() for job in jobs(caller).values()
-            if LADDER in str(job.get("uses") or "")
+            for caller in regression_callers().values() for job in jobs(caller).values()
+            if REGRESSION_RUN in str(job.get("uses") or "")
         } - {""})
         uncalled: list[str] = []
         for judge in judges:
@@ -100,7 +100,7 @@ class TestMQCCalibrationRecord:
             if "always()" in str(entry.get("if", "")) and "git push" in str(entry.get("run"))
         ]
 
-        step(1, "find the ladders judged by at least one judge")
+        step(1, "find the regression runs judged by at least one judge")
         assert judges, judges
 
         step(2, "find each judge's caller scheduled monthly, dispatchable with a reason")

@@ -3,7 +3,7 @@
 """Unit preconditions on the support code that calibrates the judge, one family at a time.
 
 Created: 2026-11-10
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
 This file contains ``TestMQCCalibrationSupport``, twelve cases on
 ``tests/cases/calibration_support.py`` and the samples it reads. They check
@@ -98,9 +98,9 @@ _FAMILY_CALIBRATION = (
 _CLEARS = 5
 _MARKS_DOWN = 1
 
-# RUNG 2'S ONE SELECTION, calibration and the judged layers together, so the
-# cascade spans both (`consumer_ci.md` section 7.4.2).
-_RUNG_TWO = "calibration or evaluator or tool or sec"
+# A SELECTION ASKING FOR CALIBRATION beside the judged layers, so the cascade
+# spans both (`consumer_ci.md` section 7.4.2).
+_ASKS_FOR_CALIBRATION = "calibration or evaluator or tool or sec"
 
 # A CEILING NO OTHER CASE SETS, so the cached channel this case builds is
 # keyed apart from every channel a graded case builds.
@@ -192,20 +192,20 @@ class TestMQCCalibrationSupport:
             collected = [case for case in _CALIBRATION_IDS if case in output]
             assert not collected, (
                 f"-m {markexpr!r} collected calibration cases {collected}, so a gate "
-                f"or rung 1 or 3 would call a live judge: exit {status}"
+                f"or any band of a regression run would call a live judge: exit {status}"
             )
 
-        status, output = collect_calibration(_RUNG_TWO, "--mode", "replay")
+        status, output = collect_calibration(_ASKS_FOR_CALIBRATION, "--mode", "replay")
         assert status != 0 and "QC_HARNESS_PARSER_ERROR" in output, (
             f"asking for calibration under a replayed judge was not refused: exit {status}"
         )
 
         status, output = collect_calibration(
-            _RUNG_TWO, "--mode", "replay", "--judge-mode", "live"
+            _ASKS_FOR_CALIBRATION, "--mode", "replay", "--judge-mode", "live"
         )
-        assert status == 0, f"rung 2's selection did not collect: exit {status}"
+        assert status == 0, f"replay -> live asking for calibration did not collect: exit {status}"
         assert all(case in output for case in _CALIBRATION_IDS), (
-            "rung 2's selection under a live judge did not collect all six cases"
+            "replay -> live asking for calibration did not collect all six cases"
         )
 
     @story("A family's judged cases rest on its calibration")
@@ -362,7 +362,7 @@ class TestMQCCalibrationSupport:
         """Every sample's failed checks are exactly what it names, read with no judge asked.
 
         A sample our checks disagree with is a defective sample, found here at
-        no judge spend rather than in rung 2. Design: ``consumer_ci.md``
+        no judge spend rather than in judge calibration. Design: ``consumer_ci.md``
         section 7.4.1.1.
 
         Args:

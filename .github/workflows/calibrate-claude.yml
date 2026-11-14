@@ -3,7 +3,7 @@
 # Calibrates the claude judge: monthly, on a model change, and by hand.
 #
 # THREE THINGS START IT. The schedule, on the 1st at 00:00 UTC, ahead of every
-# ladder's slot; the probe, when claude serves another model; and a person.
+# regression run's slot; the probe, when claude serves another model; and a person.
 # Disabling it in the Actions tab stops the schedule, and the probe reads a
 # disabled workflow as opted out. Design `consumer_ci.md` section 7.4.5.
 name: calibrate-claude

@@ -119,8 +119,8 @@ so nobody is tempted to.
 | Run one case or a few, right now | `debug-cases-on-demand` | No | Only if you ask |
 | Stabilize cases against a harness in flight | `debug-cases-on-demand` from your `stabilization-*` branch | No | Only if you ask |
 | Check a branch before opening a pull request | Push it. One `gate-<engine>` per target runs itself | Yes, on the pull request | No |
-| Regression across one target, live | `evaluate-<engine>-scheduled`, which also fires monthly by itself. Inputs: `max_spend`, the ceiling for the whole ladder, $7.00 by default; `os`, `ubuntu-26.04` by default or `windows-latest`; `reason` | No | **Yes, rungs 2 and 3, each as P0, P1 and P2-P4 bands** |
-| Calibrate a judge | `calibrate-claude` or `calibrate-gemini`, which also fire monthly by themselves. Inputs: `max_spend`, $1.00 by default; `reason`. The record it commits is what every live ladder that judge grades reads | No | **Yes, one judge call per sample** |
+| Regression across one target, live | `evaluate-<engine>-scheduled`, which also fires monthly by itself. Inputs: `max_spend`, the ceiling for the whole regression run, $7.00 by default; `os`, `ubuntu-26.04` by default or `windows-latest`; `reason` | No | **Yes, `replay -> live` and `live -> live`, each as P0, P1 and P2-P4 bands** |
+| Calibrate a judge | `calibrate-claude` or `calibrate-gemini`, which also fire monthly by themselves. Inputs: `max_spend`, $1.00 by default; `reason`. The record it commits is what every live regression run that judge grades reads | No | **Yes, one judge call per sample** |
 
 **The first two are the ones this page is really about.** They are manual, they
 yield no verdict, and nothing they do can colour a gate run on the same commit.
@@ -280,9 +280,9 @@ shapes.
 
 | Artifact | Left by | Kept |
 |---|---|---|
-| `mqc-reports-cases-<engine>-replay-replay-<band>` | The scheduled evaluation, replay rung, one per band: `p0`, `p1`, `p2_p4` | 90 days |
-| `mqc-reports-cases-<engine>-replay-live-<band>-by-<judge>` | The scheduled evaluation, judged rung, one per band | 90 days |
-| `mqc-reports-cases-<engine>-live-live-<band>-by-<judge>` | The scheduled evaluation, live rung, one per band | 90 days |
+| `mqc-reports-cases-<engine>-replay-replay-<band>` | The scheduled evaluation, replay stage, one per band: `p0`, `p1`, `p2_p4` | 90 days |
+| `mqc-reports-cases-<engine>-replay-live-<band>-by-<judge>` | The scheduled evaluation, judged stage, one per band | 90 days |
+| `mqc-reports-cases-<engine>-live-live-<band>-by-<judge>` | The scheduled evaluation, live stage, one per band | 90 days |
 | `mqc-reports-calibration-<judge>` | A judge's calibration run | 90 days |
 | `mqc-reports-gate-<target>-*` | A gate run, per band | 90 days |
 | `scratch-debug-cases-<run id>` | `debug-cases-on-demand` | 14 days |
@@ -459,7 +459,7 @@ anyway and records what it used.
 | `debug-cases-on-demand`, any branch | **Nothing. It runs** |
 | `gate-on-change` on `stabilization-*`, `expand-*`, `extend-*` | It runs, ungated, no verdict |
 | `gate-on-change` on `main` | **Exit 4. Nothing installs and nothing runs** |
-| `evaluate-<engine>-scheduled` | **Exit 4. No rung starts** |
+| `evaluate-<engine>-scheduled` | **Exit 4. No stage starts** |
 
 **The last two rows are the point of the refusal.** A regression measures, so
 it needs an established instrument or it measures nothing worth having. A

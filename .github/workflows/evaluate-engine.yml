@@ -1,21 +1,24 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-# The attribution ladder for ONE engine, banded as the gate is.
+# The regression run for ONE engine, banded as the gate is.
 #
 # Specified by docs/design/consumer_ci.md sections 7, 7.8 and 4.18.
 #
 # A GRADED RUN HAS TWO MOVING PARTS, the candidate and the judge, and a single
-# job that moves both can only report that something changed. Each rung holds
-# everything fixed except one thing.
+# job that moves both can only report that something changed. Each stage holds
+# everything fixed except one thing, and is named by its pair, candidate mode
+# first, then judge mode (section 7.0):
 #
-#   1  replay candidate, replay judge    ->  OUR CODE changed a frozen outcome
-#   2  replay candidate, live judge      ->  THE JUDGE moved
-#   3  live candidate,    live judge     ->  THE MODEL moved
+#   replay -> replay   OUR CODE changed a frozen outcome; verifies the harness and the cases
+#   replay -> live     THE JUDGE moved
+#   live -> live       THE MODEL moved; the regression itself
 #
-# EACH RUNG IS THE GATE'S THREE BANDS, since 2026-11-12: P0 and P1 release
+# live -> replay is refused: a stored judgement scores a recorded response.
+#
+# EACH STAGE IS THE GATE'S THREE BANDS, since 2026-11-12: P0 and P1 release
 # blocking, P2-P4 against the pass floor, each a job calling the one band
 # definition, each carrying its outcomes to the next so a dependent of a failed
-# foundation skips before its candidate is dispatched. A red rung stops the
+# foundation skips before its candidate is dispatched. A red stage stops the
 # next. Section 7.8.
 #
 # ONE ENGINE PER CALL, AND NOTHING AGGREGATES. These are the products of
@@ -29,19 +32,19 @@ on:
     inputs:
       max_spend:
         description: >-
-          USD ceiling for the whole ladder. Each live band spends what the live
+          USD ceiling for the whole regression run. Each live band spends what the live
           bands before it left (section 7.8.4)
         required: false
         default: "7.00"
         type: string
       engine:
-        description: "Which engine the ladder evaluates"
+        description: "Which engine the regression run evaluates"
         required: true
         type: string
       judge:
         description: >-
-          Which engine grades rungs 2 and 3. Rung 1 has no judge dimension:
-          it replays both halves, and the code reading a stored judgement does
+          Which engine grades replay -> live and live -> live. replay -> replay
+          has no judge dimension: it replays both halves, and the code reading a stored judgement does
           not vary with the engine that produced it (section 7.7.1).
         required: false
         default: "gemini"
@@ -63,9 +66,10 @@ env:
   PYTHON_VERSION: "3.14"
 
 jobs:
-  # RUNG 0, AND IT IS NOT A RUNG. It measures nothing; it decides whether the
-  # ladder has an instrument worth spending on. ONE RESOLVE FOR ALL THREE
-  # RUNGS, so the harness cannot move between rung 1 and rung 3. Section 7.6.
+  # NOT A STAGE. It measures nothing; it decides whether the regression run
+  # has an instrument worth spending on. ONE RESOLVE FOR ALL THREE STAGES, so
+  # the harness cannot move between replay -> replay and live -> live.
+  # Section 7.6.
   resolve:
     name: resolve the paired harness
     runs-on: ubuntu-26.04
@@ -94,7 +98,7 @@ jobs:
         run: |
           python -m tools.harness_pin --case-branch "${{ github.ref_name }}"
 
-      - name: Say what the ladder is about to measure with
+      - name: Say what the regression run is about to measure with
         if: always()
         shell: bash
         run: |
@@ -109,7 +113,7 @@ jobs:
             echo "${{ steps.pin.outputs.reason }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # GATE 2 AHEAD OF EVERY RUNG. A red here means nothing was measured and
+  # GATE 2 AHEAD OF EVERY STAGE. A red here means nothing was measured and
   # nothing was spent. It writes the record every band reads, guarded by both
   # commits and the platform, so it runs on the chosen one. Sections 7.2.1
   # and 7.8.3; harness `cmn_verdict_and_cli.md` section 7.1.4.
@@ -151,10 +155,11 @@ jobs:
           path: reports/
           retention-days: 90
 
-  # RUNG 1: OUR CODE. Both sides replayed, so no environment and no key. It is
-  # the precondition for spending: a red here stops rungs 2 and 3.
-  deterministic-p0:
-    name: 1 - our code (replay, replay) on ${{ inputs.engine }}, P0, release blocking
+  # REPLAY -> REPLAY: OUR CODE. Both sides replayed, so no environment and no
+  # key. It is the precondition for spending: a red here stops replay -> live
+  # and live -> live.
+  replay-replay-p0:
+    name: replay -> replay on ${{ inputs.engine }}, P0, release blocking
     needs: [resolve, preconditions]
     runs-on: ${{ inputs.os }}
     env:
@@ -181,7 +186,7 @@ jobs:
         with:
           band: P0
           priority: "0"
-          report: deterministic_p0
+          report: replay_replay_p0
           engine: ${{ inputs.engine }}
           mode: replay
           preconditions_record: reports/preconditions.json
@@ -190,7 +195,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: carry-deterministic-after-p0-${{ inputs.engine }}
+          name: carry-replay-replay-after-p0-${{ inputs.engine }}
           path: reports/carry.json
           retention-days: 1
       - uses: actions/upload-artifact@v6
@@ -200,9 +205,9 @@ jobs:
           path: reports/
           retention-days: 90
 
-  deterministic-p1:
-    name: 1 - our code (replay, replay) on ${{ inputs.engine }}, P1, release blocking
-    needs: [resolve, preconditions, deterministic-p0]
+  replay-replay-p1:
+    name: replay -> replay on ${{ inputs.engine }}, P1, release blocking
+    needs: [resolve, preconditions, replay-replay-p0]
     if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     runs-on: ${{ inputs.os }}
     env:
@@ -227,14 +232,14 @@ jobs:
       - name: Take the outcomes P0 established
         uses: actions/download-artifact@v7
         with:
-          name: carry-deterministic-after-p0-${{ inputs.engine }}
+          name: carry-replay-replay-after-p0-${{ inputs.engine }}
           path: reports/
       - name: Band P1
         uses: ./.github/actions/band
         with:
           band: P1
           priority: "1"
-          report: deterministic_p1
+          report: replay_replay_p1
           engine: ${{ inputs.engine }}
           mode: replay
           preconditions_record: reports/preconditions.json
@@ -243,7 +248,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: carry-deterministic-after-p1-${{ inputs.engine }}
+          name: carry-replay-replay-after-p1-${{ inputs.engine }}
           path: reports/carry.json
           retention-days: 1
       - uses: actions/upload-artifact@v6
@@ -253,9 +258,9 @@ jobs:
           path: reports/
           retention-days: 90
 
-  deterministic-lower:
-    name: 1 - our code (replay, replay) on ${{ inputs.engine }}, P2-P4, pass floor
-    needs: [resolve, preconditions, deterministic-p1]
+  replay-replay-lower:
+    name: replay -> replay on ${{ inputs.engine }}, P2-P4, pass floor
+    needs: [resolve, preconditions, replay-replay-p1]
     if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     runs-on: ${{ inputs.os }}
     env:
@@ -280,14 +285,14 @@ jobs:
       - name: Take the outcomes P0 and P1 established
         uses: actions/download-artifact@v7
         with:
-          name: carry-deterministic-after-p1-${{ inputs.engine }}
+          name: carry-replay-replay-after-p1-${{ inputs.engine }}
           path: reports/
       - name: Band P2-P4
         uses: ./.github/actions/band
         with:
           band: P2-P4
           priority: "2,3,4"
-          report: deterministic_p2_p4
+          report: replay_replay_p2_p4
           engine: ${{ inputs.engine }}
           mode: replay
           preconditions_record: reports/preconditions.json
@@ -299,7 +304,7 @@ jobs:
           path: reports/
           retention-days: 90
 
-  # RUNG 2: THE JUDGE IS THE ONLY THING THAT MOVED. Same stored responses,
+  # REPLAY -> LIVE: THE JUDGE IS THE ONLY THING THAT MOVED. Same stored responses,
   # scored by the judge as it answers today. It does not calibrate: each band
   # reads the judge's calibration record from the default branch, and a
   # family whose calibration did not hold, or a record that no longer
@@ -309,11 +314,12 @@ jobs:
   # EACH LIVE BAND SPENDS WHAT THE LIVE BANDS BEFORE IT LEFT of the one
   # ceiling, read from the spend each published (section 7.8.4).
   #
-  # A RED RUNG 2 REFRESHES NOTHING. Stored judgements stay authoritative and
-  # rung 1 keeps working; recalibrate before accepting a new judge (7.5).
-  judge-p0:
-    name: 2 - the judge (replay, live) on ${{ inputs.engine }}, P0, release blocking, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, deterministic-p0, deterministic-p1, deterministic-lower]
+  # A RED REPLAY -> LIVE REFRESHES NOTHING. Stored judgements stay
+  # authoritative and replay -> replay keeps working; recalibrate before
+  # accepting a new judge (7.5).
+  replay-live-p0:
+    name: replay -> live on ${{ inputs.engine }}, P0, release blocking, judged by ${{ inputs.judge }}
+    needs: [resolve, preconditions, replay-replay-p0, replay-replay-p1, replay-replay-lower]
     runs-on: ${{ inputs.os }}
     environment: live
     env:
@@ -354,7 +360,7 @@ jobs:
         with:
           band: P0
           priority: "0"
-          report: judge_p0
+          report: replay_live_p0
           engine: ${{ inputs.engine }}
           mode: replay
           judge_mode: live
@@ -367,14 +373,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: carry-judge-after-p0-${{ inputs.engine }}
+          name: carry-replay-live-after-p0-${{ inputs.engine }}
           path: reports/carry.json
           retention-days: 1
       - name: Publish what this band spent to the live bands after it
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: spend-${{ inputs.engine }}-judge-p0
+          name: spend-${{ inputs.engine }}-replay-live-p0
           path: reports/junit_mqc_judge_p0.xml
           retention-days: 1
       - uses: actions/upload-artifact@v6
@@ -384,9 +390,9 @@ jobs:
           path: reports/
           retention-days: 90
 
-  judge-p1:
-    name: 2 - the judge (replay, live) on ${{ inputs.engine }}, P1, release blocking, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, judge-p0]
+  replay-live-p1:
+    name: replay -> live on ${{ inputs.engine }}, P1, release blocking, judged by ${{ inputs.judge }}
+    needs: [resolve, preconditions, replay-live-p0]
     if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     runs-on: ${{ inputs.os }}
     environment: live
@@ -414,7 +420,7 @@ jobs:
       - name: Take the outcomes P0 established
         uses: actions/download-artifact@v7
         with:
-          name: carry-judge-after-p0-${{ inputs.engine }}
+          name: carry-replay-live-after-p0-${{ inputs.engine }}
           path: reports/
       - name: Take the reports of the live bands before this one
         uses: actions/download-artifact@v7
@@ -437,7 +443,7 @@ jobs:
         with:
           band: P1
           priority: "1"
-          report: judge_p1
+          report: replay_live_p1
           engine: ${{ inputs.engine }}
           mode: replay
           judge_mode: live
@@ -450,14 +456,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: carry-judge-after-p1-${{ inputs.engine }}
+          name: carry-replay-live-after-p1-${{ inputs.engine }}
           path: reports/carry.json
           retention-days: 1
       - name: Publish what this band spent to the live bands after it
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: spend-${{ inputs.engine }}-judge-p1
+          name: spend-${{ inputs.engine }}-replay-live-p1
           path: reports/junit_mqc_judge_p1.xml
           retention-days: 1
       - uses: actions/upload-artifact@v6
@@ -467,9 +473,9 @@ jobs:
           path: reports/
           retention-days: 90
 
-  judge-lower:
-    name: 2 - the judge (replay, live) on ${{ inputs.engine }}, P2-P4, pass floor, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, judge-p1]
+  replay-live-lower:
+    name: replay -> live on ${{ inputs.engine }}, P2-P4, pass floor, judged by ${{ inputs.judge }}
+    needs: [resolve, preconditions, replay-live-p1]
     if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     runs-on: ${{ inputs.os }}
     environment: live
@@ -497,7 +503,7 @@ jobs:
       - name: Take the outcomes P0 and P1 established
         uses: actions/download-artifact@v7
         with:
-          name: carry-judge-after-p1-${{ inputs.engine }}
+          name: carry-replay-live-after-p1-${{ inputs.engine }}
           path: reports/
       - name: Take the reports of the live bands before this one
         uses: actions/download-artifact@v7
@@ -520,7 +526,7 @@ jobs:
         with:
           band: P2-P4
           priority: "2,3,4"
-          report: judge_p2_p4
+          report: replay_live_p2_p4
           engine: ${{ inputs.engine }}
           mode: replay
           judge_mode: live
@@ -533,7 +539,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: spend-${{ inputs.engine }}-judge-lower
+          name: spend-${{ inputs.engine }}-replay-live-lower
           path: reports/junit_mqc_judge_p2_p4.xml
           retention-days: 1
       - uses: actions/upload-artifact@v6
@@ -543,13 +549,13 @@ jobs:
           path: reports/
           retention-days: 90
 
-  # RUNG 3: BOTH SIDES LIVE. THE ONLY RUNG THAT REPORTS A FINDING ABOUT THE
-  # MODEL, and per A2 a model regression never blocks a merge. Each rung
-  # carries its own outcomes: rung 1's replayed foundations say nothing about
-  # a live response (section 7.8.2).
-  model-p0:
-    name: 3 - the model (live, live) on ${{ inputs.engine }}, P0, release blocking, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, judge-p0, judge-p1, judge-lower]
+  # LIVE -> LIVE: BOTH SIDES LIVE. THE ONLY STAGE THAT REPORTS A FINDING ABOUT
+  # THE MODEL, and per A2 a model regression never blocks a merge. Each stage
+  # carries its own outcomes: replay -> replay's replayed foundations say
+  # nothing about a live response (section 7.8.2).
+  live-live-p0:
+    name: live -> live on ${{ inputs.engine }}, P0, release blocking, judged by ${{ inputs.judge }}
+    needs: [resolve, preconditions, replay-live-p0, replay-live-p1, replay-live-lower]
     runs-on: ${{ inputs.os }}
     environment: live
     env:
@@ -600,7 +606,7 @@ jobs:
         with:
           band: P0
           priority: "0"
-          report: model_p0
+          report: live_live_p0
           engine: ${{ inputs.engine }}
           mode: live
           judge_mode: live
@@ -613,14 +619,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: carry-model-after-p0-${{ inputs.engine }}
+          name: carry-live-live-after-p0-${{ inputs.engine }}
           path: reports/carry.json
           retention-days: 1
       - name: Publish what this band spent to the live bands after it
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: spend-${{ inputs.engine }}-model-p0
+          name: spend-${{ inputs.engine }}-live-live-p0
           path: reports/junit_mqc_model_p0.xml
           retention-days: 1
       - uses: actions/upload-artifact@v6
@@ -630,9 +636,9 @@ jobs:
           path: reports/
           retention-days: 90
 
-  model-p1:
-    name: 3 - the model (live, live) on ${{ inputs.engine }}, P1, release blocking, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, model-p0]
+  live-live-p1:
+    name: live -> live on ${{ inputs.engine }}, P1, release blocking, judged by ${{ inputs.judge }}
+    needs: [resolve, preconditions, live-live-p0]
     if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     runs-on: ${{ inputs.os }}
     environment: live
@@ -662,7 +668,7 @@ jobs:
       - name: Take the outcomes P0 established
         uses: actions/download-artifact@v7
         with:
-          name: carry-model-after-p0-${{ inputs.engine }}
+          name: carry-live-live-after-p0-${{ inputs.engine }}
           path: reports/
       - name: Take the reports of the live bands before this one
         uses: actions/download-artifact@v7
@@ -685,7 +691,7 @@ jobs:
         with:
           band: P1
           priority: "1"
-          report: model_p1
+          report: live_live_p1
           engine: ${{ inputs.engine }}
           mode: live
           judge_mode: live
@@ -698,14 +704,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: carry-model-after-p1-${{ inputs.engine }}
+          name: carry-live-live-after-p1-${{ inputs.engine }}
           path: reports/carry.json
           retention-days: 1
       - name: Publish what this band spent to the live bands after it
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: spend-${{ inputs.engine }}-model-p1
+          name: spend-${{ inputs.engine }}-live-live-p1
           path: reports/junit_mqc_model_p1.xml
           retention-days: 1
       - uses: actions/upload-artifact@v6
@@ -715,9 +721,9 @@ jobs:
           path: reports/
           retention-days: 90
 
-  model-lower:
-    name: 3 - the model (live, live) on ${{ inputs.engine }}, P2-P4, pass floor, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, model-p1]
+  live-live-lower:
+    name: live -> live on ${{ inputs.engine }}, P2-P4, pass floor, judged by ${{ inputs.judge }}
+    needs: [resolve, preconditions, live-live-p1]
     if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
     runs-on: ${{ inputs.os }}
     environment: live
@@ -747,7 +753,7 @@ jobs:
       - name: Take the outcomes P0 and P1 established
         uses: actions/download-artifact@v7
         with:
-          name: carry-model-after-p1-${{ inputs.engine }}
+          name: carry-live-live-after-p1-${{ inputs.engine }}
           path: reports/
       - name: Take the reports of the live bands before this one
         uses: actions/download-artifact@v7
@@ -770,7 +776,7 @@ jobs:
         with:
           band: P2-P4
           priority: "2,3,4"
-          report: model_p2_p4
+          report: live_live_p2_p4
           engine: ${{ inputs.engine }}
           mode: live
           judge_mode: live
@@ -783,7 +789,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: spend-${{ inputs.engine }}-model-lower
+          name: spend-${{ inputs.engine }}-live-live-lower
           path: reports/junit_mqc_model_p2_p4.xml
           retention-days: 1
       - uses: actions/upload-artifact@v6
@@ -795,28 +801,28 @@ jobs:
 
   report:
     name: report
-    needs: [resolve, preconditions, deterministic-p0, deterministic-p1, deterministic-lower,
-            judge-p0, judge-p1, judge-lower, model-p0, model-p1, model-lower]
+    needs: [resolve, preconditions, replay-replay-p0, replay-replay-p1, replay-replay-lower,
+            replay-live-p0, replay-live-p1, replay-live-lower, live-live-p0, live-live-p1, live-live-lower]
     if: always()
     runs-on: ubuntu-26.04
     steps:
-      - name: Summarise which rung stopped, band by band
+      - name: Summarise which stage stopped, band by band
         shell: bash
         run: |
           {
-            echo "## The attribution ladder on ${{ inputs.os }}"
+            echo "## The regression run on ${{ inputs.os }}"
             echo ""
-            echo "| Rung | Holds fixed | P0 | P1 | P2-P4 |"
+            echo "| Stage | Holds fixed | P0 | P1 | P2-P4 |"
             echo "|---|---|---|---|---|"
-            echo "| 1 our code | both replayed | ${{ needs.deterministic-p0.result }} | ${{ needs.deterministic-p1.result }} | ${{ needs.deterministic-lower.result }} |"
-            echo "| 2 the judge | candidate replayed | ${{ needs.judge-p0.result }} | ${{ needs.judge-p1.result }} | ${{ needs.judge-lower.result }} |"
-            echo "| 3 the model | nothing | ${{ needs.model-p0.result }} | ${{ needs.model-p1.result }} | ${{ needs.model-lower.result }} |"
+            echo "| replay -> replay | both replayed | ${{ needs.replay-replay-p0.result }} | ${{ needs.replay-replay-p1.result }} | ${{ needs.replay-replay-lower.result }} |"
+            echo "| replay -> live | candidate replayed | ${{ needs.replay-live-p0.result }} | ${{ needs.replay-live-p1.result }} | ${{ needs.replay-live-lower.result }} |"
+            echo "| live -> live | nothing | ${{ needs.live-live-p0.result }} | ${{ needs.live-live-p1.result }} | ${{ needs.live-live-lower.result }} |"
             echo ""
-            echo "**The first red rung is the attribution.** A rung that did not"
+            echo "**The first red stage is the attribution.** A stage that did not"
             echo "run was skipped because a band below it failed, which is the"
             echo "point: spending quota after a known break rediscovers it."
             echo ""
             echo "P0 and P1 are release blocking and P2-P4 answers to the pass"
-            echo "floor. Only rung 3 reports a finding about the model, and per A2"
+            echo "floor. Only live -> live reports a finding about the model, and per A2"
             echo "a model regression never blocks a merge."
           } >> "$GITHUB_STEP_SUMMARY"

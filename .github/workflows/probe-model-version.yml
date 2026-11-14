@@ -38,8 +38,8 @@ env:
   PYTHON_VERSION: "3.14"
 
 jobs:
-  # RUNG 0, AND IT MEASURES NOTHING. It decides whether there is an instrument
-  # worth dispatching against, exactly as the ladder's own resolve job does.
+  # IT MEASURES NOTHING. It decides whether there is an instrument worth
+  # dispatching against, exactly as the regression run's own resolve job does.
   # This is the half of the owner's ruling that is not a location: "Probe needs
   # to live with the model AND USE GREEN HARNESS". Section 4.23.2.
   resolve:
@@ -153,7 +153,7 @@ jobs:
   #
   # A CHANGED JUDGE IS CALIBRATED TOO. claude and gemini are rostered engines
   # and judges, so a changed model there dispatches `calibrate-<engine>.yml`
-  # beside the ladder, and the record every ladder it judges reads describes
+  # beside the regression run, and the record every regression run it judges reads describes
   # the judge it now calls (section 7.4.5).
   #
   # A DISABLED WORKFLOW IS AN OPT-OUT, NOT A FAILURE. `gh workflow run`
@@ -162,7 +162,7 @@ jobs:
   # opted out, and an absent calibration caller dispatches nothing
   # (section 4.23.3).
   dispatch:
-    name: dispatch the changed engine's scheduled ladder
+    name: dispatch the changed engine's scheduled regression run
     needs: [resolve, probe]
     if: needs.resolve.outputs.green == 'true' && needs.probe.outputs.changed_engines != ''
     runs-on: ubuntu-26.04
@@ -175,13 +175,13 @@ jobs:
         shell: bash
         run: |
           for engine in ${CHANGED//,/ }; do
-            ladder="$(gh api "repos/${REPOSITORY}/actions/workflows/evaluate-${engine}-scheduled.yml" --jq .state 2>/dev/null || echo absent)"
-            if [ "${ladder}" = "active" ]; then
+            regression="$(gh api "repos/${REPOSITORY}/actions/workflows/evaluate-${engine}-scheduled.yml" --jq .state 2>/dev/null || echo absent)"
+            if [ "${regression}" = "active" ]; then
               gh workflow run "evaluate-${engine}-scheduled.yml" \
                 --repo "${{ github.repository }}" \
                 --field reason="model version changed"
             else
-              echo "- evaluate-${engine}-scheduled.yml is ${ladder}: opted out, not dispatched" >> "$GITHUB_STEP_SUMMARY"
+              echo "- evaluate-${engine}-scheduled.yml is ${regression}: opted out, not dispatched" >> "$GITHUB_STEP_SUMMARY"
             fi
             calibration="$(gh api "repos/${REPOSITORY}/actions/workflows/calibrate-${engine}.yml" --jq .state 2>/dev/null || echo absent)"
             if [ "${calibration}" = "active" ]; then

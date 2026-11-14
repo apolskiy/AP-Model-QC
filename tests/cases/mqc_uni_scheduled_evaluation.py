@@ -3,17 +3,18 @@
 """Unit preconditions for the monthly evaluation and the weekly probe that triggers one.
 
 Created: 2026-11-09
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
-This file contains ``TestMQCScheduledEvaluation``, eight cases over
+This file contains ``TestMQCScheduledEvaluation``, nine cases over
 ``tools/recent_evaluation.py`` and the workflows it serves. A scheduled
-evaluation skips itself when its engine's live rung already ran inside the
-window, whatever started that run; a run outside the window, a live rung that
+evaluation skips itself when its engine's ``live -> live`` stage already ran
+inside the window, whatever started that run and whether the stage carries its
+name or the one a run before 2026-11-13 gave it; a run outside the window, a live stage that
 never finished, and the run asking do not count; and a history that cannot be
 read refuses rather than guessing. Each engine's scheduled caller fires
 monthly on a day of its own and asks before it spends, and the probe fires
 weekly, dispatches only inputs the caller declares, and alone reads its keys
-from the ``version_probe`` environment. Each scheduled ladder passes the judge
+from the ``version_probe`` environment. Each scheduled regression run passes the judge
 section 4.18.2 assigns its engine.
 
 **These run in the ``unit`` precondition gate.** A failure is an instrument
@@ -29,13 +30,14 @@ Specified by ``docs/design/consumer_ci.md`` section 4.18.3.
 #
 # TestMQCScheduledEvaluation
 #   115830  an_engine_unevaluated_in_the_window_is_evaluated
-#   115831  a_live_rung_finished_in_the_window_skips_the_run
+#   115831  a_live_stage_finished_in_the_window_skips_the_run
 #   115832  runs_that_did_not_measure_in_the_window_do_not_count
+#   115851  a_stage_named_before_the_rename_still_counts
 #   115833  an_unreadable_history_refuses
 #   115834  each_scheduled_caller_fires_monthly_and_asks_first
 #   115835  the_probe_fires_weekly_and_dispatches_declared_inputs
 #   115836  the_probe_alone_reads_keys_from_an_environment_of_its_own
-#   115848  a_scheduled_ladder_with_the_wrong_judge_is_reported
+#   115848  a_scheduled_run_with_the_wrong_judge_is_reported
 # ------------------------------------------------------------ end of cases
 
 import re
@@ -56,16 +58,23 @@ pytestmark = pytest.mark.unit
 _ROOT: Path = Path(__file__).resolve().parents[2]
 _TODAY = date(2026, 11, 9)
 _SINCE = date(2026, 10, 13)
-_RUNG = "gemini / 3 - the model (live, live) on gemini, judged by gemini"
+_LIVE_STAGE_JOB = "gemini / live -> live on gemini, P0, release blocking, judged by claude"
 _PROBE_ENVIRONMENT = "version_probe"
 
-# WHICH JUDGE GRADES EACH ENGINE'S SCHEDULED LADDER, so no judge grades its own
-# engine on a schedule. Section 4.18.2.
+# THE NAMES A RUN BEFORE 2026-11-13 GAVE THE LIVE STAGE AND THE JUDGE STAGE.
+# Section 4.18.3.
+_OLD_LIVE_STAGE_JOB = "gemini / 3 - the model (live, live) on gemini, P1, release blocking, " \
+                      "judged by claude"
+_OLD_JUDGE_STAGE_JOB = "gemini / 2 - the judge (replay, live) on gemini, P0, release " \
+                       "blocking, judged by claude"
+
+# WHICH JUDGE GRADES EACH ENGINE'S SCHEDULED REGRESSION RUN, so no judge grades
+# its own engine on a schedule. Section 4.18.2.
 _SCHEDULED_JUDGE = {"claude": "gemini", "gemini": "claude", "grok": "gemini",
                     "openai": "claude"}
 
 # A PROBE-DISPATCHED RUN THAT MEASURED, one that waited for a reviewer and
-# never ran its live rung, one from before the window, and the run asking.
+# never ran its live stage, one from before the window, and the run asking.
 _RUNS = [
     {"id": 11, "created_at": "2026-11-02T05:10:00Z", "status": "completed",
      "event": "workflow_dispatch", "path": ".github/workflows/evaluate-gemini-scheduled.yml"},
@@ -76,10 +85,10 @@ _RUNS = [
     {"id": 14, "created_at": "2026-11-09T02:00:00Z", "status": "in_progress",
      "event": "schedule", "path": ".github/workflows/evaluate-gemini-scheduled.yml"},
 ]
-_MEASURED = {11: [{"name": _RUNG, "conclusion": "failure"}]}
-_UNMEASURED = {12: [{"name": _RUNG, "conclusion": "skipped"}],
-               13: [{"name": _RUNG, "conclusion": "success"}],
-               14: [{"name": _RUNG, "conclusion": "success"}]}
+_MEASURED = {11: [{"name": _LIVE_STAGE_JOB, "conclusion": "failure"}]}
+_UNMEASURED = {12: [{"name": _LIVE_STAGE_JOB, "conclusion": "skipped"}],
+               13: [{"name": _LIVE_STAGE_JOB, "conclusion": "success"}],
+               14: [{"name": _LIVE_STAGE_JOB, "conclusion": "success"}]}
 
 
 class TestMQCScheduledEvaluation:
@@ -87,7 +96,7 @@ class TestMQCScheduledEvaluation:
 
     @story("A scheduled evaluation skips a month already measured")
     def MQC_CAS_UNI_115830_an_engine_unevaluated_in_the_window_is_evaluated(self) -> None:
-        """No live rung finished inside the window, so the scheduled run evaluates.
+        """No live stage finished inside the window, so the scheduled run evaluates.
 
         Design: ``consumer_ci.md`` section 4.18.3.
 
@@ -101,10 +110,10 @@ class TestMQCScheduledEvaluation:
         assert WINDOW_DAYS < 28, WINDOW_DAYS
 
     @story("A scheduled evaluation skips a month already measured")
-    def MQC_CAS_UNI_115831_a_live_rung_finished_in_the_window_skips_the_run(self) -> None:
+    def MQC_CAS_UNI_115831_a_live_stage_finished_in_the_window_skips_the_run(self) -> None:
         """A probe-dispatched run that measured the engine makes the scheduled run redundant.
 
-        A failed live rung counts: it measured the model, and the result is a finding.
+        A failed live stage counts: it measured the model, and the result is a finding.
 
         Design: ``consumer_ci.md`` section 4.18.3.
 
@@ -121,21 +130,43 @@ class TestMQCScheduledEvaluation:
     def MQC_CAS_UNI_115832_runs_that_did_not_measure_in_the_window_do_not_count(
         self,
     ) -> None:
-        """A rung never run, a run before the window, the run asking, another engine.
+        """A stage never run, a run before the window, the run asking, another engine.
 
         Design: ``consumer_ci.md`` section 4.18.3.
 
         Returns:
             None
         """
-        other = {11: [{"name": "openai / 3 - the model (live, live) on openai, judged by "
+        other = {11: [{"name": "openai / live -> live on openai, judged by "
                                "gemini", "conclusion": "success"}]}
 
-        step(1, "ignore a live rung skipped, one before the window and the run asking")
+        step(1, "ignore a live stage skipped, one before the window and the run asking")
         assert redundant_by(_RUNS, _UNMEASURED, "gemini", _SINCE, 14) is None
 
-        step(2, "ignore another engine's live rung")
+        step(2, "ignore another engine's live stage")
         assert redundant_by(_RUNS, other, "gemini", _SINCE, 14) is None
+
+    @story("A scheduled evaluation skips a month already measured")
+    def MQC_CAS_UNI_115851_a_stage_named_before_the_rename_still_counts(self) -> None:
+        """A live stage under the name a run before 2026-11-13 gave it measured the engine.
+
+        Its replayed-candidate stage, under its old name, measured the judge and
+        not the model, so it does not count.
+
+        Design: ``consumer_ci.md`` sections 4.18.3 and 7.0.
+
+        Returns:
+            None
+        """
+        renamed = {11: [{"name": _OLD_LIVE_STAGE_JOB, "conclusion": "success"}]}
+        judged = {11: [{"name": _OLD_JUDGE_STAGE_JOB, "conclusion": "success"}]}
+        reason = redundant_by(_RUNS, {**_UNMEASURED, **renamed}, "gemini", _SINCE, 14)
+
+        step(1, "name the run whose live stage carries the name it had before the rename")
+        assert reason is not None and "run 11" in reason, reason
+
+        step(2, "ignore the replayed-candidate stage under its name before the rename")
+        assert redundant_by(_RUNS, {**_UNMEASURED, **judged}, "gemini", _SINCE, 14) is None
 
     @story("A scheduled evaluation skips a month already measured")
     def MQC_CAS_UNI_115833_an_unreadable_history_refuses(self, tmp_path: Path) -> None:
@@ -177,7 +208,7 @@ class TestMQCScheduledEvaluation:
 
     @story("Each engine is evaluated monthly and asks first")
     def MQC_CAS_UNI_115834_each_scheduled_caller_fires_monthly_and_asks_first(self) -> None:
-        """A monthly cron on a day of its own, and a decision gating the ladder on a schedule.
+        """A monthly cron on a day of its own, and a decision gating the run on a schedule.
 
         Design: ``consumer_ci.md`` section 4.18.3.
 
@@ -198,14 +229,14 @@ class TestMQCScheduledEvaluation:
                 days.append(crons[0][2])
             defined = jobs(loaded)
             decide = defined.get("decide", {})
-            ladder = defined.get("ladder", {})
+            regression = defined.get("regression", {})
             if "github.event_name == 'schedule'" not in str(decide.get("if", "")) or \
                     "tools.recent_evaluation" not in " ".join(run_lines(decide, _ROOT)):
                 problems.append(f"{engine}: no decision asked only on a schedule")
-            if "needs.decide.outputs.evaluate" not in str(ladder.get("if", "")):
-                problems.append(f"{engine}: the ladder does not read the decision")
+            if "needs.decide.outputs.evaluate" not in str(regression.get("if", "")):
+                problems.append(f"{engine}: the regression run does not read the decision")
 
-        step(1, "find a monthly cron and a decision gating the ladder for every engine")
+        step(1, "find a monthly cron and a decision gating the regression run for every engine")
         assert not problems, problems
 
         step(2, "find each engine on a day of its own")
@@ -277,10 +308,10 @@ class TestMQCScheduledEvaluation:
         assert not spending, spending
 
     @story("Each engine is evaluated monthly and asks first")
-    def MQC_CAS_UNI_115848_a_scheduled_ladder_with_the_wrong_judge_is_reported(
+    def MQC_CAS_UNI_115848_a_scheduled_run_with_the_wrong_judge_is_reported(
         self,
     ) -> None:
-        """Each scheduled ladder passes the judge section 4.18.2 gives its engine.
+        """Each scheduled regression run passes the judge section 4.18.2 gives its engine.
 
         Design: ``consumer_ci.md`` section 4.18.2.
 
@@ -297,5 +328,5 @@ class TestMQCScheduledEvaluation:
         step(1, "find every rostered engine with a judge assigned")
         assert set(passed) == set(_SCHEDULED_JUDGE), sorted(passed)
 
-        step(2, "find each scheduled ladder passing its engine's judge")
+        step(2, "find each scheduled regression run passing its engine's judge")
         assert passed == {engine: [judge] for engine, judge in _SCHEDULED_JUDGE.items()}, passed

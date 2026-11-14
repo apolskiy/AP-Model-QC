@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-# The scheduled attribution ladder for grok: monthly, and on a model change.
+# The scheduled regression run for grok: monthly, and on a model change.
 #
 # ONE WORKFLOW PER ENGINE, so this engine has its own status, its own run
 # history and its own artifacts. A combined result would average over four
@@ -12,13 +12,13 @@
 # Only the schedule asks first: a model change or a person means it.
 #
 # THE SCHEDULE ASKS BEFORE IT SPENDS. `decide` reads this engine's evaluation
-# runs and skips the ladder when its live rung already finished inside the
+# runs and skips the regression run when its live stage already finished inside the
 # window, whatever started that run (section 4.18.3). A history it cannot read
 # fails the job and spends nothing.
 #
 # EACH ENGINE ON A DAY OF ITS OWN, 02:00 UTC: gemini the 1st, openai the 2nd,
 # claude the 3rd, grok the 4th; this one the 4th. The gap being far longer
-# than a ladder takes keeps an overrun a finding rather than a collision
+# than a regression run takes keeps an overrun a finding rather than a collision
 # (section 4.18.2). JUDGED BY GEMINI, so no judge grades its own engine on a
 # schedule (section 4.18.2). Nobody approves a live run since 2026-11-12:
 # disabling this workflow in the Actions tab is what stops it, and the probe
@@ -35,12 +35,12 @@ on:
   workflow_dispatch:
     inputs:
       max_spend:
-        description: "USD ceiling for the whole ladder. The monthly cap is $20 per provider"
+        description: "USD ceiling for the whole regression run. The monthly cap is $20 per provider"
         required: false
         default: "7.00"
         type: string
       os:
-        description: "The one platform the ladder runs on (section 7.8.3)"
+        description: "The one platform the regression run runs on (section 7.8.3)"
         required: false
         default: "ubuntu-26.04"
         type: choice
@@ -94,7 +94,7 @@ jobs:
           --output "$GITHUB_OUTPUT"
           --summary "$GITHUB_STEP_SUMMARY"
 
-  ladder:
+  regression:
     name: grok
     needs: decide
     if: >-

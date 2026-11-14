@@ -1,17 +1,18 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Support code reading the banded attribution ladder, for the cases that check it.
+"""Support code reading the banded regression run, for the cases that check it.
 
 Created: 2026-11-12
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
-This file contains ``RUNGS`` and ``BANDS``, the ladder's nine band jobs as
-``consumer_ci.md`` section 7.8.1 lays them out; ``LIVE_BANDS``, the six that
+This file contains the three stage names, candidate mode then judge mode;
+``STAGES``, ``BANDS`` and ``BAND_SUFFIXES``, the regression run's nine band
+jobs as ``consumer_ci.md`` section 7.8.1 lays them out; ``LIVE_BANDS``, the six that
 spend, in the order they run; ``band_step``, which returns the step calling the
 shared band definition; ``band_invocation``, the band's pytest invocation with
 the step's inputs resolved; ``flag_value``, the value an invocation passes a
 flag; ``steps_running``, the steps whose run body names a text; and
-``ladder_callers``, every workflow calling the ladder.
+``regression_callers``, every workflow calling the regression run.
 
 **Not a test module.** ``pytest.ini`` collects ``mqc_*.py``, so this name sits
 outside that pattern deliberately, as ``workflow_support.py`` does.
@@ -29,28 +30,41 @@ from tests.cases.workflow_support import (
     load,
 )
 
-# THE LADDER EVERY ENGINE'S CALLERS INVOKE.
-LADDER: Final[str] = "evaluate-engine.yml"
+# THE REGRESSION RUN EVERY ENGINE'S CALLERS INVOKE.
+REGRESSION_RUN: Final[str] = "evaluate-engine.yml"
 
-# EACH RUNG'S JOBS IN BAND ORDER, the name each job's display name leads with,
-# and the candidate and judge modes its band invocation passes. Rung 1 passes
-# no judge mode, so the judge follows the replayed candidate. Section 7.8.1.
-RUNGS: Final[dict[str, dict[str, Any]]] = {
-    "deterministic": {
-        "jobs": ("deterministic-p0", "deterministic-p1", "deterministic-lower"),
-        "name": "1 - our code (replay, replay) on ${{ inputs.engine }}",
+# THE STAGE NAMES, candidate mode then judge mode. Section 7.0.
+REPLAY_REPLAY: Final[str] = "replay -> replay"
+REPLAY_LIVE: Final[str] = "replay -> live"
+LIVE_LIVE: Final[str] = "live -> live"
+
+# EACH STAGE BY ITS PAIR, in the order the stages run: its jobs in band order,
+# the report stem and carried-outcomes prefix each band job uses, the name each
+# job's display name leads with, and the candidate and judge modes its band
+# invocation passes. `replay -> replay` passes no judge mode, so the judge
+# follows the replayed candidate. Section 7.8.1.
+STAGES: Final[dict[str, dict[str, Any]]] = {
+    REPLAY_REPLAY: {
+        "jobs": ("replay-replay-p0", "replay-replay-p1", "replay-replay-lower"),
+        "report": "replay_replay",
+        "carry": "carry-replay-replay-after-",
+        "name": "replay -> replay on ${{ inputs.engine }}",
         "mode": "replay",
         "judge_mode": "",
     },
-    "judge": {
-        "jobs": ("judge-p0", "judge-p1", "judge-lower"),
-        "name": "2 - the judge (replay, live) on ${{ inputs.engine }}",
+    REPLAY_LIVE: {
+        "jobs": ("replay-live-p0", "replay-live-p1", "replay-live-lower"),
+        "report": "replay_live",
+        "carry": "carry-replay-live-after-",
+        "name": "replay -> live on ${{ inputs.engine }}",
         "mode": "replay",
         "judge_mode": "live",
     },
-    "model": {
-        "jobs": ("model-p0", "model-p1", "model-lower"),
-        "name": "3 - the model (live, live) on ${{ inputs.engine }}",
+    LIVE_LIVE: {
+        "jobs": ("live-live-p0", "live-live-p1", "live-live-lower"),
+        "report": "live_live",
+        "carry": "carry-live-live-after-",
+        "name": "live -> live on ${{ inputs.engine }}",
         "mode": "live",
         "judge_mode": "live",
     },
@@ -64,9 +78,12 @@ BANDS: Final[tuple[tuple[str, str, str], ...]] = (
     ("P2-P4", "2,3,4", "false"),
 )
 
+# EACH BAND'S REPORT STEM SUFFIX, in the order of ``BANDS``. Section 7.8.1.
+BAND_SUFFIXES: Final[tuple[str, ...]] = ("p0", "p1", "p2_p4")
+
 # THE BANDS THAT SPEND, in the order they run, so a band's position is how
 # many live bands ran before it. Section 7.8.4.
-LIVE_BANDS: Final[tuple[str, ...]] = RUNGS["judge"]["jobs"] + RUNGS["model"]["jobs"]
+LIVE_BANDS: Final[tuple[str, ...]] = STAGES[REPLAY_LIVE]["jobs"] + STAGES[LIVE_LIVE]["jobs"]
 
 # THE PLATFORM A LIVE RUN TAKES WHEN NOBODY CHOOSES, and the two a dispatch
 # offers. Section 7.8.3.
@@ -120,6 +137,31 @@ def band_invocation(job: dict[str, Any], root: Path) -> str:
     return found[0] if len(found) == 1 else ""
 
 
+def pair_mismatch(job: dict[str, Any], stage: dict[str, Any], position: int) -> Optional[str]:
+    """Return how a band job's report stem or carried outcomes miss its stage's pair, or None.
+
+    Args:
+        job (dict): The band job definition.
+        stage (dict): The stage's entry in ``STAGES``.
+        position (int): The band's position in ``BANDS``.
+
+    Returns:
+        Optional[str]: The stem and the carried artifacts, None where both
+        carry the pair.
+    """
+    report = band_inputs(job).get("report")
+    carried = [
+        str((entry.get("with") or {}).get("name", ""))
+        for entry in job.get("steps") or []
+        if "upload-artifact" in str(entry.get("uses", ""))
+        and str((entry.get("with") or {}).get("name", "")).startswith("carry-")
+    ]
+    if report == f"{stage['report']}_{BAND_SUFFIXES[position]}" and all(
+            artifact.startswith(stage["carry"]) for artifact in carried):
+        return None
+    return f"report {report!r}, carries {carried}"
+
+
 def flag_value(line: str, flag: str) -> Optional[str]:
     """Return the value an invocation passes a flag, quotes removed.
 
@@ -152,8 +194,8 @@ def steps_running(job: dict[str, Any], text: str) -> list[dict[str, Any]]:
     ]
 
 
-def ladder_callers() -> dict[str, dict[str, Any]]:
-    """Return every workflow calling the ladder, by filename.
+def regression_callers() -> dict[str, dict[str, Any]]:
+    """Return every workflow calling the regression run, by filename.
 
     Returns:
         dict[str, dict]: Filename to the parsed caller.
@@ -161,7 +203,7 @@ def ladder_callers() -> dict[str, dict[str, Any]]:
     found: dict[str, dict[str, Any]] = {}
     for workflow in sorted(WORKFLOWS.glob("*.yml")):
         loaded = load(workflow.name)
-        if any(LADDER in str(job.get("uses") or "") for job in jobs(loaded).values()):
+        if any(REGRESSION_RUN in str(job.get("uses") or "") for job in jobs(loaded).values()):
             found[workflow.name] = loaded
     return found
 
@@ -171,7 +213,7 @@ def write_band_report(directory: Path, stem: str, total: Optional[str]) -> Path:
 
     Args:
         directory (Path): Where the report goes, created where absent.
-        stem (str): The report's stem, such as ``judge_p0``.
+        stem (str): The report's stem, such as ``replay_live_p0``.
         total (Optional[str]): The ``mqc.total_spend_usd`` value, such as
             ``1.2345`` or ``unpriced``; None writes no spend property.
 

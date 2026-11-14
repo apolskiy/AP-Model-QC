@@ -3,7 +3,7 @@
 """Support code that evaluates a family's calibration samples and reports those that disagreed.
 
 Created: 2026-11-10
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
 This file contains ``calibration_samples`` and ``every_calibration_sample``,
 which read the authored samples in ``data/calibration/``; ``sample_case``, the
@@ -268,7 +268,7 @@ def rest_on_family_calibration(items: list[Any], root: Path, config: Any = None)
     """Make each judged case depend on its family's calibration, collected or recorded.
 
     Returns at once where the session neither collected a calibration case nor
-    names ``--calibration-record``, which is every gate and rung 1, so those
+    names ``--calibration-record``, which is every gate and ``replay -> replay``, so those
     neither parse the suite nor gain a dependency. Otherwise hands the items
     and ``suite_support.judged_case_families`` to the harness
     ``rest_judged_cases_on_calibration``, which wires each judged case to the

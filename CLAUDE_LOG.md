@@ -9050,3 +9050,46 @@ and support code existed.
 reads workflow files only and does not follow a local composite action, so a
 live invocation in `.github/actions/band` is outside what `115418` checks. It
 gets a failing harness case and a fix of its own.
+
+## 2026-11-13: A graded run is named by its candidate and judge modes
+
+**What was wrong.** The documents, workflow comments and job names called the
+banded run a ladder and its parts rung 1 to rung 3, while this project calls
+that run a regression run, and a rung number made a reader recall what each
+position replayed. "Regression run" also carried a wider sense in section 3.9,
+any measuring run on `main`, and "calibration" was being read as covering the
+replay-on-both-sides run.
+
+**The ruling.** A graded run is named by its pair, candidate mode first:
+`replay -> replay` verifies the harness and the cases, `replay -> live`
+measures the judge, `live -> live` is the regression, `live -> replay` is
+refused. The `replay -> live` stage stays in the regression run; judge
+calibration is the other `replay -> live`, over the samples.
+
+**What changed.** `consumer_ci.md` section 7.0 states the names, the four
+pairs and what each is used for, and section 7.4 sets the two `replay -> live`
+runs side by side. Section 3.9 says a run on `main`. A token-aware rename swept
+the designs, requirements, cases, workflows and tool here and in the harness,
+renaming Python names by identifier rules and prose by prose rules; the change
+history was left as written. Hand edits followed where the sweep could not
+read meaning: numbered stages split across line breaks, "regression run run",
+a probe shell variable the sweep turned into two words, and backticks inside
+an `echo` that bash would have run as a command.
+
+Every name a band job uses carries its pair: job identifiers `replay-replay-p0`
+to `live-live-lower`, display names opening `live -> live on <engine>`, report
+stems and carried-outcomes artifacts. The callers' job is `regression`.
+`tools/recent_evaluation.py` counts a live stage by its new name and by the
+name runs before 2026-11-13 carry, so the first month after the rename does
+not measure an engine twice.
+
+**Cases.** `115837` gained a step asserting each band's report stem and
+carried artifact; `115851` asserts a stage under its old name counts and the
+old judge stage does not. Eight changed cases failed against the unrenamed
+workflows. `115851` passed there, because the old tool matched only the old
+name; injections show it catches a dropped old name and an old name widened to
+any stage. 39 injections were each caught: the 30 of 2026-11-12, translated
+to the new names, and nine on the names themselves. The first run of one, a
+dropped new name, went NOT CAUGHT because the injection left a parenthesized
+string where a tuple had been, so every job matched; with the tuple kept it
+was caught.

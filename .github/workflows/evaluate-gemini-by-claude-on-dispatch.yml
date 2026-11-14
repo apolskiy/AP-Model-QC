@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-# The attribution ladder for gemini, judged by claude.
+# The regression run for gemini, judged by claude.
 #
 # WHY A SECOND JUDGE. The project owner, 2026-10-21: "gemini judging itself,
 # adn finding least problems, can look suspect." Both judges score every
@@ -23,13 +23,13 @@
 # TO MAKE IT BEHAVE LIKE THE GEMINI-JUDGED RUN, add the schedule its caller
 # carries and the `workflow_run` dispatch from the probe, and rename this file
 # to `evaluate-gemini-by-claude-scheduled.yml`, which is a paired change with
-# whatever dispatches it. **What that costs:** rung 2 spends one claude request
+# whatever dispatches it. **What that costs:** `replay -> live` spends one claude request
 # per judged case and nothing on candidates, since the responses are a
-# recording; rung 3 spends on both. The monthly cap is $20 per provider, and a
+# recording; `live -> live` spends on both. The monthly cap is $20 per provider, and a
 # second judge on every engine monthly is a second judge bill, not a second
 # candidate bill. Section 7.7.3.
 #
-# RUNG 1 IS NOT REPEATED FOR A SECOND JUDGE. It replays both halves, so it
+# REPLAY -> REPLAY IS NOT REPEATED FOR A SECOND JUDGE. It replays both halves, so it
 # measures our code, and the code reading a stored judgement does not vary
 # with the engine that produced it. The project owner: "Since harness gets
 # tested on gemini, is there a point to retest the whole harness on a
@@ -40,12 +40,12 @@ on:
   workflow_dispatch:
     inputs:
       max_spend:
-        description: "USD ceiling for the whole ladder. The monthly cap is $20 per provider"
+        description: "USD ceiling for the whole regression run. The monthly cap is $20 per provider"
         required: false
         default: "7.00"
         type: string
       os:
-        description: "The one platform the ladder runs on (section 7.8.3)"
+        description: "The one platform the regression run runs on (section 7.8.3)"
         required: false
         default: "ubuntu-26.04"
         type: choice
@@ -66,7 +66,7 @@ permissions:
   actions: read
 
 jobs:
-  ladder:
+  regression:
     name: gemini, judged by claude
     uses: ./.github/workflows/evaluate-engine.yml
     with:

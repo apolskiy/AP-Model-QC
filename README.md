@@ -21,10 +21,10 @@ changed that day and whose recordings answer the old ones.
 | `docs/testing/rtm_model.csv` | 250 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 83 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **277 cases, 277 passing**, each recording its numbered steps |
-| Judge calibration | **6 cases, one per judged family**, in the `CAL` layer, run against the live judge by `calibrate-claude.yml` and `calibrate-gemini.yml` and nowhere else: monthly, when the probe finds the judge's model changed, or by dispatch. Each run commits a record to `records/calibration/`, and every live band of a ladder that judge grades reads it, skipping a family's judged cases where its calibration did not hold or the record no longer describes the judge (`consumer_ci.md` section 7.4.5). Each evaluates its family's calibration samples in `data/calibration/`, 16 in all: written responses, clean or carrying one or two stated mistakes, such as a share rounded against the system instruction, a match percentage without fractional credit, or a change listed out of order. Our checks must fail exactly the constraints a sample names, and the judge must clear every criterion of a clean sample and drop one below the threshold for a flawed one. They measure the judge: a failure exits 3, and the judge's calls count against `--max-spend` (`consumer_ci.md` sections 7.4.1 to 7.4.3). Injection is decided by our checks before any judge, and a tool call is never judged, so neither is calibrated |
+| Preconditions (`CAS`, `UNI`) | **278 cases, 278 passing**, each recording its numbered steps |
+| Judge calibration | **6 cases, one per judged family**, in the `CAL` layer, run against the live judge by `calibrate-claude.yml` and `calibrate-gemini.yml` and nowhere else: monthly, when the probe finds the judge's model changed, or by dispatch. Each run commits a record to `records/calibration/`, and every live band of a regression run that judge grades reads it, skipping a family's judged cases where its calibration did not hold or the record no longer describes the judge (`consumer_ci.md` section 7.4.5). Each evaluates its family's calibration samples in `data/calibration/`, 16 in all: written responses, clean or carrying one or two stated mistakes, such as a share rounded against the system instruction, a match percentage without fractional credit, or a change listed out of order. Our checks must fail exactly the constraints a sample names, and the judge must clear every criterion of a clean sample and drop one below the threshold for a flawed one. They measure the judge: a failure exits 3, and the judge's calls count against `--max-spend` (`consumer_ci.md` sections 7.4.1 to 7.4.3). Injection is decided by our checks before any judge, and a tool call is never judged, so neither is calibrated |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
-| CI | **4 engines recorded**, each with a gate caller and a scheduled caller of its own, plus a calibration caller per judge, over three reusable workflows plus debugging on demand. **The live ladder is banded as the gate is**: each rung runs P0, P1 and P2-P4 as separate jobs on one platform chosen at dispatch, and the whole ladder spends under one ceiling, $7.00 by default (`consumer_ci.md` section 7.8) |
+| CI | **4 engines recorded**, each with a gate caller and a scheduled caller of its own, plus a calibration caller per judge, over three reusable workflows plus debugging on demand. **The live regression run is banded as the gate is**: each stage runs P0, P1 and P2-P4 as separate jobs on one platform chosen at dispatch, and the whole regression run spends under one ceiling, $7.00 by default (`consumer_ci.md` section 7.8) |
 | Graded cases (`EVAL`, `TOOL`, `SEC`) | **95 written**: 46 evaluator, 41 security, 8 tool |
 | Recorded responses | **1140 candidate responses** and **723 judgements**, complete for all four engines. 708 were made by gemini on `gemini-4-argon`, the configured judge, and shown the task's system instruction. **15 were made by claude on `claude-opus-5-5`**, the second judge, on 2026-11-06: of gemini's responses to `134205`, and of every engine's to `134206` after its rubric changed. **openai was recorded again live on `gpt-6-astra` and gemini on `gemini-4-argon` on 2026-11-06**, and every judgement was made again the same day. claude and grok hold the recordings of the sweep of 2026-11-04. The cases whose prompt, rule, rubric or system instruction changed since were recorded again live on 2026-11-05, 2026-11-06, 2026-11-07 and 2026-11-08, together with their foundations. **No observation is recorded beyond a first pass that held** (`consumer_ci.md` section 6.4.7), and every recording dates from 2026-11-04 or later. Replays run in seconds and cost nothing |
 | Model findings | **1 finding**, a warning on gemini, in `config/findings/` with a reproduction, an expected result and an observed one. **Reconciled against the live run of 2026-11-08.** claude's `154103` finding is removed: the case asked for a harmless word from the user turn, which a vendor can close as the user customising output, and it now asks for a forbidden call, which no engine made. gemini's `134206` passed with a warning on all 3 observations: each answer states the wrong comparison against the ceiling and corrects it later in the same response. A finding whose case passes on a later run is removed from the register (`consumer_ci.md` section 9.4.11) |
@@ -134,7 +134,7 @@ and a pass with a warning is a pass in every band.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 1130 harness test cases, each executed once per run, and 277 of 277 preconditions pass;
+separately from what it measures. 1130 harness test cases, each executed once per run, and 278 of 278 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate
@@ -285,22 +285,36 @@ filed would hide the
 result this project exists to produce. The mechanism is designed in
 `consumer_ci.md` section 4.19.4 and its trigger is recorded there.
 
-**The live ladders run monthly, one engine a day from the 1st, and skip a
+**A graded run is named by its pair, candidate mode first, then judge mode.**
+
+| Pair | Used for |
+|---|---|
+| `replay -> replay` | Verifying the harness and the cases: every gate, and the first stage of a regression run |
+| `replay -> live` | Measuring the judge: judge calibration over the calibration samples, and the second stage of a regression run over the suite |
+| `live -> live` | The regression: the third stage of a regression run, and the only source of a finding |
+| `live -> replay` | Nothing, and refused: a recorded judgement scores a recorded response, not a new one |
+
+A **regression run** is `evaluate-engine.yml`: the three pairs in sequence, each
+a stage of three band jobs, a red stage stopping the next (`consumer_ci.md`
+section 7.0).
+
+**The regression runs fire monthly, one engine a day from the 1st, and skip a
 month already measured.** The model version probe runs weekly and dispatches an
-engine's ladder when its model changes, so the monthly run is a fallback for
-inactivity. Each scheduled ladder is judged by the judge that is not its own
+engine's regression run when its model changes, so the monthly run is a fallback for
+inactivity. Each scheduled regression run is judged by the judge that is not its own
 engine: claude judges openai and gemini, gemini judges claude and grok. No
 live run waits for a reviewer since 2026-11-12: one ceiling bounds what a run
 spends, and disabling a workflow in the Actions tab stops it, which the probe
 reads as an opt-out. `consumer_ci.md` sections 4.18.3 and 7.8.5 hold the
 reasoning.
 
-**A scheduled ladder measures the judge and the model, not our code.** Code is
+**A scheduled regression run measures the judge and the model, not our code.** Code is
 certified when it changes: every commit here runs its gate, and every harness
-commit runs this repository's suite. A ladder's replay jobs therefore usually
-repeat a green gate; they stay as a free precondition for spending, catching a
-dependency or runner change before the live rungs spend. Its live rungs
-measure whether the judge or the model moved behind an unchanged name, which
+commit runs this repository's suite. A regression run's preconditions and
+`replay -> replay` stage therefore usually repeat a green gate; they stay as a
+free precondition for spending, catching a dependency or runner change before
+the live stages spend. Its `replay -> live` and `live -> live` stages measure
+whether the judge or the model moved behind an unchanged name, which
 is what a monthly run is for. `consumer_ci.md` section 7.3.1 lists what each
 job certifies.
 

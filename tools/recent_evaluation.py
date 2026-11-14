@@ -3,22 +3,24 @@
 """Decides whether a scheduled evaluation would repeat one already made this month.
 
 Created: 2026-11-09
-Last updated: 2026-11-09
+Last updated: 2026-11-13
 
-This file contains ``redundant_by``, which returns the run whose live rung
-already measured an engine inside the window, or ``None``; ``fetch``, which
+This file contains ``redundant_by``, which returns the run whose
+``live -> live`` stage already measured an engine inside the window, or
+``None``; ``fetch``, which
 reads the engine's evaluation runs and their jobs from GitHub; and ``main``,
 the command line a scheduled caller's ``decide`` job runs, which writes
 ``evaluate=true`` or ``evaluate=false`` and a ``reason`` to ``--output``, and
 the same decision as markdown to ``--summary`` when given, and exits 0, or
 exits 4 without a decision when the history cannot be read.
 
-**An evaluation is a live rung that finished.** A run counts when its job
-named ``3 - the model (live, live) on <engine>`` concluded success or failure,
+**An evaluation is a live stage that finished.** A run counts when a job
+named ``live -> live on <engine>``, or ``3 - the model (live, live) on
+<engine>`` as a run before 2026-11-13 named it, concluded success or failure,
 in either caller that runs it: ``evaluate-<engine>-scheduled.yml``, whether a
 schedule, the probe or a person started it, and
-``evaluate-<engine>-by-claude-on-dispatch.yml``. A failed rung measured the
-model, so it counts. A rung skipped, cancelled or never approved did not, and
+``evaluate-<engine>-by-claude-on-dispatch.yml``. A failed stage measured the
+model, so it counts. A stage skipped, cancelled or never approved did not, and
 the run asking is not counted. A local live run leaves no run here and is not
 seen.
 
@@ -56,21 +58,22 @@ _EXIT_REFUSED: Final[int] = 4
 History = tuple[list[dict[str, Any]], dict[int, list[dict[str, Any]]]]
 
 
-def _live_rung(engine: str) -> str:
-    """Return the name every evaluation gives the job that measures the model.
+def _live_stage(engine: str) -> tuple[str, ...]:
+    """Return the names an evaluation gives the jobs that measure the model.
 
     Args:
         engine (str): The engine evaluated.
 
     Returns:
-        str: The live rung's job name, without its judge.
+        tuple[str, ...]: The ``live -> live`` stage's job name without its band
+        or judge, then the name a run before 2026-11-13 gave the same stage.
     """
-    return f"3 - the model (live, live) on {engine}"
+    return (f"live -> live on {engine}", f"3 - the model (live, live) on {engine}")
 
 
 def redundant_by(runs: list[dict[str, Any]], jobs_by_run: Mapping[int, list[dict[str, Any]]],
                  engine: str, since: date, current_run: int) -> Optional[str]:
-    """Return the newest run whose live rung measured the engine since a date.
+    """Return the newest run whose live stage measured the engine since a date.
 
     Args:
         runs (list[dict]): Workflow runs, each with ``id``, ``created_at``,
@@ -83,15 +86,16 @@ def redundant_by(runs: list[dict[str, Any]], jobs_by_run: Mapping[int, list[dict
 
     Returns:
         Optional[str]: Why this run is redundant, naming the run, its trigger
-        and its live rung's conclusion; ``None`` when nothing measured it.
+        and its live stage's conclusion; ``None`` when nothing measured it.
     """
-    rung = _live_rung(engine)
+    stages = _live_stage(engine)
     window = [run for run in runs
               if run.get("id") != current_run and run.get("status") == "completed"
               and date.fromisoformat(str(run.get("created_at", ""))[:10]) >= since]
     for run in sorted(window, key=lambda run: str(run.get("created_at")), reverse=True):
         for job in jobs_by_run.get(int(run["id"]), []):
-            if rung in str(job.get("name", "")) and job.get("conclusion") in _COUNTED:
+            name = str(job.get("name", ""))
+            if any(stage in name for stage in stages) and job.get("conclusion") in _COUNTED:
                 return (f"run {run['id']} of {Path(str(run.get('path', ''))).name} "
                         f"({run.get('event')}, {run.get('created_at')}) evaluated {engine} "
                         f"live since {since.isoformat()}, concluding {job.get('conclusion')}")
