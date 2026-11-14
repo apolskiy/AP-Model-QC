@@ -9174,3 +9174,30 @@ nothing (both cases each), and calibration naming `debug_live` (`115837`).
 **Left to the owner**: creating the `debug_live` environment with the owner as
 required reviewer and the four provider keys, and on `live` removing the
 reviewer and limiting deployments to `main`.
+
+### Digressions the user spotted, and the fix
+
+**The bands were applied to the replay gate and not to the live runs they were
+designed for.** A) Section 3.12 names no job type, so its bands bind every
+graded run, and they exist mainly for live runs: a failed P0 skips its
+dependents before anything is spent, and a P2 failure reads as a floor miss
+rather than beside a blocker. The replay gate jobs were banded; the live
+regression run stayed one pytest session per stage until 2026-11-12, when a
+grok `live -> live` run was red on a P2 check beside a P1 failure and an openai
+dispatch spent $5.86 against a $4.00 ceiling. It was reworked only when the
+user pointed at it, after the rules and design were read again in full. B) The
+bands were implemented for the jobs being edited, and no search was made for
+the other jobs the rule binds. **Fixed** 2026-11-12 (entry "The live ladder is
+banded as the gate is"); `115837` and `115838` now hold the regression run to
+the gate's bands.
+
+**The banned shell shapes kept being attempted.** A) Here-documents,
+`python -c` and `sed -i` were issued repeatedly across sessions after the rules
+banned them, and each was stopped by the `PreToolUse` hook, not by the rules;
+every refused call cost a round trip and its tokens (entries recorded above, at
+the refused `sed -i`, `python -c` and filler heredoc). B) The written rule did
+not hold against habit, and the auto-mode system reminder recommends `sed` and
+here-documents for file edits, contradicting it; that reminder arrived again in
+this session. **Fixed** by the hook, which refuses all four shapes before they
+run, and by declining the reminder explicitly; the rule stays the reason and
+the hook the enforcement.
