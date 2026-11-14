@@ -14,16 +14,19 @@ family's samples through the harness ``calibrate_sample``;
 withheld; ``sample_integrity_problems``, every sample that does not answer a
 shipped case of its family; ``calibration_plan`` and ``calibration_channel``,
 the live judge channel calibration uses; ``rest_on_family_calibration``, which
-makes each collected judged case depend on its family's collected calibration
-case; ``calibrate_family_live``, which joins the channel to a family; and
+makes each judged case depend on its family's calibration, collected or carried
+from a record; ``samples_digest``, the digest a record is valid against;
+``adopt_record`` and ``publish_record``, which read and write the record;
+``calibrate_family_live``, which joins the channel to a family; and
 ``assert_calibrated``, which each case in ``mqc_cal_calibration.py`` calls with
 its family.
 
-**Calibration runs in rung 2 only**, where the marker expression names
-``calibration`` under a live judge, and the harness deselects it everywhere
-else. A failure means the judge missed a stated mistake or marked down a clean
-sample, so its family's judged scores are uninterpretable: it exits 3 and
-skips them.
+**Calibration runs in each judge's calibration workflow only**, where the
+marker expression names ``calibration`` under a live judge, and the harness
+deselects it everywhere else. That session writes a record each live band reads
+(``consumer_ci.md`` section 7.4.5). A failure means the judge missed a stated
+mistake or marked down a clean sample, so its family's judged scores are
+uninterpretable: it exits 3, and every band reading the record skips them.
 
 **The channel neither records nor reuses a judgement.** Its plan names live
 mode and no fixture root, so ``--fill-gaps`` has nothing to read and nothing is
@@ -32,13 +35,15 @@ written, and its budget is the run's session, so every call counts against
 7.4.3.
 """
 
+import hashlib
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Final, Optional
 
 import pytest
 import yaml
 
+from cmn.calibration_record import adopt_calibration_record, publish_calibration_record
 from cmn.calibration_runs import rest_judged_cases_on_calibration
 from cmn.config import packaged_roster_path
 from evaluation.calibration import (
@@ -52,6 +57,7 @@ from evaluation.calibration import (
 from evaluation.judge import JudgeBinding
 from evaluation.pipeline import evaluate_observation
 from execution.judge_channel import JudgementPlan, judge_channel_from_roster
+from execution.preflight import served_facts
 
 from tests.cases import suite_support
 from tests.cases.graded_support import repository_root, run_session, shipped_cases
@@ -258,27 +264,92 @@ def calibration_plan(budget: Any = None) -> JudgementPlan:
     return JudgementPlan(mode="live", budget=budget)
 
 
-def rest_on_family_calibration(items: list[Any], root: Path) -> int:
-    """Make each collected judged case depend on its family's collected calibration case.
+def rest_on_family_calibration(items: list[Any], root: Path, config: Any = None) -> int:
+    """Make each judged case depend on its family's calibration, collected or recorded.
 
-    Returns at once where no calibration case was collected, which is every
-    gate and rungs 1 and 3, so those neither parse the suite nor gain a
-    dependency. Otherwise hands the items and
-    ``suite_support.judged_case_families`` to the harness
-    ``rest_judged_cases_on_calibration``. Design: ``consumer_ci.md`` section
-    7.4.2.
+    Returns at once where the session neither collected a calibration case nor
+    names ``--calibration-record``, which is every gate and rung 1, so those
+    neither parse the suite nor gain a dependency. Otherwise hands the items
+    and ``suite_support.judged_case_families`` to the harness
+    ``rest_judged_cases_on_calibration``, which wires each judged case to the
+    calibration collected beside it or carried from the record. Design:
+    ``consumer_ci.md`` sections 7.4.2 and 7.4.5.
 
     Args:
         items (list): The collected items, after every selector.
         root (Path): This repository's root.
+        config (Any): pytest's configuration, read for ``--calibration-record``;
+            None where the caller has none.
 
     Returns:
         int: The number of cases given a dependency.
     """
-    if not any(item.get_closest_marker(_CALIBRATION_MARKER) for item in items):
+    named = bool(config is not None and config.getoption("--calibration-record", None))
+    if not named and not any(item.get_closest_marker(_CALIBRATION_MARKER) for item in items):
         return 0
     return rest_judged_cases_on_calibration(
         items, suite_support.judged_case_families(root)
+    )
+
+
+def samples_digest(sample_root: Optional[Path] = None) -> str:
+    """Return the digest a calibration record is valid against.
+
+    Every ``*.yaml`` under the root, in name order, is hashed by its name and
+    its content with CRLF read as LF, so an edited, added, removed or renamed
+    sample moves the digest and a checkout on either platform computes the
+    same one. Design: ``consumer_ci.md`` section 7.4.5.
+
+    Args:
+        sample_root (Optional[Path]): The samples directory, ``data/calibration``
+            where None.
+
+    Returns:
+        str: The first sixteen hexadecimal digits of the SHA-256.
+    """
+    digest = hashlib.sha256()
+    for source in sorted((sample_root or _sample_root()).glob("*.yaml")):
+        digest.update(source.name.encode("utf-8") + b"\0")
+        digest.update(source.read_bytes().replace(b"\r\n", b"\n") + b"\0")
+    return digest.hexdigest()[:16]
+
+
+def adopt_record(config: Any) -> Optional[str]:
+    """Adopt the calibration record a band session names, at session start.
+
+    Hands the samples digest and the served-identity reader to the harness
+    ``adopt_calibration_record``, which reads the record only where the
+    session names one under a live judge. Design: ``consumer_ci.md`` section
+    7.4.5.
+
+    Args:
+        config (Any): pytest's configuration.
+
+    Returns:
+        Optional[str]: Why the record is invalid, or None.
+    """
+    if not config.getoption("--calibration-record", None):
+        return None
+    return adopt_calibration_record(config, samples_digest(), served_reader=served_facts)
+
+
+def publish_record(config: Any, root: Path) -> Optional[Path]:
+    """Write the calibration record a calibration session names, at session end.
+
+    Design: ``consumer_ci.md`` section 7.4.5.
+
+    Args:
+        config (Any): pytest's configuration.
+        root (Path): This repository's root.
+
+    Returns:
+        Optional[Path]: The record written, None where none was.
+    """
+    if not config.getoption("--record-calibration", None):
+        return None
+    return publish_calibration_record(
+        config, samples_digest(), suite_support.judged_case_families(root),
+        served_reader=served_facts,
     )
 
 

@@ -3,9 +3,9 @@
 """Unit preconditions for the monthly evaluation and the weekly probe that triggers one.
 
 Created: 2026-11-09
-Last updated: 2026-11-11
+Last updated: 2026-11-12
 
-This file contains ``TestMQCScheduledEvaluation``, seven cases over
+This file contains ``TestMQCScheduledEvaluation``, eight cases over
 ``tools/recent_evaluation.py`` and the workflows it serves. A scheduled
 evaluation skips itself when its engine's live rung already ran inside the
 window, whatever started that run; a run outside the window, a live rung that
@@ -13,7 +13,8 @@ never finished, and the run asking do not count; and a history that cannot be
 read refuses rather than guessing. Each engine's scheduled caller fires
 monthly on a day of its own and asks before it spends, and the probe fires
 weekly, dispatches only inputs the caller declares, and alone reads its keys
-from the ``version_probe`` environment.
+from the ``version_probe`` environment. Each scheduled ladder passes the judge
+section 4.18.2 assigns its engine.
 
 **These run in the ``unit`` precondition gate.** A failure is an instrument
 defect, **not a model finding**: the run exits 3 and no graded case executes,
@@ -34,6 +35,7 @@ Specified by ``docs/design/consumer_ci.md`` section 4.18.3.
 #   115834  each_scheduled_caller_fires_monthly_and_asks_first
 #   115835  the_probe_fires_weekly_and_dispatches_declared_inputs
 #   115836  the_probe_alone_reads_keys_from_an_environment_of_its_own
+#   115848  a_scheduled_ladder_with_the_wrong_judge_is_reported
 # ------------------------------------------------------------ end of cases
 
 import re
@@ -56,6 +58,11 @@ _TODAY = date(2026, 11, 9)
 _SINCE = date(2026, 10, 13)
 _RUNG = "gemini / 3 - the model (live, live) on gemini, judged by gemini"
 _PROBE_ENVIRONMENT = "version_probe"
+
+# WHICH JUDGE GRADES EACH ENGINE'S SCHEDULED LADDER, so no judge grades its own
+# engine on a schedule. Section 4.18.2.
+_SCHEDULED_JUDGE = {"claude": "gemini", "gemini": "claude", "grok": "gemini",
+                    "openai": "claude"}
 
 # A PROBE-DISPATCHED RUN THAT MEASURED, one that waited for a reviewer and
 # never ran its live rung, one from before the window, and the run asking.
@@ -268,3 +275,27 @@ class TestMQCScheduledEvaluation:
 
         step(3, "find the probe running no test")
         assert not spending, spending
+
+    @story("Each engine is evaluated monthly and asks first")
+    def MQC_CAS_UNI_115848_a_scheduled_ladder_with_the_wrong_judge_is_reported(
+        self,
+    ) -> None:
+        """Each scheduled ladder passes the judge section 4.18.2 gives its engine.
+
+        Design: ``consumer_ci.md`` section 4.18.2.
+
+        Returns:
+            None
+        """
+        passed = {
+            engine: [str((job.get("with") or {}).get("judge", ""))
+                     for job in jobs(load(f"evaluate-{engine}-scheduled.yml")).values()
+                     if "evaluate-engine.yml" in str(job.get("uses") or "")]
+            for engine in sorted(load_engines(packaged_roster_path()))
+        }
+
+        step(1, "find every rostered engine with a judge assigned")
+        assert set(passed) == set(_SCHEDULED_JUDGE), sorted(passed)
+
+        step(2, "find each scheduled ladder passing its engine's judge")
+        assert passed == {engine: [judge] for engine, judge in _SCHEDULED_JUDGE.items()}, passed

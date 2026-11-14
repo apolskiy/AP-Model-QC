@@ -3,15 +3,17 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-11-11
+Last updated: 2026-11-12
 
 This file contains the pytest hooks for the case suite. They declare the
-execution flags, record what the run was invoked with, label severity, select
-the requested bands, rest each judged case on its family's calibration case
-and order the cascade at collection, skip a case whose
+execution flags, record what the run was invoked with, adopt the carried
+outcomes and any calibration record at session start, label severity, select
+the requested bands, rest each judged case on its family's calibration and
+order the cascade at collection, skip a case whose
 foundation did not hold, record each assertion as a verification step, and at
-the end of the session publish what the run established, refuse a skipped
-precondition or a broken case, and print the band lines.
+the end of the session publish what the run established and any calibration
+record, refuse a skipped precondition or a broken case, and print the band
+lines.
 
 pytest loads it for every run in this repository, locally and in CI, before any
 case is collected. What ``pytest_sessionfinish`` publishes is what the next
@@ -231,12 +233,13 @@ def pytest_collection_modifyitems(
     select_modules(config, items)
     select_traced_cases(config, items)
     select_named_tests(config, items)
-    # A FAMILY'S JUDGED CASES REST ON ITS CALIBRATION CASE, where the run
-    # collected one: after every selector, so a dropped case is not wired, and
-    # before the cascade is ordered (`consumer_ci.md` section 7.4.2). Loaded
-    # here, after the rewrite registration, as `pytest_sessionstart` loads it.
+    # A FAMILY'S JUDGED CASES REST ON ITS CALIBRATION, collected in this run or
+    # carried from the record it names: after every selector, so a dropped case
+    # is not wired, and before the cascade is ordered (`consumer_ci.md`
+    # sections 7.4.2 and 7.4.5). Loaded here, after the rewrite registration,
+    # as `pytest_sessionstart` loads it.
     importlib.import_module("tests.cases.calibration_support").rest_on_family_calibration(
-        items, config.rootpath
+        items, config.rootpath, config
     )
     # ONE EXECUTION PER IDENTIFIER, judged on what will run. An identifier
     # collected twice refuses the run (harness design section 7.8.5).
@@ -357,6 +360,10 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     graded_support = importlib.import_module("tests.cases.graded_support")
     record_rule_set_hash(session.config, graded_support.shipped_corpus()[1])
     adopt_prerequisites(session.config)
+    # THE JUDGE'S CALIBRATION RECORD AFTER THE CARRIED BAND OUTCOMES, so its
+    # families join them; a band naming none adopts nothing (`consumer_ci.md`
+    # section 7.4.5).
+    importlib.import_module("tests.cases.calibration_support").adopt_record(session.config)
 
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
@@ -375,6 +382,11 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     """
     del exitstatus
     publish_prerequisites(session.config)
+    # AND A CALIBRATION SESSION'S RECORD, whatever its families' outcome: a
+    # failed family is a measurement (`consumer_ci.md` section 7.4.5).
+    importlib.import_module("tests.cases.calibration_support").publish_record(
+        session.config, session.config.rootpath
+    )
     # ZERO SKIPS, ENFORCED. A precondition that did not run measured
     # nothing, and pytest exits 0 on a skip: a unit job reported green
     # at 99.44% with four of them (`harness_test_taxonomy.md` 7.5.1).

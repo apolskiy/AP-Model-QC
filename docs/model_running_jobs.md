@@ -119,7 +119,8 @@ so nobody is tempted to.
 | Run one case or a few, right now | `debug-cases-on-demand` | No | Only if you ask |
 | Stabilize cases against a harness in flight | `debug-cases-on-demand` from your `stabilization-*` branch | No | Only if you ask |
 | Check a branch before opening a pull request | Push it. One `gate-<engine>` per target runs itself | Yes, on the pull request | No |
-| Regression across one target, live | `evaluate-<engine>-scheduled`, which also fires monthly by itself | No | **Yes, all three rungs** |
+| Regression across one target, live | `evaluate-<engine>-scheduled`, which also fires monthly by itself. Inputs: `max_spend`, the ceiling for the whole ladder, $7.00 by default; `os`, `ubuntu-26.04` by default or `windows-latest`; `reason` | No | **Yes, rungs 2 and 3, each as P0, P1 and P2-P4 bands** |
+| Calibrate a judge | `calibrate-claude` or `calibrate-gemini`, which also fire monthly by themselves. Inputs: `max_spend`, $1.00 by default; `reason`. The record it commits is what every live ladder that judge grades reads | No | **Yes, one judge call per sample** |
 
 **The first two are the ones this page is really about.** They are manual, they
 yield no verdict, and nothing they do can colour a gate run on the same commit.
@@ -279,9 +280,10 @@ shapes.
 
 | Artifact | Left by | Kept |
 |---|---|---|
-| `mqc-reports-cases-<engine>-replay-replay` | The scheduled evaluation, replay leg | 90 days |
-| `mqc-reports-cases-<engine>-replay-live` | The scheduled evaluation, judged leg | 90 days |
-| `mqc-reports-cases-<engine>-live-live` | The scheduled evaluation, live leg | 90 days |
+| `mqc-reports-cases-<engine>-replay-replay-<band>` | The scheduled evaluation, replay rung, one per band: `p0`, `p1`, `p2_p4` | 90 days |
+| `mqc-reports-cases-<engine>-replay-live-<band>-by-<judge>` | The scheduled evaluation, judged rung, one per band | 90 days |
+| `mqc-reports-cases-<engine>-live-live-<band>-by-<judge>` | The scheduled evaluation, live rung, one per band | 90 days |
+| `mqc-reports-calibration-<judge>` | A judge's calibration run | 90 days |
 | `mqc-reports-gate-<target>-*` | A gate run, per band | 90 days |
 | `scratch-debug-cases-<run id>` | `debug-cases-on-demand` | 14 days |
 
@@ -300,7 +302,7 @@ manual selection. What a subset costs is the verdict, never the ability to run.
 
 ```
 gh run list --workflow evaluate-claude-scheduled.yml --limit 5
-gh run download 1234567890 --name mqc-reports-cases-claude-replay-replay --dir results
+gh run download 1234567890 --name mqc-reports-cases-claude-replay-replay-p0 --dir results
 ```
 
 `gh run download` with no `--name` takes every artifact of that run into one

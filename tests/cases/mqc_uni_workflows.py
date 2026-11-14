@@ -3,13 +3,13 @@
 """Unit preconditions for what this repository's CI workflows must and must not do.
 
 Created: 2026-09-26
-Last updated: 2026-11-02
+Last updated: 2026-11-12
 
 This file contains ten cases over the workflow definitions, read through
 ``workflow_support``. ``TestMQCWorkflowProperties`` checks the debug workflow yields no
 verdict and is the only one to judge a failed case; ``TestMQCAttributionLadder`` that a
-graded gate job needs no credential, a live job follows the ladder and a job
-running graded cases stands behind the preconditions;
+graded gate job needs no credential and a job running graded cases stands behind the
+preconditions;
 ``TestMQCResolveObligation`` that no workflow installs an unresolved harness or spends
 past the green gate; ``TestMQCArtifactContract`` that every mandated artifact is
 emitted; and ``TestMQCRefusalReachesTheRun`` that no test job outruns a refusal and a red
@@ -36,7 +36,6 @@ takes to its own.
 #   115701  only_the_debug_workflow_judges_a_failed_case
 # TestMQCAttributionLadder
 #   115702  a_graded_gate_job_that_needs_a_credential_is_reported
-#   115703  a_live_job_that_does_not_follow_the_ladder_is_reported
 #   115782  a_graded_job_not_gated_on_the_preconditions_is_reported
 # TestMQCResolveObligation
 #   115704  a_workflow_installing_an_unresolved_harness_is_reported
@@ -80,16 +79,6 @@ pytestmark = pytest.mark.unit
 # engines in one gate made a red run when two passed. Design
 # `consumer_ci.md` section 4.19.
 _GATE = "gate-target.yml"
-# THE LADDER ITSELF, which one workflow per engine calls. The rungs moved
-# here on 2026-10-03: a combined result averages over three
-# vendors' products, so each engine has its own caller and its own
-# history. Design `consumer_ci.md` section 4.18.
-_LIVE = "evaluate-engine.yml"
-_RUNGS = ("deterministic", "judge", "model")
-
-# The GitHub Environment holding every provider secret. A1's approval boundary.
-_ENVIRONMENT = "live"
-
 # The markers selecting a graded layer. A gate step naming one of these is
 # grading, whatever the step is called.
 
@@ -396,92 +385,10 @@ class TestMQCAttributionLadder:
                     f"which is what kept grading out of the gate: {line.strip()}"
                 )
 
-    @story("The ladder")
-    def MQC_CAS_UNI_115703_a_live_job_that_does_not_follow_the_ladder_is_reported(
-        self,
-    ) -> None:
-        """A red rung stops the ladder, and each rung moves one thing.
-
-        **Sequence is the whole mechanism.** Running the judge live after our
-        own code has already changed a frozen outcome spends quota to
-        rediscover something established, and a run whose three jobs started
-        together can say only that something moved.
-
-        **Every rung that spends is named.** A live step outside an
-        environment would run on a fork's pull request, so the environment is
-        the approval boundary rather than a label.
-
-        Returns:
-            None
-        """
-        ladder = _load(_LIVE)
-        jobs = _jobs(ladder)
-
-        for name in _RUNGS:
-            assert name in jobs, (
-                f"rung {name!r} is missing, so the ladder cannot attribute "
-                f"what it was built to attribute"
-            )
-
-        # EACH RUNG NEEDS THE ONE BELOW IT. Checked pairwise rather than by
-        # reading the file top to bottom, because job order in the document
-        # means nothing to Actions.
-        for rung in range(1, len(_RUNGS)):
-            lower, upper = _RUNGS[rung - 1], _RUNGS[rung]
-            assert lower in _needs(jobs[upper]), (
-                f"{upper!r} does not need {lower!r}, so it runs even when the "
-                f"rung below it is red and spends quota to rediscover a known "
-                f"break"
-            )
-
-        # RUNG 1 IS THE FREE ONE, here as in the gate.
-        first = jobs[_RUNGS[0]]
-        assert "environment" not in first, (
-            f"the replayed rung names environment {first.get('environment')!r}, "
-            f"so the precondition deciding whether to spend now needs approval "
-            f"to answer"
-        )
-        for line in _graded_invocations(first, _repository_root()):
-            assert "--mode replay" in line and "--judge-mode live" not in line, (
-                f"the first rung moves more than the instrument: {line.strip()}"
-            )
-
-        # RUNG 2 MOVES THE JUDGE AND NOTHING ELSE.
-        judged = _graded_invocations(jobs[_RUNGS[1]], _repository_root())
-        assert judged, "the judge rung grades nothing"
-        for line in judged:
-            assert "--mode replay" in line, (
-                f"the judge rung dispatches the candidate live, so a failure "
-                f"no longer attributes to the judge: {line.strip()}"
-            )
-            assert "--judge-mode live" in line, (
-                f"the judge rung replays the judge, which is rung 1 again at "
-                f"the cost of a scheduled run: {line.strip()}"
-            )
-
-        # RUNG 3 MOVES EVERYTHING, which is the only rung that may.
-        live = _graded_invocations(jobs[_RUNGS[2]])
-        assert live, "the model rung grades nothing"
-        for line in live:
-            assert "--mode live" in line, (
-                f"the model rung replays the candidate, so it reports nothing "
-                f"about the model: {line.strip()}"
-            )
-
-        # EVERY SPENDING JOB IS GATED BY AN ENVIRONMENT, in every workflow that
-        # has one, not only in this one.
-        for workflow in sorted(_WORKFLOWS.glob("*.yml")):
-            for name, job in _jobs(_load(workflow.name)).items():
-                if not any(
-                    "--mode live" in line
-                    for line in _run_lines(job, _repository_root())
-                ):
-                    continue
-                assert job.get("environment") == _ENVIRONMENT, (
-                    f"{workflow.name} job {name!r} dispatches live outside the "
-                    f"{_ENVIRONMENT!r} environment, so the secret it spends has "
-                    f"no approval boundary"
-                )
+    # `MQC_CAS_UNI_115703` WAS RETIRED ON 2026-11-12. It asserted the
+    # single-session rung jobs `deterministic`, `judge` and `model`, which the
+    # banded ladder replaced; `mqc_uni_live_bands.py` asserts the bands, the
+    # chaining and the `live` environment (`consumer_ci.md` section 7.8.6).
 
     @story("The ladder stands behind the preconditions")
     def MQC_CAS_UNI_115782_a_graded_job_not_gated_on_the_preconditions_is_reported(

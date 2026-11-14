@@ -3,12 +3,14 @@
 """Preconditions on the model version probe this repository owns and dispatches.
 
 Created: 2026-10-29
-Last updated: 2026-11-09
+Last updated: 2026-11-12
 
 Its cases read ``.github/workflows/probe-model-version.yml``. The first checks
 that the probe resolves a green harness before it decides anything and that it
 dispatches the changed engine's own scheduled caller, which has to exist for every
-rostered engine. The second calls the shared
+rostered engine. The second checks that the dispatch reads each workflow's
+enabled state before dispatching it, and dispatches the changed engine's
+calibration where one exists. The third calls the shared
 ``cmn.ci_gating.ungated_dispatches`` with this root, which reports any job here
 that starts a spending workflow without reading a green pairing from a job it
 needs.
@@ -20,9 +22,10 @@ not exist fails the step, and a dispatch on an unverified harness produces a
 result nothing can attribute. Its cases are listed in the block below,
 inventoried in ``docs/design/consumer_ci.md`` section 4.23.
 
-**Two cases, because they ask different questions.** A checker reporting
-nothing against a correct file says nothing about whether the file is the one
-that was wanted, which is why the shape is asserted beside the gating.
+**The shape and the gating are separate cases, because they ask different
+questions.** A checker reporting nothing against a correct file says nothing
+about whether the file is the one that was wanted, which is why the shape is
+asserted beside the gating.
 
 A failure here is **not a model finding**, so the module carries no priority
 marker, per ``framework-rules.md`` section 3.3.
@@ -35,6 +38,7 @@ Specified by ``docs/design/consumer_ci.md`` section 4.23.5.
 #
 # TestMQCVersionProbeShape
 #   115789  the_probe_resolves_a_green_harness_before_it_dispatches
+#   115849  a_probe_dispatching_without_reading_the_state_is_reported
 # TestMQCDispatchGating
 #   115790  a_dispatching_job_reading_no_green_pairing_is_reported
 # ------------------------------------------------------------ end of cases
@@ -44,8 +48,10 @@ import re
 
 import pytest
 
+from cmn.case_steps import step
 from cmn.ci_gating import ungated_dispatches
 from cmn.config import load_engines, packaged_roster_path
+from cmn.grouping import story
 from tests.cases.workflow_support import jobs, load, needs, run_lines
 
 pytestmark = pytest.mark.unit
@@ -62,6 +68,16 @@ _GREEN: str = "needs.resolve.outputs.green"
 # A VALUE SUBSTITUTED AT RUNTIME, in either of the two spellings a workflow
 # uses: a shell variable the dispatch loop sets, or an Actions expression.
 _INTERPOLATION: re.Pattern = re.compile(r"\$\{[^}]|\$\{\{")
+
+# HOW THE DISPATCH ASKS WHETHER A WORKFLOW IS ENABLED, the state an active one
+# reports, and the calibration caller a changed judge engine has. Section 4.23.3.
+_STATE_READ: str = "/actions/workflows/"
+_STATE_FIELD: str = r"--jq \.state"
+_ACTIVE: str = '= "active"'
+# WHAT A CHANGED ENGINE DISPATCHES: its ladder and, where it judges, its
+# calibration. The dispatch itself, not the filename, since the state read
+# names the file too.
+_DISPATCHED: tuple[str, ...] = ("evaluate-${engine}-scheduled.yml", "calibrate-${engine}.yml")
 
 
 class TestMQCVersionProbeShape:
@@ -160,6 +176,47 @@ class TestMQCVersionProbeShape:
             "rostered engine(s) have no scheduled caller for the probe to "
             f"dispatch, so a version move there would fail the step: {missing}"
         )
+
+
+    @story("A disabled workflow is an opt-out")
+    def MQC_CAS_UNI_115849_a_probe_dispatching_without_reading_the_state_is_reported(
+        self,
+    ) -> None:
+        """The dispatch reads each workflow's state first, and dispatches the calibration too.
+
+        **A disabled workflow is the owner's opt-out**, and ``gh workflow run``
+        refuses one with HTTP 422, which failed the probe for a decision the
+        owner made. Design: ``consumer_ci.md`` section 4.23.3.
+
+        Returns:
+            None
+        """
+        dispatch = " ".join(run_lines(jobs(load(_PROBE_WORKFLOW))["dispatch"], _ROOT))
+        # EACH DISPATCH AGAINST ITS OWN READ AND ITS OWN GUARD. Checked across
+        # the job, the calibration's read and guard covered for a ladder
+        # dispatch that read nothing: both injections went NOT CAUGHT.
+        dispatched = re.findall(r'gh workflow run "([^"]+)"', dispatch)
+        unread: list[str] = []
+        unguarded: list[str] = []
+        for target in dispatched:
+            position = dispatch.find(f'gh workflow run "{target}"')
+            read = re.search(
+                rf'(\w+)="\$\(gh api "[^"]*{_STATE_READ}{re.escape(target)}" {_STATE_FIELD}',
+                dispatch,
+            )
+            if read is None or read.start() > position:
+                unread.append(target)
+            elif f'[ "${{{read.group(1)}}}" {_ACTIVE} ]' not in dispatch[read.end():position]:
+                unguarded.append(target)
+
+        step(1, "find the changed engine's ladder and calibration dispatched")
+        assert sorted(dispatched) == sorted(_DISPATCHED), dispatched
+
+        step(2, "find each workflow's state read before it is dispatched")
+        assert not unread, unread
+
+        step(3, "find each dispatch made only where its own workflow is active")
+        assert not unguarded, unguarded
 
 
 class TestMQCDispatchGating:

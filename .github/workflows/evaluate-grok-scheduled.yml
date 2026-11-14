@@ -19,8 +19,10 @@
 # EACH ENGINE ON A DAY OF ITS OWN, 02:00 UTC: gemini the 1st, openai the 2nd,
 # claude the 3rd, grok the 4th; this one the 4th. The gap being far longer
 # than a ladder takes keeps an overrun a finding rather than a collision
-# (section 4.18.2). The live environment requires a reviewer, so a scheduled
-# run waits for approval before it spends.
+# (section 4.18.2). JUDGED BY GEMINI, so no judge grades its own engine on a
+# schedule (section 4.18.2). Nobody approves a live run since 2026-11-12:
+# disabling this workflow in the Actions tab is what stops it, and the probe
+# reads a disabled workflow as opted out (section 4.18.3).
 name: evaluate-grok-scheduled
 
 run-name: >-
@@ -33,10 +35,18 @@ on:
   workflow_dispatch:
     inputs:
       max_spend:
-        description: "USD ceiling for this run. The monthly cap is $20 per provider"
+        description: "USD ceiling for the whole ladder. The monthly cap is $20 per provider"
         required: false
-        default: "4.00"
+        default: "7.00"
         type: string
+      os:
+        description: "The one platform the ladder runs on (section 7.8.3)"
+        required: false
+        default: "ubuntu-26.04"
+        type: choice
+        options:
+          - ubuntu-26.04
+          - windows-latest
       reason:
         description: "Why this run was started; the probe passes 'model version changed'"
         required: false
@@ -92,6 +102,8 @@ jobs:
       || needs.decide.outputs.evaluate == 'true') }}
     uses: ./.github/workflows/evaluate-engine.yml
     with:
-      max_spend: ${{ inputs.max_spend || '4.00' }}
+      max_spend: ${{ inputs.max_spend || '7.00' }}
       engine: grok
+      judge: gemini
+      os: ${{ inputs.os || 'ubuntu-26.04' }}
     secrets: inherit

@@ -3,10 +3,11 @@
 """Support code reading the CI workflow definitions, for the cases that check them.
 
 Created: 2026-10-03
-Last updated: 2026-11-02
+Last updated: 2026-11-12
 
 This file contains ``load``, ``jobs`` and ``needs``, which parse a workflow and its job
-graph; ``run_lines``, which returns each step's run body, following a local ``uses:``;
+graph; ``run_lines``, which returns each step's run body, following a local ``uses:``
+and reading each input reference there as the value the step passed;
 ``selects_a_graded_marker`` and ``graded_invocations``, which find the pytest calls that
 run graded cases; ``floor_conditions``, ``band_action_inputs`` and
 ``band_definition_runs``, which read the shared band definition; and
@@ -116,16 +117,32 @@ def run_lines(job: dict[str, Any], root: Optional[Path] = None) -> list[str]:
             folded.append(re.sub(r"\\\s*\n\s*", " ", body))
         reference = str((step or {}).get("uses") or "")
         if root is not None and reference.startswith("./"):
-            folded.extend(_referenced_run_lines(root, reference))
+            folded.extend(
+                _referenced_run_lines(root, reference, dict((step or {}).get("with") or {}))
+            )
     return folded
 
 
-def _referenced_run_lines(root: Path, reference: str) -> list[str]:
-    """Return the run bodies a local `uses:` reference contributes.
+# AN INPUT REFERENCE INSIDE A FOLLOWED DEFINITION, which reads as the value the
+# step passed. Without it every job calling the shared band definition read as
+# `--mode ${{ inputs.mode }}`, so no check could tell a replayed band from a
+# live one (`consumer_ci.md` section 7.8.1).
+_INPUT_REFERENCE: Final[re.Pattern] = re.compile(r"\$\{\{\s*inputs\.([A-Za-z0-9_-]+)\s*\}\}")
+
+
+def _referenced_run_lines(
+    root: Path, reference: str, values: Optional[dict[str, Any]] = None
+) -> list[str]:
+    """Return the run bodies a local `uses:` reference contributes, its inputs resolved.
+
+    Each ``${{ inputs.<name> }}`` in the definition reads as the value the
+    step passed under ``with:``, or the definition's declared default where it
+    passed none; a name with neither is left as written.
 
     Args:
         root (Path): The repository root.
         reference (str): The ``uses:`` value, beginning with ``./``.
+        values (Optional[dict]): What the step passed under ``with:``.
 
     Returns:
         list[str]: The referenced definition's folded run bodies.
@@ -151,7 +168,23 @@ def _referenced_run_lines(root: Path, reference: str) -> list[str]:
         bodies: list[str] = []
         for definition in inner:
             bodies.extend(run_lines(definition, root))
-        return bodies
+        declared = parsed.get("inputs") or {}
+        if not declared:
+            # A CALLED WORKFLOW DECLARES ITS INPUTS UNDER ITS TRIGGER.
+            trigger = parsed.get("on") or parsed.get(True) or {}
+            declared = ((trigger.get("workflow_call") or {}) if isinstance(trigger, dict)
+                        else {}).get("inputs") or {}
+        resolved = {
+            name: str((spec or {}).get("default", "")) for name, spec in declared.items()
+            if isinstance(spec, dict) and "default" in spec
+        }
+        resolved.update({name: str(value) for name, value in (values or {}).items()})
+        return [
+            _INPUT_REFERENCE.sub(
+                lambda found: resolved.get(found.group(1), found.group(0)), body
+            )
+            for body in bodies
+        ]
     raise ValueError(
         f"QC_HARNESS_PARSER_ERROR: a workflow uses {reference!r} and no "
         f"definition is there, so the workflow cannot run and this reader "

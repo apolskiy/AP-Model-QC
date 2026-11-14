@@ -43,6 +43,30 @@ inputs:
       `cmn_verdict_and_cli.md` section 7.1.4.
     required: false
     default: ""
+  # WHAT A LADDER RUNG VARIES, each defaulting to what the gate passes, so the
+  # gate's band jobs are unchanged. `consumer_ci.md` section 7.8.1.
+  mode:
+    description: "The candidate's mode: replay in the gate and rungs 1 and 2, live in rung 3"
+    required: false
+    default: "replay"
+  judge_mode:
+    description: "The judge's mode, empty to follow the candidate's; live in rungs 2 and 3"
+    required: false
+    default: ""
+  judge_engine:
+    description: "The engine grading the band, empty for the roster's; rungs 2 and 3 name it"
+    required: false
+    default: ""
+  max_spend:
+    description: "The band's ceiling in USD, 0 for none; a live band passes its remainder"
+    required: false
+    default: "0"
+  calibration_record:
+    description: >-
+      The judge's calibration record a judged band reads, empty where the band
+      judges nothing live. Section 7.4.5.
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -59,7 +83,12 @@ runs:
     # a lower band whose own verdict line read "the band cleared its floor".
     # The floor step below takes the status and owns the outcome, in every
     # band. Design `consumer_ci.md` section 3.12.2.
-    - name: Band ${{ inputs.band }}, both sides replayed
+    #
+    # THE MODES, JUDGE, CEILING AND RECORD ARE WRITTEN INTO THE COMMAND, not
+    # assembled by the shell, so a reader of a job sees the invocation that
+    # job makes (`tests/cases/workflow_support.py` resolves them). Each empty
+    # value is the harness's own default.
+    - name: Band ${{ inputs.band }}, candidate ${{ inputs.mode }}
       shell: bash
       env:
         # THE RECORD THE PRECONDITIONS JOB WROTE, read from the environment so
@@ -69,7 +98,11 @@ runs:
         set +e
         pytest -m "evaluator or tool or sec" \
           --engine ${{ inputs.engine }} \
-          --mode replay \
+          --mode ${{ inputs.mode }} \
+          --judge-mode "${{ inputs.judge_mode }}" \
+          --judge-engine "${{ inputs.judge_engine }}" \
+          --max-spend "${{ inputs.max_spend }}" \
+          --calibration-record "${{ inputs.calibration_record }}" \
           --priority ${{ inputs.priority }} \
           ${PRECONDITIONS_RECORD:+--preconditions-record "${PRECONDITIONS_RECORD}"} \
           --carry-outcomes reports/carry.json \

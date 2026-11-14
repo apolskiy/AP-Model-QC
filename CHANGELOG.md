@@ -40,6 +40,38 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The live ladder is banded as the gate is, and each judge is calibrated once, 2026-11-12
+
+**Why it was needed.** Rungs 2 and 3 each ran as one pytest session over every
+priority, so the grok rung 3 run of 2026-11-12 was red on a P2 phrasing check
+beside a P1 security failure with nothing telling a release blocker from a bug
+to open, and a failed P0 foundation could not skip its dependents before they
+were dispatched. Each spending rung received the whole `max_spend`, so an
+openai dispatch spent $5.86 against $4.00. Rung 2 calibrated the judge on every
+ladder run, once per candidate engine, although the samples and the judge are
+the same for every engine. A required reviewer on `live` would have made a
+banded ladder wait for six approvals.
+
+**What changed.** Each rung of `evaluate-engine.yml` is the gate's three band
+jobs, P0 and P1 blocking and P2-P4 floored, calling the band definition, which
+now takes the candidate mode, judge mode, judge, ceiling and calibration record
+as inputs. Bands chain within a rung and a red rung stops the next. Every job
+running the suite takes one platform, the `os` input, `ubuntu-26.04` by
+default. Each live band spends what the earlier live bands left of one ceiling,
+$7.00 by default, through `tools/spend_remaining.py`. `calibrate-claude.yml`
+and `calibrate-gemini.yml` call `calibrate-judge.yml`, which calibrates the
+judge monthly, on a probe-detected model change or by dispatch, and commits a
+record to `records/calibration/`; every live band reads its judge's record. The
+scheduled ladders are judged across: claude judges openai and gemini, gemini
+judges claude and grok. The probe reads a workflow's enabled state before
+dispatching it and reports a disabled one as opted out. `live` has no required
+reviewer and deploys from `main` only. Cases `115703` and `115777` are retired
+and `115837` to `115850` added; requirements `MQC_REQ_CAS_CI_0086` to `0091`
+and `PRE_0024` added and `CI_0008` and `PRE_0014` rewritten; `consumer_ci.md`
+sections 7.8 and 7.4.5 specify it. The README states the banded ladder, the
+calibration workflows, 277 preconditions, 250 requirements and 1130 harness
+cases.
+
 ### Calibration redesign: the judge is calibrated against authored samples, 2026-11-12
 
 **Why it was redesigned.** Calibration sent every rubric exemplar to the judge

@@ -1,0 +1,156 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Calibrates ONE judge and commits the record every ladder it judges reads.
+#
+# Specified by docs/design/consumer_ci.md section 7.4.5, and the record by the
+# harness `tier3_evaluation.md` section 9.4.2.
+#
+# CALIBRATION MEASURES THE JUDGE, NOT THE CANDIDATE. The samples and the judge
+# model are the same whichever engine a ladder evaluates, so rung 2 calibrating
+# on every ladder run measured one judge four times. It runs here, once per
+# judge, and each live band reads the record from the default branch.
+#
+# ONE PLATFORM. Calibration measures the judge, which no platform changes
+# (section 7.8.3).
+name: calibrate-judge
+
+on:
+  workflow_call:
+    inputs:
+      judge:
+        description: "The judge engine to calibrate"
+        required: true
+        type: string
+      max_spend:
+        description: "USD ceiling: one judge call per sample"
+        required: false
+        default: "1.00"
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  resolve:
+    name: resolve the paired harness
+    runs-on: ubuntu-26.04
+    outputs:
+      harness_repository: ${{ steps.pin.outputs.harness_repository }}
+      harness_sha: ${{ steps.pin.outputs.harness_sha }}
+      green: ${{ steps.pin.outputs.green }}
+      reason: ${{ steps.pin.outputs.reason }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      # PYYAML, AND NOTHING ELSE, BECAUSE THE HARNESS MUST NOT BE HERE: an
+      # unverified ref does not vouch for itself. Matches `pyproject.toml`.
+      - name: Install PyYAML for the resolver
+        run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
+      - name: Resolve the pairing and assess it
+        id: pin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m tools.harness_pin --case-branch "${{ github.ref_name }}"
+
+  # GATE 2 FIRST. A sample that answers no shipped case, or checks that
+  # disagree with a sample, are caught free here before a judge is paid.
+  preconditions:
+    name: preconditions, not a judge finding (${{ inputs.judge }})
+    needs: resolve
+    if: needs.resolve.outputs.green == 'true'
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+      - name: Gate 2, the corpus preconditions
+        run: pytest -m unit --junitxml=reports/junit_mqc_unit.xml --alluredir=reports/allure-results
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: mqc-reports-calibration-${{ inputs.judge }}-preconditions
+          path: reports/
+          retention-days: 90
+
+  calibrate:
+    name: calibrate ${{ inputs.judge }}
+    needs: [resolve, preconditions]
+    runs-on: ubuntu-26.04
+    environment: live
+    env:
+      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
+      MQC_CASE_REF: ${{ github.sha }}
+      # EVERY JUDGE'S KEY IS OFFERED AND THE NAMED ONE READS ITS OWN.
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the resolved harness and this repository
+        shell: bash
+        run: |
+          python -m pip install --quiet \
+            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
+          python -m pip install --quiet --no-deps --editable "."
+
+      # THE CHECKED-OUT RECORD GOES FIRST, so the record committed below is
+      # the one this session wrote and a session that wrote none commits
+      # nothing.
+      - name: Calibrate the judge and write its record
+        shell: bash
+        run: |
+          rm -f records/calibration/${{ inputs.judge }}.json
+          pytest -m calibration \
+            --engine ${{ inputs.judge }} \
+            --mode replay \
+            --judge-mode live \
+            --judge-engine "${{ inputs.judge }}" \
+            --max-spend "${{ inputs.max_spend }}" \
+            --record-calibration "records/calibration/${{ inputs.judge }}.json" \
+            --junitxml=reports/junit_mqc_calibration.xml \
+            --alluredir=reports/allure-results
+
+      # EVEN WHEN A FAMILY FAILED. A failed family is a measurement, and the
+      # record says so: a ladder reading it skips that family's judged cases,
+      # naming the failure and its date. Absent is red.
+      - name: Commit the record to the branch this ran on
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -f records/calibration/${{ inputs.judge }}.json ]; then
+            echo "QC_HARNESS_DEPENDENCY_UNMET: the session wrote no calibration record"
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add records/calibration/${{ inputs.judge }}.json
+          if git diff --cached --quiet; then
+            echo "the record is unchanged"
+            exit 0
+          fi
+          git commit -m "Record the ${{ inputs.judge }} judge calibration"
+          git pull --rebase --quiet origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: mqc-reports-calibration-${{ inputs.judge }}
+          path: reports/
+          retention-days: 90

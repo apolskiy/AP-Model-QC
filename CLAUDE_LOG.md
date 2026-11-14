@@ -8984,3 +8984,69 @@ withheld, which `115042` holds in the unit gate. Seven injections into the
 support code and the samples were each caught. The calibration cases are new
 identifiers, `174607` to `174612`, since their behavior changed, and
 `174602`, injection, has no successor.
+
+## 2026-11-12: The live ladder is banded as the gate is
+
+**What was wrong.** Section 3.12 names no job type, so its bands bind every
+graded run, and rungs 2 and 3 were each one session over every priority. The
+grok rung 3 run was red on a P2 phrasing check beside a P1 security failure,
+and a failed P0 foundation could not skip its dependents before they were
+dispatched. **Why.** The ladder predates the gate's bands and was not revisited
+when they were built.
+
+**Each rung is now three band jobs** calling `.github/actions/band`, which takes
+the candidate mode, judge mode, judge, ceiling and calibration record as inputs
+and defaults each to what the gate passes, so the gate's jobs did not change.
+The values are written into the command rather than assembled by the shell, and
+`workflow_support._referenced_run_lines` resolves `${{ inputs.<name> }}` from
+the step's `with:` or the declared default, so a case reading a job reads the
+invocation that job makes. Within a rung the bands chain and run unless the
+preconditions failed; the first band of a rung needs every band of the one
+below.
+
+**One platform per live run.** The platform matrix tests the harness, which the
+gate does on replay; a live run measures the model and the judge, so a second
+platform paid twice for one measurement. Every job running the suite takes the
+`os` input, which each caller offers as a choice.
+
+**One ceiling, carried as a remainder.** Each spending rung received the whole
+`max_spend`, so an openai dispatch spent $5.86 against $4.00. Each live band now
+reads the JUnit reports of the live bands before it and
+`tools/spend_remaining.py` subtracts the `mqc.total_spend_usd` each published,
+rounding down to the cent; zero or less refuses with
+`QC_HARNESS_BUDGET_EXHAUSTED`, and a report that is missing or carries no priced
+total refuses with `QC_HARNESS_DEPENDENCY_UNMET`, since spend nobody can read is
+not zero. The default ceiling is $7.00, the openai ladder's measured spend with
+calibration included.
+
+**Calibration is the judge's, so it runs once per judge.** `calibrate-judge.yml`
+runs `-m calibration` under a live judge on `ubuntu-26.04` and commits the
+harness record (`tier3_evaluation.md` section 9.4.2) even when a family failed.
+`calibrate-claude.yml` and `calibrate-gemini.yml` fire monthly on the 1st ahead
+of the ladders, and the probe dispatches them when the judge's engine serves
+another model. Each live band takes the record from the head of the default
+branch, since a calibration committed after the ladder started describes the
+judge now. `calibration_support.samples_digest` hashes each sample by name and
+content with line endings normalized, so either platform computes the same
+digest. `rest_on_family_calibration` now proceeds where the session names a
+record, and `conftest.py` adopts the record at session start and publishes it at
+session end.
+
+**No reviewer on `live`.** Six live band jobs in sequence would have waited for
+six approvals, and a run waiting on approval is not scheduled. What bounds a run
+is the ceiling, the workflow's enabled state, `live` deploying from `main`
+only, and only jobs naming `live` reading the keys. The probe reads each
+workflow's state before dispatching it, since `gh workflow run` refuses a
+disabled one with HTTP 422, and reports a disabled one as opted out.
+
+**The scheduled ladders are judged across**: claude judges openai and gemini,
+gemini judges claude and grok, so no judge grades its own engine on a schedule.
+
+**Cases.** `115703` and `115777` asserted the single-session rung jobs and are
+retired. `115837` to `115850` are new; each failed before the workflows, tool
+and support code existed.
+
+**Not yet done.** The harness `cmn.workflow_standards.uncapped_spending_steps`
+reads workflow files only and does not follow a local composite action, so a
+live invocation in `.github/actions/band` is outside what `115418` checks. It
+gets a failing harness case and a fix of its own.

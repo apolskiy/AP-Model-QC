@@ -77,7 +77,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0005` | A debug workflow runs one test or a subset in its own jobs, yields no verdict, and takes both refs as inputs so a case can be run against a harness other than the one its branch maps to |
 | `MQC_REQ_CAS_CI_0006` | A debug run asks for a judgement on a failed case and no gate workflow does, the rubric being what separates a wrong case from a wrong model |
 | `MQC_REQ_CAS_CI_0007` | The graded gate job replays both sides, so it needs no provider credential and the gate stays credential-free |
-| `MQC_REQ_CAS_CI_0008` | The live workflow runs the three jobs in sequence, each needing the one before it, so a red rung stops the ladder |
+| `MQC_REQ_CAS_CI_0008` | The live workflow runs its three rungs in sequence: the first band job of each rung needs every band job of the rung below, so a red rung stops the ladder; within a rung each band needs the band before it and runs unless the preconditions failed |
 | `MQC_REQ_CAS_CI_0009` | Every workflow that installs the harness takes a commit resolved in the same run, and the workflow that spends quota most of all |
 | `MQC_REQ_CAS_CI_0010` | A workflow that spends provider quota does not start when the paired harness commit is not green |
 | `MQC_REQ_CAS_CI_0011` | A refusal stops every test-executing job in a gating workflow, so a red harness on a regression run spends nothing |
@@ -120,6 +120,12 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_CI_0083` | The model version probe fires weekly, dispatches the changed engine's scheduled caller, and passes only inputs every scheduled caller declares | consumer_ci.md sections 4.18.3 and 4.23 |
 | `MQC_REQ_CAS_CI_0084` | A workflow that deploys the report site never cancels a run of itself that is in progress, so a deployment already under way completes and runs waiting behind it collapse to the newest | consumer_ci.md section 4.22.1 |
 | `MQC_REQ_CAS_CI_0085` | The model version probe reads its provider keys from the `version_probe` environment, no other job names that environment, and the probe job runs no test | consumer_ci.md section 4.23.6 |
+| `MQC_REQ_CAS_CI_0086` | Each rung of the live workflow is three jobs calling the shared band definition at P0, P1 and P2-P4, the first two blocking and the third against the pass floor; rung 1 replays both sides and names no environment, rung 2 replays the candidate and judges live, rung 3 runs both live, each band job is named for its rung and engine first, and every job in any workflow that runs a case live names the live environment | consumer_ci.md sections 7.8 and 7.8.1 |
+| `MQC_REQ_CAS_CI_0087` | Every ladder job that installs and runs the suite runs on the ladder's os input, which defaults to ubuntu-26.04, with no platform matrix; every caller of the ladder offers os on dispatch as a choice of ubuntu-26.04 and windows-latest, ubuntu by default, and passes it | consumer_ci.md section 7.8.3 |
+| `MQC_REQ_CAS_CI_0088` | Every live band job runs with --max-spend set to the dispatch ceiling less the total every earlier live band of the same ladder published; a remainder of zero or less refuses with QC_HARNESS_BUDGET_EXHAUSTED and an earlier live band whose total cannot be read refuses with QC_HARNESS_DEPENDENCY_UNMET, the band not running in either case | consumer_ci.md section 7.8.4 |
+| `MQC_REQ_CAS_CI_0089` | Each judge has a calibration caller passing it to calibrate-judge.yml, scheduled monthly and dispatchable with a reason, which runs -m calibration under a live judge on one platform with --record-calibration and commits the record; every rung 2 and rung 3 band invocation names --calibration-record for its judge, read from the head of the default branch, and no ladder invocation selects calibration | consumer_ci.md section 7.4.5 |
+| `MQC_REQ_CAS_CI_0090` | The model version probe reads each workflow's state before dispatching it, dispatching an active one and reporting any other state as opted out without failing, and a changed engine that has a calibration caller dispatches it as well as its ladder | consumer_ci.md section 4.23.3 |
+| `MQC_REQ_CAS_CI_0091` | Each engine's scheduled caller passes the judge the schedule gives it: claude for gemini and openai, gemini for claude and grok | consumer_ci.md section 4.18.2 |
 | `MQC_REQ_CAS_CI_0076` | No case holds recorded observations beyond the roster's observation count unless one of those first observations fails under the current rule, from its checks or its stored judgement | consumer_ci.md section 6.4.7 |
 | `MQC_REQ_CAS_CI_0073` | An observation whose judgement was unavailable or withheld is not a failure to the escalation rule and earns no further observation, and it reports the judge's own harness code in its record and when its case concludes | consumer_ci.md section 6.4.5 |
 | `MQC_REQ_CAS_CI_0067` | Every date this repository takes is the UTC date, read from the harness's clock, so a module reading a clock of its own is reported rather than dating a published filing sheet by where the process ran | code-style.md section 8.3 |
@@ -246,7 +252,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_PRE_0011` | The generated per-case index agrees with the corpus and covers every case the suite dispatches, so a family or tag selection resolving through it is exact rather than stale | cmn_verdict_and_cli.md section 7.7.6.2 |
 | `MQC_REQ_CAS_PRE_0012` | Every graded band job reads the precondition record from the preconditions job that wrote it, under an artifact name carrying the platform, and passes its path to the band definition; the band chain carries outcomes and nothing else, so no band takes its gating from the band before it | consumer_ci.md section 3.12.1.1 |
 | `MQC_REQ_CAS_PRE_0013` | A graded invocation in a workflow that is not a debug workflow, or in a composite action, names every graded layer marker; one naming some of them selects part of a run while the harness records a full selection, so its rows would carry a verdict over part of the graded cases | consumer_ci.md section 4.21 |
-| `MQC_REQ_CAS_PRE_0014` | The ladder takes the judge as an input; rungs 2 and 3 name it on every graded invocation and carry it in their job names while rung 1 names no judge, and each engine has one claude-judged caller passing it, under a cadence that is not the debug one so the run is counted | consumer_ci.md section 7.7 |
+| `MQC_REQ_CAS_PRE_0014` | The ladder takes the judge as an input; rungs 2 and 3 name it on every graded invocation and carry it in every band job name while rung 1 names no judge, and each engine has one claude-judged caller passing it, under a cadence that is not the debug one so the run is counted | consumer_ci.md section 7.7 |
 | `MQC_REQ_CAS_PRE_0015` | A job that runs graded cases reaches a precondition invocation before it can spend, either through a job it needs or through an earlier step of its own job that a failure stops; a graded invocation is read in every workflow that is not a debug workflow and through a local uses: where one is factored out, and a job running another repository's cases from a checkout it fetched is that repository's to gate | consumer_ci.md section 7.2.1 |
 | `MQC_REQ_CAS_PRE_0016` | Every Ubuntu runner label this repository's workflows name is the single version the pair pins, and that version is declared in `.github/actionlint.yaml`, so a band runs on the image the harness measured on and the lint job can read the file |
 | `MQC_REQ_CAS_PRE_0017` | A workflow here does not report success for work it did not do. Where one job is gated on the conclusion of the run that triggered the workflow, every other job either skips with that job or names its result |
@@ -256,6 +262,7 @@ requirements exist, and that is exactly what `115600` checks.
 | `MQC_REQ_CAS_PRE_0021` | The graded judge channel and the calibration channel each carry the run's dispatch session as their budget, so every judge call is counted against --max-spend with the candidate's | consumer_ci.md section 7.4.3 |
 | `MQC_REQ_CAS_PRE_0022` | Every run publishes, after its last case, the candidate, judge and total spend of its dispatch session, its ceiling and any unpriced model, as JUnit properties and in the Allure environment file after the provenance | consumer_ci.md section 7.4.4 |
 | `MQC_REQ_CAS_PRE_0023` | Every calibration sample answers a shipped case whose rule's first family is its file's and which is not declared adversarial, names only that case's constraints or its rule's check identifiers, and carries an identifier no other sample does; each calibrated family holds a clean and a flawed sample; and our checks fail exactly what every sample names, read with the judge withheld | consumer_ci.md section 7.4.1.1 |
+| `MQC_REQ_CAS_PRE_0024` | The calibration samples digest hashes every sample file by name and content with line endings normalized, so it moves when a sample changes and not when only its line endings do; a session naming --calibration-record rests its judged cases on calibration although it collects no calibration case, and a session naming neither rests nothing | consumer_ci.md section 7.4.5 |
 | `MQC_REQ_CAS_COR_0022` | Every security case declares every vector its payload carries and names the one it is about, so an incidental match cannot stand in for coverage |
 | `MQC_REQ_CAS_COR_0021` | Every graded case's declared foundations are exactly the ones its design inventory states, so a dependency cannot be added in code without a document approving it |
 | `MQC_REQ_CAS_COR_0020` | A recorded response that withheld content states the provider's own reason for withholding it, so a refusal is not read as a model failure |
@@ -835,7 +842,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115008` | N | `the_shipped_task_file_differs_from_what_the_generator_builds` |
 | `115503` | N | `a_document_or_data_file_without_its_mit_header_is_reported` |
 | `115702` | N | `a_graded_gate_job_that_needs_a_credential_is_reported` |
-| `115703` | N | `a_live_job_that_does_not_follow_the_ladder_is_reported` |
+| ~~`115703`~~ | | ~~`a_live_job_that_does_not_follow_the_ladder_is_reported`~~. **Retired 2026-11-12**: it read single-session rung jobs, and the rungs are banded (`consumer_ci.md` section 7.8). `115837` and `115838` hold the ladder now. The identifier stays retired |
 | `115704` | N | `a_workflow_installing_an_unresolved_harness_is_reported` |
 | `115705` | N | `a_spending_workflow_that_skips_the_green_gate_is_reported` |
 | `115400` | N | `a_task_and_rule_pair_bound_by_two_graded_cases_is_reported` |
@@ -857,7 +864,7 @@ Categories: **P** positive, **N** negative, **B** boundary.
 | `115784` | N | `a_shipped_rule_claiming_p0_or_p1_with_a_rubric_is_reported` (8.1.3) |
 | `115802` | P | `the_judging_flag_reaches_the_pipeline_call` |
 
-**Inventory: 95 cases, 77 negative, 16 positive, 2 boundary.**
+**Inventory: 94 cases, 76 negative, 16 positive, 2 boundary.**
 
 The `CAS` block also carries `115300` through `115313`, inventoried in
 `docs/design/consumer_ci.md` section 4: those cover which harness this case set

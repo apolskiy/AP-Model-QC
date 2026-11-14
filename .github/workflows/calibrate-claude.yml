@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
+# SPDX-License-Identifier: MIT
+# Calibrates the claude judge: monthly, on a model change, and by hand.
+#
+# THREE THINGS START IT. The schedule, on the 1st at 00:00 UTC, ahead of every
+# ladder's slot; the probe, when claude serves another model; and a person.
+# Disabling it in the Actions tab stops the schedule, and the probe reads a
+# disabled workflow as opted out. Design `consumer_ci.md` section 7.4.5.
+name: calibrate-claude
+
+run-name: >-
+  calibrate claude: ${{ github.event_name == 'schedule' && 'monthly'
+  || inputs.reason || github.event_name }}
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+    inputs:
+      max_spend:
+        description: "USD ceiling for this calibration"
+        required: false
+        default: "1.00"
+        type: string
+      reason:
+        description: "Why this run was started; the probe passes 'model version changed'"
+        required: false
+        default: "dispatched"
+        type: string
+
+# NOT cancel-in-progress: a cancelled calibration commits no record.
+concurrency:
+  group: calibrate-claude
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  calibrate:
+    name: claude
+    uses: ./.github/workflows/calibrate-judge.yml
+    with:
+      judge: claude
+      max_spend: ${{ inputs.max_spend || '1.00' }}
+    secrets: inherit

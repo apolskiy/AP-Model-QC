@@ -76,6 +76,7 @@ modules:
   tests/cases/mqc_uni_list_item_gates.py: Corpus
   tests/cases/mqc_uni_instruction_checks.py: Instruction following
   tests/cases/mqc_uni_calibration.py: Judge calibration
+  tests/cases/mqc_uni_calibration_record.py: Judge calibration
 
   # Whether a recorded run can be replayed and judged as it was.
   tests/cases/mqc_uni_recording_coverage.py: Recording coverage
@@ -96,6 +97,8 @@ modules:
   tests/cases/mqc_uni_operator_commands.py: Consumer CI
   tests/cases/mqc_uni_version_probe.py: Consumer CI
   tests/cases/mqc_uni_scheduled_evaluation.py: Consumer CI
+  tests/cases/mqc_uni_live_bands.py: Consumer CI
+  tests/cases/mqc_uni_spend_remaining.py: Consumer CI
 
   # Which harness this case set runs against, and whether it followed.
   tests/cases/mqc_uni_harness_follow.py: Harness pairing

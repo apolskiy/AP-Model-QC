@@ -94,8 +94,7 @@ jobs:
     # Secrets live in an environment, which makes them unreachable from any
     # workflow that does not name it. That is A1 made structural. This one has
     # no required reviewer and no other job names it: the probe sends no
-    # prompt and spends nothing to approve, and the ladder it dispatches still
-    # waits on `live`. Section 4.23.6.
+    # prompt and spends nothing to approve. Section 4.23.6.
     environment: version_probe
     outputs:
       changed_engines: ${{ steps.probe.outputs.changed_engines }}
@@ -151,6 +150,17 @@ jobs:
   # nothing verified, which is the arrangement `cmn.ci_gating.ungated_dispatches`
   # reports and which the retired harness probe had. Harness
   # `harness_ci_pipeline.md` section 8.9.
+  #
+  # A CHANGED JUDGE IS CALIBRATED TOO. claude and gemini are rostered engines
+  # and judges, so a changed model there dispatches `calibrate-<engine>.yml`
+  # beside the ladder, and the record every ladder it judges reads describes
+  # the judge it now calls (section 7.4.5).
+  #
+  # A DISABLED WORKFLOW IS AN OPT-OUT, NOT A FAILURE. `gh workflow run`
+  # refuses a disabled workflow with HTTP 422, so each workflow's state is
+  # read first: an active one is dispatched, any other state is reported as
+  # opted out, and an absent calibration caller dispatches nothing
+  # (section 4.23.3).
   dispatch:
     name: dispatch the changed engine's scheduled ladder
     needs: [resolve, probe]
@@ -161,12 +171,26 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           CHANGED: ${{ needs.probe.outputs.changed_engines }}
+          REPOSITORY: ${{ github.repository }}
         shell: bash
         run: |
           for engine in ${CHANGED//,/ }; do
-            gh workflow run "evaluate-${engine}-scheduled.yml" \
-              --repo "${{ github.repository }}" \
-              --field reason="model version changed"
+            ladder="$(gh api "repos/${REPOSITORY}/actions/workflows/evaluate-${engine}-scheduled.yml" --jq .state 2>/dev/null || echo absent)"
+            if [ "${ladder}" = "active" ]; then
+              gh workflow run "evaluate-${engine}-scheduled.yml" \
+                --repo "${{ github.repository }}" \
+                --field reason="model version changed"
+            else
+              echo "- evaluate-${engine}-scheduled.yml is ${ladder}: opted out, not dispatched" >> "$GITHUB_STEP_SUMMARY"
+            fi
+            calibration="$(gh api "repos/${REPOSITORY}/actions/workflows/calibrate-${engine}.yml" --jq .state 2>/dev/null || echo absent)"
+            if [ "${calibration}" = "active" ]; then
+              gh workflow run "calibrate-${engine}.yml" \
+                --repo "${{ github.repository }}" \
+                --field reason="model version changed"
+            elif [ "${calibration}" != "absent" ]; then
+              echo "- calibrate-${engine}.yml is ${calibration}: opted out, not dispatched" >> "$GITHUB_STEP_SUMMARY"
+            fi
           done
 
   # A PROBE FAILURE IS NOT A TEST FAILURE. It means the detector is broken,

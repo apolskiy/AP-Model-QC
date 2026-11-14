@@ -40,10 +40,18 @@ on:
   workflow_dispatch:
     inputs:
       max_spend:
-        description: "USD ceiling for this run. The monthly cap is $20 per provider"
+        description: "USD ceiling for the whole ladder. The monthly cap is $20 per provider"
         required: false
-        default: "4.00"
+        default: "7.00"
         type: string
+      os:
+        description: "The one platform the ladder runs on (section 7.8.3)"
+        required: false
+        default: "ubuntu-26.04"
+        type: choice
+        options:
+          - ubuntu-26.04
+          - windows-latest
 
 # NOT cancel-in-progress, and KEYED WITH THE JUDGE. A cancelled live run yields
 # partial artifacts, which A6 forbids presenting as complete. The judge is in
@@ -62,7 +70,8 @@ jobs:
     name: grok, judged by claude
     uses: ./.github/workflows/evaluate-engine.yml
     with:
-      max_spend: ${{ inputs.max_spend || '4.00' }}
+      max_spend: ${{ inputs.max_spend || '7.00' }}
       engine: grok
       judge: claude
+      os: ${{ inputs.os || 'ubuntu-26.04' }}
     secrets: inherit

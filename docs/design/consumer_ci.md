@@ -1163,7 +1163,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115775` | N | `a_band_not_reading_the_precondition_record_is_reported` (3.12.1.1) |
 | `115800` | N | `a_failing_run_does_not_decide_a_band_its_floor_cleared` (3.12.2) |
 | `115776` | N | `a_graded_invocation_leaving_out_a_layer_is_reported` (4.21) |
-| `115777` | N | `a_rung_that_grades_without_naming_its_judge_is_reported` (7.7) |
+| ~~`115777`~~ | | ~~`a_rung_that_grades_without_naming_its_judge_is_reported`~~. **Retired 2026-11-12**: it read single-session rung jobs, and the rungs are banded (section 7.8). `115850` replaces it. The identifier stays retired |
 | `115782` | N | `a_graded_job_not_gated_on_the_preconditions_is_reported` (7.2.1) |
 | `115787` | N | `a_runner_label_disagreeing_with_the_pin_is_reported` (3.12.4) |
 | `115788` | N | `a_job_concluding_a_run_it_did_not_earn_is_reported` (3.12.4) |
@@ -1193,6 +1193,20 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115834` | P | `each_scheduled_caller_fires_monthly_and_asks_first` (4.18.3) |
 | `115835` | P | `the_probe_fires_weekly_and_dispatches_declared_inputs` (4.18.3, 4.23.3) |
 | `115836` | P | `the_probe_alone_reads_keys_from_an_environment_of_its_own` (4.23.6) |
+| `115837` | N | `a_ladder_rung_not_banded_as_the_gate_is_reported` (7.8.1) |
+| `115838` | N | `a_rung_that_runs_past_a_red_rung_below_is_reported` (7.8.2) |
+| `115839` | N | `a_ladder_job_off_the_chosen_platform_is_reported` (7.8.3) |
+| `115840` | N | `a_live_band_spending_the_whole_input_is_reported` (7.8.4) |
+| `115841` | P | `the_remainder_is_the_ceiling_less_every_earlier_band` (7.8.4) |
+| `115842` | N | `an_exhausted_ceiling_refuses_the_band` (7.8.4) |
+| `115843` | N | `a_spend_that_cannot_be_read_refuses_the_band` (7.8.4) |
+| `115844` | N | `a_live_band_without_the_calibration_record_is_reported` (7.4.5) |
+| `115845` | N | `a_judge_without_its_calibration_workflow_is_reported` (7.4.5) |
+| `115846` | B | `the_samples_digest_moves_with_samples_and_not_line_endings` (7.4.5) |
+| `115847` | P | `a_band_reading_a_calibration_record_rests_on_it` (7.4.5) |
+| `115848` | N | `a_scheduled_ladder_with_the_wrong_judge_is_reported` (4.18.2) |
+| `115849` | N | `a_probe_dispatching_without_reading_the_state_is_reported` (4.23.3) |
+| `115850` | N | `a_band_that_grades_without_naming_its_judge_is_reported` (7.8.6) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1202,7 +1216,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 170 cases, 120 negative, 41 positive, 9 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 183 cases, 130 negative, 43 positive, 10 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1908,12 +1922,18 @@ the gate.
 
 A day apart in roster order, monthly since 2026-11-09:
 
-| Engine | Fires |
-|---|---|
-| `gemini` | Day 1 of the month, 02:00 UTC |
-| `openai` | Day 2, 02:00 UTC |
-| `claude` | Day 3, 02:00 UTC |
-| `grok` | Day 4, 02:00 UTC |
+| Engine | Fires | Judged by |
+|---|---|---|
+| `gemini` | Day 1 of the month, 02:00 UTC | `claude` |
+| `openai` | Day 2, 02:00 UTC | `claude` |
+| `claude` | Day 3, 02:00 UTC | `gemini` |
+| `grok` | Day 4, 02:00 UTC | `gemini` |
+
+**Four scheduled ladders, two per judge, since 2026-11-12.** Every scheduled
+ladder was judged by gemini, including gemini's own, which section 7.7 records
+as the reason a second judge exists. Each judge now scores two engines on the
+schedule and neither scores its own. Any other engine and judge pair is run by
+dispatch.
 
 **Until 2026-11-09 the slots were weekly and eight hours apart**, reserved and
 never written: Monday 02:00, 10:00 and 18:00 UTC, and Tuesday 02:00 for the
@@ -1954,10 +1974,20 @@ seeing it, and a month bounds that.
 **One: a firing is read by somebody.** The gate's replay reports known findings
 across the four engines, so a live run reports at least those. The condition
 was that a cron always red for reasons recorded earlier communicates nothing.
-**Every scheduled run waits for a required reviewer** on the `live`
-environment before any rung spends, so a firing reaches a person and does not
-spend into nobody's attention. The quarantine mechanism of 2026-10-02 remains
-the remedy for known findings, and it does not gate the schedule.
+**A scheduled ladder runs only while its workflow is enabled**, which the owner
+sets in the Actions tab: enabling one is the decision that its monthly result
+is wanted and will be read. Until 2026-11-12 every scheduled run waited for a
+required reviewer on `live` instead; the banded ladder holds six live jobs, a
+run waiting on six approvals is not scheduled, and the reviewer was removed
+(section 7.8.5). The quarantine mechanism of 2026-10-02 remains the remedy for
+known findings, and it does not gate the schedule.
+
+**Enabled and disabled are GitHub's own workflow states, and nothing here
+stores a switch.** A workflow with no schedule runs only when somebody starts
+it, so only the four scheduled ladders, the two calibration workflows and the
+probe run on their own; disabling any of them stops its firings and leaves
+dispatch available once it is enabled again. The probe treats a disabled
+ladder or calibration workflow as opted out (section 4.23.3).
 
 **Two: the scheduled run declines when anything else has already evaluated
 this engine.** Any evaluation of that engine inside the window makes the
@@ -1985,8 +2015,8 @@ declines.
 |---|---|
 | Which runs | Runs of the engine's scheduled caller and of its claude-judged dispatch caller, created on or after the window opened |
 | How long the window is | 27 days, shorter than the shortest month, so the previous month's scheduled run never makes this one redundant |
-| What counts as evaluated | A completed run holding the job `<engine> / 3 - the model (live, live) on <engine>, judged by <judge>` that concluded success or failure |
-| What does not count | The run asking; a live rung skipped, cancelled or never reached, which includes a run nobody approved; a run before the window; another engine's rung |
+| What counts as evaluated | A completed run holding a job whose name carries `3 - the model (live, live) on <engine>` that concluded success or failure. Since 2026-11-12 rung 3 is three band jobs whose names keep that prefix (section 7.8.1), and any of them having run is a measurement of the model |
+| What does not count | The run asking; a live rung skipped, cancelled or never reached; a run before the window; another engine's rung |
 | A history that cannot be read | Exit 4, `QC_HARNESS_DEPENDENCY_UNMET`, and the ladder does not run: a guess in either direction is wrong, and the reviewer re-runs it |
 | What it writes | `evaluate=true` or `evaluate=false` and the reason naming the run, its trigger and its conclusion, to the job's outputs and to the run summary |
 
@@ -1996,8 +2026,8 @@ re-measures an unchanged model.
 
 **What the query cannot see is a local run.** A recording made from a
 workstation leaves no Actions history, so the scheduled run proceeds after one.
-That costs one redundant run at most, and the reviewer's approval is where it
-is declined by hand.
+That costs one redundant run at most, bounded by its ceiling; disabling the
+workflow for the month is how it is declined by hand.
 
 **The probe's dispatch carried an input no caller declared, until 2026-11-09.**
 It passed `--field reason="model version changed"` to callers declaring only
@@ -2483,6 +2513,31 @@ measurement.
 and has had callers here since 2026-10-05; the harness dispatch enumerated
 three engines, so a quarter of the roster was unwatched.
 
+**A changed judge is a changed engine, and it dispatches its calibration too.**
+Added 2026-11-12. Both judges are rostered engines and judge with their roster
+models, so the probe's comparison already sees a judge's model move. A changed
+engine with a `calibrate-<engine>.yml` dispatches it with the reason, ahead of
+its ladder, so that the record a ladder reads describes the judge it now calls
+(section 7.4.5).
+
+**A disabled workflow is an opt-out, not a failure.** Added 2026-11-12.
+Disabling a scheduled ladder in the Actions tab is how the owner stops it
+spending (section 4.18.3), and `gh workflow run` refuses a disabled workflow
+with HTTP 422, which failed the probe for a decision the owner made. The
+dispatch job reads each workflow's state first: an active one is dispatched,
+and any other state is reported in the run summary as opted out and dispatches
+nothing.
+
+| The changed engine's workflow | The probe |
+|---|---|
+| Active | Dispatches it, with the reason |
+| Disabled, or any other state | Reports it as opted out, and stays green |
+| Absent, as `calibrate-<engine>.yml` is for an engine that judges nothing | Dispatches nothing for it |
+
+`MQC_CAS_UNI_115849` reads the dispatch job: it reads the state before each
+dispatch, and dispatches the changed engine's calibration where one exists.
+Requirement `MQC_REQ_CAS_CI_0090`.
+
 #### 4.23.4 A probe failure dispatches nothing
 
 **It means the detector is broken, which is an instrument defect**, and
@@ -2529,12 +2584,14 @@ fired.
 
 | Environment | Reviewer | Held by | What a firing costs |
 |---|---|---|---|
-| `live` | Required | Every job that runs a graded case live | A ladder, up to `--max-spend` |
+| `live` | None since 2026-11-12, deployments from `main` only (section 7.8.5) | Every job that runs a graded case live, and calibration | A ladder, up to its ceiling |
 | `version_probe` | None | The probe job alone | One metadata call per engine, no prompt |
 
 **Keys still live in an environment**, so a workflow naming neither cannot
 reach them, which is why the probe named one at all. What the probe gives up is the approval, and the probe spends
-nothing to approve. The ladder it dispatches still names `live` and still waits.
+nothing to approve. The ladder it dispatches names `live`, which held a
+required reviewer until 2026-11-12 and holds none since (section 7.8.5); the
+probe keeps its own environment so that no ladder can borrow it.
 
 **Two conditions keep the unreviewed environment that cheap.** No other job
 names `version_probe`, so a later workflow cannot borrow its keys to spend
@@ -3175,7 +3232,8 @@ cannot live there.
 | Workflow | Rungs | Trigger |
 |---|---|---|
 | `gate-target.yml`, called by one `gate-<target>.yml` for each target | 1 | Every push and pull request |
-| `evaluate-engine.yml`, called by one scheduled and one claude-judged dispatch caller for each engine | 1, then 2, then 3 | Monthly unless already measured, and on dispatch |
+| `evaluate-engine.yml`, called by one scheduled and one claude-judged dispatch caller for each engine | 1, then 2, then 3, each as three band jobs (section 7.8) | Monthly unless already measured, and on dispatch |
+| `calibrate-judge.yml`, called by one `calibrate-<judge>.yml` for each judge | None: it measures the judge (section 7.4.5) | Monthly, on the judge's model change, and on dispatch |
 
 **The names moved and this table did not, until 2026-10-25.** It read
 `gate-on-change.yml` and `evaluate-live-weekly.yml`, which are the harness's
@@ -3241,6 +3299,11 @@ alone would tell an operator that something moved and leave them without a way
 to decide what to do about it.
 
 #### 7.4.1 One calibration case per family, run only where rung 2 asks for it
+
+**Superseded in part on 2026-11-12.** Rung 2 no longer selects calibration:
+the cases below run in each judge's calibration workflow, and a ladder reads
+the record it writes (section 7.4.5). What a case and a sample are is
+unchanged.
 
 Added 2026-11-10. The rung 2 step that runs calibration selected it with
 `-k calibration`, and no case carried that name, so the step collected nothing
@@ -3349,6 +3412,10 @@ spacing and counted against `--max-spend` (section 7.4.3).
 
 #### 7.4.2 A family's judged cases rest on its calibration case, in one invocation
 
+**Superseded in part on 2026-11-12.** The dependency stands; the one
+invocation does not. A band session rests its judged cases on the calibration
+a record carries (section 7.4.5).
+
 Added 2026-11-11. **A failed calibration exits 3 and did not stop its family
 being judged.** Rung 2 ran calibration and the judged cases as two steps, so
 the second step reported a pass or a fail for every judged case of a family
@@ -3427,6 +3494,93 @@ figures belong to one run's artifacts (harness `cmn_verdict_and_cli.md` section
 
 `MQC_CAS_UNI_115041` runs one precondition in a child pytest with a ceiling,
 then reads both artifacts. Requirement `MQC_REQ_CAS_PRE_0022`.
+
+#### 7.4.5 Calibration is the judge's, so it runs once per judge and every ladder reads its record
+
+Added 2026-11-12, at the project owner's ruling of that date.
+
+**What was wrong.** Rung 2 calibrated the judge on every ladder run, once per
+candidate engine, although the samples and the judge model are the same
+whichever engine a ladder evaluates. The plan of 2026-10-21 said calibration
+runs only when the judge model changed, and it was not built that way.
+**Why.** A family's judged cases could rest on its calibration only within one
+pytest session (section 7.4.2), so the calibration had to run where the judged
+cases did.
+
+**Calibration runs in a workflow of its own per judge**, and writes a record
+every ladder judged by that judge reads (harness `tier3_evaluation.md` section
+9.4.2).
+
+| Workflow | Does |
+|---|---|
+| `calibrate-claude.yml`, `calibrate-gemini.yml` | One caller per judge, each passing its judge |
+| `calibrate-judge.yml` | Resolves the paired harness, runs the preconditions, then `pytest -m calibration` under a live judge with `--record-calibration records/calibration/<judge>.json`, and commits the record to the branch it ran on |
+
+| Starts it | When |
+|---|---|
+| A schedule | Monthly, the 1st at 00:00 UTC for claude and 00:30 for gemini, ahead of the ladders' slots (section 4.18.2) |
+| The probe | When the judge's engine serves another model (section 4.23.3) |
+| A person | Any time, by dispatch |
+
+**It runs on one platform, `ubuntu-26.04`.** Calibration measures the judge,
+which no operating system changes (section 7.8.3). It names `live` for the
+judge's key, and its ceiling is a `max_spend` input defaulting to $1.00: one
+judge call per sample, sixteen samples.
+
+**The record is committed even when a family failed.** A failed family is a
+measurement, and the record says so: a ladder reading it skips that family's
+judged cases, naming the failure and its date. A session that wrote no record
+commits nothing, and its job is red.
+
+**What the record holds and when it is valid are the harness's** (section
+9.4.2): the judge, what it served, a digest of the samples, the commits, the
+date and each family's outcome. It is valid while the judge serves the digest
+it names and the samples are unchanged, and age never invalidates it.
+
+**The samples digest is this repository's.** `calibration_support.samples_digest`
+hashes every file in `data/calibration/` by name and content, line endings
+normalized, so a sample edited anywhere invalidates every record and a
+checkout on either platform computes the same digest.
+
+**A ladder reads the latest record, not the one in its checkout.** Each live
+band job takes `records/calibration/<judge>.json` from the head of the default
+branch before its run, and passes it as `--calibration-record`. A dispatch
+checks out one commit, and a calibration committed after the ladder started is
+the one that describes the judge now. Reading a newer record is safe because
+its validity is decided against the judge as it answers now and the samples in
+the checkout.
+
+| The record a band reads | Its judged cases | Its check-only cases |
+|---|---|---|
+| Valid, the family held | Judged | Run |
+| Valid, the family failed | Skipped, naming the failure and its date | Run |
+| Absent or invalid | Skipped, naming the reason | Run |
+
+**A blocking band whose judged cases skipped is red**, because its floor answers
+for every case it selected (section 3.12.2). So a ladder with no valid record
+stops at rung 2's first band and names the reason, having spent only on the
+check-only cases. **When the probe finds a judge's model changed**, it
+dispatches the calibration and the ladder together; the ladder's rung 2 starts
+after its preconditions and three replay bands, which is longer than a
+calibration takes, and a ladder that still reads the old record skips its
+judged cases naming both versions.
+
+**`calibration_support.rest_on_family_calibration` wires a band session to the
+record.** It returned at once where the session collected no calibration case,
+which is now every graded session; it now proceeds as well where the session
+names `--calibration-record`, so the harness wires each judged case to the
+calibration the record carries. `conftest.py` adopts the record at session
+start, after the carried band outcomes, and a calibration session publishes it
+at session end.
+
+| Case | Asserts |
+|---|---|
+| `MQC_CAS_UNI_115844` | Every rung 2 and rung 3 band invocation names `--calibration-record` for its judge, and no ladder invocation selects `calibration` |
+| `MQC_CAS_UNI_115845` | Each judge has a calibration caller passing it to `calibrate-judge.yml`, scheduled monthly and dispatchable with a reason; that workflow runs `-m calibration` under a live judge on one platform, writes the record and commits it |
+| `MQC_CAS_UNI_115846` | The samples digest moves when a sample changes and not when only its line endings do |
+| `MQC_CAS_UNI_115847` | A session naming a calibration record and collecting no calibration case still rests its judged cases on calibration, and a session naming neither rests nothing |
+
+Requirements `MQC_REQ_CAS_CI_0089` and `MQC_REQ_CAS_PRE_0024`.
 
 ### 7.5 A red rung 2 does not refresh anything
 
@@ -3584,6 +3738,139 @@ wrong twice. The harness `harness_ci_pipeline.md` section 2.1 lists the
 cadences in use and `scheduled` is not among them; the harness
 `harness_open_questions.md` records that nothing enforces that set, and only
 `-on-demand` changes how a run is counted.
+
+### 7.8 The live rungs are banded as the gate is
+
+Added 2026-11-12, at the project owner's ruling of that date.
+
+**What was wrong.** Rungs 2 and 3 each ran as one pytest session over every
+priority, while the gate runs P0, P1 and P2-P4 as separate jobs (section
+3.12). Section 3.12 names no job type, so it binds every graded run, and the
+ladder was built without it. Two consequences followed on 2026-11-12. The grok
+rung 3 run was red on a P2 phrasing check beside a P1 security failure, with
+nothing in the run telling a release blocker from a bug to open. And a P0
+foundation that failed could not skip what rested on it before anything was
+dispatched for it, which is the saving the bands exist for live; replay runs
+it free, and the gate carries the same mechanism so that it is tested before
+a live run relies on it. **Why.** The ladder predates the gate's bands and was
+not revisited when they were built.
+
+**The rule now: a graded job is banded the same way whatever it replays.**
+Every rung of the ladder is the gate's three band jobs, calling the same
+`.github/actions/band` definition, with the same floors and the same carried
+outcomes. A result at P0 in rung 3 and a result at P0 in the gate mean the
+same thing.
+
+#### 7.8.1 Each rung is three band jobs
+
+| Rung | Jobs | Candidate | Judge | Environment |
+|---|---|---|---|---|
+| 1, our code | `deterministic-p0`, `deterministic-p1`, `deterministic-lower` | replay | replay | None |
+| 2, the judge | `judge-p0`, `judge-p1`, `judge-lower` | replay | live | `live` |
+| 3, the model | `model-p0`, `model-p1`, `model-lower` | live | live | `live` |
+
+**P0 and P1 are blocking and P2-P4 answers to the pass floor**, decided by
+`tools/band_floor.py` exactly as in the gate. A rung is green when all three
+of its band jobs are. Each job name carries its rung, the engine, its band
+and, for rungs 2 and 3, the judge: `3 - the model (live, live) on grok, P1,
+release blocking, judged by gemini`. **The rung and engine lead, as they did
+before the bands**, so `tools/recent_evaluation.py`, which finds a measured
+month by the substring `3 - the model (live, live) on <engine>` (section
+4.18.3), reads any rung 3 band job without changing.
+
+**The band definition takes what a rung varies as inputs**: the candidate
+mode, the judge mode, the judge engine, the spend ceiling and the calibration
+record. Its marker expression stays fixed, `evaluator or tool or sec`, so no
+band selects calibration (section 7.4.5).
+
+#### 7.8.2 Bands chain within a rung, and a red rung stops the next
+
+**Within a rung the bands chain as in the gate** (section 3.12.1): P1 needs
+P0 and P2-P4 needs P1, each taking the outcomes the band before it carried,
+and each runs unless the preconditions failed, so one red band does not hide
+the next. A P1 case resting on a failed P0 foundation is skipped with
+`QC_HARNESS_DEPENDENCY_UNMET` before its candidate is dispatched.
+
+**Between rungs, a red rung stops the ladder** (section 7.2): the first band
+of rung N+1 needs every band of rung N, under the default success condition.
+Each rung carries its own outcomes: rung 1's replayed foundations say nothing
+about a live response.
+
+| Rung N | Rung N+1 |
+|---|---|
+| Every band green, the lower one at or above its floor | Runs |
+| Any band red | Skipped, and the report names the rung that stopped |
+
+#### 7.8.3 One platform per run, chosen at dispatch
+
+**The platform matrix tests the harness, and the harness is tested on
+replay**: the gate runs both platforms on every push. A live run measures the
+model and the judge, which no operating system changes, so a second platform
+would pay twice for one measurement.
+
+**The ladder takes an `os` input**, `ubuntu-26.04` by default, and every job
+that installs and runs the suite runs on it. Each caller's dispatch offers it
+as a choice of `ubuntu-26.04` and `windows-latest`; a scheduled run takes the
+default. The preconditions record the bands read is guarded by the platform
+(harness `cmn_verdict_and_cli.md` section 7.1.4), so the preconditions job runs
+on the same one.
+
+#### 7.8.4 One ceiling for the whole ladder, carried as a remainder
+
+**What was wrong.** `max_spend` was offered as the dispatch's ceiling, and each
+spending rung received the whole of it, so an openai dispatch spent $5.86
+against an input of $4.00.
+
+**Each live band runs with what the earlier live bands left.** Before its
+run, a live band job downloads the reports of every live band of this ladder
+that ran before it, and `tools/spend_remaining.py` subtracts the
+`mqc.total_spend_usd` each one published (section 7.4.4) from the dispatch's
+ceiling. The band's `--max-spend` is that remainder, so the ladder's total
+cannot pass the input.
+
+| The earlier live bands | `tools/spend_remaining.py` |
+|---|---|
+| Each report carries a priced total | Prints the remainder, to two decimal places |
+| The remainder is zero or less | Exits 4, `QC_HARNESS_BUDGET_EXHAUSTED`, and the band does not run |
+| A report lacks a priced total, or a live band left no report | Exits 4, `QC_HARNESS_DEPENDENCY_UNMET`: spend nobody can read is not assumed to be zero |
+
+**The default ceiling is $7.00**, one platform's ladder: the openai dispatch
+of 2026-11-12 spent $5.86 across rungs 2 and 3, calibration included.
+
+#### 7.8.5 What bounds a live run, now that nobody approves it
+
+**The `live` environment carries no required reviewer since 2026-11-12, and
+its deployments are limited to `main`.** A banded ladder holds six live jobs
+in sequence and calibration more, and a reviewer on each made a scheduled run
+wait for six approvals; a run waiting on approval is not scheduled. What
+bounds a run is now:
+
+| Bound | Held by |
+|---|---|
+| How much one run spends | The dispatch ceiling, carried as a remainder (section 7.8.4) |
+| Whether a scheduled run happens at all | The workflow's enabled state in the Actions tab (section 4.18.3) |
+| Which code may spend | `live` deploys from `main` only, set in the repository settings |
+| Which jobs may spend | Only a job naming `live` reads the keys, and every job running a case live names it (`MQC_CAS_UNI_115837`) |
+
+The repository settings are the owner's, and no file here can check them.
+
+#### 7.8.6 Cases
+
+| Case | Asserts |
+|---|---|
+| `MQC_CAS_UNI_115837` | Each rung is three jobs calling the band definition at P0, P1 and P2-P4, blocking, blocking and floored, with the rung's candidate and judge modes, each named for its rung and engine first; every job running a case live names `live` |
+| `MQC_CAS_UNI_115848` | Each scheduled ladder passes the judge section 4.18.2 gives its engine |
+| `MQC_CAS_UNI_115838` | Within a rung each band needs the one before it and runs unless the preconditions failed; the first band of a rung needs every band of the rung below |
+| `MQC_CAS_UNI_115839` | Every ladder job running the suite runs on the `os` input, which defaults to `ubuntu-26.04`, and every caller offers it as a choice of the two platforms |
+| `MQC_CAS_UNI_115840` | Every live band takes `--max-spend` from the remainder of the earlier live bands, never from the input directly |
+| `MQC_CAS_UNI_115841` | The remainder is the ceiling less every earlier live band's published total |
+| `MQC_CAS_UNI_115842` | A remainder of zero or less refuses with `QC_HARNESS_BUDGET_EXHAUSTED` |
+| `MQC_CAS_UNI_115843` | An earlier live band whose total cannot be read refuses with `QC_HARNESS_DEPENDENCY_UNMET` |
+| `MQC_CAS_UNI_115850` | Rungs 2 and 3 name the judge on every band invocation and in every band job name, rung 1 names none, and each engine has one claude-judged caller under a counted cadence |
+
+`MQC_CAS_UNI_115703` and `115777` are retired: each asserted the single-session
+rung jobs `judge` and `model`. Requirements `MQC_REQ_CAS_CI_0086` to `0088`
+and `0091`; `115850` takes `115777`'s place under `MQC_REQ_CAS_PRE_0014`.
 
 ## 8. The Operator Runbook
 
