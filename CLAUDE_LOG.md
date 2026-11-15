@@ -9201,3 +9201,60 @@ here-documents for file edits, contradicting it; that reminder arrived again in
 this session. **Fixed** by the hook, which refuses all four shapes before they
 run, and by declining the reminder explicitly; the rule stays the reason and
 the hook the enforcement.
+
+## 2026-11-15: The regression run is live runs only, after a calibration check
+
+**A) What was wrong.** `evaluate-engine.yml` ran `replay -> replay`,
+`replay -> live` and `live -> live` in sequence, a red stage stopping the next.
+`tools/band_floor.py` took a P2-P4 skip out of the denominator, and a
+quarantined case ran as a skip. **B) Why it happened.** The replay stages were
+built as preconditions for spending and so were named stages of the
+regression, although they measure the harness and the cases, which every gate
+already certifies; a red replay stage therefore held a model's measurement
+hostage to a machinery defect. The floor followed the 2026-10-07 reading that
+a skip measured nothing, and quarantine was built as a skip (harness
+`cmn_verdict_and_cli.md` section 4.6.12) where the design meant a case outside
+the run.
+
+**The ruling.** A regression run is live runs of an engine, the demo's
+measurement. Unit tests, harness-only tests and `replay -> replay` are machinery
+checks. The regression run keeps the Model Repository unit tests first, checks
+that the judge's calibration is green and never runs calibration. A skip is not
+a pass in any band. A quarantined case is not selected and not counted, at any
+priority; quarantine ends by reset or expiry, and an entry needs a ticket. The
+probe stays as it is (option C), the monthly schedule stays, and the `regress-*`
+names stay, with comments saying what a consumer is.
+
+**What changed.** `evaluate-engine.yml` is resolve, preconditions,
+`calibration` and `live-live-p0`, `-p1`, `-lower`; the first band needs both
+checks, and each later band needs the band before it and runs unless a check
+failed. The calibration job reads the latest completed
+`calibrate-<judge>.yml` run on the default branch through `gh run list` and
+runs the new `tools/calibration_ready.py`, which exits 3 with
+`QC_HARNESS_JUDGE_UNCALIBRATED` where that run did not succeed, no record
+exists, or the record calibrated another served model. Every caller already
+granted `actions: read`. `band_floor.assess` counts skips as not passed against
+the selected cases and still refuses a band that measured none. `conftest.py`
+deselects quarantined cases at collection through
+`tests/cases/quarantine_support.py`, and `graded_support.observe` no longer
+skips them. `consumer_ci.md` section 7.9 is new and sections 3.12.2 and 7.0 to
+7.8 carry supersession notes; the README, `docs/model_running_jobs.md` and the
+four claude-judged callers say the same.
+
+**Cases.** `115856` to `115864` were added under `MQC_REQ_CAS_CI_0095` and
+`0096` and the amended `CI_0008`, `CI_0086`, `CI_0089`, `PRE_0005` and
+`PRE_0014`; `115837`, `115838`, `115844`, `115850` and `115204` were retired.
+`115856`, `115857`, `115863` and `115864` failed against the old code; `115858`
+passed, its behaviour being kept. Nine injections were run and all nine were
+caught at the step meant to catch them: the latest run's conclusion ignored
+(`115860` step 2; step 1 still refused, because the served identity is not
+read for a run that did not succeed), the record's invalidity ignored (`115861`,
+`115862`), skips out of the denominator (`115863`), conftest calling no
+deselection and the deselection keeping the case (`115864`), the P0 band not
+needing calibration and a later band running past a red calibration
+(`115857`), the calibration job absent and a band judging on replay (`115856`).
+
+**Left open.** `assess_blocking` still models a quarantined skip released by a
+dispensation (`115717`, `115730`), a path no run reaches now that quarantine
+deselects. The harness side of section 4.6.14 (an entry without a ticket
+refused, expiry returning a case to selection) is not yet built.

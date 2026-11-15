@@ -3,7 +3,7 @@
 """Support code that dispatches and evaluates a graded case, written once for every case.
 
 Created: 2026-09-25
-Last updated: 2026-11-11
+Last updated: 2026-11-15
 
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
@@ -537,33 +537,9 @@ def observe(
     """
     case = case_for(task_id, rule_id)
 
-    # QUARANTINE SAVES THE RUN'S COST, which is what it is for: a case already
-    # known to fail buys nothing by being asked again. Skipped before the
-    # request is formed, so no quota is spent, and the blocking band counts the
-    # skip against the band it was selected into rather than excusing it.
-    # Harness `cmn_verdict_and_cli.md` section 4.6.12.
-    if case.case_id in quarantined_cases(config):
-        # RECORDED BEFORE THE SKIP, carrying `quarantined` as its reason, so the
-        # pass rate counts the failure quarantine declined to pay to measure
-        # again. Released only by a recorded dispensation, harness design
-        # section 4.6.13.
-        record_observation(
-            assemble_observation(
-                skip_fields(
-                    case,
-                    None,
-                    observation_index,
-                    reason="quarantined",
-                    code="QC_HARNESS_QUARANTINED",
-                ),
-                {},
-            ),
-            None,
-        )
-        pytest.skip(
-            f"QC_HARNESS_QUARANTINED: {case.case_id} is quarantined, so it was "
-            f"not dispatched"
-        )
+    # A QUARANTINED CASE NEVER ARRIVES HERE: `quarantine_support` deselects it
+    # at collection, so it is neither dispatched nor counted (harness
+    # `cmn_verdict_and_cli.md` section 4.6.14).
 
     # A JUDGE THAT STOPPED ANSWERING SKIPS A JUDGED CASE BEFORE ITS DISPATCH,
     # so a live run buys no response nobody can score (section 6.4.5). Asked

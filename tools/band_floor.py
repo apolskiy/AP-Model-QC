@@ -3,7 +3,7 @@
 """The band check, which decides from a band's JUnit XML whether that band passed.
 
 Created: 2026-10-01
-Last updated: 2026-11-02
+Last updated: 2026-11-15
 
 This file contains ``assess``, which compares a lower-priority band's pass rate
 against the project's pass floor, ``assess_blocking``, which requires a release
@@ -316,10 +316,10 @@ def _quarantined_skips(report: Path, quarantined: frozenset[str]) -> int:
 def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
     """Return the exit code for a band and the sentence explaining it.
 
-    **Skips leave the denominator.** A case whose foundation did not hold
-    produced no measurement, so counting it as a failure would charge the band
-    for a defect belonging to an earlier one, and counting it as a pass would
-    invent a result.
+    **A skip is not passed, and the denominator is every case the band
+    selected.** A quarantined case is never selected, so nothing here excuses
+    one. A band that measured none refuses rather than scoring zero. Design:
+    ``consumer_ci.md`` section 3.12.2.
 
     Args:
         report (Path): The band's JUnit XML.
@@ -363,10 +363,11 @@ def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
             f"no rate to compare against the floor",
         )
 
-    rate = (measured - failures) / measured
+    passed = measured - failures
+    rate = passed / total
     detail = (
-        f"{measured - failures} of {measured} measured passed "
-        f"({rate:.1%}), {skips} skipped, floor {required:.0%}"
+        f"{passed} of {total} selected passed ({rate:.1%}), {failures} failed, "
+        f"{skips} skipped, floor {required:.0%}"
     )
     if rate < required:
         return _EXIT_BELOW_FLOOR, f"the band is below its floor: {detail}"

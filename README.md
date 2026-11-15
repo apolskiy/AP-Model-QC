@@ -18,10 +18,10 @@ changed that day and whose recordings answer the old ones.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 95 graded cases specified, measured against each model, and 6 calibration cases measuring the judge |
-| `docs/testing/rtm_model.csv` | 254 requirements, traced |
+| `docs/testing/rtm_model.csv` | 256 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 83 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
-| Preconditions (`CAS`, `UNI`) | **282 cases, 282 passing**, each recording its numbered steps |
+| Preconditions (`CAS`, `UNI`) | **286 cases, 286 passing**, each recording its numbered steps |
 | Judge calibration | **6 cases, one per judged family**, in the `CAL` layer, run against the live judge by `calibrate-claude.yml` and `calibrate-gemini.yml` and nowhere else: monthly, when the probe finds the judge's model changed, or by dispatch. Each run commits a record to `records/calibration/`, and every live band of a regression run that judge grades reads it, skipping a family's judged cases where its calibration did not hold or the record no longer describes the judge (`consumer_ci.md` section 7.4.5). Each evaluates its family's calibration samples in `data/calibration/`, 16 in all: written responses, clean or carrying one or two stated mistakes, such as a share rounded against the system instruction, a match percentage without fractional credit, or a change listed out of order. Our checks must fail exactly the constraints a sample names, and the judge must clear every criterion of a clean sample and drop one below the threshold for a flawed one. They measure the judge: a failure exits 3, and the judge's calls count against `--max-spend` (`consumer_ci.md` sections 7.4.1 to 7.4.3). Injection is decided by our checks before any judge, and a tool call is never judged, so neither is calibrated |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a scheduled caller of its own, plus a calibration caller per judge, over three reusable workflows plus debugging on demand, which replays by default and runs live only after the owner's approval, at most 20 tests and $0.50 by default (`consumer_ci.md` section 6.5). **The live regression run is banded as the gate is**: each stage runs P0, P1 and P2-P4 as separate jobs on one platform chosen at dispatch, and the whole regression run spends under one ceiling, $7.00 by default (`consumer_ci.md` section 7.8) |
@@ -134,7 +134,7 @@ and a pass with a warning is a pass in every band.
 
 **The split is the whole point of two repositories.** A failure has to be
 attributable before it is worth reporting, so the instrument is tested
-separately from what it measures. 1130 harness test cases, each executed once per run, and 282 of 282 preconditions pass;
+separately from what it measures. 1130 harness test cases, each executed once per run, and 286 of 286 preconditions pass;
 the graded cases are where the findings are.
 
 ### Reading a red gate
@@ -289,14 +289,19 @@ result this project exists to produce. The mechanism is designed in
 
 | Pair | Used for |
 |---|---|
-| `replay -> replay` | Verifying the harness and the cases: every gate, and the first stage of a regression run |
-| `replay -> live` | Measuring the judge: judge calibration over the calibration samples, and the second stage of a regression run over the suite |
-| `live -> live` | The regression: the third stage of a regression run, and the only source of a finding |
+| `replay -> replay` | The machinery check: the harness and the cases verified together in every gate, before anything spends |
+| `replay -> live` | Measuring the judge: judge calibration over the calibration samples |
+| `live -> live` | The regression run against an engine, and the only source of a finding |
 | `live -> replay` | Nothing, and refused: a recorded judgement scores a recorded response, not a new one |
 
-A **regression run** is `evaluate-engine.yml`: the three pairs in sequence, each
-a stage of three band jobs, a red stage stopping the next (`consumer_ci.md`
-section 7.0).
+A **regression run** is `evaluate-engine.yml`: live runs of one engine only.
+Its preconditions (this repository's unit tests) and a calibration check run
+first, then `live -> live` in three band jobs, P0, P1 and P2-P4, a red band
+stopping the next. The calibration check reads the latest completed
+`calibrate-<judge>.yml` run on the default branch and the judge's record; where
+the run did not succeed or the record calibrated another served model, it exits
+3 before any live call and never starts a calibration itself. `consumer_ci.md`
+section 7.9 holds the jobs.
 
 **The regression runs fire monthly, one engine a day from the 1st, and skip a
 month already measured.** The model version probe runs weekly and dispatches an
@@ -310,13 +315,13 @@ reasoning.
 
 **A scheduled regression run measures the judge and the model, not our code.** Code is
 certified when it changes: every commit here runs its gate, and every harness
-commit runs this repository's suite. A regression run's preconditions and
-`replay -> replay` stage therefore usually repeat a green gate; they stay as a
-free precondition for spending, catching a dependency or runner change before
-the live stages spend. Its `replay -> live` and `live -> live` stages measure
-whether the judge or the model moved behind an unchanged name, which
-is what a monthly run is for. `consumer_ci.md` section 7.3.1 lists what each
-job certifies.
+commit runs this repository's suite. A regression run's preconditions therefore
+usually repeat a green gate; they stay as a free check before spending,
+catching a dependency or runner change before the live bands spend. Its
+`live -> live` bands measure whether the model moved behind an unchanged name,
+which is what a monthly run is for; whether the judge moved is calibration's
+job, which runs on its own schedule. `consumer_ci.md` section 7.9.2 lists what
+each job certifies.
 
 ## Why This Is A Separate Repository
 

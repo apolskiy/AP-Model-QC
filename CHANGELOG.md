@@ -40,6 +40,33 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A regression run is live runs of the engine only, after a calibration check, 2026-11-15
+
+**Why.** A regression run measures an engine; it held two replay stages that
+repeated what every gate already certifies, and a red replay stage stopped the
+live bands, so a model fix could not be measured until a machinery defect was
+mended. It also counted a P2-P4 skip outside the floor's denominator, so a band
+that skipped its failures read as passing, and it ran a quarantined case as a
+skip, although a quarantined case is a known, ticketed defect that nothing
+should select or count.
+
+**What changed.** `evaluate-engine.yml` holds resolve, preconditions (this
+repository's unit tests), a `calibration` job, and `live -> live` in three
+bands; `replay -> replay` and `replay -> live` left it. The calibration job runs
+the new `tools/calibration_ready.py`, which exits 3 with
+`QC_HARNESS_JUDGE_UNCALIBRATED` where the latest completed
+`calibrate-<judge>.yml` run on the default branch did not succeed, where no
+record exists, or where the record calibrated another served model; it never
+starts a calibration. `tools/band_floor.py` counts every skip as not passed
+against the cases the band selected. `conftest.py` deselects quarantined cases
+at collection, at every priority, through `tests/cases/quarantine_support.py`.
+`consumer_ci.md` section 7.9 and section 3.12.2 hold the design. Requirements
+`MQC_REQ_CAS_CI_0095` and `0096` were added; `CI_0008`, `CI_0086`, `CI_0089`,
+`PRE_0005` and `PRE_0014` were amended. Cases `115856` to `115864` were added
+and `115837`, `115838`, `115844`, `115850` and `115204` retired. The README
+states 256 requirements and 286 preconditions, and describes the live-only
+regression run.
+
 ### A live debug run waits for approval and runs at most 20 tests, 2026-11-14
 
 **Why.** The `live` environment is to admit `main` alone and ask nobody, so a

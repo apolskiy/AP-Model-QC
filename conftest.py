@@ -3,7 +3,7 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-11-12
+Last updated: 2026-11-15
 
 This file contains the pytest hooks for the case suite. They declare the
 execution flags, record what the run was invoked with, adopt the carried
@@ -233,6 +233,12 @@ def pytest_collection_modifyitems(
     select_modules(config, items)
     select_traced_cases(config, items)
     select_named_tests(config, items)
+    # A QUARANTINED CASE IS OUTSIDE THE RUN, at every priority: a ticket stands
+    # against it, so it is neither run nor counted, and it is not a skip
+    # (harness `cmn_verdict_and_cli.md` section 4.6.14).
+    importlib.import_module("tests.cases.quarantine_support").deselect_quarantined_cases(
+        config, items, config.rootpath
+    )
     # A FAMILY'S JUDGED CASES REST ON ITS CALIBRATION, collected in this run or
     # carried from the record it names: after every selector, so a dropped case
     # is not wired, and before the cascade is ordered (`consumer_ci.md`

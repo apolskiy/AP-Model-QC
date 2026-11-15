@@ -3,7 +3,7 @@
 """Unit preconditions for how this case set reaches the installed harness, never by path.
 
 Created: 2026-09-28
-Last updated: 2026-11-11
+Last updated: 2026-11-15
 
 This file contains ten cases. ``TestMQCHarnessLocatedByInstall`` checks no file locates
 harness material by directory adjacency and that the engine roster resolves from the
@@ -46,7 +46,6 @@ asks which harness commit may be used, this one asks where the harness is.
 #   115802  the_judging_flag_reaches_the_pipeline_call
 # TestMQCBandFloor
 #   115203  a_lower_band_is_judged_against_the_floor
-#   115204  a_skip_leaves_the_denominator
 #   115205  an_error_refuses_rather_than_averaging
 # ------------------------------------------------------------ end of cases
 
@@ -453,30 +452,6 @@ class TestMQCBandFloor:
         # THE FIGURES ARE IN THE MESSAGE, because a bare "below the floor" sends
         # a reader to the artifact to learn by how much.
         assert "80.0%" in message and "90%" in message
-
-    def MQC_CAS_UNI_115204_a_skip_leaves_the_denominator(
-        self, tmp_path: Path
-    ) -> None:
-        """A foundation that did not hold must not charge the later band.
-
-        A dependent skipped under `QC_HARNESS_DEPENDENCY_UNMET` produced no
-        measurement. Counting it as a failure would charge this band for a
-        defect belonging to an earlier one, which is the misattribution the
-        band split exists to remove; counting it as a pass would invent a
-        result.
-
-        Args:
-            tmp_path (Path): pytest's temporary directory.
-
-        Returns:
-            None
-        """
-        report = self._report(tmp_path / "skips.xml", passed=9, failed=1, skipped=40)
-        code, message = assess(report, floor=0.90)
-
-        assert code == 0, message
-        assert "40 skipped" in message
-        assert "9 of 10 measured" in message
 
     def MQC_CAS_UNI_115205_an_error_refuses_rather_than_averaging(
         self, tmp_path: Path

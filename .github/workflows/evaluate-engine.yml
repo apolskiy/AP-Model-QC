@@ -1,25 +1,24 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-# The regression run for ONE engine, banded as the gate is.
+# The regression run for ONE engine: the live runs, banded as the gate is.
 #
-# Specified by docs/design/consumer_ci.md sections 7, 7.8 and 4.18.
+# Specified by docs/design/consumer_ci.md sections 7.9, 7.8 and 4.18.
 #
-# A GRADED RUN HAS TWO MOVING PARTS, the candidate and the judge, and a single
-# job that moves both can only report that something changed. Each stage holds
-# everything fixed except one thing, and is named by its pair, candidate mode
-# first, then judge mode (section 7.0):
+# A REGRESSION RUN MEASURES AN EVAL ENGINE, and nothing else (section 7.9):
 #
-#   replay -> replay   OUR CODE changed a frozen outcome; verifies the harness and the cases
-#   replay -> live     THE JUDGE moved
-#   live -> live       THE MODEL moved; the regression itself
+#   preconditions   this repository's unit tests, so the cases are known to work
+#   calibration     the judge's calibration is green and covers the model it
+#                   serves now; checked, never run (section 7.9.3)
+#   live -> live    P0 and P1 release blocking, P2-P4 against the pass floor
 #
-# live -> replay is refused: a stored judgement scores a recorded response.
+# NO REPLAY RUNS HERE, since 2026-11-14. replay -> replay is a machinery check
+# and runs in every gate; the judge is certified by calibrate-judge.yml. A red
+# replay stage stopped the live bands, so a new model's fixes were never
+# measured.
 #
-# EACH STAGE IS THE GATE'S THREE BANDS, since 2026-11-12: P0 and P1 release
-# blocking, P2-P4 against the pass floor, each a job calling the one band
-# definition, each carrying its outcomes to the next so a dependent of a failed
-# foundation skips before its candidate is dispatched. A red stage stops the
-# next. Section 7.8.
+# EACH BAND CARRIES ITS OUTCOMES TO THE NEXT, so a dependent of a failed
+# foundation skips before its candidate is dispatched, and each spends what the
+# bands before it left of one ceiling. Sections 7.8.2 and 7.8.4.
 #
 # ONE ENGINE PER CALL, AND NOTHING AGGREGATES. These are the products of
 # different companies evaluated against one harness: a combined result
@@ -43,9 +42,8 @@ on:
         type: string
       judge:
         description: >-
-          Which engine grades replay -> live and live -> live. replay -> replay
-          has no judge dimension: it replays both halves, and the code reading a stored judgement does
-          not vary with the engine that produced it (section 7.7.1).
+          Which engine grades the live bands. Its calibration is checked before
+          any band spends (section 7.9.3)
         required: false
         default: "gemini"
         type: string
@@ -66,10 +64,9 @@ env:
   PYTHON_VERSION: "3.14"
 
 jobs:
-  # NOT A STAGE. It measures nothing; it decides whether the regression run
-  # has an instrument worth spending on. ONE RESOLVE FOR ALL THREE STAGES, so
-  # the harness cannot move between replay -> replay and live -> live.
-  # Section 7.6.
+  # IT MEASURES NOTHING; it decides whether the regression run has an
+  # instrument worth spending on. ONE RESOLVE FOR EVERY JOB, so the harness
+  # cannot move between the checks and the bands. Section 7.6.
   resolve:
     name: resolve the paired harness
     runs-on: ubuntu-26.04
@@ -113,7 +110,8 @@ jobs:
             echo "${{ steps.pin.outputs.reason }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # GATE 2 AHEAD OF EVERY STAGE. A red here means nothing was measured and
+  # THIS REPOSITORY'S UNIT TESTS AHEAD OF EVERY BAND, so the cases are known to
+  # work before they run live. A red here means nothing was measured and
   # nothing was spent. It writes the record every band reads, guarded by both
   # commits and the platform, so it runs on the chosen one. Sections 7.2.1
   # and 7.8.3; harness `cmn_verdict_and_cli.md` section 7.1.4.
@@ -155,245 +153,16 @@ jobs:
           path: reports/
           retention-days: 90
 
-  # REPLAY -> REPLAY: OUR CODE. Both sides replayed, so no environment and no
-  # key. It is the precondition for spending: a red here stops replay -> live
-  # and live -> live.
-  replay-replay-p0:
-    name: replay -> replay on ${{ inputs.engine }}, P0, release blocking
-    needs: [resolve, preconditions]
-    runs-on: ${{ inputs.os }}
-    env:
-      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
-      MQC_CASE_REF: ${{ github.sha }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install the resolved harness and this repository
-        shell: bash
-        run: |
-          python -m pip install --quiet \
-            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
-          python -m pip install --quiet --no-deps --editable "."
-      - name: Take the record the preconditions job wrote
-        uses: actions/download-artifact@v7
-        with:
-          name: preconditions-${{ inputs.engine }}
-          path: reports/
-      - name: Band P0
-        uses: ./.github/actions/band
-        with:
-          band: P0
-          priority: "0"
-          report: replay_replay_p0
-          engine: ${{ inputs.engine }}
-          mode: replay
-          preconditions_record: reports/preconditions.json
-          blocking: "true"
-      - name: Carry the outcomes to P1
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: carry-replay-replay-after-p0-${{ inputs.engine }}
-          path: reports/carry.json
-          retention-days: 1
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: mqc-reports-cases-${{ inputs.engine }}-replay-replay-p0
-          path: reports/
-          retention-days: 90
-
-  replay-replay-p1:
-    name: replay -> replay on ${{ inputs.engine }}, P1, release blocking
-    needs: [resolve, preconditions, replay-replay-p0]
-    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
-    runs-on: ${{ inputs.os }}
-    env:
-      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
-      MQC_CASE_REF: ${{ github.sha }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install the resolved harness and this repository
-        shell: bash
-        run: |
-          python -m pip install --quiet \
-            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
-          python -m pip install --quiet --no-deps --editable "."
-      - name: Take the record the preconditions job wrote
-        uses: actions/download-artifact@v7
-        with:
-          name: preconditions-${{ inputs.engine }}
-          path: reports/
-      - name: Take the outcomes P0 established
-        uses: actions/download-artifact@v7
-        with:
-          name: carry-replay-replay-after-p0-${{ inputs.engine }}
-          path: reports/
-      - name: Band P1
-        uses: ./.github/actions/band
-        with:
-          band: P1
-          priority: "1"
-          report: replay_replay_p1
-          engine: ${{ inputs.engine }}
-          mode: replay
-          preconditions_record: reports/preconditions.json
-          blocking: "true"
-      - name: Carry the outcomes to P2-P4
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: carry-replay-replay-after-p1-${{ inputs.engine }}
-          path: reports/carry.json
-          retention-days: 1
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: mqc-reports-cases-${{ inputs.engine }}-replay-replay-p1
-          path: reports/
-          retention-days: 90
-
-  replay-replay-lower:
-    name: replay -> replay on ${{ inputs.engine }}, P2-P4, pass floor
-    needs: [resolve, preconditions, replay-replay-p1]
-    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
-    runs-on: ${{ inputs.os }}
-    env:
-      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
-      MQC_CASE_REF: ${{ github.sha }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install the resolved harness and this repository
-        shell: bash
-        run: |
-          python -m pip install --quiet \
-            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
-          python -m pip install --quiet --no-deps --editable "."
-      - name: Take the record the preconditions job wrote
-        uses: actions/download-artifact@v7
-        with:
-          name: preconditions-${{ inputs.engine }}
-          path: reports/
-      - name: Take the outcomes P0 and P1 established
-        uses: actions/download-artifact@v7
-        with:
-          name: carry-replay-replay-after-p1-${{ inputs.engine }}
-          path: reports/
-      - name: Band P2-P4
-        uses: ./.github/actions/band
-        with:
-          band: P2-P4
-          priority: "2,3,4"
-          report: replay_replay_p2_p4
-          engine: ${{ inputs.engine }}
-          mode: replay
-          preconditions_record: reports/preconditions.json
-          blocking: "false"
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: mqc-reports-cases-${{ inputs.engine }}-replay-replay-p2_p4
-          path: reports/
-          retention-days: 90
-
-  # REPLAY -> LIVE: THE JUDGE IS THE ONLY THING THAT MOVED. Same stored responses,
-  # scored by the judge as it answers today. It does not calibrate: each band
-  # reads the judge's calibration record from the default branch, and a
-  # family whose calibration did not hold, or a record that no longer
-  # describes the judge, skips its judged cases before the judge is called
-  # (section 7.4.5).
-  #
-  # EACH LIVE BAND SPENDS WHAT THE LIVE BANDS BEFORE IT LEFT of the one
-  # ceiling, read from the spend each published (section 7.8.4).
-  #
-  # A RED REPLAY -> LIVE REFRESHES NOTHING. Stored judgements stay
-  # authoritative and replay -> replay keeps working; recalibrate before
-  # accepting a new judge (7.5).
-  replay-live-p0:
-    name: replay -> live on ${{ inputs.engine }}, P0, release blocking, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, replay-replay-p0, replay-replay-p1, replay-replay-lower]
-    runs-on: ${{ inputs.os }}
-    environment: live
-    env:
-      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
-      MQC_CASE_REF: ${{ github.sha }}
-      # EVERY JUDGE'S KEY IS OFFERED AND THE NAMED ONE READS ITS OWN. A judge
-      # whose key is absent refuses at preflight (section 4.17.2).
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install the resolved harness and this repository
-        shell: bash
-        run: |
-          python -m pip install --quiet \
-            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
-          python -m pip install --quiet --no-deps --editable "."
-      - name: Take the record the preconditions job wrote
-        uses: actions/download-artifact@v7
-        with:
-          name: preconditions-${{ inputs.engine }}
-          path: reports/
-      - name: What the live bands before this one left of the ceiling
-        id: spend
-        shell: bash
-        run: python -m tools.spend_remaining --ceiling "${{ inputs.max_spend }}" --reports spent --earlier 0 --output "$GITHUB_OUTPUT"
-      - name: Take the judge's calibration record from the default branch
-        shell: bash
-        run: |
-          mkdir -p calibration
-          git fetch --quiet --depth=1 origin "${{ github.event.repository.default_branch || 'main' }}"
-          git show "FETCH_HEAD:records/calibration/${{ inputs.judge }}.json" > calibration/record.json || rm -f calibration/record.json
-      - name: Band P0
-        uses: ./.github/actions/band
-        with:
-          band: P0
-          priority: "0"
-          report: replay_live_p0
-          engine: ${{ inputs.engine }}
-          mode: replay
-          judge_mode: live
-          judge_engine: ${{ inputs.judge }}
-          max_spend: ${{ steps.spend.outputs.remaining }}
-          calibration_record: calibration/record.json
-          preconditions_record: reports/preconditions.json
-          blocking: "true"
-      - name: Carry the outcomes to P1
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: carry-replay-live-after-p0-${{ inputs.engine }}
-          path: reports/carry.json
-          retention-days: 1
-      - name: Publish what this band spent to the live bands after it
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: spend-${{ inputs.engine }}-replay-live-p0
-          path: reports/junit_mqc_judge_p0.xml
-          retention-days: 1
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: mqc-reports-cases-${{ inputs.engine }}-replay-live-p0-by-${{ inputs.judge }}
-          path: reports/
-          retention-days: 90
-
-  replay-live-p1:
-    name: replay -> live on ${{ inputs.engine }}, P1, release blocking, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, replay-live-p0]
-    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
+  # THE JUDGE'S CALIBRATION IS CHECKED, NEVER RUN. The latest completed
+  # calibrate-<judge>.yml run on the default branch must have succeeded, and
+  # the record at the head of the default branch must cover the judge as it
+  # serves now. Either failing stops the run with exit 3 before any band
+  # spends: an instrument problem, not a model finding. It names `live` for
+  # the judge's key, which asking what the judge serves needs. Section 7.9.3.
+  calibration:
+    name: calibration check, not a model finding (judge ${{ inputs.judge }})
+    needs: resolve
+    if: needs.resolve.outputs.green == 'true'
     runs-on: ${{ inputs.os }}
     environment: live
     env:
@@ -412,150 +181,34 @@ jobs:
           python -m pip install --quiet \
             "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
           python -m pip install --quiet --no-deps --editable "."
-      - name: Take the record the preconditions job wrote
-        uses: actions/download-artifact@v7
-        with:
-          name: preconditions-${{ inputs.engine }}
-          path: reports/
-      - name: Take the outcomes P0 established
-        uses: actions/download-artifact@v7
-        with:
-          name: carry-replay-live-after-p0-${{ inputs.engine }}
-          path: reports/
-      - name: Take the reports of the live bands before this one
-        uses: actions/download-artifact@v7
-        with:
-          pattern: spend-${{ inputs.engine }}-*
-          path: spent/
-          merge-multiple: true
-      - name: What the live bands before this one left of the ceiling
-        id: spend
+      - name: How the judge's latest calibration run concluded
+        id: latest
         shell: bash
-        run: python -m tools.spend_remaining --ceiling "${{ inputs.max_spend }}" --reports spent --earlier 1 --output "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          conclusion="$(gh run list --repo "${{ github.repository }}" \
+            --workflow "calibrate-${{ inputs.judge }}.yml" \
+            --branch "${{ github.event.repository.default_branch || 'main' }}" \
+            --status completed --limit 1 --json conclusion --jq '.[0].conclusion // ""')"
+          echo "conclusion=$conclusion" >> "$GITHUB_OUTPUT"
       - name: Take the judge's calibration record from the default branch
         shell: bash
         run: |
           mkdir -p calibration
           git fetch --quiet --depth=1 origin "${{ github.event.repository.default_branch || 'main' }}"
           git show "FETCH_HEAD:records/calibration/${{ inputs.judge }}.json" > calibration/record.json || rm -f calibration/record.json
-      - name: Band P1
-        uses: ./.github/actions/band
-        with:
-          band: P1
-          priority: "1"
-          report: replay_live_p1
-          engine: ${{ inputs.engine }}
-          mode: replay
-          judge_mode: live
-          judge_engine: ${{ inputs.judge }}
-          max_spend: ${{ steps.spend.outputs.remaining }}
-          calibration_record: calibration/record.json
-          preconditions_record: reports/preconditions.json
-          blocking: "true"
-      - name: Carry the outcomes to P2-P4
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: carry-replay-live-after-p1-${{ inputs.engine }}
-          path: reports/carry.json
-          retention-days: 1
-      - name: Publish what this band spent to the live bands after it
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: spend-${{ inputs.engine }}-replay-live-p1
-          path: reports/junit_mqc_judge_p1.xml
-          retention-days: 1
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: mqc-reports-cases-${{ inputs.engine }}-replay-live-p1-by-${{ inputs.judge }}
-          path: reports/
-          retention-days: 90
+      - name: Check the judge is calibrated
+        shell: bash
+        run: python -m tools.calibration_ready --judge "${{ inputs.judge }}" --record calibration/record.json --conclusion "${{ steps.latest.outputs.conclusion }}"
 
-  replay-live-lower:
-    name: replay -> live on ${{ inputs.engine }}, P2-P4, pass floor, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, replay-live-p1]
-    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
-    runs-on: ${{ inputs.os }}
-    environment: live
-    env:
-      MQC_CODE_REF: ${{ needs.resolve.outputs.harness_sha }}
-      MQC_CASE_REF: ${{ github.sha }}
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install the resolved harness and this repository
-        shell: bash
-        run: |
-          python -m pip install --quiet \
-            "ap-harness-qc[dev] @ git+https://github.com/${{ needs.resolve.outputs.harness_repository }}@${{ needs.resolve.outputs.harness_sha }}"
-          python -m pip install --quiet --no-deps --editable "."
-      - name: Take the record the preconditions job wrote
-        uses: actions/download-artifact@v7
-        with:
-          name: preconditions-${{ inputs.engine }}
-          path: reports/
-      - name: Take the outcomes P0 and P1 established
-        uses: actions/download-artifact@v7
-        with:
-          name: carry-replay-live-after-p1-${{ inputs.engine }}
-          path: reports/
-      - name: Take the reports of the live bands before this one
-        uses: actions/download-artifact@v7
-        with:
-          pattern: spend-${{ inputs.engine }}-*
-          path: spent/
-          merge-multiple: true
-      - name: What the live bands before this one left of the ceiling
-        id: spend
-        shell: bash
-        run: python -m tools.spend_remaining --ceiling "${{ inputs.max_spend }}" --reports spent --earlier 2 --output "$GITHUB_OUTPUT"
-      - name: Take the judge's calibration record from the default branch
-        shell: bash
-        run: |
-          mkdir -p calibration
-          git fetch --quiet --depth=1 origin "${{ github.event.repository.default_branch || 'main' }}"
-          git show "FETCH_HEAD:records/calibration/${{ inputs.judge }}.json" > calibration/record.json || rm -f calibration/record.json
-      - name: Band P2-P4
-        uses: ./.github/actions/band
-        with:
-          band: P2-P4
-          priority: "2,3,4"
-          report: replay_live_p2_p4
-          engine: ${{ inputs.engine }}
-          mode: replay
-          judge_mode: live
-          judge_engine: ${{ inputs.judge }}
-          max_spend: ${{ steps.spend.outputs.remaining }}
-          calibration_record: calibration/record.json
-          preconditions_record: reports/preconditions.json
-          blocking: "false"
-      - name: Publish what this band spent to the live bands after it
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: spend-${{ inputs.engine }}-replay-live-lower
-          path: reports/junit_mqc_judge_p2_p4.xml
-          retention-days: 1
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: mqc-reports-cases-${{ inputs.engine }}-replay-live-p2_p4-by-${{ inputs.judge }}
-          path: reports/
-          retention-days: 90
-
-  # LIVE -> LIVE: BOTH SIDES LIVE. THE ONLY STAGE THAT REPORTS A FINDING ABOUT
-  # THE MODEL, and per A2 a model regression never blocks a merge. Each stage
-  # carries its own outcomes: replay -> replay's replayed foundations say
-  # nothing about a live response (section 7.8.2).
+  # LIVE -> LIVE: BOTH SIDES LIVE, THE ONLY SOURCE OF A FINDING ABOUT THE
+  # MODEL, and per A2 a model regression never blocks a merge. P0 waits on both
+  # checks; each later band waits on the band before it and runs unless a
+  # check failed, so a red band does not hide the next (section 7.9.2).
   live-live-p0:
     name: live -> live on ${{ inputs.engine }}, P0, release blocking, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, replay-live-p0, replay-live-p1, replay-live-lower]
+    needs: [resolve, preconditions, calibration]
     runs-on: ${{ inputs.os }}
     environment: live
     env:
@@ -585,16 +238,10 @@ jobs:
         with:
           name: preconditions-${{ inputs.engine }}
           path: reports/
-      - name: Take the reports of the live bands before this one
-        uses: actions/download-artifact@v7
-        with:
-          pattern: spend-${{ inputs.engine }}-*
-          path: spent/
-          merge-multiple: true
       - name: What the live bands before this one left of the ceiling
         id: spend
         shell: bash
-        run: python -m tools.spend_remaining --ceiling "${{ inputs.max_spend }}" --reports spent --earlier 3 --output "$GITHUB_OUTPUT"
+        run: python -m tools.spend_remaining --ceiling "${{ inputs.max_spend }}" --reports spent --earlier 0 --output "$GITHUB_OUTPUT"
       - name: Take the judge's calibration record from the default branch
         shell: bash
         run: |
@@ -627,7 +274,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: spend-${{ inputs.engine }}-live-live-p0
-          path: reports/junit_mqc_model_p0.xml
+          path: reports/junit_mqc_live_live_p0.xml
           retention-days: 1
       - uses: actions/upload-artifact@v6
         if: always()
@@ -638,8 +285,8 @@ jobs:
 
   live-live-p1:
     name: live -> live on ${{ inputs.engine }}, P1, release blocking, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, live-live-p0]
-    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
+    needs: [resolve, preconditions, calibration, live-live-p0]
+    if: ${{ !cancelled() && needs.preconditions.result == 'success' && needs.calibration.result == 'success' }}
     runs-on: ${{ inputs.os }}
     environment: live
     env:
@@ -679,7 +326,7 @@ jobs:
       - name: What the live bands before this one left of the ceiling
         id: spend
         shell: bash
-        run: python -m tools.spend_remaining --ceiling "${{ inputs.max_spend }}" --reports spent --earlier 4 --output "$GITHUB_OUTPUT"
+        run: python -m tools.spend_remaining --ceiling "${{ inputs.max_spend }}" --reports spent --earlier 1 --output "$GITHUB_OUTPUT"
       - name: Take the judge's calibration record from the default branch
         shell: bash
         run: |
@@ -712,7 +359,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: spend-${{ inputs.engine }}-live-live-p1
-          path: reports/junit_mqc_model_p1.xml
+          path: reports/junit_mqc_live_live_p1.xml
           retention-days: 1
       - uses: actions/upload-artifact@v6
         if: always()
@@ -723,8 +370,8 @@ jobs:
 
   live-live-lower:
     name: live -> live on ${{ inputs.engine }}, P2-P4, pass floor, judged by ${{ inputs.judge }}
-    needs: [resolve, preconditions, live-live-p1]
-    if: ${{ !cancelled() && needs.preconditions.result == 'success' }}
+    needs: [resolve, preconditions, calibration, live-live-p1]
+    if: ${{ !cancelled() && needs.preconditions.result == 'success' && needs.calibration.result == 'success' }}
     runs-on: ${{ inputs.os }}
     environment: live
     env:
@@ -764,7 +411,7 @@ jobs:
       - name: What the live bands before this one left of the ceiling
         id: spend
         shell: bash
-        run: python -m tools.spend_remaining --ceiling "${{ inputs.max_spend }}" --reports spent --earlier 5 --output "$GITHUB_OUTPUT"
+        run: python -m tools.spend_remaining --ceiling "${{ inputs.max_spend }}" --reports spent --earlier 2 --output "$GITHUB_OUTPUT"
       - name: Take the judge's calibration record from the default branch
         shell: bash
         run: |
@@ -790,7 +437,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: spend-${{ inputs.engine }}-live-live-lower
-          path: reports/junit_mqc_model_p2_p4.xml
+          path: reports/junit_mqc_live_live_p2_p4.xml
           retention-days: 1
       - uses: actions/upload-artifact@v6
         if: always()
@@ -801,28 +448,26 @@ jobs:
 
   report:
     name: report
-    needs: [resolve, preconditions, replay-replay-p0, replay-replay-p1, replay-replay-lower,
-            replay-live-p0, replay-live-p1, replay-live-lower, live-live-p0, live-live-p1, live-live-lower]
+    needs: [resolve, preconditions, calibration, live-live-p0, live-live-p1, live-live-lower]
     if: always()
     runs-on: ubuntu-26.04
     steps:
-      - name: Summarise which stage stopped, band by band
+      - name: Summarise the checks and the bands
         shell: bash
         run: |
           {
             echo "## The regression run on ${{ inputs.os }}"
             echo ""
-            echo "| Stage | Holds fixed | P0 | P1 | P2-P4 |"
-            echo "|---|---|---|---|---|"
-            echo "| replay -> replay | both replayed | ${{ needs.replay-replay-p0.result }} | ${{ needs.replay-replay-p1.result }} | ${{ needs.replay-replay-lower.result }} |"
-            echo "| replay -> live | candidate replayed | ${{ needs.replay-live-p0.result }} | ${{ needs.replay-live-p1.result }} | ${{ needs.replay-live-lower.result }} |"
-            echo "| live -> live | nothing | ${{ needs.live-live-p0.result }} | ${{ needs.live-live-p1.result }} | ${{ needs.live-live-lower.result }} |"
+            echo "| Job | Result |"
+            echo "|---|---|"
+            echo "| preconditions | ${{ needs.preconditions.result }} |"
+            echo "| calibration check, judge ${{ inputs.judge }} | ${{ needs.calibration.result }} |"
+            echo "| live -> live, P0 | ${{ needs.live-live-p0.result }} |"
+            echo "| live -> live, P1 | ${{ needs.live-live-p1.result }} |"
+            echo "| live -> live, P2-P4 | ${{ needs.live-live-lower.result }} |"
             echo ""
-            echo "**The first red stage is the attribution.** A stage that did not"
-            echo "run was skipped because a band below it failed, which is the"
-            echo "point: spending quota after a known break rediscovers it."
-            echo ""
-            echo "P0 and P1 are release blocking and P2-P4 answers to the pass"
-            echo "floor. Only live -> live reports a finding about the model, and per A2"
-            echo "a model regression never blocks a merge."
+            echo "A red check means nothing was measured and nothing was spent. P0"
+            echo "and P1 are release blocking and pass every case they selected;"
+            echo "P2-P4 answers to the pass floor, and a skip counts as not passed"
+            echo "in every band. Per A2 a model regression never blocks a merge."
           } >> "$GITHUB_STEP_SUMMARY"

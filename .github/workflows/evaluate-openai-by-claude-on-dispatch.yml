@@ -23,17 +23,14 @@
 # TO MAKE IT BEHAVE LIKE THE GEMINI-JUDGED RUN, add the schedule its caller
 # carries and the `workflow_run` dispatch from the probe, and rename this file
 # to `evaluate-openai-by-claude-scheduled.yml`, which is a paired change with
-# whatever dispatches it. **What that costs:** `replay -> live` spends one claude request
-# per judged case and nothing on candidates, since the responses are a
-# recording; `live -> live` spends on both. The monthly cap is $20 per provider, and a
-# second judge on every engine monthly is a second judge bill, not a second
-# candidate bill. Section 7.7.3.
+# whatever dispatches it. **What that costs:** `live -> live` spends on the
+# candidate and on one claude request per judged case. The monthly cap is $20
+# per provider, and a second judge on every engine monthly is a second judge
+# bill. Section 7.7.3.
 #
-# REPLAY -> REPLAY IS NOT REPEATED FOR A SECOND JUDGE. It replays both halves, so it
-# measures our code, and the code reading a stored judgement does not vary
-# with the engine that produced it. The project owner: "Since harness gets
-# tested on gemini, is there a point to retest the whole harness on a
-# different judge?" Section 7.7.1.
+# NO REPLAY RUNS HERE, since 2026-11-14. The regression run is live runs only,
+# after the preconditions and a check that claude's calibration is green;
+# replay -> replay is a machinery check every gate already runs. Section 7.9.
 name: evaluate-openai-by-claude-on-dispatch
 
 on:
