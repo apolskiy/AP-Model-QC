@@ -1,0 +1,36 @@
+{
+  "case_ref": "d777448006853a3e026392aac4fbbcfed2dc14db",
+  "code_ref": "dcb6e51d050eb7542cdd850eca92f156030c9e03",
+  "families": {
+    "ambiguity_discrimination": {
+      "held": true,
+      "identifier": "174607"
+    },
+    "code_comprehension": {
+      "held": true,
+      "identifier": "174608"
+    },
+    "output_shape": {
+      "held": true,
+      "identifier": "174609"
+    },
+    "premise_discrimination": {
+      "held": true,
+      "identifier": "174610"
+    },
+    "requirement_match": {
+      "held": true,
+      "identifier": "174611"
+    },
+    "source_fidelity": {
+      "held": true,
+      "identifier": "174612"
+    }
+  },
+  "judge_engine": "claude",
+  "judge_model": "claude-opus-5-5",
+  "judge_served_digest": "63d22347ddca7e1e",
+  "judge_served_version": "claude-opus-5-5",
+  "recorded": "2026-11-14",
+  "samples_digest": "6468b556c025622a"
+}

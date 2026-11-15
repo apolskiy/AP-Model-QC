@@ -1,0 +1,36 @@
+{
+  "case_ref": "a239af91d9a4eacce4027edde52a5fab5dfa930e",
+  "code_ref": "dcb6e51d050eb7542cdd850eca92f156030c9e03",
+  "families": {
+    "ambiguity_discrimination": {
+      "held": true,
+      "identifier": "174607"
+    },
+    "code_comprehension": {
+      "held": true,
+      "identifier": "174608"
+    },
+    "output_shape": {
+      "held": true,
+      "identifier": "174609"
+    },
+    "premise_discrimination": {
+      "held": true,
+      "identifier": "174610"
+    },
+    "requirement_match": {
+      "held": true,
+      "identifier": "174611"
+    },
+    "source_fidelity": {
+      "held": true,
+      "identifier": "174612"
+    }
+  },
+  "judge_engine": "gemini",
+  "judge_model": "gemini-4-argon",
+  "judge_served_digest": "915fb4abb1387b87",
+  "judge_served_version": "3.0",
+  "recorded": "2026-11-14",
+  "samples_digest": "6468b556c025622a"
+}
