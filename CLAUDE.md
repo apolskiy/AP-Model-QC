@@ -63,9 +63,6 @@ being repeated or context being lost across a session reset.
 | `CLAUDE_TASK.md` | **What is active now.** One row per item, removed when it closes |
 | `CLAUDE_LOG.md` | Changes and the reasoning behind them, in date order |
 
-**No tracked file records a verbatim prompt or who asked for what.** Those stay
-in the local working log, which is never committed and never shared.
-
 ## Read The Register First
 
 **`docs/model_document_register.md` names every tracked document in this repository and what each holds.** Read it before any documentation work and work through it on any review: it is the only complete list, and `MQC_CAS_UNI_115413` checks it against the repository in both directions.

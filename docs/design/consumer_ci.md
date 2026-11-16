@@ -900,8 +900,15 @@ preconditions job, so a skipped band leaves a conclusion that is still true.
 ### 3.12.5 The one release, and how a skip names its cause
 
 Added 2026-10-08. Section 3.12.2 holds that a blocking band answers for every
-case it selected and that quarantine excuses nothing. **There is exactly one
-exception and it is not quarantine.**
+case it selected and that quarantine excuses nothing.
+
+**Retired 2026-11-16: no skip is released.** A quarantined case is deselected
+and never reaches a band (section 3.12.2), so the dispensation release below
+had nothing left to release, and releasing any other skip would turn a skip
+into a pass. `assess_blocking` no longer reads `release_accepted_in`, which
+stays in an entry as a record only (harness section 4.6.14), and `115717` is
+retired. The skip phrases below still hold. The paragraphs that follow are
+kept as they were decided.
 
 **A recorded dispensation releases the skip and the line names it.** Where the
 quarantine entry carries `release_accepted_in`, product management has announced
@@ -1138,7 +1145,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115729` | N | `a_replay_store_refreshed_in_part_is_reported` |
 | `115799` | N | `a_judgement_left_behind_by_a_refresh_is_reported` (9.4.3.1.1) |
 | `115730` | N | `a_blocking_band_passing_on_unmeasured_cases_is_reported` |
-| `115717` | P | `a_blocking_band_releases_only_on_a_recorded_dispensation` |
+| ~~`115717`~~ | | ~~`a_blocking_band_releases_only_on_a_recorded_dispensation`~~. **Retired 2026-11-16**: no skip is released (section 3.12.5). `115874` replaces it. The identifier stays retired |
 | `115718` | N | `a_document_naming_no_repository_is_reported` |
 | `115719` | N | `a_case_block_disagreeing_with_its_module_is_reported` |
 | `115720` | N | `a_floor_step_skipped_on_a_red_band_is_reported` |
@@ -1293,7 +1300,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 196 cases, 138 negative, 47 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 200 cases, 141 negative, 48 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1723,6 +1730,10 @@ it.
 
 ### The quarantine inherits downwards
 
+**Superseded 2026-11-16 by section 4.14.2**: a quarantined foundation's
+dependents run and count unless somebody quarantines them by name. The rule
+below is kept as it was decided.
+
 **When a base is quarantined, its dependents are deferred with it**, carrying
 the same reason and the same expiry. A bare skip beside a quarantined base
 states the consequence without the cause, and a reader then has to reconstruct
@@ -1758,6 +1769,64 @@ cheaper.
 **So a vendor report can state the cost of one defect.** "Fixing `154100`
 unblocks four cases" is a different and better sentence than "four cases
 skipped", and it is available before anything is run.
+
+#### 4.14.2 A quarantined foundation's dependents run, unless quarantined by name
+
+Added 2026-11-16, superseding "The quarantine inherits downwards" above.
+
+**What was wrong.** Quarantining a foundation without its dependents refused
+the whole run at collection: deselection dropped the foundation, and the
+harness then found dependents naming a case nothing collected. Had the run got
+past collection, every dependent would have skipped behind a foundation that
+did not run, and a skip counts as not passed in every band. **Why.** The
+cascade treated a foundation as held or not held, and a quarantined one is
+neither; and the design here had dependents inherit the quarantine, which
+nothing built.
+
+**The rule, at every priority.**
+
+| A dependent of a quarantined foundation | |
+|---|---|
+| Quarantined with it | **Only on an explicit request**, by `tools/quarantine.py --with-dependents` naming the foundation, or by editing the file |
+| Otherwise | **Runs, and counts in its band like any case.** A failure is a failure |
+| Passing | **Reported as a question about the foundation**: the case resting on it held, so the foundation is investigated |
+
+**Collection.** After deselecting the quarantined cases,
+`quarantine_support.deselect_quarantined_cases` passes the case number of every
+case in force in the engine's quarantine file to the harness's
+`set_aside_foundations`, whether or not this band collected it, because a later
+band's dependent rests on a foundation an earlier band dropped (harness
+`cmn_verdict_and_cli.md` section 10.28.7).
+
+**The report.** At session end, a dependent that passed while a foundation it
+rests on is set aside gets one line:
+
+```
+Investigate the foundation: MQC_EVL_SEC_154104_... passed while its foundation 154100 is quarantined
+```
+
+**The tool offers, and the default is no.** `tools/quarantine.py` lists, for
+each quarantined foundation, its dependents that are not quarantined, each
+reading "runs and counts". `--with-dependents <case number>`, repeatable, adds
+an entry for each dependent of that foundation not already quarantined, with
+the foundation's ticket, dates, observed model and `ends_on_model_change`, and
+the reason "its foundation <number> is quarantined", so removing the
+foundation's entry points to the entries that followed it. **Nothing is added
+without the flag.** The dependents it adds are written after the
+re-observation, not re-observed by it: somebody asked for them by name.
+
+**What it costs.** A dependent left in may fail for its foundation's defect
+rather than its own, and that failure counts. The rule accepts it: an explicit
+decision is the only thing that holds a case out of a run, and a dependent
+that passes is the evidence a foundation's quarantine is worth re-examining.
+
+| ID | Cat | Behavior |
+|---|---|---|
+| `115870` | N | `a_quarantined_foundation_is_set_aside_for_every_band` |
+| `115871` | P | `a_dependent_passing_on_a_quarantined_foundation_is_reported` |
+| `115872` | N | `the_tool_adds_no_dependent_unless_asked` |
+| `115873` | P | `the_tool_quarantines_the_dependents_it_is_asked_for` |
+| `115874` | N | `a_blocking_band_skip_is_never_released` |
 
 ### 4.15 The session did not survive the run, and the ceiling stopped nothing
 

@@ -9294,3 +9294,63 @@ states 257 requirements, 291 preconditions and 1140 harness test cases; the
 
 **Left open.** The dispensation path, `assess_blocking` with `115717` and
 `115730`, is unchanged and unreachable.
+
+## 2026-11-16: The rule against prompts and attribution in tracked files is withdrawn
+
+**A) What was wrong.** `CLAUDE.md` stated that no tracked file records a
+verbatim prompt or who asked for a change, while 203 lines in 25 files here
+name the project owner and 30 quote a prompt. **B) Why.** The rule came after
+most of those lines and nothing checked it.
+
+**What changed.** The rule is withdrawn rather than enforced, a sweep being out
+of proportion to what it would buy; `CLAUDE.md` no longer states it. The
+harness governance changes with it (harness `CLAUDE_LOG.md`, same date).
+Existing attributions and quotes stay as written.
+
+## 2026-11-16: Fixed a quarantined foundation taking its dependents out of the run
+
+**A) What was wrong.** Collection deselected a quarantined case, and its
+dependents then skipped in the same band or refused the run in a later one.
+`tools/band_floor.py` could also release a blocking band's skip on a recorded
+dispensation, so a dependent left out could clear a red P0 or P1. **B) Why.**
+The harness cascade knew nothing of a quarantine, and the dispensation was a
+release path no ruling still supported.
+
+**The ruling.** A quarantined foundation does not quarantine its dependents.
+The quarantine tool offers to, the default is no, and only `--with-dependents`
+adds them. A dependent not quarantined runs and counts; one that passes opens
+an investigation of its foundation. A skip still acts on the floor, and
+nothing releases it.
+
+**What changed.** `deselect_quarantined_cases` passes the number of every
+in-force quarantined case in the suite to the harness's
+`set_aside_foundations`, in every band, not only the band that dropped one.
+`conftest.py` notes each call-phase pass resting on a set-aside foundation and
+prints "Investigate the foundation: ..." before the counts.
+`tools/quarantine.py` gained `build_parser`, `plan_dependents` and
+`--with-dependents`: a named foundation's dependents are added with its ticket,
+dates, observed model and model-change flag, the reason "its foundation <n> is
+quarantined" and no release copied, and every other dependent is listed as
+running and counting. `tools/band_floor.py` lost `dispensed`,
+`_released_skips`, `_declared_dispensations` and the unused
+`_quarantined_skips`. Case `115717` was retired, and `MQC_REQ_CAS_CI_0040` and
+`0042` list it as retired. Design `consumer_ci.md` sections 4.14.2 and
+3.12.5, requirements `MQC_REQ_CAS_CI_0098` and `0099`, cases `115870` to
+`115874`.
+
+**Smoke run.** With `134000` quarantined for gemini on replay, its dependents
+`134001` and `134002` ran and passed, and both "Investigate the foundation"
+lines printed. The temporary quarantine file was removed afterwards.
+
+**Injection.** Nine defects here, nine caught, each exiting 3: no held number
+set aside, held cases set aside only when this band dropped one, a failed
+dependent raising a question, the session never noting a report, the tool
+adding dependents nobody asked for, the flag defaulting to a foundation, an
+added dependent copying the release decision, a quarantined dependent added
+twice, and a blocking band ignoring its skips. Five more in the harness, all
+caught. Baselines exit 0 in both repositories after restore.
+
+**Verified.** Harness: unit 1115 of 1115, system 24 of 24, exit 0. Model
+Repository preconditions: unit 295 of 295, 0 skipped, exit 0; pylint exit 0.
+No graded band ran: no engine was dispatched live, and replay bands are
+unchanged by this change apart from the smoke run above.

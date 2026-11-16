@@ -40,6 +40,25 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A quarantined foundation's dependents run and count unless quarantined by name, 2026-11-16
+
+**Why.** A quarantined foundation's dependents were skipped with it, and in a
+later band they refused the run because their foundation was unknown. A skip in
+a blocking band could also be released on a recorded dispensation, so a
+dependent left out could turn a red band green.
+
+**What changed.** Collection sets every in-force quarantined case aside as a
+foundation through the harness's `set_aside_foundations`, in every band, so its
+dependents run and count. A dependent that passes prints "Investigate the
+foundation" before the run's counts. `tools/quarantine.py` gained
+`--with-dependents`, which quarantines a named foundation's dependents with its
+ticket and dates; without the flag it lists each dependent left in and adds
+nothing. `tools/band_floor.py` no longer releases a skip on a dispensation, and
+case `115717` was retired. `consumer_ci.md` sections 4.14.2 and 3.12.5 hold the
+design. Requirements `MQC_REQ_CAS_CI_0098` and `0099` and cases `115870` to
+`115874` were added. The README states 259 requirements, 295 preconditions and
+1143 harness test cases.
+
 ### A run holds out only the quarantined cases whose entry is in force, 2026-11-15
 
 **Why.** Collection deselected the case of every entry in an engine's

@@ -3,7 +3,7 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-11-15
+Last updated: 2026-11-16
 
 This file contains the pytest hooks for the case suite. They declare the
 execution flags, record what the run was invoked with, adopt the carried
@@ -339,6 +339,11 @@ def pytest_runtest_makereport(item: pytest.Item, call: Any) -> Any:
     # reports from setup, and recording only the call phase left the next link
     # with no entry to read. Design section 10.28.5.
     record_from_report(item, outcome.get_result())
+    # A DEPENDENT THAT PASSED ON A QUARANTINED FOUNDATION raises a question
+    # about the foundation (`consumer_ci.md` section 4.14.2).
+    importlib.import_module("tests.cases.quarantine_support").note_foundation_question(
+        item, outcome.get_result()
+    )
     # AND THE RECORD REACHES THE ARTIFACT. Everything was built and
     # nothing published it: a real result carried empty parameters and a
     # severity label, so a collector could not say which engine produced
@@ -458,5 +463,10 @@ def pytest_terminal_summary(
             broken=sum(broken),
         ),
     )
-    for line in [*lines, *broken_detail_lines(stats)]:
+    # THE QUESTIONS BEFORE THE COUNTS, which stay the last lines (harness
+    # `code-style.md` section 7.1).
+    questions = importlib.import_module(
+        "tests.cases.quarantine_support"
+    ).foundation_questions()
+    for line in [*questions, *lines, *broken_detail_lines(stats)]:
         terminalreporter.write_line(line)

@@ -3,12 +3,15 @@
 """The quarantine tool, which re-runs an engine's quarantined cases and rewrites its file.
 
 Created: 2026-10-02
-Last updated: 2026-11-15
+Last updated: 2026-11-16
 
 This file contains ``main``, which loads ``config/quarantine/<engine>.yaml``,
 re-observes every case in it, lets the harness decide what each entry becomes
-and writes the file back, and ``parse_as_of``, which reads the date the run is
-stamped with. ``--dry-run`` prints the changes and writes nothing.
+and writes the file back; ``build_parser``, its arguments; ``plan_dependents``,
+which adds the dependents of a quarantined foundation only where
+``--with-dependents`` names it and lists every other dependent left in; and
+``parse_as_of``, which reads the date the run is stamped with. ``--dry-run``
+prints the changes and writes nothing.
 
 An operator runs it by hand, normally live with a spend ceiling. The file it
 rewrites is the quarantine list collection reads, so an entry it keeps holds
@@ -16,7 +19,7 @@ its case out of the next run while the entry is in force, and an entry it
 drops no longer does. ``render`` writes each entry with the day its hold began
 and whether a model change ends it.
 
-Specified by ``docs/design/consumer_ci.md`` section 4.14, against harness
+Specified by ``docs/design/consumer_ci.md`` sections 4.14 and 4.14.2, against harness
 ``cmn_verdict_and_cli.md`` sections 4.6.5 and 4.6.10.
 
 **The decision is the harness's and the running is ours.** Re-observing needs
@@ -36,21 +39,26 @@ legs that run in parallel.
 
 import argparse
 import logging
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, Final, Optional
+from typing import Any, Final, Mapping, Optional
 
 import yaml
 
+from cmn.pytest_support import case_identifier
 from cmn.quarantine_file import load_quarantine_for
 from cmn.quarantine import DROPPED, STAMPED, UNDECIDED, QuarantineEntry, reconcile
+from ingestion.cases import build_case_id
 
 from tests.cases.graded_support import (
     dispatch_session,
     observe_repeatedly,
     repository_root,
 )
+from tests.cases.quarantine_support import declared_dependents
+from tests.cases.suite_support import case_rules_from_suite
 
 logger = logging.getLogger(__name__)
 
@@ -228,16 +236,94 @@ def parse_as_of(value: str) -> date:
         ) from error
 
 
-def main(argv: Optional[list[str]] = None) -> int:
-    """Re-observe one engine's quarantined cases and return an exit code.
+def plan_dependents(
+    entries: list[QuarantineEntry],
+    pairs: Mapping[str, tuple[str, str]],
+    dependents: Mapping[str, list[str]],
+    requested: frozenset[str],
+) -> tuple[list[QuarantineEntry], list[str]]:
+    """Return the dependent entries asked for, and a line for each dependent left in.
+
+    A dependent of a quarantined foundation is added only where ``requested``
+    names that foundation, carrying its ticket, dates, observed model and
+    model-change flag; any other dependent not quarantined is listed as running
+    and counting. Design: ``consumer_ci.md`` section 4.14.2.
 
     Args:
-        argv (Optional[list]): Arguments, for calling in-process from a case.
+        entries (list[QuarantineEntry]): The entries the file holds.
+        pairs (Mapping): Case name to the task and rule it dispatches.
+        dependents (Mapping): Foundation case number to the names resting on it.
+        requested (frozenset[str]): The foundation case numbers whose
+            dependents are to be quarantined.
 
     Returns:
-        int: ``0`` when every entry was decided, ``1`` when any was left
-        undecided because its case produced no observations, ``4`` when the
-        engine's file names nothing to re-observe.
+        tuple: The entries to add, and one line per dependent left in or not
+        quarantinable.
+    """
+    held = {entry.case_id for entry in entries}
+    number_of = {
+        build_case_id(*pair): case_identifier(name) for name, pair in pairs.items()
+    }
+    added: list[QuarantineEntry] = []
+    listed: list[str] = []
+    for entry in entries:
+        foundation = number_of.get(entry.case_id)
+        if not foundation:
+            continue
+        for name in dependents.get(foundation, []):
+            pair = pairs.get(name)
+            if pair is None:
+                listed.append(
+                    f"{name} rests on quarantined {foundation} and dispatches no "
+                    f"corpus case, so it cannot be quarantined"
+                )
+                continue
+            case_id = build_case_id(*pair)
+            if case_id in held:
+                continue
+            if foundation in requested:
+                added.append(replace(
+                    entry, case_id=case_id, release_accepted_in="",
+                    reason=f"its foundation {foundation} is quarantined",
+                ))
+                held.add(case_id)
+            else:
+                listed.append(
+                    f"{name} rests on quarantined {foundation} and is not "
+                    f"quarantined, so it runs and counts"
+                )
+    return added, listed
+
+
+def _with_requested_dependents(
+    entries: list[QuarantineEntry], requested: list[str]
+) -> list[QuarantineEntry]:
+    """Return the entries with the requested dependents added, logging each decision.
+
+    Args:
+        entries (list[QuarantineEntry]): The entries surviving re-observation.
+        requested (list[str]): The foundation case numbers ``--with-dependents`` named.
+
+    Returns:
+        list[QuarantineEntry]: The entries, then those added.
+    """
+    root = repository_root()
+    added, listed = plan_dependents(
+        entries, case_rules_from_suite(root),
+        declared_dependents(root / "tests" / "cases"), frozenset(requested),
+    )
+    for line in listed:
+        logger.info("%s", line)
+    for entry in added:
+        logger.info("%s: quarantined with its foundation, %s", entry.case_id, entry.reason)
+    return [*entries, *added]
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """Return the tool's argument parser.
+
+    Returns:
+        argparse.ArgumentParser: The parser ``main`` reads its arguments with.
     """
     parser = argparse.ArgumentParser(
         prog="quarantine",
@@ -262,7 +348,26 @@ def main(argv: Optional[list[str]] = None) -> int:
         "--dry-run", action="store_true",
         help="Print what would change and write nothing",
     )
-    parsed = parser.parse_args(argv)
+    parser.add_argument(
+        "--with-dependents", action="append", default=[], metavar="CASE_NUMBER",
+        help="Also quarantine the dependents of this quarantined foundation; "
+             "repeatable. Without it no dependent is added",
+    )
+    return parser
+
+
+def main(argv: Optional[list[str]] = None) -> int:
+    """Re-observe one engine's quarantined cases and return an exit code.
+
+    Args:
+        argv (Optional[list]): Arguments, for calling in-process from a case.
+
+    Returns:
+        int: ``0`` when every entry was decided, ``1`` when any was left
+        undecided because its case produced no observations, ``4`` when the
+        engine's file names nothing to re-observe.
+    """
+    parsed = build_parser().parse_args(argv)
 
     config_dir = parsed.config_dir or (repository_root() / "config")
     entries = load_quarantine_for(config_dir, parsed.engine)
@@ -282,6 +387,10 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     for case_id in sorted(actions):
         logger.info("%s: %s", case_id, actions[case_id])
+
+    # DEPENDENTS AFTER THE RE-OBSERVATION, and only those asked for by name:
+    # quarantining one is an explicit decision (section 4.14.2).
+    remaining = _with_requested_dependents(remaining, parsed.with_dependents)
     if not resolved_model:
         logger.warning(
             "The run resolved no single model, so every surviving entry was "

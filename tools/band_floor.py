@@ -3,15 +3,15 @@
 """The band check, which decides from a band's JUnit XML whether that band passed.
 
 Created: 2026-10-01
-Last updated: 2026-11-15
+Last updated: 2026-11-16
 
 This file contains ``assess``, which compares a lower-priority band's pass rate
 against the project's pass floor, ``assess_blocking``, which requires a release
 blocking band to have measured and passed every case it selected,
 ``run_status_problem``, which says whether the status the band's run reported
 leaves a rate worth reading, and ``main``, the command line they run behind.
-Skips are explained by cause, and a skip the engine's quarantine file or a
-recorded dispensation excuses is counted apart.
+Skips are explained by cause, and no skip is excused: a quarantined case is
+deselected before any band runs.
 
 The band composite action runs it after each band's pytest step, with
 ``--blocking --engine`` for P0 and P1 and without them for the lower band, and
@@ -54,7 +54,6 @@ from xml.etree import ElementTree
 
 from cmn.band_summary import _QUARANTINE_SKIP, skip_detail_lines
 from cmn.quarantine_file import load_quarantine_for
-from cmn.quarantine import released_by_dispensation
 from cmn.verdict import Thresholds
 from cmn.threshold_domain import check_rate
 
@@ -139,7 +138,6 @@ def _counts(report: Path) -> tuple[int, int, int, int]:
 def assess_blocking(
     report: Path,
     quarantined: frozenset[str] = frozenset(),
-    dispensed: Optional[dict[str, str]] = None,
 ) -> tuple[int, str]:
     """Return the exit code for a release blocking band and why.
 
@@ -147,21 +145,15 @@ def assess_blocking(
     A skip is not a pass and not a failure; it is an absence, and a band that
     exists to block a release cannot report green on an absence.
 
-    **Whatever caused the skip.** A foundation that did not hold, a fixture gone
-    stale, a budget exhausted, a quarantine entry: each means the case was not
-    measured, which is the one answer a blocking band may not round up.
-
-    **A recorded dispensation is the one release**, and the message names the
-    case and the reference so a reader can go and read what was agreed. Harness
-    design section 4.6.13.
+    **Whatever caused the skip, and nothing releases one.** A foundation that
+    did not hold, a fixture gone stale, a budget exhausted: each means the case
+    was not measured. Design: ``consumer_ci.md`` sections 3.12.2 and 3.12.5.
 
     Args:
         report (Path): The band's JUnit XML.
-        quarantined (frozenset[str]): Case identifiers declared quarantined.
-            They do not leave the denominator: quarantine saves the run's cost
-            and buys nothing else.
-        dispensed (Optional[dict]): Each case product management has accepted a
-            release with, mapped to the tracker reference announcing it.
+        quarantined (frozenset[str]): Case identifiers declared quarantined,
+            which only name a skip's cause: a quarantined case is deselected
+            and never reaches a band.
 
     Returns:
         tuple: The exit code and a message naming the figures behind it.
@@ -184,16 +176,9 @@ def assess_blocking(
             "band that blocks a release",
         )
 
-    # QUARANTINE DOES NOT EXCUSE A BLOCKING BAND. It exists to stop spending
-    # on a case already known to fail, not to let one release: a quarantined
-    # P0 or P1 still blocks. The project owner's correction, 2026-10-07;
-    # `consumer_ci.md` section 3.12.2.
-    #
-    # A RECORDED DISPENSATION IS THE ONE EXCEPTION, and it is an exception
-    # rather than a mechanism: it is written only once product management has
-    # announced the decision in the tracker (harness section 4.6.13).
-    released = _released_skips(report, dispensed or {})
-    unmeasured = skipped - len(released)
+    # NO SKIP IS RELEASED. A quarantined case is deselected and never reaches
+    # here, so every skip is a case this band selected and did not measure
+    # (`consumer_ci.md` section 3.12.5).
     passed = selected - failures - skipped
     executed = selected - skipped
 
@@ -209,11 +194,6 @@ def assess_blocking(
         f"{passed} passed", f"{failures} failed", f"{skipped} skipped",
     ]
     causes = _skip_causes(report, quarantined)
-    if released:
-        counted.append(
-            f"{len(released)} released on a recorded dispensation "
-            f"({'; '.join(released)})"
-        )
     # THE COUNTS FIRST, THEN ONE LINE PER CAUSE. A reader needs the shape of
     # the band before its reasons (harness design section 7.11.3).
     # ONE FACT PER LINE. The verdict after a cause carrying its own colon
@@ -225,7 +205,7 @@ def assess_blocking(
     # section 7.1). What a blocking band answers for is in `consumer_ci.md`
     # section 3.12.2, and a failing line names its cause because the cause is
     # what a reader acts on.
-    if failures or unmeasured:
+    if failures or skipped:
         return _EXIT_BELOW_FLOOR, f"{detail}\nbelow the blocking floor"
     return _EXIT_GREEN, detail
 
@@ -259,58 +239,6 @@ def _skip_causes(report: Path, quarantined: frozenset[str]) -> list[str]:
             reason = f"{_QUARANTINE_SKIP}: declared for this engine"
         skips.append((name, reason))
     return skip_detail_lines(skips)
-
-
-def _released_skips(report: Path, dispensed: dict[str, str]) -> list[str]:
-    """Return one phrase per skipped case a recorded dispensation releases.
-
-    **Matched on the identifier inside the test name**, because a JUnit name
-    carries the whole callable and a dispensation names the case.
-
-    Args:
-        report (Path): The band's JUnit XML.
-        dispensed (dict): Case identifier to the tracker reference.
-
-    Returns:
-        list[str]: ``"<case> per <reference>"`` for each, sorted so a message
-        does not depend on report order.
-    """
-    if not dispensed:
-        return []
-    released: list[str] = []
-    for case in ElementTree.parse(report).iter("testcase"):
-        if case.find("skipped") is None:
-            continue
-        name = str(case.get("name", ""))
-        for case_id, reference in dispensed.items():
-            if case_id and case_id in name:
-                released.append(f"{case_id} per {reference}")
-    return sorted(released)
-
-
-def _quarantined_skips(report: Path, quarantined: frozenset[str]) -> int:
-    """Return how many skipped cases were declared quarantined.
-
-    **Matched on the identifier inside the test name**, because a JUnit name
-    carries the whole callable and a quarantine entry names the case.
-
-    Args:
-        report (Path): The band's JUnit XML.
-        quarantined (frozenset[str]): The declared identifiers.
-
-    Returns:
-        int: How many skips a declaration excuses.
-    """
-    if not quarantined:
-        return 0
-    excused = 0
-    for case in ElementTree.parse(report).iter("testcase"):
-        if case.find("skipped") is None:
-            continue
-        name = str(case.get("name", ""))
-        if any(entry and entry in name for entry in quarantined):
-            excused += 1
-    return excused
 
 
 def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
@@ -374,30 +302,6 @@ def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
     return _EXIT_GREEN, f"the band cleared its floor: {detail}"
 
 
-def _declared_dispensations(engine: str) -> dict[str, str]:
-    """Return each case a recorded release decision excuses, and the reference.
-
-    **An unconfirmed entry carries none**, which the harness decides: an entry
-    without an observed date or model is our bookkeeping failing, and a
-    dispensation on top of that accepts a release against a finding whose
-    expiry cannot be evaluated.
-
-    Args:
-        engine (str): Which engine ran, naming the file.
-
-    Returns:
-        dict[str, str]: Case identifier to tracker reference, empty where none
-        is recorded.
-    """
-    if not engine:
-        return {}
-    return {
-        str(entry.case_id): released_by_dispensation(entry)
-        for entry in load_quarantine_for(Path("config"), engine)
-        if released_by_dispensation(entry)
-    }
-
-
 def _declared_quarantine(engine: str) -> frozenset[str]:
     """Return the case identifiers quarantined for one engine.
 
@@ -442,13 +346,13 @@ def main(argv: Optional[list[str]] = None) -> int:
         action="store_true",
         help=(
             "Assess a release blocking band: every case selected was measured "
-            "and passed, quarantined cases excepted"
+            "and passed"
         ),
     )
     parser.add_argument(
         "--engine",
         default="",
-        help="Which engine ran, naming the quarantine file to honour",
+        help="Which engine ran, naming the quarantine file a skip's cause is read from",
     )
     parser.add_argument(
         "--run-status",
@@ -470,9 +374,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     if parsed.blocking:
         code, message = assess_blocking(
-            parsed.report,
-            _declared_quarantine(parsed.engine),
-            _declared_dispensations(parsed.engine),
+            parsed.report, _declared_quarantine(parsed.engine)
         )
     else:
         code, message = assess(parsed.report, parsed.floor)
