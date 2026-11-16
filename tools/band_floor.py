@@ -53,7 +53,7 @@ from typing import Final, Optional
 from xml.etree import ElementTree
 
 from cmn.band_summary import _QUARANTINE_SKIP, skip_detail_lines
-from cmn.config import load_quarantine_for
+from cmn.quarantine_file import load_quarantine_for
 from cmn.quarantine import released_by_dispensation
 from cmn.verdict import Thresholds
 from cmn.threshold_domain import check_rate

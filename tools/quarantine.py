@@ -3,7 +3,7 @@
 """The quarantine tool, which re-runs an engine's quarantined cases and rewrites its file.
 
 Created: 2026-10-02
-Last updated: 2026-10-21
+Last updated: 2026-11-15
 
 This file contains ``main``, which loads ``config/quarantine/<engine>.yaml``,
 re-observes every case in it, lets the harness decide what each entry becomes
@@ -11,9 +11,10 @@ and writes the file back, and ``parse_as_of``, which reads the date the run is
 stamped with. ``--dry-run`` prints the changes and writes nothing.
 
 An operator runs it by hand, normally live with a spend ceiling. The file it
-rewrites is the quarantine list the band check honours, so an entry it keeps
-still excuses that case in a release blocking band, and an entry it drops no
-longer does.
+rewrites is the quarantine list collection reads, so an entry it keeps holds
+its case out of the next run while the entry is in force, and an entry it
+drops no longer does. ``render`` writes each entry with the day its hold began
+and whether a model change ends it.
 
 Specified by ``docs/design/consumer_ci.md`` section 4.14, against harness
 ``cmn_verdict_and_cli.md`` sections 4.6.5 and 4.6.10.
@@ -42,7 +43,7 @@ from typing import Any, Final, Optional
 
 import yaml
 
-from cmn.config import load_quarantine_for
+from cmn.quarantine_file import load_quarantine_for
 from cmn.quarantine import DROPPED, STAMPED, UNDECIDED, QuarantineEntry, reconcile
 
 from tests.cases.graded_support import (
@@ -160,7 +161,7 @@ def _observe_entries(
     return outcomes, next(iter(served)) if len(served) == 1 else ""
 
 
-def _render(entries: list[QuarantineEntry]) -> str:
+def render(entries: list[QuarantineEntry]) -> str:
     """Render the entries back as the file they came from.
 
     An absent date or model is written as nothing rather than as a null, so an
@@ -177,6 +178,12 @@ def _render(entries: list[QuarantineEntry]) -> str:
         record: dict[str, Any] = {"case_id": entry.case_id, "reason": entry.reason}
         if entry.quarantined_on is not None:
             record["quarantined_on"] = entry.quarantined_on.isoformat()
+        # THE DAY THE HOLD BEGAN, which a re-stamp never moves. Section 3.12.2.
+        if entry.originally_quarantined_on is not None:
+            record["originally_quarantined_on"] = (
+                entry.originally_quarantined_on.isoformat()
+            )
+        record["ends_on_model_change"] = entry.ends_on_model_change
         if entry.observed_model:
             record["observed_model"] = entry.observed_model
         if entry.ticket:
@@ -189,9 +196,10 @@ def _render(entries: list[QuarantineEntry]) -> str:
     return (
         "# SPDX-FileCopyrightText: 2026 Aleksandr Polskiy\n"
         "# SPDX-License-Identifier: MIT\n"
-        "# Written by tools/quarantine.py. An entry expires when the resolved\n"
-        "# model changes or the 21-day window lapses; see consumer_ci.md\n"
-        "# section 4.14 and harness cmn_verdict_and_cli.md section 4.6.\n"
+        "# Written by tools/quarantine.py. An entry holds its case out until\n"
+        "# its 21-day window lapses, or the model changes where\n"
+        "# ends_on_model_change is true; see consumer_ci.md sections 3.12.2\n"
+        "# and 4.14 and harness cmn_verdict_and_cli.md section 4.6.15.\n"
         + body
     )
 
@@ -283,9 +291,9 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     target = config_dir / "quarantine" / f"{parsed.engine}.yaml"
     if parsed.dry_run:
-        logger.info("Dry run, %s left unwritten:\n%s", target, _render(remaining))
+        logger.info("Dry run, %s left unwritten:\n%s", target, render(remaining))
     else:
-        target.write_text(_render(remaining), encoding=_ENCODING, newline="\n")
+        target.write_text(render(remaining), encoding=_ENCODING, newline="\n")
         logger.info("Wrote %s, %d entries remain", target, len(remaining))
 
     undecided = sorted(

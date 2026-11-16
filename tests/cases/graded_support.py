@@ -10,7 +10,8 @@ response with the harness's ``evaluate_observation`` and records it, and
 ``observe_repeatedly``, which does so ``observation_count`` times. Beside them sit the
 corpus readers (``shipped_corpus``, ``shipped_cases``, ``case_for``, ``task_material``),
 the run's plans (``dispatch_plan``, ``dispatch_session``, ``judgement_plan``,
-``judge_binding``), ``judge_stopped``, ``quarantined_cases``, and the suite
+``judge_binding``), ``judge_stopped``, ``held_cases`` and ``quarantined_cases``,
+which read which quarantine entries are in force, and the suite
 readers ``case_rules_from_suite`` and ``case_families_from_suite``. The fields
 an observation records are built in ``observation_records``.
 
@@ -30,6 +31,7 @@ decides, and a case cannot quietly spend quota.
 """
 
 import logging
+from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Final, Optional
@@ -38,9 +40,8 @@ import pytest
 
 from cmn.observations import further_observations
 from cmn.steps import entering
-from cmn.pytest_support import corpus_selection
+from cmn.pytest_support import corpus_selection, rostered_model
 from cmn.config import (
-    load_quarantine_for,
     load_engines,
     packaged_config_root,
     packaged_roster_path,
@@ -49,6 +50,8 @@ from cmn.emission import record_observation
 from cmn.observations import assemble_observation
 from cmn.options import resolve_judge_mode
 from cmn.pricing import load_price_table
+from cmn.quarantine import QUARANTINE_WINDOW_DAYS, in_force_cases
+from cmn.quarantine_file import load_quarantine_for
 from cmn.prerequisites import record_rule_set_hash
 from cmn.project_clock import project_today
 from evaluation.isolation import UnauthoredMaterial
@@ -666,9 +669,29 @@ def observe(
     return result
 
 
+def held_cases(config_dir: Path, engine: str, as_of: date, model: str) -> frozenset[str]:
+    """Return the case identifiers whose quarantine entry is in force for one engine.
+
+    Design: ``consumer_ci.md`` section 3.12.2.
+
+    Args:
+        config_dir (Path): The directory holding ``quarantine/<engine>.yaml``.
+        engine (str): Which engine this run measures.
+        as_of (date): The date the windows are read on.
+        model (str): The engine's rostered model, the form ``observed_model``
+            is stamped in.
+
+    Returns:
+        frozenset[str]: The identifiers, empty where nothing is in force.
+    """
+    return in_force_cases(
+        load_quarantine_for(config_dir, engine), as_of, model, QUARANTINE_WINDOW_DAYS,
+    )
+
+
 @lru_cache(maxsize=8)
 def _quarantine_for(engine: str) -> frozenset[str]:
-    """Return the case identifiers quarantined for one engine.
+    """Return the case identifiers held out of this run for one engine.
 
     **Cached, because every observation asks.** The file does not change
     within a run, and reading it per observation would read it hundreds of
@@ -678,12 +701,13 @@ def _quarantine_for(engine: str) -> frozenset[str]:
         engine (str): Which engine this run measures.
 
     Returns:
-        frozenset[str]: The identifiers, empty where nothing is quarantined.
+        frozenset[str]: The identifiers, empty where no entry is in force.
     """
     if not engine:
         return frozenset()
-    entries = load_quarantine_for(repository_root() / "config", engine)
-    return frozenset(str(entry.case_id) for entry in entries)
+    return held_cases(
+        repository_root() / "config", engine, project_today(), rostered_model(engine)
+    )
 
 
 def quarantined_cases(config: Any) -> frozenset[str]:

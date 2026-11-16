@@ -649,6 +649,42 @@ quarantined case does not execute and does not count. The paragraphs below
 dated 2026-10-07 and 2026-10-08 built quarantine as a skip that the band then
 counted, and are corrected by this one where they disagree with it.
 
+##### Only an entry in force holds its case out
+
+Added 2026-11-15. **What was wrong:** collection deselected the case of every
+entry in `config/quarantine/<engine>.yaml` and never asked whether the entry
+had lapsed, so an expired entry kept its case out of the run. **Why:** expiry
+was read only by the harness verdict's V5, after the run, and nothing at
+collection read it.
+
+`graded_support.held_cases` asks the harness which entries are in force
+(`cmn.quarantine.in_force_cases`, harness `cmn_verdict_and_cli.md` section
+4.6.15) on the project's UTC date and for the run engine's rostered model,
+which is the form `tools/quarantine.py` stamps as `observed_model`, and
+`conftest.py` deselects only those:
+
+| The case's entry | The case |
+|---|---|
+| Within its window, or extended by setting `quarantined_on` to the current date | **Deselected** |
+| Past its window, or observed on a model the roster no longer names, where the entry ends on a model change | **Collected**, and counted in its band |
+| Removed from the file | **Collected** |
+
+**Quarantining is explicit.** A person runs `tools/quarantine.py` or edits the
+file; nothing re-quarantines a case inside a run, and an expired case that
+fails again fails in its band until someone quarantines it again, with a
+ticket. Ticket-driven extension is documented by the harness as an option and
+not supported here. `tools/quarantine.py` writes `originally_quarantined_on` and
+`ends_on_model_change` with every entry, so a re-stamp keeps the day the hold
+began.
+
+| ID | Cat | Behavior |
+|---|---|---|
+| `115865` | P | `an_extended_quarantine_case_is_deselected` |
+| `115866` | N | `an_expired_quarantine_case_is_collected` |
+| `115867` | N | `a_case_whose_model_changed_is_collected` |
+| `115868` | P | `a_case_removed_from_quarantine_is_collected` |
+| `115869` | P | `the_quarantine_tool_writes_the_original_date` |
+
 **A skip is not a pass and it is not a failure; it is an absence**, and a band
 that exists to block a release cannot report green on an absence. So any skip
 that is not a quarantine fails a blocking band, whatever caused it: a
@@ -1257,7 +1293,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 191 cases, 136 negative, 44 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 196 cases, 138 negative, 47 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,

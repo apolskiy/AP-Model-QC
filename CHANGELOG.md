@@ -40,6 +40,23 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A run holds out only the quarantined cases whose entry is in force, 2026-11-15
+
+**Why.** Collection deselected the case of every entry in an engine's
+quarantine file and never asked whether the entry had lapsed, so an expired
+entry, or one observed on a model the roster no longer names, kept its case
+out of every run until somebody deleted it. A re-stamped entry also lost the
+day its hold began.
+
+**What changed.** `tests/cases/graded_support.py` gained `held_cases`, which
+asks the harness's `cmn.quarantine.in_force_cases` which entries are in force
+on the project's UTC date and for the engine's rostered model, and collection
+deselects only those. `tools/quarantine.py` writes `originally_quarantined_on`
+and `ends_on_model_change` with every entry, and its renderer is public as
+`render`. `consumer_ci.md` section 3.12.2 holds the design. Requirement
+`MQC_REQ_CAS_CI_0097` and cases `115865` to `115869` were added. The README
+states 257 requirements, 291 preconditions and 1140 harness test cases.
+
 ### A regression run is live runs of the engine only, after a calibration check, 2026-11-15
 
 **Why.** A regression run measures an engine; it held two replay stages that

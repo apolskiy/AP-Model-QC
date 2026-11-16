@@ -9258,3 +9258,39 @@ needing calibration and a later band running past a red calibration
 dispensation (`115717`, `115730`), a path no run reaches now that quarantine
 deselects. The harness side of section 4.6.14 (an entry without a ticket
 refused, expiry returning a case to selection) is not yet built.
+
+## 2026-11-15: Only a quarantine entry in force holds its case out
+
+**A) What was wrong.** `graded_support._quarantine_for` returned the case of
+every entry in `config/quarantine/<engine>.yaml`, so collection deselected an
+expired entry's case, and one observed on a model the roster no longer names,
+until somebody deleted the entry. **B) Why.** Expiry was read only by the
+harness verdict's V5, after the run, and nothing at collection read it.
+
+**What changed.** `held_cases` asks the harness's `in_force_cases` which
+entries are in force on the project's UTC date and for the engine's rostered
+model, which is the form `tools/quarantine.py` stamps as `observed_model`, and
+`_quarantine_for` passes `project_today()` and `rostered_model(engine)`. The
+harness side noted as open in the entry above is now built: the loader refuses
+an entry without a ticket, V5 is retired, and the loaders moved to
+`cmn.quarantine_file`, which every caller here now imports. `tools/quarantine.py`
+writes `originally_quarantined_on` and `ends_on_model_change` with every entry,
+and its renderer is public as `render`, because a case reads it.
+`consumer_ci.md` section 3.12.2; requirement `MQC_REQ_CAS_CI_0097`.
+
+**Cases.** `115865` to `115869` in `tests/cases/mqc_uni_quarantine_selection.py`,
+with their builders in `quarantine_support.py`. Against a stub holding every
+entry, `115866`, `115867` and `115869` failed at their intended steps; `115865`
+and `115868` describe behaviour that already held. `115408`'s second entry
+gained a ticket, the loader now refusing one without.
+
+**Injections.** Six here, each caught: every entry held, the model never
+compared, the window never lapsing, `_quarantine_for` reading no date, and
+either new field left unwritten by the tool.
+
+**Verified.** Unit 291 of 291, pylint exit 0, actionlint exit 0. The README
+states 257 requirements, 291 preconditions and 1140 harness test cases; the
+`consumer_ci.md` inventory 196 cases.
+
+**Left open.** The dispensation path, `assess_blocking` with `115717` and
+`115730`, is unchanged and unreachable.

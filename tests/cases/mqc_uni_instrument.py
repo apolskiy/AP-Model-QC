@@ -3,7 +3,7 @@
 """Unit preconditions for whether the instrument measures the claim each case name makes.
 
 Created: 2026-10-01
-Last updated: 2026-10-24
+Last updated: 2026-11-15
 
 This file contains thirteen cases. ``TestMQCCasesMeasureTheirOwnClaim`` checks no task
 and rule pair is bound by two graded cases, no assertion turns on trailing whitespace, a
@@ -70,7 +70,7 @@ import pytest
 from cmn.case_steps import step
 from cmn.grouping import story
 from cmn.observations import further_observations
-from cmn.config import load_quarantine_for
+from cmn.quarantine_file import load_quarantine_for
 from cmn.vectors import is_registered_vector, match_vectors
 from evaluation.assertions import run_assertions
 from ingestion.schemas import GoldenRuleSet, TaskDataSet
@@ -745,7 +745,8 @@ class TestMQCQuarantineTool:
             "  - case_id: MQC_TASK_absent::MQC_RULE_absent\n"
             "    reason: never reproduced since\n"
             "    quarantined_on: 2026-09-01\n"
-            "    observed_model: stale-model\n",
+            "    observed_model: stale-model\n"
+            "    ticket: MQC-8\n",
             encoding="utf-8",
         )
         before = target.read_text(encoding="utf-8")
