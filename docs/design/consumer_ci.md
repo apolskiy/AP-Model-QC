@@ -1301,7 +1301,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 203 cases, 143 negative, 49 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 204 cases, 144 negative, 49 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -4882,6 +4882,35 @@ or environment bug, never a model finding, and the exit says so.
 | `115875` | N | `a_missing_judgement_skips_the_whole_case_naming_it` |
 | `115876` | N | `a_missing_recording_skips_the_case_naming_it` |
 | `115877` | P | `a_missing_artifact_is_labelled_and_exits_3` |
+
+#### A graded case naming a pair the corpus does not define skips
+
+Added 2026-11-17 at the project owner's ruling on missing artifacts, where a
+missing corpus pair skips its case and an unloadable corpus refuses the run.
+
+**A graded case whose task and rule set define no case in the corpus skips,
+naming the pair, in any mode.** `observe` asks `graded_case` for the case
+before anything is dispatched, and `graded_case` raises the harness's
+`raise_missing_artifact`, `QC_HARNESS_ARTIFACT_MISSING` kind `corpus_pair`,
+with the corpus root as the path and the task and rule set in the detail. The
+other cases run, and `conftest.py` labels the skip and makes the run exit 3, as
+for a missing recording. A task or rule file deleted or renamed, or an
+identifier mistyped in a case, is a test bug, never a model finding.
+
+**Raised in the call, before any request.** The pair is named in the case's
+body, so setup cannot see it, and no provider is asked before the skip: a live
+run spends nothing on it.
+
+**A corpus that cannot be loaded at all still refuses the whole run.**
+`pytest_sessionstart` loads it to record the rule set digest, so no case is
+built from it. `case_for` keeps its `KeyError` for the preconditions and the
+tools, where a pair the corpus lacks is a defect in the caller. The quarantine
+tool, which re-observes through `observe_repeatedly`, catches the
+`corpus_pair` skip and leaves that entry undecided, as section 4.14 requires.
+
+| ID | Cat | Behavior |
+|---|---|---|
+| `115878` | N | `a_pair_the_corpus_does_not_define_skips_naming_it` |
 
 ### 9.4.6 An error ceiling, because "do not overstate" was a judgement and not a check
 

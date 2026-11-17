@@ -3,7 +3,7 @@
 """The quarantine tool, which re-runs an engine's quarantined cases and rewrites its file.
 
 Created: 2026-10-02
-Last updated: 2026-11-16
+Last updated: 2026-11-17
 
 This file contains ``main``, which loads ``config/quarantine/<engine>.yaml``,
 re-observes every case in it, lets the harness decide what each entry becomes
@@ -47,6 +47,7 @@ from typing import Any, Final, Mapping, Optional
 
 import yaml
 
+from cmn.missing_artifact import MissingArtifactSkip
 from cmn.pytest_support import case_identifier
 from cmn.quarantine_file import load_quarantine_for
 from cmn.quarantine import DROPPED, STAMPED, UNDECIDED, QuarantineEntry, reconcile
@@ -67,6 +68,9 @@ _ENCODING: Final[str] = "utf-8"
 # The separator `ingestion.cases.build_case_id` composes an identifier with.
 # Split rather than re-derived, because the entry stores the composed form.
 _CASE_ID_SEPARATOR: Final[str] = "::"
+
+# The missing-artifact kind of a pair the corpus does not define.
+_CORPUS_PAIR: Final[str] = "corpus_pair"
 
 # Mirrors the verdict tool's codes, which `cmn_verdict_and_cli.md` section 7.3
 # chose to stay clear of argparse's own exit 2.
@@ -152,12 +156,14 @@ def _observe_entries(
         task_id, rule_id = entry.case_id.split(_CASE_ID_SEPARATOR, 1)
         try:
             results = observe_repeatedly(carrier, task_id, rule_id)
-        except KeyError:
+        except MissingArtifactSkip as skipped:
             # AN ENTRY CAN OUTLIVE ITS CASE. A renamed or deleted case leaves
             # an entry naming a pair the corpus no longer defines, which is
             # unobservable rather than passing: dropping it would decide on no
             # evidence and raising would let one stale entry block every other.
-            # It falls through to UNDECIDED. Design section 4.14.
+            # It falls through to UNDECIDED. Design sections 4.14 and 9.4.5.
+            if skipped.missing.kind != _CORPUS_PAIR:
+                raise
             logger.error(
                 "%s names a case the corpus does not define, so it cannot be "
                 "re-observed and is left unchanged", entry.case_id,

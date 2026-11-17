@@ -8,7 +8,8 @@ Last updated: 2026-11-17
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
 ``observe_repeatedly``, which does so ``observation_count`` times. Beside them sit the
-corpus readers (``shipped_corpus``, ``shipped_cases``, ``case_for``, ``task_material``),
+corpus readers (``shipped_corpus``, ``corpus_root``, ``shipped_cases``, ``case_for``,
+``graded_case``, ``task_material``),
 the run's plans (``dispatch_plan``, ``dispatch_session``, ``judgement_plan``,
 ``judge_binding``), ``judge_stopped``, ``held_cases`` and ``quarantined_cases``,
 which read which quarantine entries are in force, and the suite
@@ -19,7 +20,8 @@ an observation records are built in ``observation_records``.
 ``consistency_support``, which decides it, so **a case reads as its own claim**
 rather than as sixty repetitions of a loop. A recording or judgement missing in
 replay skips the case whole first, naming the file, so it is never decided on
-the observations present (``consumer_ci.md`` section 9.4.5). The readers also
+the observations present, and a pair the corpus does not define skips before
+any dispatch (``consumer_ci.md`` section 9.4.5). The readers also
 serve the ``mqc_uni_*`` preconditions and the case index, quarantine and ticket
 scripts in ``tools/``, so all of them read the corpus one way.
 
@@ -49,7 +51,11 @@ from cmn.config import (
     packaged_roster_path,
 )
 from cmn.emission import record_observation
-from cmn.missing_artifact import raise_missing_artifact, skip_unreplayed_case
+from cmn.missing_artifact import (
+    MissingArtifact,
+    raise_missing_artifact,
+    skip_unreplayed_case,
+)
 from cmn.observations import assemble_observation
 from cmn.options import resolve_judge_mode
 from cmn.pricing import load_price_table
@@ -105,12 +111,20 @@ def shipped_corpus() -> tuple[tuple[Any, ...], tuple[Any, ...]]:
     Returns:
         tuple: Every task, then every rule set.
     """
-    named, policy = corpus_selection()
-    root = named or (repository_root() / "data")
+    policy = corpus_selection()[1]
     tasks, rules = load_corpus(
-        root, **({"unknown_columns": policy} if policy else {})
+        corpus_root(), **({"unknown_columns": policy} if policy else {})
     )
     return tuple(tasks), tuple(rules)
+
+
+def corpus_root() -> Path:
+    """Return the corpus this run reads: the one ``--golden-rules`` names, else ``data/``.
+
+    Returns:
+        Path: The corpus root.
+    """
+    return corpus_selection()[0] or (repository_root() / "data")
 
 
 def shipped_cases() -> dict[str, Any]:
@@ -204,6 +218,32 @@ def case_for(task_id: str, rule_id: str) -> Any:
             f"a task and rule pair that data/ does not define"
         )
     return cases[identifier]
+
+
+def graded_case(task_id: str, rule_id: str) -> Any:
+    """Return the case a graded case dispatches, or skip it where the corpus lacks the pair.
+
+    Design: ``consumer_ci.md`` section 9.4.5.
+
+    Args:
+        task_id (str): The task.
+        rule_id (str): The rule set judging it.
+
+    Returns:
+        Any: The :class:`EvaluationCase`.
+
+    Raises:
+        MissingArtifactSkip: ``QC_HARNESS_ARTIFACT_MISSING``, kind
+            ``corpus_pair``, naming the corpus root and the pair.
+    """
+    try:
+        return case_for(task_id, rule_id)
+    except KeyError:
+        raise_missing_artifact(MissingArtifact(
+            kind="corpus_pair",
+            path=str(corpus_root()),
+            detail=f"task {task_id} judged by rule set {rule_id} defines no case there",
+        ))
 
 
 def dispatch_plan(config: Any) -> DispatchPlan:
@@ -541,7 +581,9 @@ def observe(
     Returns:
         Any: The :class:`EvaluationResult`.
     """
-    case = case_for(task_id, rule_id)
+    # A PAIR THE CORPUS LACKS SKIPS HERE, before anything is dispatched (design
+    # section 9.4.5).
+    case = graded_case(task_id, rule_id)
 
     # A QUARANTINED CASE NEVER ARRIVES HERE: `quarantine_support` deselects it
     # at collection, so it is neither dispatched nor counted (harness

@@ -9405,3 +9405,49 @@ they moved to `partial_recording_support.py`.
 0; pylint exit 0. Replay of every graded case, unchanged: claude 95 of 95
 passed, gemini 94 passed and 1 passw, grok 95 passed, openai 95 passed, each
 exit 0, no skips. Harness after its fix: unit 1143 of 1143, system 24 of 24.
+
+## 2026-11-17: Fixed a graded case naming a pair the corpus does not define reporting broken
+
+**A) What was wrong.** A graded case whose task and rule set define no case in
+the corpus raised `KeyError` from `case_for` and reported broken, naming
+neither the corpus nor the kind of gap. **B) Why.** The corpus reader predates
+the harness's missing-artifact skip, and the owner's ruling of 2026-11-17 on
+missing artifacts makes a missing corpus pair skip its case, while an
+unloadable corpus refuses the run.
+
+**What changed.** `graded_support.graded_case` returns the case or raises the
+harness's `raise_missing_artifact`, kind `corpus_pair`, with the corpus root as
+the path and the task and rule set in the detail. `observe` calls it before
+anything is dispatched. `corpus_root` now names the corpus `shipped_corpus`
+loads and the skip reports. `case_for` keeps its `KeyError` for the
+preconditions and the tools; the quarantine tool catches the `corpus_pair`
+skip instead. An unloadable corpus already refuses the run,
+since `pytest_sessionstart` loads it. Design `consumer_ci.md` section 9.4.5;
+requirement `MQC_REQ_CAS_CI_0101`; case `115878` in
+`mqc_uni_missing_corpus_pair.py`.
+
+**End to end.** Grok `134205` and `134206` replayed with `134205`'s task
+identifier mistyped: `134205` skipped with `QC_HARNESS_ARTIFACT_MISSING`, its
+JUnit case carried kind `corpus_pair` and the corpus root, `134206` skipped
+behind it with `QC_HARNESS_DEPENDENCY_UNMET`, and the run exited 3. The module
+was restored byte for byte.
+
+**Injection.** Before the fix, `115878` reported broken with the `KeyError`.
+Five defects, five caught, each exiting 3: `observe` reading the pair through
+`case_for`, the wrong kind, no corpus root, the rule set left out of the
+detail, and a dispatch before the pair is read. Baseline exit 0 after restore.
+
+**Digressions the user spotted, and the fix.** None from the user. Mine: the
+change broke `115408`, which skipped with the new code. `tools/quarantine.py`
+re-observes each entry through `observe_repeatedly` and caught `KeyError` to
+leave an entry naming a deleted pair undecided; it now catches the skip of kind
+`corpus_pair` and re-raises any other, so its behaviour for every other gap is
+unchanged. No case asserts the re-raise. The full unit run also found the
+inventory `consumer_ci.md` states one short, now 204 cases with 144 negative,
+and the README check counting tracked files, which passed once the new module
+was staged.
+
+**Verified.** Model Repository preconditions: unit 299 of 299, 0 skipped, exit
+0; pylint exit 0. Replay of every graded case: claude 95 passed, gemini 94
+passed and 1 passw, grok 95 passed, openai 95 passed, each exit 0, no skips.
+Harness unchanged.

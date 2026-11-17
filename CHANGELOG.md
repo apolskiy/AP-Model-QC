@@ -40,6 +40,22 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A graded case naming a pair the corpus does not define skips, naming it, 2026-11-17
+
+**Why.** A graded case whose task and rule set define no case in the corpus
+raised `KeyError` and reported broken, so a deleted or renamed corpus file or a
+mistyped identifier read as a crash rather than as a missing artifact, and
+named neither the corpus nor the kind of gap.
+
+**What changed.** `observe` reads the case through `graded_case`, which skips a
+pair the corpus lacks before any dispatch with `QC_HARNESS_ARTIFACT_MISSING`,
+kind `corpus_pair`, naming the corpus root and the pair, and the run exits 3.
+A corpus that cannot be loaded still refuses the whole run at session start.
+The quarantine tool leaves an entry naming such a pair undecided, as before.
+`consumer_ci.md` section 9.4.5 holds the design. Requirement
+`MQC_REQ_CAS_CI_0101` and case `115878` were added. The README states 261
+requirements and 299 preconditions.
+
 ### A partially recorded replay case skips whole, naming the missing file, 2026-11-17
 
 **Why.** In replay, a case missing the judgement of some observations was
