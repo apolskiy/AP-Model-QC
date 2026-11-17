@@ -3,7 +3,7 @@
 """Unit preconditions for whether the instrument measures the claim each case name makes.
 
 Created: 2026-10-01
-Last updated: 2026-11-15
+Last updated: 2026-11-17
 
 This file contains thirteen cases. ``TestMQCCasesMeasureTheirOwnClaim`` checks no task
 and rule pair is bound by two graded cases, no assertion turns on trailing whitespace, a
@@ -701,7 +701,7 @@ class TestMQCRunLevelSession:
             DispatchOutcome(
                 case_id="MQC_TASK_a::MQC_RULE_r", engine="gemini", mode="replay",
                 duration_ms=0, duration_kind="measured", attempts=0,
-                rate_limit_encounters=0, taxonomy_code="QC_HARNESS_FIXTURE_MISSING",
+                rate_limit_encounters=0, taxonomy_code="QC_HARNESS_ARTIFACT_MISSING",
             )
         )
         assert not skipped.served

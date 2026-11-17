@@ -3,7 +3,7 @@
 """Unit preconditions for whether a graded result from this suite means what it says.
 
 Created: 2026-10-06
-Last updated: 2026-11-06
+Last updated: 2026-11-17
 
 This file contains nine cases. ``TestMQCTheInstrumentDoesNotManufactureFindings``
 checks the injection screen raises nothing on an ordinary case and every failure message
@@ -84,6 +84,10 @@ from tests.cases.step_recording import record_remaining_steps
 from tests.cases.vacuity_support import unfailable_assertions
 
 pytestmark = pytest.mark.unit
+
+# A JUDGEMENT GAP OUTSIDE THE REPLAY STORE, the only kind a verdict still
+# reads past (design section 9.4.5).
+_UNREACHABLE: Final[str] = "QC_HARNESS_ENGINE_UNREACHABLE"
 
 _TAXONOMY_CODE: Final[re.Pattern] = re.compile(
     r"\b(QC_(?:LLM|HARNESS|SEC|DATA)_[A-Z_]+)\b"
@@ -279,20 +283,13 @@ class TestMQCAssertionsCanFail:
     def MQC_CAS_UNI_115728_an_unmeasured_observation_is_not_counted_as_a_failure(
         self,
     ) -> None:
-        """A third way an instrument defect becomes a finding about a model.
+        """An unmeasured observation is never a failure, and a verdict reads the measured ones.
 
-        **This one arrived on 2026-10-06 and was caught before it shipped.**
-        Nine assertions were repaired, and because assertions gate judging,
-        nine cases reached the judge for the first time and found no recording.
-        Counting those observations as failures reported
-        ``QC_LLM_INCONSISTENT`` against four models for our own missing
-        fixtures.
-
-        **A gap may cost a finding; it may never manufacture one.** So a
-        verdict is read over the measured observations, and the three outcomes
-        are asymmetric on purpose: a failure we measured survives a gap
-        elsewhere, while a pass on part of the population has established
-        nothing about repeat behaviour.
+        A gap outside the replay store, a judge that stopped answering, leaves
+        a case decided over its measured observations: a measured failure
+        fails, stating the denominator, a partial pass skips, and nothing
+        measured skips. A gap in the replay store skips the case whole before
+        this is reached.
 
         Design: ``consumer_ci.md`` section 9.4.5.
 
@@ -313,12 +310,12 @@ class TestMQCAssertionsCanFail:
                 ),
             ),
         )
-        # WHAT THE HARNESS HANDS BACK FOR A JUDGEMENT IT COULD NOT REPLAY
-        # (`tier3_evaluation.md` section 6.5). It passed no assertion and
+        # WHAT THE HARNESS HANDS BACK FOR A JUDGE THAT COULD NOT BE REACHED
+        # (`tier3_evaluation.md` section 6.5.1). It passed no assertion and
         # failed none; it measured nothing.
         gap = SimpleNamespace(
             passed=False, judge_skipped_reason="judgement_unavailable",
-            taxonomy_codes=("QC_HARNESS_FIXTURE_MISSING",),
+            taxonomy_codes=(_UNREACHABLE,),
             assertion_results=(),
         )
 
@@ -326,7 +323,7 @@ class TestMQCAssertionsCanFail:
             "an observation carrying no judgement is counted as a measurement, "
             "so a recording gap is about to be read as model behaviour"
         )
-        assert unmeasured_code([passing, gap]) == "QC_HARNESS_FIXTURE_MISSING", (
+        assert unmeasured_code([passing, gap]) == _UNREACHABLE, (
             "the store's own code is lost, so the skip cannot say which gap it "
             "hit"
         )
@@ -349,16 +346,14 @@ class TestMQCAssertionsCanFail:
         # something about repeat behaviour that two of three cannot establish.
         with pytest.raises(BaseException) as raised:
             assert_consistent_pass([passing, passing, gap])
-        assert "QC_HARNESS_FIXTURE_MISSING" in str(raised.value), (
-            f"a partially measured pass does not skip with the store's code, "
+        assert _UNREACHABLE in str(raised.value), (
+            f"a partially measured pass does not skip with the gap's code, "
             f"so it either passes on thin evidence or fails on none: "
             f"{raised.value}"
         )
 
         # A MEASURED FAILURE STILL FAILS, over the population it measured, and
-        # says so. Grok `134205` is the case: its first observation states a
-        # bare figure with the source nowhere, and its other two carry no
-        # judgement. Skipping it would discard a finding we did measure.
+        # says so, where the gap is not one replay can fill.
         with pytest.raises(AssertionError) as failure:
             assert_consistent_pass([failing, gap, gap])
         message = str(failure.value)
@@ -629,7 +624,7 @@ class TestMQCAssertionsCanFail:
         step(3, "record an observation whose judgement could not be made")
         unscored = SimpleNamespace(
             passed=False, judge_skipped_reason="judgement_unavailable",
-            taxonomy_codes=["QC_HARNESS_FIXTURE_MISSING"],
+            taxonomy_codes=["QC_HARNESS_ARTIFACT_MISSING"],
         )
         assert measured_fields(case, outcome, unscored, 0)["outcome"] == "skip", (
             "an answer nobody could score was recorded as something other than a skip"

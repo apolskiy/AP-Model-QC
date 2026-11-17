@@ -3,7 +3,7 @@
 """Unit preconditions for graded cases whose judge has stopped answering or did not score.
 
 Created: 2026-11-06
-Last updated: 2026-11-06
+Last updated: 2026-11-17
 
 This file contains ``TestMQCStoppedJudge``, two cases on
 ``tests.cases.graded_support`` and ``tests.cases.consistency_support``. The
@@ -41,6 +41,7 @@ from tests.cases import graded_support
 from tests.cases.consistency_support import assert_consistent_pass, unmeasured_code
 from tests.cases.graded_support import case_for, judge_stopped, observe, observe_repeatedly
 from tests.cases.instrument_support import SimulatedGradedConfig, dispatch_outcome
+from tests.cases.partial_recording_support import isolate_observation
 
 pytestmark = pytest.mark.unit
 
@@ -150,24 +151,13 @@ class TestMQCStoppedJudge:
             taxonomy_codes=("QC_LLM_ASSERTION_FAILED", _REJECTED),
             assertion_results=(), judgement=None,
         )
-        monkeypatch.setattr(
-            graded_support, "_channel",
-            lambda *args, **kwargs: SimpleNamespace(
-                stopped=None, engine="claude", invoke=None, args=(args, kwargs)),
-        )
+        isolate_observation(monkeypatch, recorded)
         monkeypatch.setattr(
             graded_support, "dispatch_case",
             lambda *args, **kwargs: dispatch_outcome("gemini-4-argon", mode="replay"),
         )
         monkeypatch.setattr(
             graded_support, "evaluate_observation", lambda *args, **kwargs: unjudged
-        )
-        monkeypatch.setattr(
-            graded_support, "record_observation",
-            lambda observation, *rest: recorded.append(observation),
-        )
-        monkeypatch.setattr(
-            graded_support, "record_observation_step", lambda *args, **kwargs: None
         )
         monkeypatch.setattr(
             graded_support, "record_remaining_steps", lambda *args, **kwargs: None

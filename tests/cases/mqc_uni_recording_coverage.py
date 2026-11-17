@@ -3,7 +3,7 @@
 """Unit preconditions for whether a blocking band has a recording to replay for every case.
 
 Created: 2026-10-09
-Last updated: 2026-10-24
+Last updated: 2026-11-17
 
 This file contains ``TestMQCRecordingCoverage``, two cases over the replay fixtures,
 read through the harness's ``missing_recordings``. ``115721`` checks every P0 and P1
@@ -71,7 +71,7 @@ class TestMQCRecordingCoverage:
         **A lower band is not held to this.** P2 to P4 are governed by a pass
         floor rather than by answering for everything, so a missing recording
         there costs coverage and does not block, and the band line already says
-        `QC_HARNESS_FIXTURE_MISSING, no recorded response for this engine`.
+        `QC_HARNESS_ARTIFACT_MISSING`, naming the recording.
 
         Design: ``consumer_ci.md`` section 3.12.6.
 

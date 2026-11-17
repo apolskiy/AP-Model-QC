@@ -40,6 +40,27 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A partially recorded replay case skips whole, naming the missing file, 2026-11-17
+
+**Why.** In replay, a case missing the judgement of some observations was
+decided on the rest: a measured failure failed it and a partial pass skipped
+it, so a partially recorded case could report a finding on evidence that tests
+nothing. A missing recording skipped without naming its file, and no missing
+artifact made the run exit 3.
+
+**What changed.** `observe` skips a case whose recording is missing with
+`QC_HARNESS_ARTIFACT_MISSING`, naming it. `observe_repeatedly` skips the whole
+case once its observations and any escalation have run, where any judgement is
+missing or stale, through the harness's `skip_unreplayed_case`. `conftest.py`
+labels such a skip with its kind and path and makes the run exit 3. The
+measured-population rule now governs only a judge that was unreachable or
+withheld. Every graded case replays on all four engines with no skip, Grok
+`134205`, decided on one observation before its judgements were recorded,
+among them. `consumer_ci.md`
+section 9.4.5 holds the design. Requirement `MQC_REQ_CAS_CI_0100` and cases
+`115875` to `115877` were added. The README states 260 requirements, 298
+preconditions and 1171 harness test cases.
+
 ### A quarantined foundation's dependents run and count unless quarantined by name, 2026-11-16
 
 **Why.** A quarantined foundation's dependents were skipped with it, and in a

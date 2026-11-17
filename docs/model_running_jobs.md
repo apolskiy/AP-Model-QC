@@ -458,8 +458,9 @@ assessment happens at all on a case the assertions have already failed.
 | `live` | Spent | Spent, on a failing case as well as a passing one |
 
 **Replay replays the judge too.** A failed case is judged from a stored
-judgement, and one no live run has judged reports its judgement as unavailable
-(`QC_HARNESS_FIXTURE_MISSING`) rather than calling the judge. A live judgement
+judgement, and one no live run has judged skips the whole case with
+`QC_HARNESS_ARTIFACT_MISSING`, naming the judgement, rather than calling the
+judge (`consumer_ci.md` section 9.4.5). A live judgement
 of that case needs a live run.
 
 ---
@@ -527,7 +528,7 @@ reader of a skipped case actually needs:
 | `QC_HARNESS_PROVIDER_UNAVAILABLE` | Theirs | Yes | The service said it is busy. Wait |
 | `QC_HARNESS_GATEWAY_FAILURE` | **The path** | Yes | A proxy, CDN or egress rule failed. **Not the provider** |
 | `QC_HARNESS_ENGINE_UNREACHABLE` | **The path** | No | A redirect or connection failure. Check proxy, DNS, VPN |
-| `QC_HARNESS_FIXTURE_MISSING` | Ours | No | Nothing recorded yet. Record it, or run live |
+| `QC_HARNESS_ARTIFACT_MISSING` | Ours | No | A file the case reads is absent or unreadable; the message names its kind and path, and the run exits 3. A `recording` or `judgement`: record it, or run live. `QC_HARNESS_FIXTURE_MISSING` until 2026-11-17 |
 | `QC_HARNESS_FIXTURE_STALE` | Ours | No | The question or the instrument moved. Re-record |
 | `QC_HARNESS_DEPENDENCY_UNMET` | The model's, one layer up | No | A prerequisite at the same or a higher priority failed or was skipped. Fix that one first |
 

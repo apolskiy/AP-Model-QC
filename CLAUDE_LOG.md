@@ -9354,3 +9354,54 @@ caught. Baselines exit 0 in both repositories after restore.
 Repository preconditions: unit 295 of 295, 0 skipped, exit 0; pylint exit 0.
 No graded band ran: no engine was dispatched live, and replay bands are
 unchanged by this change apart from the smoke run above.
+
+## 2026-11-17: Fixed a partially recorded replay case being decided on the observations present
+
+**A) What was wrong.** In replay, a case missing the judgement of some
+observations was decided on the rest: a measured failure failed it and a
+partial pass skipped it. A missing recording skipped without naming its file,
+and no missing artifact made the run exit 3. **B) Why.** The partial-population
+rule of `consumer_ci.md` section 9.4.5 predates the owner's ruling of
+2026-11-17 that a partially recorded case tests nothing and is re-recorded,
+and this repository had not adopted the harness's missing-artifact skip.
+
+**What changed.** `observe` raises the harness's `raise_missing_artifact` for
+a dispatch whose recording is missing, naming it. `observe_repeatedly` calls
+`skip_unreplayed_case` once its observations and any escalation have run, so a
+missing or stale judgement skips the whole case. `conftest.py` calls
+`label_missing_artifact_skip` from makereport and `refuse_missing_artifacts`
+at session finish. Case `115728` now covers only a judge that was unreachable
+or withheld, which keeps the measured-population rule; that scope is my
+reading and not yet ruled on. The remaining current-behaviour mentions of
+`QC_HARNESS_FIXTURE_MISSING` became `QC_HARNESS_ARTIFACT_MISSING`, in
+`consumer_ci.md`, `model_running_jobs.md`, `mqc_uni_instrument.py` and
+`mqc_uni_recording_coverage.py`; the records of past runs keep the old code.
+Design `consumer_ci.md` section 9.4.5; requirement `MQC_REQ_CAS_CI_0100`;
+cases `115875` to `115877` in `mqc_uni_partial_recording.py`, with
+`partial_recording_support.py` holding `isolate_observation`, which
+`mqc_uni_stopped_judge.py` now shares.
+
+**End to end.** Grok `134205` and `134206` replayed with observation 1's
+judgements moved aside from both judge directories: `134205` passed, `134206`
+skipped whole naming the judgement, its JUnit case carried the kind and path,
+and the run exited 3. The judgements were restored byte for byte. The run
+found a harness defect, a call-time skip naming no code on the band line,
+fixed there with case `112468`; the rerun names `QC_HARNESS_ARTIFACT_MISSING`.
+
+**Injection.** Five defects, five caught, each exiting 3: the case decided on
+the rest (`115875`), the skip taken before escalation (`115875`), a missing
+recording skipping unnamed (`115876`), and the conftest dropping the labelling
+or the exit 3 (`115877`). Baseline exit 0 after restore.
+
+**Digressions the user spotted, and the fix.** None from the user. Mine: an
+edit to `115728`'s docstring lost its indentation and the module failed to
+parse; restored. `115877` first used `called_names`, which also counts
+imports, so the two conftest injections went NOT CAUGHT; it now reads what the
+makereport and session-finish hooks call through `top_level_calls`. The new
+module's doubles duplicated `mqc_uni_stopped_judge.py` and pylint refused it;
+they moved to `partial_recording_support.py`.
+
+**Verified.** Model Repository preconditions: unit 298 of 298, 0 skipped, exit
+0; pylint exit 0. Replay of every graded case, unchanged: claude 95 of 95
+passed, gemini 94 passed and 1 passw, grok 95 passed, openai 95 passed, each
+exit 0, no skips. Harness after its fix: unit 1143 of 1143, system 24 of 24.

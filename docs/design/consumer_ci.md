@@ -968,7 +968,8 @@ is red on our gap rather than on a model.
 
 **A lower band is not held to it.** P2 to P4 are governed by a pass floor rather
 than by answering for everything, so a missing recording there costs coverage
-and does not block, and `QC_HARNESS_FIXTURE_MISSING` already says so on the line.
+and does not block, and `QC_HARNESS_ARTIFACT_MISSING`, naming the recording,
+already says so on the line (`QC_HARNESS_FIXTURE_MISSING` until 2026-11-17).
 
 #### It fails the run, and is not declarable
 
@@ -1300,7 +1301,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 200 cases, 141 negative, 48 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 203 cases, 143 negative, 49 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3042,7 +3043,7 @@ deterministic failure is not sent anywhere: `no_rubric_authored`,
 
 **The gate pays nothing for it.** `--judge-mode` follows `--mode`, so a
 replayed gate run reads a stored judgement and a judgement the store lacks is a
-`QC_HARNESS_FIXTURE_MISSING` skip. What it costs is one judge request per
+`QC_HARNESS_ARTIFACT_MISSING` skip of the whole case (section 9.4.5). What it costs is one judge request per
 failing observation in a **live** run, accepted at the ruling.
 
 **The gaps it leaves open.** Each is a consequence of judging more, and none is
@@ -3086,7 +3087,7 @@ dispatching anything.
 
 **Judge quota is spent only where the judge is named live.** `--judge-mode`
 defaults to `--mode`, so a replay run replays the candidate and the judge
-alike, and a judgement it cannot find is a `QC_HARNESS_FIXTURE_MISSING` skip,
+alike, and a judgement it cannot find is a `QC_HARNESS_ARTIFACT_MISSING` skip,
 never a live call (harness `tier2_execution.md` section 7.9).
 
 | Run | Candidate | Judge | Spends |
@@ -4821,6 +4822,10 @@ a day removing.
 
 #### A verdict is read over the observations that were measured
 
+**Superseded 2026-11-17 for a replay gap**, by the subsection after this one.
+The table now governs only a gap outside the replay store, a live judge that
+was unreachable or withheld.
+
 | Measured observations | What the case does |
 |---|---|
 | None | **Skips**, carrying the store's harness code |
@@ -4832,16 +4837,51 @@ survives a gap elsewhere; a pass on two of five observations is not evidence
 that the other three would have passed. So a gap can cost a finding but can
 never manufacture one, which is the direction this project errs in.
 
-**Grok `134205` is the case that settles it.** Its first observation states a
-bare "30 million" with the sourced figure nowhere in the answer, and its other
-two now reach the judge and find no recording. Skipping the case would discard
-a finding we did measure; counting the gaps as failures would report three
-failures where there is one. It fails, on a population of one, and says so.
+**Grok `134205` was the case that settled it, until 2026-11-17.** Its first
+observation states a bare "30 million" with the sourced figure nowhere in the
+answer, and its other two reach the judge and find no recording. It failed, on
+a population of one. **Its judgements have since been recorded**, and on
+2026-11-17 it replayed with every observation judged and passed, so the
+subsection below has nothing to skip there.
 
 **The remedy for the gaps is a live judge pass**, not an edit. `--fill-gaps`
 exists for exactly this: a stored judgement whose request moved is a gap, and
 asking again is right. Until it runs, the band reports the skips and the total
 pass rate counts them, because a skip is not a non-event.
+
+#### A partially recorded replay case is re-recorded, never decided
+
+Added 2026-11-17 at the project owner's ruling: "in replay case if judgement or
+recording is missing, test must be rerecorded. Running a partially recorded
+test is a waste, because that tests nothing."
+
+**In replay, a case any of whose observations lacks its recording or its
+judgement, or reads a stale one, skips whole.** The harness holds the rule,
+harness `harness_test_taxonomy.md` section 5.1.3.1, and this repository calls
+it in two places:
+
+| Gap | Called from | Skip |
+|---|---|---|
+| A recording absent or unreadable | `observe`, at the first dispatch lacking one | `raise_missing_artifact`, `QC_HARNESS_ARTIFACT_MISSING`, kind `recording` |
+| A judgement absent or unreadable, or a judgement stale | `observe_repeatedly`, once every observation and any escalation has run and the steps are recorded | `skip_unreplayed_case`, `QC_HARNESS_ARTIFACT_MISSING` kind `judgement`, or `QC_HARNESS_FIXTURE_STALE` |
+
+**After the observations, not at setup**, at the owner's choice: which
+judgements a case needs depends on the screen, the assertions,
+`--judge-on-failure` and escalation, all decided by the pipeline, and replay
+spends nothing. A stale recording already ended the case at dispatch, and
+still does.
+
+**`conftest.py` labels the skip and makes the run exit 3.** Its makereport
+hook calls `label_missing_artifact_skip`, so a skip raised during the call
+carries the JUnit properties and Allure labels a setup skip carries, and its
+session finish calls `refuse_missing_artifacts`. A missing artifact is a test
+or environment bug, never a model finding, and the exit says so.
+
+| ID | Cat | Behavior |
+|---|---|---|
+| `115875` | N | `a_missing_judgement_skips_the_whole_case_naming_it` |
+| `115876` | N | `a_missing_recording_skips_the_case_naming_it` |
+| `115877` | P | `a_missing_artifact_is_labelled_and_exits_3` |
 
 ### 9.4.6 An error ceiling, because "do not overstate" was a judgement and not a check
 

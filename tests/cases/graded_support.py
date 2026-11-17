@@ -3,7 +3,7 @@
 """Support code that dispatches and evaluates a graded case, written once for every case.
 
 Created: 2026-09-25
-Last updated: 2026-11-15
+Last updated: 2026-11-17
 
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
@@ -16,10 +16,12 @@ readers ``case_rules_from_suite`` and ``case_families_from_suite``. The fields
 an observation records are built in ``observation_records``.
 
 **Every graded case calls ``observe_repeatedly``** and hands the results to
-``consistency_support``, which decides it, so **a case reads as its own claim** rather
-than as sixty repetitions of a loop. The readers also serve the ``mqc_uni_*``
-preconditions and the case index, quarantine and ticket scripts in ``tools/``, so all
-of them read the corpus one way.
+``consistency_support``, which decides it, so **a case reads as its own claim**
+rather than as sixty repetitions of a loop. A recording or judgement missing in
+replay skips the case whole first, naming the file, so it is never decided on
+the observations present (``consumer_ci.md`` section 9.4.5). The readers also
+serve the ``mqc_uni_*`` preconditions and the case index, quarantine and ticket
+scripts in ``tools/``, so all of them read the corpus one way.
 
 **Not collected**, as the filename carries no ``mqc_`` prefix, the same device
 ``provider_doubles.py`` uses in the harness. A case is a test; its machinery is not.
@@ -47,6 +49,7 @@ from cmn.config import (
     packaged_roster_path,
 )
 from cmn.emission import record_observation
+from cmn.missing_artifact import raise_missing_artifact, skip_unreplayed_case
 from cmn.observations import assemble_observation
 from cmn.options import resolve_judge_mode
 from cmn.pricing import load_price_table
@@ -608,6 +611,10 @@ def observe(
             ),
             outcome,
         )
+        # A RECORDING MISSING IN REPLAY NAMES ITS FILE and counts toward exit 3
+        # (design section 9.4.5).
+        if getattr(outcome, "missing_artifact", None) is not None:
+            raise_missing_artifact(outcome.missing_artifact)
         pytest.skip(
             f"{outcome.taxonomy_code}: {case.case_id} produced no measurement"
         )
@@ -803,4 +810,8 @@ def observe_repeatedly(
     record_remaining_steps(
         case_for(task_id, rule_id).case_id, results, configured=configured
     )
+    # A PARTIALLY RECORDED CASE IS RE-RECORDED, NEVER DECIDED. Read only now,
+    # every observation and escalation having run, because which judgements a
+    # case needs is known only then (design section 9.4.5).
+    skip_unreplayed_case(results)
     return results

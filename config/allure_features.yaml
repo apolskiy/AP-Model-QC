@@ -82,6 +82,7 @@ modules:
   tests/cases/mqc_uni_recording_coverage.py: Recording coverage
   tests/cases/mqc_uni_withheld_judge.py: Recording coverage
   tests/cases/mqc_uni_stopped_judge.py: Recording coverage
+  tests/cases/mqc_uni_partial_recording.py: Recording coverage
   tests/cases/mqc_uni_judge_material.py: Recording coverage
 
   # This repository's own pipeline: the bands, the jobs and the pin.
