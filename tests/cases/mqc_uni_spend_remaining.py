@@ -3,13 +3,16 @@
 """Unit preconditions for the remainder a live band may spend.
 
 Created: 2026-11-12
-Last updated: 2026-11-13
+Last updated: 2026-11-17
 
-This file contains ``TestMQCSpendRemaining``, three cases over
-``tools/spend_remaining.py``. The remainder is the dispatch's ceiling less what
-every earlier live band published; a remainder of zero or less refuses the
-band; and an earlier band whose spend cannot be read refuses it too, since
-spend nobody can read is not assumed to be zero.
+This file contains ``TestMQCSpendRemaining``, five cases over
+``tools/spend_remaining.py`` and the run's dispatch session. The remainder is
+the dispatch's ceiling less what every earlier live band published; a
+remainder of zero or less refuses the band; an earlier report that is missing,
+extra, empty, unparseable, wrongly named or without one priced total is
+declared missing, so the band's cases skip, since spend nobody can read is not
+assumed to be zero; and a band that dispatched nothing still publishes a priced
+total.
 
 **These run in the ``unit`` precondition gate.** A failure is an instrument
 defect, **not a model finding**, and the module carries no priority marker,
@@ -24,7 +27,9 @@ Specified by ``docs/design/consumer_ci.md`` section 7.8.4.
 # TestMQCSpendRemaining
 #   115841  the_remainder_is_the_ceiling_less_every_earlier_band
 #   115842  an_exhausted_ceiling_refuses_the_band
-#   115843  a_spend_that_cannot_be_read_refuses_the_band
+#   115879  a_missing_or_unreadable_spend_report_is_declared_missing
+#   115880  a_spend_report_without_one_priced_total_is_declared_missing
+#   115882  a_band_that_dispatched_nothing_publishes_a_priced_total
 # ------------------------------------------------------------ end of cases
 
 from decimal import Decimal
@@ -35,14 +40,20 @@ import pytest
 from cmn.case_steps import step
 from cmn.grouping import story
 
-from tests.cases.live_band_support import write_band_report
+from tests.cases.live_band_support import missing_path, run_declared_band, write_band_report
 from tools.spend_remaining import main, remaining
 
 pytestmark = pytest.mark.unit
 
 _CEILING = "7.00"
 _EXHAUSTED = "QC_HARNESS_BUDGET_EXHAUSTED"
-_UNMET = "QC_HARNESS_DEPENDENCY_UNMET"
+
+# THE REMAINDER A BAND MISSING A SPEND REPORT RUNS WITH. Section 7.8.4.
+_DECLARED_REMAINDER = "0.01"
+
+# THE RUN PROPERTIES A BAND'S REPORT CARRIES ITS SPEND UNDER. Section 7.4.4.
+_TOTAL = "mqc.total_spend_usd"
+_CEILING_PROPERTY = "mqc.max_spend_usd"
 
 
 class TestMQCSpendRemaining:
@@ -110,11 +121,11 @@ class TestMQCSpendRemaining:
         assert main(["--ceiling", _CEILING, "--reports", str(exact), "--earlier", "2",
                      "--output", str(output)]) == 4 and not output.exists()
 
-    @story("One ceiling for the whole regression run")
-    def MQC_CAS_UNI_115843_a_spend_that_cannot_be_read_refuses_the_band(
+    @story("A missing spend report skips the band's cases")
+    def MQC_CAS_UNI_115879_a_missing_or_unreadable_spend_report_is_declared_missing(
         self, tmp_path: Path,
     ) -> None:
-        """An unpriced total, an absent total and a missing report each refuse.
+        """A short, extra, empty, unparseable or wrongly named report is declared missing.
 
         Design: ``consumer_ci.md`` section 7.8.4.
 
@@ -124,26 +135,98 @@ class TestMQCSpendRemaining:
         Returns:
             None
         """
-        unpriced = tmp_path / "unpriced"
-        write_band_report(unpriced, "replay_live_p0", "unpriced")
-        unpublished = tmp_path / "unpublished"
-        write_band_report(unpublished, "replay_live_p0", None)
         short = tmp_path / "short"
-        write_band_report(short, "replay_live_p0", "0.5000")
+        write_band_report(short, "live_live_p0", "0.5000")
+        extra = tmp_path / "extra"
+        write_band_report(extra, "live_live_p0", "0.5000")
+        write_band_report(extra, "replay_live_p0", "0.5000")
+        empty = tmp_path / "empty"
+        empty_report = write_band_report(empty, "live_live_p0", "0.5000")
+        empty_report.write_text("", encoding="utf-8")
+        broken = tmp_path / "broken"
+        broken_report = write_band_report(broken, "live_live_p0", "0.5000")
+        broken_report.write_text("<testsuites><testsuite>", encoding="utf-8")
+        renamed = tmp_path / "renamed"
+        renamed_report = write_band_report(renamed, "live_live_p0", "0.5000")
+        renamed_report.rename(renamed / "junit_mqc_live_live_p0.xml.txt")
         output = tmp_path / "output.txt"
+        cases = {
+            "fewer reports than bands": (short, 2, short),
+            "more reports than bands": (extra, 1, extra),
+            "an empty report": (empty, 1, empty_report),
+            "an unparseable report": (broken, 1, broken_report),
+            "a report under another name": (renamed, 1, renamed),
+        }
+        named = {
+            fault: missing_path(Decimal(_CEILING), reports, earlier)
+            for fault, (reports, earlier, _) in cases.items()
+        }
 
-        step(1, "refuse an earlier band whose total is unpriced")
-        with pytest.raises(ValueError, match=_UNMET):
-            remaining(Decimal(_CEILING), unpriced, 1)
+        step(1, "declare each missing or unreadable report missing, naming it")
+        assert named == {fault: str(path) for fault, (_, _, path) in cases.items()}, named
 
-        step(2, "refuse an earlier band that published no total")
-        with pytest.raises(ValueError, match=_UNMET):
-            remaining(Decimal(_CEILING), unpublished, 1)
-
-        step(3, "refuse when fewer reports arrived than live bands ran before")
-        with pytest.raises(ValueError, match=_UNMET):
-            remaining(Decimal(_CEILING), short, 2)
-
-        step(4, "exit 4 and write no remainder")
+        step(2, "exit 0 and write the declaration and a one-cent remainder")
         assert main(["--ceiling", _CEILING, "--reports", str(short), "--earlier", "2",
-                     "--output", str(output)]) == 4 and not output.exists()
+                     "--output", str(output)]) == 0 and \
+            output.read_text(encoding="utf-8") == (
+                f"remaining=0.01\nmissing=spend_report={short}\n"
+            ), output.read_text(encoding="utf-8") if output.exists() else "no output"
+
+    @story("A missing spend report skips the band's cases")
+    def MQC_CAS_UNI_115880_a_spend_report_without_one_priced_total_is_declared_missing(
+        self, tmp_path: Path,
+    ) -> None:
+        """A report publishing no total, two totals or an unpriced one is declared missing.
+
+        Design: ``consumer_ci.md`` section 7.8.4.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+
+        Returns:
+            None
+        """
+        unpriced = write_band_report(tmp_path / "unpriced", "live_live_p0", "unpriced")
+        unpublished = write_band_report(tmp_path / "unpublished", "live_live_p0", None)
+        doubled = write_band_report(tmp_path / "doubled", "live_live_p0", "0.5000")
+        doubled.write_text(
+            doubled.read_text(encoding="utf-8").replace(
+                "</properties>",
+                '<property name="mqc.total_spend_usd" value="0.2500"/></properties>',
+            ),
+            encoding="utf-8",
+        )
+        named = {
+            str(report): missing_path(Decimal(_CEILING), report.parent, 1)
+            for report in (unpriced, unpublished, doubled)
+        }
+
+        step(1, "declare each report lacking one priced total missing, naming the report")
+        assert all(found == expected for expected, found in named.items()), named
+
+    @story("A missing spend report skips the band's cases")
+    def MQC_CAS_UNI_115882_a_band_that_dispatched_nothing_publishes_a_priced_total(
+        self, tmp_path: Path,
+    ) -> None:
+        """A band whose every case skipped on a declared report publishes a total of 0.0000.
+
+        Design: ``consumer_ci.md`` section 7.8.4.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+
+        Returns:
+            None
+        """
+        status, properties, outcomes = run_declared_band(tmp_path, _DECLARED_REMAINDER)
+
+        step(1, "find the band exiting 3 with every case it selected skipped")
+        assert status == 3 and outcomes and set(outcomes) == {"skipped"}, (status, outcomes)
+
+        step(2, "find the band's report publishing a priced total of 0.0000 against $0.01")
+        assert (
+            properties.get(_TOTAL) == "0.0000" and properties.get(_CEILING_PROPERTY) == "0.0100"
+        ), properties
+
+        step(3, "find the published total readable by the band after it")
+        assert remaining(Decimal(_CEILING), tmp_path, 1) == Decimal("7.00")

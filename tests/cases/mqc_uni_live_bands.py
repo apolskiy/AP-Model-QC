@@ -3,14 +3,16 @@
 """Unit preconditions for the regression run, banded as the gate is.
 
 Created: 2026-11-12
-Last updated: 2026-11-15
+Last updated: 2026-11-17
 
-This file contains ``TestMQCLiveBands``, four cases over ``evaluate-engine.yml``
+This file contains ``TestMQCLiveBands``, five cases over ``evaluate-engine.yml``
 and its callers. A regression run is its preconditions, the calibration check
 and the gate's three ``live -> live`` band jobs, and holds no replay stage;
 the bands chain after the preconditions and the calibration check; every job
-running the suite takes the platform the dispatch chose; and every live band
-spends what the earlier live bands left of one ceiling.
+running the suite takes the platform the dispatch chose; every live band
+spends what the earlier live bands left of one ceiling; and a spend report
+declared missing reaches pytest as ``--missing-artifact`` and a setup hook that
+skips the band's cases.
 
 **These run in the ``unit`` precondition gate.** A failure is an instrument
 defect, **not a model finding**: the run exits 3 and no graded case executes,
@@ -28,14 +30,17 @@ Specified by ``docs/design/consumer_ci.md`` sections 6.5, 7.8 and 7.9.
 #   115857  a_live_band_out_of_order_is_reported
 #   115839  a_regression_job_off_the_chosen_platform_is_reported
 #   115840  a_live_band_spending_the_whole_input_is_reported
+#   115881  a_declared_spend_report_reaches_every_band_and_its_cases
 # ------------------------------------------------------------ end of cases
 
 import pytest
+import yaml
 
 from cmn.case_steps import step
 from cmn.grouping import story
 
 from tests.cases.debug_support import DEBUG_ENVIRONMENT, DEBUG_LIVE
+from tests.cases.quarantine_support import top_level_calls
 from tests.cases.live_band_support import (
     BANDS,
     CALIBRATION_JOB,
@@ -79,6 +84,15 @@ _STAGE = STAGES[LIVE_LIVE]
 # THE REMAINDER A LIVE BAND SPENDS, as its band step reads it. Section 7.8.4.
 _REMAINDER = "steps.spend.outputs.remaining"
 _SPEND_TOOL = "tools.spend_remaining"
+
+# A MISSING SPEND REPORT, as the spend step declares it, the band input that
+# carries it, the variable the band step reads it from and the flag it becomes.
+# Section 7.8.4.
+_DECLARED_OUTPUT = "steps.spend.outputs.missing"
+_DECLARED_INPUT = "missing_artifact"
+_DECLARED_ENV = "MISSING_ARTIFACT"
+_DECLARED_FLAG = '${MISSING_ARTIFACT:+--missing-artifact "${MISSING_ARTIFACT}"}'
+_DECLARED_FIXTURE = "fixture_mqc_declared_missing"
 
 # THE PLATFORM INPUT, as a job reads it. Section 7.8.3.
 _CHOSEN_OS = "${{ inputs.os }}"
@@ -270,3 +284,46 @@ class TestMQCLiveBands:
 
         step(3, "find each live band publishing its report for the bands after it")
         assert not unpublished, unpublished
+
+    @story("A missing spend report skips the band's cases")
+    def MQC_CAS_UNI_115881_a_declared_spend_report_reaches_every_band_and_its_cases(
+        self,
+    ) -> None:
+        """Each live band passes the declaration on, as --missing-artifact, to a skipping hook.
+
+        Design: ``consumer_ci.md`` section 7.8.4.
+
+        Returns:
+            None
+        """
+        regression = jobs(load(REGRESSION_RUN))
+        unpassed = [
+            f"{name}: {band_inputs(regression.get(name, {})).get(_DECLARED_INPUT)!r}"
+            for name in LIVE_BANDS
+            if _DECLARED_OUTPUT not in band_inputs(regression.get(name, {})).get(
+                _DECLARED_INPUT, "")
+        ]
+        action = yaml.safe_load(
+            (repository_root() / ".github" / "actions" / "band" / "action.yml").read_text(
+                encoding="utf-8")
+        )
+        running = [
+            entry for entry in (action.get("runs") or {}).get("steps") or []
+            if "pytest" in str(entry.get("run") or "")
+        ]
+        undeclared = _DECLARED_INPUT not in (action.get("inputs") or {}) or not any(
+            str((entry.get("env") or {}).get(_DECLARED_ENV)) ==
+            f"${{{{ inputs.{_DECLARED_INPUT} }}}}"
+            and _DECLARED_FLAG in str(entry.get("run")) for entry in running
+        )
+        hooked = top_level_calls(repository_root() / "conftest.py", _DECLARED_FIXTURE)
+
+        step(1, "find each live band passing the spend step's declaration to the band")
+        assert not unpassed, unpassed
+
+        step(2, "find the band action passing a set declaration to pytest as --missing-artifact")
+        assert not undeclared, [entry.get("run") for entry in running]
+
+        step(3, "find the conftest's autouse fixture setting up the run's provenance, "
+                "then skipping the cases a declaration covers")
+        assert {"getfixturevalue", "skip_declared_missing"} <= hooked, sorted(hooked)

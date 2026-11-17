@@ -59,7 +59,11 @@ from cmn.calibration_runs import deselect_unrequested_calibration
 from cmn.broken import broken_count, broken_detail_lines, mark_broken, refuse_broken
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
-from cmn.missing_artifact import label_missing_artifact_skip, refuse_missing_artifacts
+from cmn.missing_artifact import (
+    label_missing_artifact_skip,
+    refuse_missing_artifacts,
+    skip_declared_missing,
+)
 from cmn.mutation_guard import imported_harness_root, refuse_if_mutating
 from cmn.passw import mark_passw, passw_count, refuse_precondition_warnings
 from cmn.run_context import adopt_run_context, publish_preconditions_record
@@ -140,6 +144,25 @@ def fixture_mqc_run_provenance(
     publish_run_spend(
         record_testsuite_property, pytestconfig, _RUN_PROVENANCE, session.spend_summary()
     )
+
+
+@pytest.fixture(name="mqc_declared_missing", autouse=True)
+def fixture_mqc_declared_missing(request: pytest.FixtureRequest) -> None:
+    """Skip a graded case when a step declared an artifact missing before the run.
+
+    **A fixture rather than the setup hook**, and one that sets up the run's
+    provenance first: a skip raised in the hook comes before every fixture, so
+    a band whose every case skipped published no spend total and the band after
+    it could not read one (``consumer_ci.md`` section 7.8.4).
+
+    Args:
+        request (pytest.FixtureRequest): The case's fixture request.
+
+    Returns:
+        None
+    """
+    request.getfixturevalue("mqc_run_provenance")
+    skip_declared_missing(request.node)
 
 
 def pytest_addoption(parser: Any) -> None:

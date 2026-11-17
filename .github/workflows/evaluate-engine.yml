@@ -259,6 +259,7 @@ jobs:
           judge_mode: live
           judge_engine: ${{ inputs.judge }}
           max_spend: ${{ steps.spend.outputs.remaining }}
+          missing_artifact: ${{ steps.spend.outputs.missing }}
           calibration_record: calibration/record.json
           preconditions_record: reports/preconditions.json
           blocking: "true"
@@ -344,6 +345,7 @@ jobs:
           judge_mode: live
           judge_engine: ${{ inputs.judge }}
           max_spend: ${{ steps.spend.outputs.remaining }}
+          missing_artifact: ${{ steps.spend.outputs.missing }}
           calibration_record: calibration/record.json
           preconditions_record: reports/preconditions.json
           blocking: "true"
@@ -429,6 +431,7 @@ jobs:
           judge_mode: live
           judge_engine: ${{ inputs.judge }}
           max_spend: ${{ steps.spend.outputs.remaining }}
+          missing_artifact: ${{ steps.spend.outputs.missing }}
           calibration_record: calibration/record.json
           preconditions_record: reports/preconditions.json
           blocking: "false"

@@ -1271,7 +1271,11 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115840` | N | `a_live_band_spending_the_whole_input_is_reported` (7.8.4) |
 | `115841` | P | `the_remainder_is_the_ceiling_less_every_earlier_band` (7.8.4) |
 | `115842` | N | `an_exhausted_ceiling_refuses_the_band` (7.8.4) |
-| `115843` | N | `a_spend_that_cannot_be_read_refuses_the_band` (7.8.4) |
+| ~~`115843`~~ | | ~~`a_spend_that_cannot_be_read_refuses_the_band`~~. **Retired 2026-11-17**: such a report is declared missing and the band's cases skip (section 7.8.4). `115879` and `115880` replace it. The identifier stays retired |
+| `115879` | N | `a_missing_or_unreadable_spend_report_is_declared_missing` (7.8.4) |
+| `115880` | N | `a_spend_report_without_one_priced_total_is_declared_missing` (7.8.4) |
+| `115881` | P | `a_declared_spend_report_reaches_every_band_and_its_cases` (7.8.4) |
+| `115882` | P | `a_band_that_dispatched_nothing_publishes_a_priced_total` (7.8.4) |
 | ~~`115844`~~ | | ~~`a_live_band_without_the_calibration_record_is_reported`~~. **Retired 2026-11-14**: `replay -> live` left the regression run (section 7.9). `115858` replaces it. The identifier stays retired |
 | `115845` | N | `a_judge_without_its_calibration_workflow_is_reported` (7.4.5) |
 | `115846` | B | `the_samples_digest_moves_with_samples_and_not_line_endings` (7.4.5) |
@@ -1301,7 +1305,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 204 cases, 144 negative, 49 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 207 cases, 145 negative, 51 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -4105,7 +4109,28 @@ cannot pass the input.
 |---|---|
 | Each report carries a priced total | Prints the remainder, to two decimal places |
 | The remainder is zero or less | Exits 4, `QC_HARNESS_BUDGET_EXHAUSTED`, and the band does not run |
-| A report lacks a priced total, or a live band left no report | Exits 4, `QC_HARNESS_DEPENDENCY_UNMET`: spend nobody can read is not assumed to be zero |
+| Fewer or more reports arrived than live bands ran before, or a report is empty, will not parse, or lacks a priced total | **Declares the report missing and exits 0**: it writes `missing=spend_report=<path>` and a remainder of `0.01`, and the band runs with `--missing-artifact`, so every case skips at setup with `QC_HARNESS_ARTIFACT_MISSING` and nothing is dispatched. Spend nobody can read is not assumed to be zero |
+
+**A missing spend report skips the band's cases rather than failing its job**,
+at the project owner's ruling of 2026-11-17: the band runs and every case
+skips, naming the report, so the band's result says which artifact was missing
+rather than the job ending before pytest. The path is the report that could
+not be read, or the reports directory where the count is wrong; a file not
+ending in `.xml`, such as one under an old name, is not a report and leaves the
+count short. The run exits 3 (harness `harness_test_taxonomy.md` section
+5.1.3.2). The band action passes the declaration when its `missing_artifact`
+input is set, and `conftest.py` calls `skip_declared_missing` from an autouse
+fixture that first sets up the run's provenance fixture. **The skip is not
+raised in the setup hook**, which runs before any fixture: there it left the
+session fixture that publishes the spend never set up, so a band whose every
+case skipped published no total at all. A case skipped behind a foundation
+that did not hold keeps that cause, the hook running first.
+
+**The one-cent remainder keeps the band's own total priced.** A ceiling above
+zero loads the price table, so a band whose cases all skipped publishes
+`mqc.total_spend_usd` as `0.0000` and the band after it reads one more report
+rather than one it cannot price; and a case dispatched despite the skip could
+spend no more than a cent.
 
 **The default ceiling is $7.00**, one platform's regression run: the openai dispatch
 of 2026-11-12 spent $5.86 across `replay -> live` and `live -> live`, calibration included.
@@ -4141,7 +4166,11 @@ The repository settings are the owner's, and no file here can check them.
 | `MQC_CAS_UNI_115840` | Every live band takes `--max-spend` from the remainder of the earlier live bands, never from the input directly |
 | `MQC_CAS_UNI_115841` | The remainder is the ceiling less every earlier live band's published total |
 | `MQC_CAS_UNI_115842` | A remainder of zero or less refuses with `QC_HARNESS_BUDGET_EXHAUSTED` |
-| `MQC_CAS_UNI_115843` | An earlier live band whose total cannot be read refuses with `QC_HARNESS_DEPENDENCY_UNMET` |
+| ~~`MQC_CAS_UNI_115843`~~ | ~~An earlier live band whose total cannot be read refuses with `QC_HARNESS_DEPENDENCY_UNMET`~~. **Retired 2026-11-17**: such a report is declared missing and the band's cases skip; `115879` and `115880` |
+| `MQC_CAS_UNI_115879` | A missing, extra, empty, unparseable or wrongly named report is declared missing, naming it, and the tool writes the declaration and a remainder of `0.01` and exits 0 |
+| `MQC_CAS_UNI_115880` | A report publishing no total, two totals or an unpriced one is declared missing, naming it |
+| `MQC_CAS_UNI_115881` | Every live band passes the tool's declaration to the band action, which passes it to pytest as `--missing-artifact`, and `conftest.py` calls `skip_declared_missing` from an autouse fixture that sets up the run's provenance first |
+| `MQC_CAS_UNI_115882` | A band run with its spend report declared missing and a one-cent ceiling skips every case, exits 3, and publishes a priced total of `0.0000` the next band can read |
 | ~~`115850`~~ | ~~`replay -> live` and `live -> live` name the judge on every band invocation and in every band job name, `replay -> replay` names none, and each engine has one claude-judged caller under a counted cadence~~. **Retired 2026-11-14**: `115858` |
 
 `MQC_CAS_UNI_115703` and `115777` are retired: each asserted the single-session

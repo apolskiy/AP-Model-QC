@@ -40,6 +40,25 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A live band missing an earlier spend report skips its cases, naming the report, 2026-11-17
+
+**Why.** A live band whose earlier band's spend report was missing, extra,
+empty, unparseable, wrongly named or without one priced total failed its job
+with exit 4 before pytest ran, so no case result named the report that was
+missing. Spend nobody can read is still not assumed to be zero.
+
+**What changed.** `tools/spend_remaining.py` declares such a report missing: it
+writes `missing=spend_report=<path>` and a remainder of `0.01` and exits 0. The
+band action passes the declaration to pytest as `--missing-artifact`, and an
+autouse fixture in `conftest.py` skips every graded case with
+`QC_HARNESS_ARTIFACT_MISSING`, naming the report, so the run exits 3 and nothing
+is dispatched. The fixture sets up the run's provenance first, so a band whose
+every case skipped still publishes a priced total of `0.0000`. An exhausted
+ceiling still exits 4 with `QC_HARNESS_BUDGET_EXHAUSTED`. `consumer_ci.md`
+section 7.8.4 holds the design. Requirement `MQC_REQ_CAS_CI_0102` and cases
+`115879` to `115882` were added, and `115843` was retired. The README states
+262 requirements, 302 preconditions and 1174 harness test cases.
+
 ### A graded case naming a pair the corpus does not define skips, naming it, 2026-11-17
 
 **Why.** A graded case whose task and rule set define no case in the corpus

@@ -3,7 +3,7 @@
 """Support code reading the banded regression run, for the cases that check it.
 
 Created: 2026-11-12
-Last updated: 2026-11-15
+Last updated: 2026-11-17
 
 This file contains the pair names, candidate mode then judge mode;
 ``STAGES``, ``BANDS`` and ``BAND_SUFFIXES``, the regression run's three
@@ -19,7 +19,9 @@ flag; ``steps_running``, the steps whose run body names a text;
 ``replaying_invocations``, every regression run invocation naming replay;
 ``live_jobs_off_their_environment``, every job running a case live outside
 the environment its workflow requires; ``claude_judged_callers``, the judge
-each counted claude-judged caller passes; ``write_band_report``, a band
+each counted claude-judged caller passes; ``missing_path``, what
+``tools/spend_remaining.py`` declares missing; ``run_declared_band``, a child
+band run with its spend report declared missing; ``write_band_report``, a band
 report carrying a published spend; and ``write_floor_report``, a P2-P4 band report the floor reads.
 
 **Not a test module.** ``pytest.ini`` collects ``mqc_*.py``, so this name sits
@@ -27,8 +29,12 @@ outside that pattern deliberately, as ``workflow_support.py`` does.
 """
 
 import re
+import subprocess
+import sys
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Final, Optional
+from xml.etree import ElementTree
 
 from tests.cases.debug_support import environment_of, expected_environment
 from tests.cases.workflow_support import (
@@ -37,8 +43,10 @@ from tests.cases.workflow_support import (
     graded_invocations,
     jobs,
     load,
+    repository_root,
     run_lines,
 )
+from tools.spend_remaining import MissingSpendReport, remaining
 
 # THE REGRESSION RUN EVERY ENGINE'S CALLERS INVOKE.
 REGRESSION_RUN: Final[str] = "evaluate-engine.yml"
@@ -271,6 +279,61 @@ def claude_judged_callers(engines: tuple[str, ...], uncounted: str) -> dict[str,
         ]
         for engine in engines
     }
+
+
+def missing_path(ceiling: Decimal, reports: Path, earlier: int) -> str:
+    """Return the path ``spend_remaining`` declares missing, or what it did instead.
+
+    Args:
+        ceiling (Decimal): The dispatch's ceiling.
+        reports (Path): The directory of earlier live bands' reports.
+        earlier (int): How many live bands ran before.
+
+    Returns:
+        str: The declared path, or ``not declared: <remainder or error>``.
+    """
+    try:
+        return f"not declared: {remaining(ceiling, reports, earlier)}"
+    except MissingSpendReport as declared:
+        return str(declared.path)
+    except ValueError as error:
+        return f"not declared: {error}"
+
+
+def run_declared_band(destination: Path, ceiling: str) -> tuple[int, dict[str, str], list[str]]:
+    """Run grok's P0 band in replay with its spend report declared missing.
+
+    Args:
+        destination (Path): Where the JUnit report goes.
+        ceiling (str): The ``--max-spend`` to run with.
+
+    Returns:
+        tuple: The exit status, the report's run properties, and each case's
+        outcome, ``skipped`` or ``ran``; empty where no report was written.
+    """
+    report = destination / "junit_mqc_live_live_p1.xml"
+    finished = subprocess.run(
+        [sys.executable, "-m", "pytest", "-m", "evaluator or tool or sec", "-q",
+         "--no-header", "-p", "no:randomly", "-p", "no:cacheprovider",
+         "--engine", "grok", "--mode", "replay", "--priority", "0",
+         "--max-spend", ceiling, "--missing-artifact", f"spend_report={destination}",
+         f"--junitxml={report}"],
+        cwd=repository_root(), capture_output=True, text=True, encoding="utf-8",
+        timeout=300, check=False, stdin=subprocess.DEVNULL,
+    )
+    if not report.is_file():
+        return finished.returncode, {}, []
+    root = ElementTree.parse(report).getroot()
+    suite = root.find("testsuite")
+    properties = {
+        str(found.get("name")): str(found.get("value"))
+        for found in (suite.find("properties") if suite is not None else None) or []
+    }
+    outcomes = [
+        "skipped" if case.find("skipped") is not None else "ran"
+        for case in root.iter("testcase")
+    ]
+    return finished.returncode, properties, outcomes
 
 
 def write_band_report(directory: Path, stem: str, total: Optional[str]) -> Path:

@@ -67,6 +67,13 @@ inputs:
       judges nothing live. Section 7.4.5.
     required: false
     default: ""
+  missing_artifact:
+    description: >-
+      KIND=PATH of an artifact an earlier step found missing, such as a spend
+      report, empty where none was. Set, every case skips at setup naming it.
+      Section 7.8.4.
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -94,6 +101,9 @@ runs:
         # THE RECORD THE PRECONDITIONS JOB WROTE, read from the environment so
         # an empty input omits the flag rather than naming an empty path.
         PRECONDITIONS_RECORD: ${{ inputs.preconditions_record }}
+        # AN ARTIFACT FOUND MISSING BEFORE THE RUN, as the record above, so an
+        # empty input omits the flag (section 7.8.4).
+        MISSING_ARTIFACT: ${{ inputs.missing_artifact }}
       run: |
         set +e
         pytest -m "evaluator or tool or sec" \
@@ -105,6 +115,7 @@ runs:
           --calibration-record "${{ inputs.calibration_record }}" \
           --priority ${{ inputs.priority }} \
           ${PRECONDITIONS_RECORD:+--preconditions-record "${PRECONDITIONS_RECORD}"} \
+          ${MISSING_ARTIFACT:+--missing-artifact "${MISSING_ARTIFACT}"} \
           --carry-outcomes reports/carry.json \
           --junitxml=reports/junit_mqc_${{ inputs.report }}.xml \
           --alluredir=reports/allure-results

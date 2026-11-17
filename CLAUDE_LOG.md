@@ -9451,3 +9451,55 @@ was staged.
 0; pylint exit 0. Replay of every graded case: claude 95 passed, gemini 94
 passed and 1 passw, grok 95 passed, openai 95 passed, each exit 0, no skips.
 Harness unchanged.
+
+## 2026-11-17: A Live Band Missing An Earlier Spend Report Skips Its Cases
+
+**Why.** `tools/spend_remaining.py` exited 4 with `QC_HARNESS_DEPENDENCY_UNMET`
+when an earlier live band's report was missing or unreadable, so the band's job
+failed before pytest and no case result named the report. The owner's ruling of
+2026-11-17: the band runs and every case skips at setup naming the report, with
+nothing spent; an exhausted ceiling stays `QC_HARNESS_BUDGET_EXHAUSTED`; a band
+whose cases all skipped still writes its spend total; the mechanism is the
+harness's generic `--missing-artifact KIND=PATH` (H5).
+
+**What changed.** `MissingSpendReport` names the report, or the reports
+directory where the count is wrong. A short or extra count, an empty or
+unparseable report, a file not ending in `.xml`, and a report publishing no
+total, two totals or an unpriced one are all declared missing: `main` writes
+`remaining=0.01` and `missing=spend_report=<path>` and exits 0. The band action
+gained a `missing_artifact` input passed as
+`${MISSING_ARTIFACT:+--missing-artifact "${MISSING_ARTIFACT}"}`, and each live
+band passes `steps.spend.outputs.missing`. `conftest.py` calls
+`skip_declared_missing` from the autouse fixture `fixture_mqc_declared_missing`,
+which sets up `mqc_run_provenance` first. The one-cent remainder keeps the
+band's own total priced. Design `consumer_ci.md` section 7.8.4; requirement
+`MQC_REQ_CAS_CI_0102`, and `MQC_REQ_CAS_CI_0088` amended; cases `115879` to
+`115882` added and `115843` retired.
+
+**End to end.** Grok's P0 band in replay with `--max-spend 0.01` and
+`--missing-artifact spend_report=spent`: 19 of 19 skipped with
+`QC_HARNESS_ARTIFACT_MISSING`, each naming `spend_report spent`, exit 3.
+
+**Injection.** Before the implementation `115879`, `115880` and `115881`
+failed. Ten defects, ten caught, each exiting 3: an unparseable report refusing,
+a wrong count raising a plain refusal, an unpriced total read as zero, a
+doubled total accepted, the declaration writing no one-cent remainder, `main`
+exiting 4 on a declaration, the band action dropping the flag, the P1 band
+passing no declaration, the fixture not skipping, and the skip moved back into
+the setup hook. Baseline exit 0 after restore.
+
+**Digressions the user spotted, and the fix.** None from the user. Mine: the
+first design called `skip_declared_missing` from `pytest_runtest_setup`. The end
+to end run showed the band's report carrying no run properties at all: a skip
+raised in the hook comes before every fixture, so the session fixture that
+publishes the spend never set up, and the next band would have read a report
+without a total. `115882` as first written checked the session object rather
+than the report, and passed against the defect. It now runs a child band and
+reads its report, failed with no properties before the fix, and passes after;
+the skip moved into the autouse fixture. `115881`'s behaviour suffix was 62
+characters and pylint exited 16 at 10.00/10; it was shortened.
+
+**Verified.** Model Repository preconditions: unit 302 of 302, 0 skipped, exit
+0; pylint exit 0. Replay of every graded case: claude 95 passed, gemini 94
+passed and 1 passw, grok 95 passed, openai 95 passed, each exit 0, no skips.
+Harness unchanged.
