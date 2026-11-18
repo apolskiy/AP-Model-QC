@@ -40,6 +40,19 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Carried outcomes from another served model skip the cases resting on them, 2026-11-18
+
+**Why.** A carried outcome is kept eighty days, and the weekly version probe
+deletes it only once it sees a model change, so a band re-run in the week
+before the probe adopted foundations measured on the previous model.
+
+**What changed.** The harness now records the served model on the carried
+outcomes and refuses a record from another one, so only the cases resting on a
+carried foundation skip, as `carried_outcome`. `config/harness_pin.yaml` pairs
+`main` with harness `main`, resolved per run, so no pin moved.
+`consumer_ci.md` section 3.12.1.2 marks the mechanism built. No README figure
+changed.
+
 ### A band refused for its run's status still reports what it held and names a missing artifact, 2026-11-18
 
 **Why.** A band whose run exited 3, as one with a declared missing artifact

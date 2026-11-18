@@ -9697,3 +9697,22 @@ refusal alone. With the change, dropping the artifact lines failed it at step
 refuse, passes unchanged.
 
 **Digressions the user spotted, and the fix.** None this commit.
+
+## 2026-11-18: The Served Model Guard Is Built
+
+**Why.** `consumer_ci.md` section 3.12.1.2 recorded the second of the two
+mechanisms the owner chose for ending carried outcomes on a model change as
+not built. The harness built it in 366099b.
+
+**What changed.** The section 3.12.1.2 row now says built and cites harness
+`cmn_verdict_and_cli.md` section 7.6.3, with a paragraph stating what is
+compared: a digest of what the provider serves rather than the version string,
+an unreadable provider on either side refusing the record, and replay comparing
+no model. `config/harness_pin.yaml` pairs `main` with harness `main`, which
+the resolver turns into a commit per run, so no pin moved. CHANGELOG entry
+added; no README figure changed.
+
+**Verified** against the pushed harness, installed editable: unit and pylint,
+figures in the commit note.
+
+**Digressions the user spotted, and the fix.** None this commit.

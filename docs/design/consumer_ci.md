@@ -625,7 +625,13 @@ which the owner chose together:
 | Mechanism | Catches | State |
 |---|---|---|
 | The version probe deletes a changed engine's carried outcomes before it dispatches | A change the weekly probe has seen | Built, section 4.23.3 |
-| The carry file records the served model version, and a band reading it under another version skips the cases resting on it | A change in the week before the probe sees it | **Not built yet**, recorded here as a gap |
+| The carry file records the served model, and a band reading it under another skips the cases resting on it | A change in the week before the probe sees it | Built 2026-11-18, in the harness: harness `cmn_verdict_and_cli.md` section 7.6.3 |
+
+**The harness compares a digest of what the provider serves, not the version
+string**, because a pinned identifier cannot move. A live band that could not
+read its provider, against a record naming a digest or the reverse, refuses the
+record too, so its dependents skip as `carried_outcome`. A replay band records
+and compares no model, since its recording names what produced it.
 
 **The precondition record and the spend reports keep the eighty days alone.**
 The record measures the instrument, which is the same whichever model is
