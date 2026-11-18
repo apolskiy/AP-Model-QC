@@ -40,6 +40,26 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### An artifact a job does not find skips the cases reading it, and never fails the job, 2026-11-18
+
+**Why.** A download step naming one artifact failed its job when the artifact
+was not there, so a band re-run after the eighty days, or after the version
+probe deleted a changed engine's carried outcomes, ended at its download step
+and no case result named what was missing. Nothing compared a download's name
+with the uploads either, so a download left under an old name would have
+failed the same way.
+
+**What changed.** Every download step in every workflow carries
+`continue-on-error: true`. A band whose precondition record was not found runs
+with it declared missing through `tools/precondition_record.py`, unless an
+earlier step declared another artifact, so every graded case skips at setup and
+the run exits 3; a carry file not found is the harness's carry problem, and the
+cases resting on it skip. Every download must name an artifact an upload in its
+workflow writes, with no old names allowed. `consumer_ci.md` section 3.12.1.3
+holds the design. Requirements `MQC_REQ_CAS_CI_0106` to `0108` and cases
+`115887` to `115890` were added. The README states 268 requirements, 310
+preconditions and 1175 harness test cases.
+
 ### A changed engine's carried outcomes are deleted before it is re-measured, 2026-11-17
 
 **Why.** Carried outcomes are foundation results measured against one served

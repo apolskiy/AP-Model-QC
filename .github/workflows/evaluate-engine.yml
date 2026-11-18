@@ -237,6 +237,9 @@ jobs:
           python -m pip install --quiet --no-deps --editable "."
       - name: Take the record the preconditions job wrote
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE BAND DECLARES IT MISSING and its cases skip, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: preconditions-${{ inputs.engine }}
           path: reports/
@@ -312,16 +315,25 @@ jobs:
           python -m pip install --quiet --no-deps --editable "."
       - name: Take the record the preconditions job wrote
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE BAND DECLARES IT MISSING and its cases skip, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: preconditions-${{ inputs.engine }}
           path: reports/
       - name: Take the outcomes P0 established
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE CASES RESTING ON IT SKIP as a carry problem, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: carry-live-live-after-p0-${{ inputs.engine }}
           path: reports/
       - name: Take the reports of the live bands before this one
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE SPEND STEP DECLARES IT MISSING (design sections 7.8.4
+        # and 3.12.1.3).
+        continue-on-error: true
         with:
           pattern: spend-${{ inputs.engine }}-*
           path: spent/
@@ -398,16 +410,25 @@ jobs:
           python -m pip install --quiet --no-deps --editable "."
       - name: Take the record the preconditions job wrote
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE BAND DECLARES IT MISSING and its cases skip, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: preconditions-${{ inputs.engine }}
           path: reports/
       - name: Take the outcomes P0 and P1 established
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE CASES RESTING ON IT SKIP as a carry problem, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: carry-live-live-after-p1-${{ inputs.engine }}
           path: reports/
       - name: Take the reports of the live bands before this one
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE SPEND STEP DECLARES IT MISSING (design sections 7.8.4
+        # and 3.12.1.3).
+        continue-on-error: true
         with:
           pattern: spend-${{ inputs.engine }}-*
           path: spent/

@@ -71,13 +71,27 @@ inputs:
     description: >-
       KIND=PATH of an artifact an earlier step found missing, such as a spend
       report, empty where none was. Set, every case skips at setup naming it.
-      Section 7.8.4.
+      Empty, a precondition record not found is declared instead. Sections
+      7.8.4 and 3.12.1.3.
     required: false
     default: ""
 
 runs:
   using: composite
   steps:
+    # A RECORD ITS DOWNLOAD DID NOT FIND IS DECLARED MISSING, never left absent,
+    # because a run given no record reads as ungated (harness
+    # `cmn_verdict_and_cli.md` section 7.1.4). ONLY WHERE NO EARLIER STEP
+    # DECLARED AN ARTIFACT: one declaration already skips every graded case, so
+    # the first found stands. `consumer_ci.md` section 3.12.1.3.
+    - name: Band ${{ inputs.band }}, its precondition record found or declared missing
+      id: record
+      if: inputs.preconditions_record != '' && inputs.missing_artifact == ''
+      shell: bash
+      env:
+        PRECONDITIONS_RECORD: ${{ inputs.preconditions_record }}
+      run: python -m tools.precondition_record --record "${PRECONDITIONS_RECORD}" --output "$GITHUB_OUTPUT"
+
     # THE PYTEST STEP IS INVOKED BY ACTIONS RATHER THAN WRAPPED, so its own
     # header and the per-test PASSED, FAILED and SKIPPED listing appear in the
     # log exactly as they do from a job. A Python wrapper would nest that
@@ -101,9 +115,10 @@ runs:
         # THE RECORD THE PRECONDITIONS JOB WROTE, read from the environment so
         # an empty input omits the flag rather than naming an empty path.
         PRECONDITIONS_RECORD: ${{ inputs.preconditions_record }}
-        # AN ARTIFACT FOUND MISSING BEFORE THE RUN, as the record above, so an
-        # empty input omits the flag (section 7.8.4).
-        MISSING_ARTIFACT: ${{ inputs.missing_artifact }}
+        # AN ARTIFACT FOUND MISSING BEFORE THE RUN, the caller's or else the
+        # record's, as the record above, so an empty value omits the flag
+        # (sections 7.8.4 and 3.12.1.3).
+        MISSING_ARTIFACT: ${{ inputs.missing_artifact || steps.record.outputs.missing }}
       run: |
         set +e
         pytest -m "evaluator or tool or sec" \

@@ -635,6 +635,54 @@ graded, and a spend report measures money against the ceiling.
 retention is not eighty days, and requires each of the three carriers to be
 found, so that a renamed carrier cannot pass by being absent.
 
+##### 3.12.1.3 A carrier that is not found skips the cases reading it, and never fails the job
+
+Recorded 2026-11-18 at the project owner's rulings: "Missing artifacts in any
+type of live run which uses tokens, must skip test cases using those
+artifacts. work flow does not matter and should not be a limitation to that",
+and, of the artifact names, "It's our harness there should not be any old names
+for download or uploads."
+
+**What was wrong.** A download step naming one artifact failed its job when the
+artifact was not there: a band re-run after the eighty days, or after the
+version probe deleted a changed engine's carried outcomes (section 4.23.3),
+ended at its download step, and no case result named what was missing. And no
+check compared a download's name with the uploads, so a download left under a
+name no job writes any more would have failed the same way.
+
+**Every download step carries `continue-on-error: true`**, in every workflow,
+so a download that found nothing leaves the file absent and the step after it
+decides. What each absence then does:
+
+| Not found | What follows |
+|---|---|
+| The precondition record | **The band action declares it missing**: `tools/precondition_record.py` finds the path it was given absent and the band runs with `--missing-artifact precondition_record=<path>`, so every graded case skips at setup with `QC_HARNESS_ARTIFACT_MISSING` and the run exits 3 (harness `harness_test_taxonomy.md` section 5.1.3.2). The record is not left absent, because a run given no record reads as ungated (harness `cmn_verdict_and_cli.md` section 7.1.4) |
+| The carried outcomes | **The harness's carry problem**: an absent carry file skips the cases resting on a foundation it would have carried, as `carried_outcome` (harness `cmn_verdict_and_cli.md` section 10.28.8), and a case resting on nothing runs |
+| An earlier live band's spend report | **`tools/spend_remaining.py` declares it missing** (section 7.8.4), as before |
+| A band's report, in the gate's result job | The band table names the report it could not read; nothing is graded there |
+
+**One declaration per band, and the first found stands.** The flag is
+single-valued because one declared artifact already skips every graded case
+(harness `harness_test_taxonomy.md` section 5.1.3.2). The band action declares
+the record only where its `missing_artifact` input is empty, so a spend report
+the step before found missing keeps its declaration.
+
+**Every download names an artifact an upload in the same workflow writes.** An
+artifact is shared within a run, and a run is one workflow file with the
+reusable workflows it calls, so the uploads a download can find are in that
+file. A name is compared with every `${{ }}` expression read as a placeholder,
+and where the whole name is one expression, each `format()` string it chooses
+between is a name; a `pattern:` download must match an upload's name. There is
+no list of permitted old names: a download naming what no upload writes is a
+defect in this repository and is fixed, never allowed.
+
+| Case | Asserts |
+|---|---|
+| `MQC_CAS_UNI_115887` | A download step without `continue-on-error: true` is reported, and no workflow here has one |
+| `MQC_CAS_UNI_115888` | A download naming an artifact no upload in its workflow writes is reported, an old name included, a `format()` name is read, and no workflow here has one |
+| `MQC_CAS_UNI_115889` | The tool declares an absent precondition record and nothing for one present, and the band action runs it before pytest only where no earlier declaration was made, passing either one as `--missing-artifact` |
+| `MQC_CAS_UNI_115890` | A band run with its precondition record absent and declared missing skips every case it selected and exits 3 |
+
 #### 3.12.2 Every band answers to a floor, and the blocking ones answer for every case they selected
 
 **Corrected 2026-10-07 by the project owner, and the sentence this replaces was
@@ -1321,6 +1369,10 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115884` | N | `a_carrier_kept_other_than_eighty_days_is_reported` (3.12.1.2) |
 | `115885` | N | `only_the_changed_engines_carried_outcomes_are_stale` (4.23.3) |
 | `115886` | N | `a_probe_dispatching_before_pruning_carriers_is_reported` (4.23.3) |
+| `115887` | N | `a_download_that_can_fail_its_job_is_reported` (3.12.1.3) |
+| `115888` | N | `a_download_naming_no_current_upload_is_reported` (3.12.1.3) |
+| `115889` | N | `an_absent_precondition_record_is_declared_missing` (3.12.1.3) |
+| `115890` | N | `a_band_missing_its_precondition_record_skips_every_case` (3.12.1.3) |
 | ~~`115844`~~ | | ~~`a_live_band_without_the_calibration_record_is_reported`~~. **Retired 2026-11-14**: `replay -> live` left the regression run (section 7.9). `115858` replaces it. The identifier stays retired |
 | `115845` | N | `a_judge_without_its_calibration_workflow_is_reported` (7.4.5) |
 | `115846` | B | `the_samples_digest_moves_with_samples_and_not_line_endings` (7.4.5) |
@@ -1350,7 +1402,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 211 cases, 148 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 215 cases, 152 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,

@@ -9620,3 +9620,52 @@ caught before staging: an alias for `step` justified by a loop the module does
 not have, removed; and a failure summary that named an unrelated code and
 credited the unbuilt served-version check, rewritten. The harness step rule
 also refused one step carrying two verifications, split into two.
+
+## 2026-11-18: An Artifact Not Found Skips The Cases Reading It
+
+**Why.** The owner's rulings of 2026-11-18: "Missing artifacts in any type of
+live run which uses tokens, must skip test cases using those artifacts. work
+flow does not matter and should not be a limitation to that", and, of the
+artifact names, "It's our harness there should not be any old names for
+download or uploads." A download step naming one artifact failed its job when
+the artifact was not there, so a band re-run after the eighty days, or after
+the version probe deleted a changed engine's carried outcomes, ended at the
+download and no case result named what was missing. Nothing compared a
+download's name with the uploads.
+
+**What changed.** All thirteen download steps, six in `gate-target.yml` and
+seven in `evaluate-engine.yml`, carry `continue-on-error: true`. The band
+action gained a step, id `record`, running `tools/precondition_record.py`
+where its `missing_artifact` input is empty: a record path that is not a file
+is written as `missing=precondition_record=<path>`, and the pytest step reads
+`${{ inputs.missing_artifact || steps.record.outputs.missing }}`, so the first
+declaration stands. A carry file not found is left to the harness's carry
+problem (`cmn_verdict_and_cli.md` section 10.28.8). `115881` asserted the old
+input-only expression and now asserts this one. Design `consumer_ci.md`
+section 3.12.1.3; requirements `MQC_REQ_CAS_CI_0106` to `0108`; cases `115887`
+to `115890` in a new module, `mqc_uni_artifact_downloads.py`, with its readers
+in `artifact_download_support.py`, since `mqc_uni_band_gating.py` sits at 828
+lines. README 268 requirements and 310 preconditions; its harness figure moved
+from 1174 to 1175, which H7 made stale.
+
+**The name check reads expressions as placeholders.** Every `${{ }}` becomes
+one placeholder, and a name that is one whole expression reads as each
+`format()` string it chooses between, so the gate's gated and ungated report
+names both count. A download must name an upload of its own workflow, or of a
+workflow it calls. No download here names an old artifact today, so `115888`
+passed before any change; the injection is what shows it works.
+
+**Injection.** Before the tool existed the module would not import. With it,
+`115887` failed naming all thirteen downloads and `115889` failed at its third
+step, finding no declaring step in the band action. Renaming the gate's P1
+carry download to `carry-after-p0-${{ inputs.engine }}`, its name before the
+platform joined it, failed `115888` naming that download; restored. `115890`
+passed before the change, because the harness already skips a declared record
+(H7): it is the end-to-end proof that a band so declared skips every case and
+exits 3.
+
+**Digressions the user spotted, and the fix.** None this commit. One of mine,
+caught before running: the script appending this entry was written with
+doubled backslashes in its line-ending literals, the third time this
+transport slip has reached a scratchpad script; it now builds them with
+`chr`, so no escape is involved.

@@ -3,7 +3,7 @@
 """Unit preconditions for the regression run, banded as the gate is.
 
 Created: 2026-11-12
-Last updated: 2026-11-17
+Last updated: 2026-11-18
 
 This file contains ``TestMQCLiveBands``, five cases over ``evaluate-engine.yml``
 and its callers. A regression run is its preconditions, the calibration check
@@ -91,6 +91,9 @@ _SPEND_TOOL = "tools.spend_remaining"
 _DECLARED_OUTPUT = "steps.spend.outputs.missing"
 _DECLARED_INPUT = "missing_artifact"
 _DECLARED_ENV = "MISSING_ARTIFACT"
+# THE CALLER'S DECLARATION FIRST, else the band's own for its precondition
+# record. Section 3.12.1.3.
+_DECLARED_VALUE = "${{ inputs.missing_artifact || steps.record.outputs.missing }}"
 _DECLARED_FLAG = '${MISSING_ARTIFACT:+--missing-artifact "${MISSING_ARTIFACT}"}'
 _DECLARED_FIXTURE = "fixture_mqc_setup_skips"
 
@@ -312,8 +315,7 @@ class TestMQCLiveBands:
             if "pytest" in str(entry.get("run") or "")
         ]
         undeclared = _DECLARED_INPUT not in (action.get("inputs") or {}) or not any(
-            str((entry.get("env") or {}).get(_DECLARED_ENV)) ==
-            f"${{{{ inputs.{_DECLARED_INPUT} }}}}"
+            str((entry.get("env") or {}).get(_DECLARED_ENV)) == _DECLARED_VALUE
             and _DECLARED_FLAG in str(entry.get("run")) for entry in running
         )
         hooked = top_level_calls(repository_root() / "conftest.py", _DECLARED_FIXTURE)

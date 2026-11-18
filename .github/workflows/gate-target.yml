@@ -274,6 +274,9 @@ jobs:
       # Design section 3.12.1.1.
       - name: Take the record the preconditions job wrote
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE BAND DECLARES IT MISSING and its cases skip, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: preconditions-${{ matrix.os }}
           path: reports/
@@ -342,6 +345,9 @@ jobs:
       # failing them.
       - name: Take the outcomes P0 established
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE CASES RESTING ON IT SKIP as a carry problem, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: carry-after-p0-${{ inputs.engine }}-${{ matrix.os }}
           path: reports/
@@ -354,6 +360,9 @@ jobs:
       # Design section 3.12.1.1.
       - name: Take the record the preconditions job wrote
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE BAND DECLARES IT MISSING and its cases skip, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: preconditions-${{ matrix.os }}
           path: reports/
@@ -418,6 +427,9 @@ jobs:
           python -m pip install --quiet --no-deps --editable "."
       - name: Take the outcomes P0 and P1 established
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE CASES RESTING ON IT SKIP as a carry problem, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: carry-after-p1-${{ inputs.engine }}-${{ matrix.os }}
           path: reports/
@@ -433,6 +445,9 @@ jobs:
       # Design section 3.12.1.1.
       - name: Take the record the preconditions job wrote
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE BAND DECLARES IT MISSING and its cases skip, rather
+        # than the job failing here (design section 3.12.1.3).
+        continue-on-error: true
         with:
           name: preconditions-${{ matrix.os }}
           path: reports/
@@ -493,6 +508,9 @@ jobs:
       - name: Collect each band's report
         if: always()
         uses: actions/download-artifact@v7
+        # NOT FOUND, THE BAND TABLE NAMES THE REPORT IT COULD NOT READ (design
+        # section 3.12.1.3).
+        continue-on-error: true
         with:
           pattern: >-
             ${{ needs.resolve.outputs.gated == 'true'
