@@ -20,8 +20,8 @@ flag; ``steps_running``, the steps whose run body names a text;
 ``live_jobs_off_their_environment``, every job running a case live outside
 the environment its workflow requires; ``claude_judged_callers``, the judge
 each counted claude-judged caller passes; ``missing_path``, what
-``tools/spend_remaining.py`` declares missing; ``run_declared_band``, a child
-band run with its spend report declared missing; ``write_band_report``, a band
+``tools/spend_remaining.py`` declares missing; ``run_child_band``, a child
+band run over a selection of grok's graded cases; ``write_band_report``, a band
 report carrying a published spend; and ``write_floor_report``, a P2-P4 band report the floor reads.
 
 **Not a test module.** ``pytest.ini`` collects ``mqc_*.py``, so this name sits
@@ -300,12 +300,16 @@ def missing_path(ceiling: Decimal, reports: Path, earlier: int) -> str:
         return f"not declared: {error}"
 
 
-def run_declared_band(destination: Path, ceiling: str) -> tuple[int, dict[str, str], list[str]]:
-    """Run grok's P0 band in replay with its spend report declared missing.
+def run_child_band(
+    destination: Path, ceiling: str, selection: list[str],
+) -> tuple[int, dict[str, str], list[str]]:
+    """Run a selection of grok's graded cases in replay, as a band, and read its report.
 
     Args:
         destination (Path): Where the JUnit report goes.
         ceiling (str): The ``--max-spend`` to run with.
+        selection (list[str]): The selecting and declaring flags, such as
+            ``--priority 0`` and ``--missing-artifact``.
 
     Returns:
         tuple: The exit status, the report's run properties, and each case's
@@ -315,8 +319,7 @@ def run_declared_band(destination: Path, ceiling: str) -> tuple[int, dict[str, s
     finished = subprocess.run(
         [sys.executable, "-m", "pytest", "-m", "evaluator or tool or sec", "-q",
          "--no-header", "-p", "no:randomly", "-p", "no:cacheprovider",
-         "--engine", "grok", "--mode", "replay", "--priority", "0",
-         "--max-spend", ceiling, "--missing-artifact", f"spend_report={destination}",
+         "--engine", "grok", "--mode", "replay", "--max-spend", ceiling, *selection,
          f"--junitxml={report}"],
         cwd=repository_root(), capture_output=True, text=True, encoding="utf-8",
         timeout=300, check=False, stdin=subprocess.DEVNULL,

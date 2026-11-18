@@ -9503,3 +9503,39 @@ characters and pylint exited 16 at 10.00/10; it was shortened.
 0; pylint exit 0. Replay of every graded case: claude 95 passed, gemini 94
 passed and 1 passw, grok 95 passed, openai 95 passed, each exit 0, no skips.
 Harness unchanged.
+
+## 2026-11-17: Every Band Publishes Its Spend Total, Even When Every Case Skipped
+
+**Why.** After M2, a live band whose every case skipped behind a foundation
+that did not hold still published no spend total: `enforce_dependencies` raised
+its skip in `pytest_runtest_setup`, before any fixture, so the session fixture
+publishing the spend never set up. The band after it then declared the report
+missing and skipped every case although nothing was missing. The owner's
+ruling of 2026-11-17: every band always publishes its measured total, `0.0000`
+when nothing was dispatched and the real figure when a case dispatched before
+it skipped; skips do not add to it, being measured rather than assumed.
+
+**What changed.** `fixture_mqc_setup_skips`, renamed from
+`fixture_mqc_declared_missing`, sets up `mqc_run_provenance`, then calls
+`enforce_dependencies`, then `skip_declared_missing`; the setup hook raises
+neither. A case skipped behind a foundation keeps that cause. Design
+`consumer_ci.md` section 7.8.4; requirement `MQC_REQ_CAS_CI_0103`; case
+`115883`, a child band selecting grok `134206` without its foundation. `115881`
+now also requires `enforce_dependencies` in the fixture.
+
+**Injection.** Before the fix `115883` failed with no run properties in the
+report. Twelve defects across M2 and M2b, twelve caught, each exiting 3; the two
+new ones put the foundation skip back in the hook (`115883`) and drop it from
+the fixture (`115881`). Baseline exit 0 after restore.
+
+**Digressions the user spotted, and the fix.** I gave the owner an example of a
+live case that spends and then skips, a judge unreachable after the candidate
+answered, citing the failure-code registry. The owner pointed out that the
+registry can be out of date and asked for verification across the
+implementation, design and cases instead. The trace that followed is reported
+to the owner separately, with the questions it raised.
+
+**Verified.** Model Repository preconditions: unit 303 of 303, 0 skipped, exit
+0; pylint exit 0. Replay of every graded case: claude 95 passed, gemini 94
+passed and 1 passw, grok 95 passed, openai 95 passed, each exit 0, no skips.
+Harness unchanged.

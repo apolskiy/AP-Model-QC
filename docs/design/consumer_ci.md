@@ -1276,6 +1276,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115880` | N | `a_spend_report_without_one_priced_total_is_declared_missing` (7.8.4) |
 | `115881` | P | `a_declared_spend_report_reaches_every_band_and_its_cases` (7.8.4) |
 | `115882` | P | `a_band_that_dispatched_nothing_publishes_a_priced_total` (7.8.4) |
+| `115883` | P | `a_band_skipped_behind_its_foundations_publishes_its_total` (7.8.4) |
 | ~~`115844`~~ | | ~~`a_live_band_without_the_calibration_record_is_reported`~~. **Retired 2026-11-14**: `replay -> live` left the regression run (section 7.9). `115858` replaces it. The identifier stays retired |
 | `115845` | N | `a_judge_without_its_calibration_workflow_is_reported` (7.4.5) |
 | `115846` | B | `the_samples_digest_moves_with_samples_and_not_line_endings` (7.4.5) |
@@ -1305,7 +1306,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 207 cases, 145 negative, 51 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 208 cases, 145 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -4123,8 +4124,16 @@ input is set, and `conftest.py` calls `skip_declared_missing` from an autouse
 fixture that first sets up the run's provenance fixture. **The skip is not
 raised in the setup hook**, which runs before any fixture: there it left the
 session fixture that publishes the spend never set up, so a band whose every
-case skipped published no total at all. A case skipped behind a foundation
-that did not hold keeps that cause, the hook running first.
+case skipped published no total at all.
+
+**Every band publishes its measured total, whatever its cases' outcomes**, at
+the project owner's ruling of 2026-11-17. A band whose every case skipped
+behind a foundation that did not hold spent nothing, and its report says
+`0.0000` rather than leaving the band after it a report it cannot read. A case
+that dispatched before it skipped spent, so the total is measured, never
+assumed to be zero. The same fixture therefore calls `enforce_dependencies`
+before `skip_declared_missing`, and a case skipped behind a foundation keeps
+that cause.
 
 **The one-cent remainder keeps the band's own total priced.** A ceiling above
 zero loads the price table, so a band whose cases all skipped publishes
@@ -4171,6 +4180,7 @@ The repository settings are the owner's, and no file here can check them.
 | `MQC_CAS_UNI_115880` | A report publishing no total, two totals or an unpriced one is declared missing, naming it |
 | `MQC_CAS_UNI_115881` | Every live band passes the tool's declaration to the band action, which passes it to pytest as `--missing-artifact`, and `conftest.py` calls `skip_declared_missing` from an autouse fixture that sets up the run's provenance first |
 | `MQC_CAS_UNI_115882` | A band run with its spend report declared missing and a one-cent ceiling skips every case, exits 3, and publishes a priced total of `0.0000` the next band can read |
+| `MQC_CAS_UNI_115883` | A band run whose every case skipped behind a foundation that did not hold publishes a priced total of `0.0000` the next band can read |
 | ~~`115850`~~ | ~~`replay -> live` and `live -> live` name the judge on every band invocation and in every band job name, `replay -> replay` names none, and each engine has one claude-judged caller under a counted cadence~~. **Retired 2026-11-14**: `115858` |
 
 `MQC_CAS_UNI_115703` and `115777` are retired: each asserted the single-session

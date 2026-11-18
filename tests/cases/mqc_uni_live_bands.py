@@ -92,7 +92,7 @@ _DECLARED_OUTPUT = "steps.spend.outputs.missing"
 _DECLARED_INPUT = "missing_artifact"
 _DECLARED_ENV = "MISSING_ARTIFACT"
 _DECLARED_FLAG = '${MISSING_ARTIFACT:+--missing-artifact "${MISSING_ARTIFACT}"}'
-_DECLARED_FIXTURE = "fixture_mqc_declared_missing"
+_DECLARED_FIXTURE = "fixture_mqc_setup_skips"
 
 # THE PLATFORM INPUT, as a job reads it. Section 7.8.3.
 _CHOSEN_OS = "${{ inputs.os }}"
@@ -326,4 +326,5 @@ class TestMQCLiveBands:
 
         step(3, "find the conftest's autouse fixture setting up the run's provenance, "
                 "then skipping the cases a declaration covers")
-        assert {"getfixturevalue", "skip_declared_missing"} <= hooked, sorted(hooked)
+        assert {"getfixturevalue", "enforce_dependencies", "skip_declared_missing"} <= hooked, \
+            sorted(hooked)

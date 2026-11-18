@@ -40,6 +40,22 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A band whose every case skipped behind a foundation publishes its spend total, 2026-11-17
+
+**Why.** A live band whose every case skipped behind a foundation that did not
+hold published no spend total, because the foundation skip was raised in the
+setup hook before the fixture that publishes the spend. The band after it then
+declared the report missing and skipped every case, although nothing was
+missing.
+
+**What changed.** `conftest.py` raises the foundation skip from the same autouse
+fixture as the declared missing artifact, now `fixture_mqc_setup_skips`, after
+the run's provenance is set up, so every band publishes its measured total
+whatever its cases' outcomes: `0.0000` when nothing was dispatched.
+`consumer_ci.md` section 7.8.4 holds the design. Requirement
+`MQC_REQ_CAS_CI_0103` and case `115883` were added. The README states 263
+requirements and 303 preconditions.
+
 ### A live band missing an earlier spend report skips its cases, naming the report, 2026-11-17
 
 **Why.** A live band whose earlier band's spend report was missing, extra,

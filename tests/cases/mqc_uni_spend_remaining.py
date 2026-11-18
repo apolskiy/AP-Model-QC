@@ -30,6 +30,7 @@ Specified by ``docs/design/consumer_ci.md`` section 7.8.4.
 #   115879  a_missing_or_unreadable_spend_report_is_declared_missing
 #   115880  a_spend_report_without_one_priced_total_is_declared_missing
 #   115882  a_band_that_dispatched_nothing_publishes_a_priced_total
+#   115883  a_band_skipped_behind_its_foundations_publishes_its_total
 # ------------------------------------------------------------ end of cases
 
 from decimal import Decimal
@@ -40,7 +41,7 @@ import pytest
 from cmn.case_steps import step
 from cmn.grouping import story
 
-from tests.cases.live_band_support import missing_path, run_declared_band, write_band_report
+from tests.cases.live_band_support import missing_path, run_child_band, write_band_report
 from tools.spend_remaining import main, remaining
 
 pytestmark = pytest.mark.unit
@@ -54,6 +55,9 @@ _DECLARED_REMAINDER = "0.01"
 # THE RUN PROPERTIES A BAND'S REPORT CARRIES ITS SPEND UNDER. Section 7.4.4.
 _TOTAL = "mqc.total_spend_usd"
 _CEILING_PROPERTY = "mqc.max_spend_usd"
+
+# A GRADED CASE RESTING ON A FOUNDATION, which skips when run without it.
+_DEPENDENT_ALONE = "134206"
 
 
 class TestMQCSpendRemaining:
@@ -218,7 +222,10 @@ class TestMQCSpendRemaining:
         Returns:
             None
         """
-        status, properties, outcomes = run_declared_band(tmp_path, _DECLARED_REMAINDER)
+        status, properties, outcomes = run_child_band(
+            tmp_path, _DECLARED_REMAINDER,
+            ["--priority", "0", "--missing-artifact", f"spend_report={tmp_path}"],
+        )
 
         step(1, "find the band exiting 3 with every case it selected skipped")
         assert status == 3 and outcomes and set(outcomes) == {"skipped"}, (status, outcomes)
@@ -227,6 +234,33 @@ class TestMQCSpendRemaining:
         assert (
             properties.get(_TOTAL) == "0.0000" and properties.get(_CEILING_PROPERTY) == "0.0100"
         ), properties
+
+        step(3, "find the published total readable by the band after it")
+        assert remaining(Decimal(_CEILING), tmp_path, 1) == Decimal("7.00")
+
+    @story("A missing spend report skips the band's cases")
+    def MQC_CAS_UNI_115883_a_band_skipped_behind_its_foundations_publishes_its_total(
+        self, tmp_path: Path,
+    ) -> None:
+        """A band whose every case skipped behind a foundation publishes a total of 0.0000.
+
+        Design: ``consumer_ci.md`` section 7.8.4.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+
+        Returns:
+            None
+        """
+        _, properties, outcomes = run_child_band(
+            tmp_path, _DECLARED_REMAINDER, ["-k", _DEPENDENT_ALONE],
+        )
+
+        step(1, f"find {_DEPENDENT_ALONE}, selected without its foundation, skipped")
+        assert outcomes == ["skipped"], outcomes
+
+        step(2, "find the band's report publishing a priced total of 0.0000")
+        assert properties.get(_TOTAL) == "0.0000", properties
 
         step(3, "find the published total readable by the band after it")
         assert remaining(Decimal(_CEILING), tmp_path, 1) == Decimal("7.00")

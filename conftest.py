@@ -146,14 +146,15 @@ def fixture_mqc_run_provenance(
     )
 
 
-@pytest.fixture(name="mqc_declared_missing", autouse=True)
-def fixture_mqc_declared_missing(request: pytest.FixtureRequest) -> None:
-    """Skip a graded case when a step declared an artifact missing before the run.
+@pytest.fixture(name="mqc_setup_skips", autouse=True)
+def fixture_mqc_setup_skips(request: pytest.FixtureRequest) -> None:
+    """Skip a case whose foundation did not hold, or a graded case declared missing an artifact.
 
     **A fixture rather than the setup hook**, and one that sets up the run's
     provenance first: a skip raised in the hook comes before every fixture, so
     a band whose every case skipped published no spend total and the band after
-    it could not read one (``consumer_ci.md`` section 7.8.4).
+    it could not read one (``consumer_ci.md`` section 7.8.4). The foundation is
+    asked first, so a case skipped behind one keeps that cause.
 
     Args:
         request (pytest.FixtureRequest): The case's fixture request.
@@ -162,6 +163,7 @@ def fixture_mqc_declared_missing(request: pytest.FixtureRequest) -> None:
         None
     """
     request.getfixturevalue("mqc_run_provenance")
+    enforce_dependencies(request.node)
     skip_declared_missing(request.node)
 
 
@@ -288,7 +290,10 @@ def pytest_collection_modifyitems(
 
 
 def pytest_runtest_setup(item: pytest.Item) -> None:
-    """Skip a case whose foundational dependency did not hold.
+    """Begin a case's record, announce it, and start recording its steps.
+
+    Its skips are raised by ``fixture_mqc_setup_skips``, after the run's
+    provenance is set up.
 
     Args:
         item (pytest.Item): The test about to run.
@@ -307,7 +312,6 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
     # ITS STEPS ARE RECORDED FROM HERE, by the engine graded cases use
     # (harness taxonomy section 8.2.4).
     begin_case_steps(item)
-    enforce_dependencies(item)
 
 
 def pytest_assertion_pass(item: pytest.Item, lineno: int, orig: str, expl: str) -> None:
