@@ -106,6 +106,7 @@ modules:
   tests/cases/mqc_uni_scheduled_evaluation.py: Consumer CI
   tests/cases/mqc_uni_live_bands.py: Consumer CI
   tests/cases/mqc_uni_artifact_downloads.py: Consumer CI
+  tests/cases/mqc_uni_gate_wait.py: Consumer CI
   tests/cases/mqc_uni_spend_remaining.py: Consumer CI
 
   # Which harness this case set runs against, and whether it followed.

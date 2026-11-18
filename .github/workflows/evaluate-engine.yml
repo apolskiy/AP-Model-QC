@@ -75,6 +75,9 @@ jobs:
       harness_sha: ${{ steps.pin.outputs.harness_sha }}
       green: ${{ steps.pin.outputs.green }}
       reason: ${{ steps.pin.outputs.reason }}
+      # NOTED, NEVER A CONDITION: a red replay -> replay never stops live
+      # (section 7.9.6).
+      gate_conclusion: ${{ steps.gate.outputs.gate_conclusion }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -87,6 +90,16 @@ jobs:
       # for itself. The version matches the `pyyaml` pin in `pyproject.toml`.
       - name: Install PyYAML for the resolver
         run: python -m pip install --quiet "pyyaml>=6.0,<7.0"
+
+      # THE ENGINE'S GATE AT THIS COMMIT FINISHES FIRST, at most thirty
+      # minutes, and then the run proceeds whatever it concluded. A newer
+      # push's gate checks other cases and does not hold it. Section 7.9.6.
+      - name: Wait for this commit's gate of the engine
+        id: gate
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m tools.gate_wait --repository "${{ github.repository }}" --workflow "gate-${{ inputs.engine }}.yml" --commit "${{ github.sha }}" --timeout-minutes 30
 
       - name: Resolve the pairing and assess it
         id: pin

@@ -40,6 +40,23 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A regression run waits for its own commit's gate, and the gate never stops it, 2026-11-18
+
+**Why.** The design said a regression run waits for its engine's gate, and
+nothing made it wait, so a run started right after a push spent on its live
+bands beside the gate still checking the same cases, and could not say what
+that machinery check concluded.
+
+**What changed.** The `resolve` job of `evaluate-engine.yml` first runs
+`tools/gate_wait.py`, which waits while `gate-<engine>.yml` at the commit the
+run measures is queued, in progress or not yet listed, for at most thirty
+minutes. The run then proceeds whatever the gate concluded, or if it never
+did, and the summary names the outcome. A gate of a newer push does not hold
+it. `consumer_ci.md` section 7.9.6 holds the design; requirement
+`MQC_REQ_CAS_CI_0110` and cases `115892` to `115896` were added. README: 270
+requirements, 316 preconditions, and the harness figure of 1177 test cases,
+which had not moved with the harness.
+
 ### Carried outcomes from another served model skip the cases resting on them, 2026-11-18
 
 **Why.** A carried outcome is kept eighty days, and the weekly version probe

@@ -1400,6 +1400,11 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115889` | N | `an_absent_precondition_record_is_declared_missing` (3.12.1.3) |
 | `115890` | N | `a_band_missing_its_precondition_record_skips_every_case` (3.12.1.3) |
 | `115891` | N | `a_refused_band_still_reports_its_counts_and_causes` (3.12.2) |
+| `115892` | P | `a_regression_run_waits_while_its_commits_gate_runs` (7.9.6) |
+| `115893` | N | `a_gate_of_another_commit_or_engine_does_not_hold_it` (7.9.6) |
+| `115894` | B | `an_unfinished_gate_ends_the_wait_at_thirty_minutes` (7.9.6) |
+| `115895` | N | `a_red_or_cancelled_gate_is_noted_and_never_stops_it` (7.9.6) |
+| `115896` | N | `the_regression_run_waits_for_its_gate_before_resolving` (7.9.6) |
 | ~~`115844`~~ | | ~~`a_live_band_without_the_calibration_record_is_reported`~~. **Retired 2026-11-14**: `replay -> live` left the regression run (section 7.9). `115858` replaces it. The identifier stays retired |
 | `115845` | N | `a_judge_without_its_calibration_workflow_is_reported` (7.4.5) |
 | `115846` | B | `the_samples_digest_moves_with_samples_and_not_line_endings` (7.4.5) |
@@ -1429,7 +1434,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 216 cases, 153 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 221 cases, 156 negative, 53 positive, 12 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -4373,7 +4378,7 @@ stage stopping the next. **Why that was wrong:**
 
 | Job, in order | Does | Needs | Spends |
 |---|---|---|---|
-| `resolve` | Resolves the paired harness commit | Nothing | Nothing |
+| `resolve` | Waits for this commit's gate of the engine (section 7.9.6), then resolves the paired harness commit | Nothing | CI minutes while it waits |
 | `preconditions` | The Model Repository unit tests, `pytest -m unit`, so the cases are known to work before they run live (section 7.2.1) | `resolve` | CI minutes |
 | `calibration` | The calibration check below | `resolve` | Nothing billed: a models request to the judge's provider |
 | `live-live-p0` | `live -> live`, P0, blocking | `preconditions`, `calibration` | Candidate and judge |
@@ -4465,6 +4470,60 @@ Requirements: `MQC_REQ_CAS_CI_0086` and `0008`, amended, for the jobs and
 their order; `MQC_REQ_CAS_PRE_0014` and `MQC_REQ_CAS_CI_0089`, amended, for
 the judge and the record; `MQC_REQ_CAS_CI_0095` for the calibration check and
 `0096` for the floors and quarantine.
+
+#### 7.9.6 A regression run waits for its own commit's gate
+
+Decided 2026-11-18 by the project owner: "Each regression run should be
+blocked by the gate job with it's particular eval engine. If that job is not
+running or in progress (waits for it's turn), they should be able to run."
+Then, of the two questions put: wait for the gate at the run's own commit
+only, and proceed when the wait runs out, cut off at thirty minutes and
+"Increase later if necessary".
+
+**What was wrong.** Section 7.9's table said a regression run waits for its
+engine's gate, and nothing made it wait. A regression run started right after
+a push ran its live bands beside the gate checking the same cases, so its
+summary could not say whether the cases it spent on had passed their machinery
+check.
+
+**The gate it waits for is `gate-<engine>.yml` at the commit the run
+measures**, any event. A run measures the commit it started on, so a gate of a
+newer push checks other cases and does not hold it; a newer push cancelling
+this commit's gate leaves that gate `cancelled`, which is noted like any other
+conclusion.
+
+| The gate at this commit | The run |
+|---|---|
+| Queued, waiting or in progress | Waits, checking every thirty seconds |
+| Not listed yet | Waits: every push gates, and a run started seconds after a push looks before GitHub lists the gate |
+| Concluded, whatever the conclusion | Proceeds, and the summary names the conclusion |
+| Still unconcluded at thirty minutes | Proceeds, and the summary says the gate had not finished, or that none was found |
+
+**The gate's result never stops the run.** A red `replay -> replay` never
+stops live (section 7.9), so a gate that has not finished does not either. The
+wait orders the two, so the summary can name what the machinery check
+concluded; what stops a run before it spends remains `resolve`'s harness
+verdict, `preconditions` and `calibration`.
+
+**Thirty minutes is the owner's figure**, against the slowest gate of the last
+thirteen per engine on 2026-11-18, which took 17.9 minutes. Waiting spends
+runner minutes and no tokens.
+
+**It is the first step of `resolve`**, before the harness pairing is
+resolved, so the harness resolved is the one current when the run starts
+spending. `tools/gate_wait.py` reuses `tools/harness_pin.py`'s run query and
+wait terms, exits 0 whatever it finds, and writes `gate_conclusion`, which
+`resolve` exports and no job's condition reads.
+
+| Case | Asserts |
+|---|---|
+| `MQC_CAS_UNI_115892` | The wait polls while its commit's gate is queued or in progress, and returns that gate's conclusion once it concludes |
+| `MQC_CAS_UNI_115893` | A gate of another commit, or another engine's gate at this commit, does not hold the run |
+| `MQC_CAS_UNI_115894` | A gate unconcluded at thirty minutes, or never listed, ends the wait at thirty minutes exactly and not before |
+| `MQC_CAS_UNI_115895` | A red or cancelled gate exits 0 and its conclusion is written to the output and the summary |
+| `MQC_CAS_UNI_115896` | `resolve` waits for `gate-<engine>.yml` at `github.sha` for thirty minutes before resolving the harness, exports the conclusion, and no job's condition reads it |
+
+Requirement: `MQC_REQ_CAS_CI_0110`.
 
 ## 8. The Operator Runbook
 

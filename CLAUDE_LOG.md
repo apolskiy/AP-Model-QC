@@ -9716,3 +9716,48 @@ added; no README figure changed.
 figures in the commit note.
 
 **Digressions the user spotted, and the fix.** None this commit.
+
+## 2026-11-18: A Regression Run Waits For Its Own Commit's Gate
+
+**Why.** The owner's ruling: "Each regression run should be blocked by the
+gate job with it's particular eval engine. If that job is not running or in
+progress (waits for it's turn), they should be able to run." Section 7.9 of
+`consumer_ci.md` already said a regression run waits for its engine's gate,
+and nothing made it wait.
+
+**Two questions put to the owner, and the answers.** Which gate runs hold it:
+I first recommended any run on the branch, and the owner asked what happens to
+a run already scheduled on an earlier commit. That case reversed the
+recommendation: a run measures the commit it started on, so a newer push's
+gate checks other cases, and a newer push cancels the older commit's gate
+anyway. Ruled: the gate at the run's own commit only. What happens at the
+cut-off: ruled, proceed, noting the gate had not finished, consistent with a
+red replay -> replay never stopping live. The cut-off: I proposed 45 minutes;
+the owner set 30 against a measured slowest gate of 17.9 minutes (13 runs per
+engine), "Increase later if necessary".
+
+**What changed.** `tools/gate_wait.py` reuses `tools/harness_pin.py`'s run
+query and `WaitPolicy`. It waits while the gate at the commit is unlisted,
+queued or in progress, reads the listing before comparing the cut-off so a
+gate concluding at thirty minutes is read, and returns the newest run's
+conclusion, or `unfinished` or `absent`. It exits 0 always and writes
+`gate_conclusion` and a summary line. It is the first step of `resolve`,
+before the harness is resolved, and `resolve` exports the conclusion, which no
+condition reads. Design section 7.9.6, the 7.9.2 table amended; requirement
+`MQC_REQ_CAS_CI_0110`; cases `115892` to `115896` in `mqc_uni_gate_wait.py`.
+README: 270 requirements, 316 preconditions, and the harness figure 1177,
+stale since the served-model commit.
+
+**Injection.** Before the tool existed the module failed to import. Four
+defects, each restored: the cut-off compared before the listing is read
+failed `115894`; dropping the commit filter failed `115893`; a red or
+cancelled gate exiting 3 failed `115895`; a fifteen-minute cut-off in the
+workflow failed `115896`.
+
+**Not proven live yet.** The wait has run only against simulated listings;
+its first real run is on one engine.
+
+**Digressions the user spotted, and the fix.** The owner's question about a
+run scheduled on an earlier commit found that my recommended option, any
+gate run on the branch, would have held a run for a gate checking other cases
+and then measured the old commit regardless. The fix was the ruling above.
