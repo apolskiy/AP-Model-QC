@@ -3,15 +3,16 @@
 """Unit preconditions for how a priority band's result is gated and reported.
 
 Created: 2026-10-07
-Last updated: 2026-11-16
+Last updated: 2026-11-18
 
-This file contains nine cases on the band jobs the workflows define, read through
+This file contains ten cases on the band jobs the workflows define, read through
 ``workflow_support``, and on the floor in ``tools/band_floor.py``. They check a band publishes
 its result even when red, never passes a blocking band on cases that did not run,
 reports a skipped floor step and
 refuses an impossible floor, hands the status its run exited with to the floor rather
 than letting the run decide the band, runs every band from the one shared definition
-within its case ceiling, and reads a command behind a local ``uses:``.
+within its case ceiling, reads a command behind a local ``uses:``, and keeps every
+carrier eighty days.
 
 **These run in the ``unit`` precondition gate**, ahead of every graded band, so a band
 that would misreport its own result is caught before it reports one. A failure is an
@@ -19,8 +20,8 @@ instrument defect, **not a model finding**: the run exits 3 and no graded case e
 and the module carries no priority marker, per the harness ``framework-rules.md``
 section 3.3.
 
-Specified by ``docs/design/consumer_ci.md`` section 4 and sections 3.12.2,
-3.12.3 and 3.12.5.
+Specified by ``docs/design/consumer_ci.md`` section 4 and sections 3.12.1.2,
+3.12.2, 3.12.3 and 3.12.5.
 
 **Split from ``mqc_uni_workflows.py`` on 2026-10-07**, which the blocking floor
 took to 945 lines against the nine-hundred-line runway ceiling. The subject is
@@ -53,6 +54,8 @@ retired on 2026-11-16 (section 3.12.5).
 #   115726  a_command_behind_a_local_uses_is_read
 # TestMQCBandGatedByTheRecord
 #   115775  a_band_not_reading_the_precondition_record_is_reported
+# TestMQCCarrierRetention
+#   115884  a_carrier_kept_other_than_eighty_days_is_reported
 # ------------------------------------------------------------ end of cases
 
 from typing import Any
@@ -61,6 +64,7 @@ from pathlib import Path
 
 import pytest
 
+from cmn.case_steps import step as _case_step
 from cmn.grouping import story
 
 from tools.band_floor import assess, assess_blocking, main as _band_floor
@@ -75,6 +79,7 @@ from tests.cases.workflow_support import (
     BAND_ACTION as _BAND_ACTION,
     BAND_CASE_CEILING as _BAND_CASE_CEILING,
     band_action_inputs as _band_action_inputs,
+    carrier_retentions as _carrier_retentions,
     cases_by_priority as _cases_by_priority,
     repository_root as _repository_root,
 )
@@ -89,6 +94,12 @@ _RECORD_INPUT = "preconditions_record"
 # THE ARTIFACT PREFIX A BAND'S OUTCOMES TRAVEL UNDER. A carried outcome is a
 # data dependency between bands; gating is not. Design section 3.12.1.1.
 _CARRY_PREFIX = "carry-after-"
+
+# THE CARRIERS, by the artifact name prefix each is uploaded under, the two
+# workflows that upload them, and how long each is kept. Section 3.12.1.2.
+_CARRIERS = ("preconditions-", "carry-", "spend-")
+_CARRIER_WORKFLOWS = ("gate-target.yml", "evaluate-engine.yml")
+_CARRIER_DAYS = "80"
 
 
 class TestMQCBandGating:
@@ -782,3 +793,35 @@ class TestMQCBandGatedByTheRecord:
                     f"gating from the band before it rather than from the "
                     f"preconditions job"
                 )
+
+
+class TestMQCCarrierRetention:
+    """A carrier outlives the run's first day, so a re-run band still finds it."""
+
+    @story("A re-run band finds what the jobs before it wrote")
+    def MQC_CAS_UNI_115884_a_carrier_kept_other_than_eighty_days_is_reported(
+        self,
+    ) -> None:
+        """Every carrier upload in the gate and the regression run is kept eighty days.
+
+        Design: ``consumer_ci.md`` section 3.12.1.2.
+
+        Returns:
+            None
+        """
+        uploads = [
+            (workflow, *upload)
+            for workflow in _CARRIER_WORKFLOWS
+            for upload in _carrier_retentions(_load(workflow), _CARRIERS)
+        ]
+
+        _case_step(1, "find each of the three carriers uploaded in the two workflows")
+        assert {upload[1] for upload in uploads} == set(_CARRIERS), uploads
+
+        _case_step(2, f"find every carrier upload kept {_CARRIER_DAYS} days")
+        kept_otherwise = [
+            f"{workflow} {job} uploads {artifact} for {retention or 'the default'} day(s)"
+            for workflow, _, job, artifact, retention in uploads
+            if retention != _CARRIER_DAYS
+        ]
+        assert not kept_otherwise, kept_otherwise

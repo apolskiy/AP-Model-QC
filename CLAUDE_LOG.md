@@ -9539,3 +9539,42 @@ to the owner separately, with the questions it raised.
 0; pylint exit 0. Replay of every graded case: claude 95 passed, gemini 94
 passed and 1 passw, grok 95 passed, openai 95 passed, each exit 0, no skips.
 Harness unchanged.
+
+## 2026-11-17: Every Carrier Is Kept Eighty Days
+
+**Why.** The precondition record, the carried outcomes and a live band's spend
+report were uploaded with `retention-days: 1`, on the ground, recorded only in
+a `gate-target.yml` comment, that a carrier is read within its run. A re-run
+of a failed job reads the artifacts of the run it belongs to, so a band re-run
+on the second day found no carrier and failed at its download step before any
+case could name what was missing. The owner's ruling of 2026-11-17: a carrier
+is kept "80 days or new model shows up", whichever comes first.
+
+**What changed.** Every carrier upload in `gate-target.yml` and
+`evaluate-engine.yml` declares `retention-days: 80`, and the comment arguing
+for one day is replaced. Design `consumer_ci.md` section 3.12.1.2, which
+records the ruling's second half, ending the carried outcomes when the served
+model changes, as a gap until it is built. Requirement `MQC_REQ_CAS_CI_0104`;
+case `115884`, reading both workflows through `carrier_retentions` in
+`workflow_support.py`, requires each of the three carriers to be found and
+every carrier upload to declare eighty days.
+
+**The ruling's second half, planned.** The owner chose both mechanisms: the
+version probe deletes a changed engine's carried outcomes before dispatching
+(M3b), and the harness carry file records the served model version, so a band
+reading it under another version skips the cases resting on it (H6). The
+precondition record and the spend reports keep the eighty days alone: the
+record measures the instrument and a spend report measures money, and neither
+changes with the model.
+
+**Injection.** Before the change `115884` failed naming all nine one-day
+carriers. Three defects, three caught, each exiting 3: the lower band's spend
+report back to one day, the gate's P1 carried outcomes declaring no retention,
+and the gate's precondition record kept ninety days. Baseline exit 0 after
+restore.
+
+**Digressions the user spotted, and the fix.** I told the owner that GitHub
+cannot expire an artifact when a model changes, so the "new model" half could
+only be a check made on read. The owner pointed out that it can: the probe
+already holds `actions: write` and detects the change, so it can delete the
+carriers as the re-record starts. Both mechanisms are now planned.

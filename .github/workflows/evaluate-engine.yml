@@ -138,13 +138,15 @@ jobs:
       - name: Gate 2, the corpus preconditions
         run: pytest -m unit --preconditions-record reports/preconditions.json --junitxml=reports/junit_mqc_unit.xml --alluredir=reports/allure-results
 
+      # KEPT EIGHTY DAYS, like every carrier, because a re-run band reads the
+      # artifacts of the run it belongs to (design section 3.12.1.2).
       - name: Carry the precondition record to the bands
         uses: actions/upload-artifact@v6
         with:
           name: preconditions-${{ inputs.engine }}
           path: reports/preconditions.json
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 80
 
       - uses: actions/upload-artifact@v6
         if: always()
@@ -269,14 +271,14 @@ jobs:
         with:
           name: carry-live-live-after-p0-${{ inputs.engine }}
           path: reports/carry.json
-          retention-days: 1
+          retention-days: 80
       - name: Publish what this band spent to the live bands after it
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: spend-${{ inputs.engine }}-live-live-p0
           path: reports/junit_mqc_live_live_p0.xml
-          retention-days: 1
+          retention-days: 80
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -355,14 +357,14 @@ jobs:
         with:
           name: carry-live-live-after-p1-${{ inputs.engine }}
           path: reports/carry.json
-          retention-days: 1
+          retention-days: 80
       - name: Publish what this band spent to the live bands after it
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: spend-${{ inputs.engine }}-live-live-p1
           path: reports/junit_mqc_live_live_p1.xml
-          retention-days: 1
+          retention-days: 80
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -441,7 +443,7 @@ jobs:
         with:
           name: spend-${{ inputs.engine }}-live-live-lower
           path: reports/junit_mqc_live_live_p2_p4.xml
-          retention-days: 1
+          retention-days: 80
       - uses: actions/upload-artifact@v6
         if: always()
         with:

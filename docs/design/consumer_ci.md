@@ -594,6 +594,38 @@ the corpus; a band with no such dependents could already run beside the others.
 That is the boundary on "separate ci jobs for each set of tiers": the jobs may
 separate, and the outcome record is what has to reach each one.
 
+##### 3.12.1.2 A carrier is kept eighty days
+
+Recorded 2026-11-17 at the project owner's ruling: a carrier is kept "80 days
+or new model shows up", whichever comes first.
+
+**A carrier is an artifact one job writes for a later job of the same run to
+read**, as against a report, which is kept for a reader. Three exist:
+
+| Carrier | Uploaded as | Read by |
+|---|---|---|
+| The precondition record | `preconditions-<os>` in the gate, `preconditions-<engine>` in the regression run | Every band job of the run |
+| The carried outcomes | `carry-after-<band>-<engine>-<os>` in the gate, `carry-live-live-after-<band>-<engine>` in the regression run | The band after the one that wrote it |
+| A live band's spend report | `spend-<engine>-live-live-<band>` | The live bands after it (section 7.8.4) |
+
+**Every carrier is uploaded with a retention of eighty days.** It was one day,
+on the ground that a carrier is read within its run. A re-run of a failed job
+reads the artifacts of the run it belongs to, so a band re-run on the second
+day found no carrier and failed at its download step, before any case could
+name what was missing.
+
+**Eighty days sits inside GitHub's ninety-day ceiling for a public
+repository**, so the figure is the owner's and not the platform's, and the
+re-run window GitHub offers falls inside it.
+
+**The ruling's second half is not built yet**: the carried outcomes end when
+the engine's served model changes, since they are foundation results measured
+against one model. It is recorded here as a gap until it is.
+
+**`MQC_CAS_UNI_115884`** reports a carrier upload in either workflow whose
+retention is not eighty days, and requires each of the three carriers to be
+found, so that a renamed carrier cannot pass by being absent.
+
 #### 3.12.2 Every band answers to a floor, and the blocking ones answer for every case they selected
 
 **Corrected 2026-10-07 by the project owner, and the sentence this replaces was
@@ -1277,6 +1309,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115881` | P | `a_declared_spend_report_reaches_every_band_and_its_cases` (7.8.4) |
 | `115882` | P | `a_band_that_dispatched_nothing_publishes_a_priced_total` (7.8.4) |
 | `115883` | P | `a_band_skipped_behind_its_foundations_publishes_its_total` (7.8.4) |
+| `115884` | N | `a_carrier_kept_other_than_eighty_days_is_reported` (3.12.1.2) |
 | ~~`115844`~~ | | ~~`a_live_band_without_the_calibration_record_is_reported`~~. **Retired 2026-11-14**: `replay -> live` left the regression run (section 7.9). `115858` replaces it. The identifier stays retired |
 | `115845` | N | `a_judge_without_its_calibration_workflow_is_reported` (7.4.5) |
 | `115846` | B | `the_samples_digest_moves_with_samples_and_not_line_endings` (7.4.5) |
@@ -1306,7 +1339,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 208 cases, 145 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 209 cases, 146 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,

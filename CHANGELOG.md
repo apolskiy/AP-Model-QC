@@ -40,6 +40,18 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Every carrier is kept eighty days, so a re-run band finds it, 2026-11-17
+
+**Why.** The precondition record, the carried outcomes and a live band's spend
+report were uploaded with a retention of one day. A re-run of a failed job
+reads the artifacts of the run it belongs to, so a band re-run on the second
+day found no carrier and failed at its download step before any case ran.
+
+**What changed.** Every carrier upload in `gate-target.yml` and
+`evaluate-engine.yml` is kept eighty days. `consumer_ci.md` section 3.12.1.2
+holds the design. Requirement `MQC_REQ_CAS_CI_0104` and case `115884` were
+added. The README states 264 requirements and 304 preconditions.
+
 ### A band whose every case skipped behind a foundation publishes its spend total, 2026-11-17
 
 **Why.** A live band whose every case skipped behind a foundation that did not

@@ -197,16 +197,16 @@ jobs:
 
       # NOT `always()`, AND NOT NAMED BY THE GATED CONDITION. A failed
       # precondition writes no record and the bands do not run, so an upload on
-      # failure would look for a file that is correctly absent; and this
-      # carrier is read within the run rather than kept, so it is neither a
-      # mandated artifact nor scratch.
+      # failure would look for a file that is correctly absent. KEPT EIGHTY
+      # DAYS, like every carrier, because a re-run band reads the artifacts of
+      # the run it belongs to (design section 3.12.1.2).
       - name: Carry the precondition record to the bands
         uses: actions/upload-artifact@v6
         with:
           name: preconditions-${{ matrix.os }}
           path: reports/preconditions.json
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 80
 
       - uses: actions/upload-artifact@v6
         if: always()
@@ -294,7 +294,7 @@ jobs:
         with:
           name: carry-after-p0-${{ inputs.engine }}-${{ matrix.os }}
           path: reports/carry.json
-          retention-days: 1
+          retention-days: 80
 
       - uses: actions/upload-artifact@v6
         if: always()
@@ -374,7 +374,7 @@ jobs:
         with:
           name: carry-after-p1-${{ inputs.engine }}-${{ matrix.os }}
           path: reports/carry.json
-          retention-days: 1
+          retention-days: 80
 
       - uses: actions/upload-artifact@v6
         if: always()

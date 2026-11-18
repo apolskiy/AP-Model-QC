@@ -3,7 +3,7 @@
 """Support code reading the CI workflow definitions, for the cases that check them.
 
 Created: 2026-10-03
-Last updated: 2026-11-12
+Last updated: 2026-11-18
 
 This file contains ``load``, ``jobs`` and ``needs``, which parse a workflow and its job
 graph; ``run_lines``, which returns each step's run body, following a local ``uses:``
@@ -11,7 +11,8 @@ and reading each input reference there as the value the step passed;
 ``selects_a_graded_marker`` and ``graded_invocations``, which find the pytest calls that
 run graded cases; ``floor_conditions``, ``band_action_inputs`` and
 ``band_definition_runs``, which read the shared band definition; and
-``cases_by_priority`` and ``repository_root``.
+``cases_by_priority`` and ``repository_root``; and ``carrier_retentions``, which
+finds each carrier upload and the retention it declares.
 
 **``mqc_uni_workflows.py``, ``mqc_uni_engine_jobs.py`` and ``mqc_uni_band_gating.py``
 import it**, all in the ``unit`` precondition gate, so every check on a workflow reads
@@ -368,3 +369,34 @@ def cases_by_priority() -> dict[int, int]:
             continue
         counted[int(priority)] = counted.get(int(priority), 0) + 1
     return counted
+
+
+def carrier_retentions(
+    workflow: dict[str, Any], prefixes: tuple[str, ...],
+) -> list[tuple[str, str, str, str]]:
+    """Return every carrier upload in a workflow with the retention it declares.
+
+    A carrier is an upload whose artifact name opens with one of ``prefixes``.
+
+    Args:
+        workflow (dict): The parsed document.
+        prefixes (tuple[str, ...]): The artifact name prefixes a carrier opens with.
+
+    Returns:
+        list[tuple[str, str, str, str]]: One ``(prefix, job, artifact,
+        retention)`` per carrier upload, in job and step order; the retention is
+        ``""`` where the step declares none.
+    """
+    found: list[tuple[str, str, str, str]] = []
+    for job_name, job in jobs(workflow).items():
+        for step in job.get("steps") or []:
+            if not str((step or {}).get("uses", "")).startswith("actions/upload-artifact"):
+                continue
+            supplied = step.get("with") or {}
+            artifact = str(supplied.get("name", "")).strip()
+            prefix = next((entry for entry in prefixes if artifact.startswith(entry)), "")
+            if prefix:
+                found.append(
+                    (prefix, job_name, artifact, str(supplied.get("retention-days", "")))
+                )
+    return found
