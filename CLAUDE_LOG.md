@@ -9669,3 +9669,31 @@ caught before running: the script appending this entry was written with
 doubled backslashes in its line-ending literals, the third time this
 transport slip has reached a scratchpad script; it now builds them with
 `chr`, so no escape is involved.
+
+## 2026-11-18: A Refused Band Still Reports What It Held
+
+**Why.** The owner's ruling, recorded as M4: `band_floor.py` "still assesses
+and reports when pytest exits 3". Since the previous commit a band missing an
+artifact runs, skips every case and exits 3, and the floor refused on that
+status before reading the report, so its log held one line, the refusal, and
+never named the artifact or the counts.
+
+**What changed.** `tools/band_floor.py` assesses the report first, blocking or
+lower, then logs the assessment and one line per missing artifact,
+`missing artifact <kind> <path>, <n> case(s) skipped for it`, read from the
+`mqc_artifact_kind` and `mqc_artifact_path` properties the harness puts on
+each case it skipped for one. Where the status is neither 0 nor 1 the
+refusal follows and the exit stays 4, whatever the assessment said. The
+artifact line is the floor's own because the harness's skip line names the
+code and its meaning, not the file. Design `consumer_ci.md` section 3.12.2;
+requirement `MQC_REQ_CAS_CI_0109`; case `115891`, placed in
+`mqc_uni_artifact_downloads.py` since `mqc_uni_band_gating.py` sits at 827
+lines and the case would take it to the runway ceiling. README 269
+requirements and 311 preconditions.
+
+**Injection.** Before the change `115891` failed at step 3, the log holding the
+refusal alone. With the change, dropping the artifact lines failed it at step
+5; restored. `115800`, which requires every status other than 0 and 1 to
+refuse, passes unchanged.
+
+**Digressions the user spotted, and the fix.** None this commit.

@@ -910,8 +910,28 @@ instrument defect that measured no model.
 |---|---|
 | 0 | Assesses the report, as before |
 | 1, the graded-failure code | Assesses the report. Failures below P1 are what the floor exists to weigh |
-| Anything else | **Refuses, exit 4**, naming the status |
-| Nothing, the status unset | **Refuses, exit 4**, because whether the band ran is unknown |
+| Anything else | **Assesses and reports the report, then refuses, exit 4**, naming the status |
+| Nothing, the status unset | **Assesses and reports the report, then refuses, exit 4**, because whether the band ran is unknown |
+
+**A refused band still says what it held**, at the project owner's ruling that
+`band_floor.py` "still assesses and reports when pytest exits 3", recorded
+2026-11-18. A run exits 3 when an artifact was declared missing (section
+3.12.1.3), and the floor's line was then the refusal alone, so the band's own
+verdict never named the artifact its cases skipped for. The floor now assesses
+the report as it would for 0 or 1 and logs the counts, one line per skipped
+case with its cause, and one line per missing artifact naming its kind and
+path, read from the `mqc_artifact_kind` and `mqc_artifact_path` properties the
+harness puts on each case it skipped for one, before the refusal. The artifact
+line is the floor's own, in every band and whatever the status: the harness's
+skip line names the code and what it means, and not which file. **The exit stays
+4 whatever the assessment said**: the status, not the rate, decides a band
+whose run measured no model, so an exit-3 band whose report would clear its
+floor is still not green. A report that is absent or will not parse is
+reported as such, and the refusal follows.
+
+`MQC_CAS_UNI_115891` runs the floor with a run status of 3 over a band whose
+cases skipped on a declared precondition record, blocking and lower, and
+asserts the counts, the cause naming the artifact, and the refusal.
 
 **`continue-on-error` on the job's `uses:` step is the wrong answer**, and it
 is the obvious one. It would carry the floor step with it, so a band **below**
@@ -1373,6 +1393,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115888` | N | `a_download_naming_no_current_upload_is_reported` (3.12.1.3) |
 | `115889` | N | `an_absent_precondition_record_is_declared_missing` (3.12.1.3) |
 | `115890` | N | `a_band_missing_its_precondition_record_skips_every_case` (3.12.1.3) |
+| `115891` | N | `a_refused_band_still_reports_its_counts_and_causes` (3.12.2) |
 | ~~`115844`~~ | | ~~`a_live_band_without_the_calibration_record_is_reported`~~. **Retired 2026-11-14**: `replay -> live` left the regression run (section 7.9). `115858` replaces it. The identifier stays retired |
 | `115845` | N | `a_judge_without_its_calibration_workflow_is_reported` (7.4.5) |
 | `115846` | B | `the_samples_digest_moves_with_samples_and_not_line_endings` (7.4.5) |
@@ -1402,7 +1423,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 215 cases, 152 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 216 cases, 153 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,

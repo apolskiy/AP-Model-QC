@@ -11,13 +11,14 @@ expression the ``format()`` strings it chooses between; ``fallible_downloads``,
 which lists each download step without ``continue-on-error: true``;
 ``unproduced_downloads``, which lists each download naming an artifact no upload
 in its workflow, or in a workflow it calls, writes; ``downloads``, which counts
-a workflow's download steps; and ``workflow_files``, every workflow in this
-repository.
+a workflow's download steps; ``write_declared_band_report``, a band report
+whose cases skipped on one declared artifact; and ``workflow_files``, every
+workflow in this repository.
 
 **Not a test module.** ``pytest.ini`` collects ``mqc_*.py``, so this name sits
 outside that pattern deliberately.
 
-Specified by ``docs/design/consumer_ci.md`` section 3.12.1.3.
+Specified by ``docs/design/consumer_ci.md`` sections 3.12.1.3 and 3.12.2.
 """
 
 import re
@@ -161,6 +162,34 @@ def unproduced_downloads(
             missing = []
         unproduced.extend(f"{job} downloads {name}, which no upload writes" for name in missing)
     return unproduced
+
+
+def write_declared_band_report(directory: Path, kind: str, path: str) -> Path:
+    """Write a band's JUnit report whose two cases skipped on one declared artifact.
+
+    Args:
+        directory (Path): Where the report goes.
+        kind (str): The artifact's kind, such as ``precondition_record``.
+        path (str): The artifact's path as it was declared.
+
+    Returns:
+        Path: The report written.
+    """
+    skipped = "".join(
+        f'<testcase classname="c" name="MQC_CAS_EVAL_13400{index}_case">'
+        f'<properties><property name="mqc_artifact_kind" value="{kind}"/>'
+        f'<property name="mqc_artifact_path" value="{path}"/></properties>'
+        f'<skipped message="QC_HARNESS_ARTIFACT_MISSING: {kind} {path}, declared '
+        f'missing to this run by --missing-artifact"/></testcase>'
+        for index in range(2)
+    )
+    report = directory / "junit_mqc_p0.xml"
+    report.write_text(
+        '<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" '
+        f'tests="2" skipped="2">{skipped}</testsuite></testsuites>',
+        encoding="utf-8",
+    )
+    return report
 
 
 def workflow_files() -> dict[str, dict[str, Any]]:

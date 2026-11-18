@@ -40,6 +40,20 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A band refused for its run's status still reports what it held and names a missing artifact, 2026-11-18
+
+**Why.** A band whose run exited 3, as one with a declared missing artifact
+does, had its floor log the refusal alone, so the band's verdict never named
+the artifact its cases skipped for or the counts behind it.
+
+**What changed.** `tools/band_floor.py` assesses the report whatever the run's
+status and logs the counts, one line per skipped case and one line per missing
+artifact naming its kind and path, then refuses with exit 4 where the status
+is neither 0 nor 1. The exit is unchanged: the status, not the rate, decides
+such a band. `consumer_ci.md` section 3.12.2 holds the design. Requirement
+`MQC_REQ_CAS_CI_0109` and case `115891` were added. The README states 269
+requirements and 311 preconditions.
+
 ### An artifact a job does not find skips the cases reading it, and never fails the job, 2026-11-18
 
 **Why.** A download step naming one artifact failed its job when the artifact

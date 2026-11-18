@@ -3,15 +3,17 @@
 """The band check, which decides from a band's JUnit XML whether that band passed.
 
 Created: 2026-10-01
-Last updated: 2026-11-16
+Last updated: 2026-11-18
 
 This file contains ``assess``, which compares a lower-priority band's pass rate
 against the project's pass floor, ``assess_blocking``, which requires a release
 blocking band to have measured and passed every case it selected,
 ``run_status_problem``, which says whether the status the band's run reported
 leaves a rate worth reading, and ``main``, the command line they run behind.
-Skips are explained by cause, and no skip is excused: a quarantined case is
-deselected before any band runs.
+Skips are explained by cause, each missing artifact is named by kind and path,
+and no skip is excused: a quarantined case is deselected before any band runs.
+A run status other than ``0`` or ``1`` still has the report assessed and
+logged, and then refuses.
 
 The band composite action runs it after each band's pytest step, with
 ``--blocking --engine`` for P0 and P1 and without them for the lower band, and
@@ -72,6 +74,11 @@ _EXIT_REFUSED: Final[int] = 4
 # job. A composite action step cannot carry `continue-on-error`, so the step
 # running the band would otherwise decide it (section 3.12.2).
 _UNREPORTED: Final[int] = -1
+
+# WHERE THE HARNESS PUTS A MISSING ARTIFACT on each case it skipped for one
+# (harness `cmn/missing_artifact.py`).
+_KIND_PROPERTY: Final[str] = "mqc_artifact_kind"
+_PATH_PROPERTY: Final[str] = "mqc_artifact_path"
 
 
 def run_status_problem(status: int) -> Optional[str]:
@@ -302,6 +309,43 @@ def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
     return _EXIT_GREEN, f"the band cleared its floor: {detail}"
 
 
+def _missing_artifacts(report: Path) -> list[str]:
+    """Return one line per artifact the band's cases skipped for, naming its kind and path.
+
+    The harness's skip line names the code and what it means, not which file,
+    so the floor reads the ``mqc_artifact_kind`` and ``mqc_artifact_path``
+    properties each such case carries. Design: ``consumer_ci.md`` section 3.12.2.
+
+    Args:
+        report (Path): The band's JUnit XML.
+
+    Returns:
+        list[str]: ``missing artifact <kind> <path>, <n> case(s) skipped for
+        it``, in order of first appearance; empty where none was missing or the
+        report cannot be read, which the assessment already reports.
+    """
+    try:
+        tree = ElementTree.parse(report)
+    except (OSError, ElementTree.ParseError):
+        return []
+    counted: dict[tuple[str, str], int] = {}
+    for case in tree.iter("testcase"):
+        if case.find("skipped") is None:
+            continue
+        properties = {
+            str(found.get("name")): str(found.get("value", ""))
+            for found in case.iter("property")
+        }
+        kind = properties.get(_KIND_PROPERTY)
+        if kind:
+            artifact = (kind, properties.get(_PATH_PROPERTY, ""))
+            counted[artifact] = counted.get(artifact, 0) + 1
+    return [
+        f"missing artifact {kind} {path}, {count} case(s) skipped for it"
+        for (kind, path), count in counted.items()
+    ]
+
+
 def _declared_quarantine(engine: str) -> frozenset[str]:
     """Return the case identifiers quarantined for one engine.
 
@@ -365,25 +409,31 @@ def main(argv: Optional[list[str]] = None) -> int:
     )
     parsed = parser.parse_args(argv)
 
-    # BEFORE EITHER FLOOR, because a run that exited for a reason of ours
-    # measured no model and neither floor is a statement about one.
-    problem = run_status_problem(parsed.run_status)
-    if problem is not None:
-        logger.error("%s", problem)
-        return _EXIT_REFUSED
-
     if parsed.blocking:
         code, message = assess_blocking(
             parsed.report, _declared_quarantine(parsed.engine)
         )
     else:
         code, message = assess(parsed.report, parsed.floor)
+    lines = [message, *_missing_artifacts(parsed.report)]
+
+    # ASSESSED AND REPORTED EVEN WHERE THE STATUS REFUSES, so a band whose run
+    # exited 3 still names what it held and the artifact it was missing; the
+    # status, not the rate, then decides it. Design section 3.12.2.
+    problem = run_status_problem(parsed.run_status)
+    if problem is not None:
+        for line in lines:
+            logger.error("%s", line)
+        logger.error("%s", problem)
+        return _EXIT_REFUSED
+
     # LOGGED, NOT ALSO PRINTED. `basicConfig` below sends this to stderr, and
     # doing both put every verdict on the console twice.
-    if code == _EXIT_GREEN:
-        logger.info("%s", message)
-    else:
-        logger.error("%s", message)
+    for line in lines:
+        if code == _EXIT_GREEN:
+            logger.info("%s", line)
+        else:
+            logger.error("%s", line)
     return code
 
 

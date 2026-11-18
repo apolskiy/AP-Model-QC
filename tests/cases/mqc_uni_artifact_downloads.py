@@ -5,19 +5,21 @@
 Created: 2026-11-18
 Last updated: 2026-11-18
 
-This file contains four cases. Every download step in every workflow carries
+This file contains five cases. Every download step in every workflow carries
 ``continue-on-error: true``; every download names an artifact an upload in its
 workflow writes, so none is left under an old name; ``tools/precondition_record.py``
 declares an absent precondition record missing and the band action passes that
-declaration where no earlier step made one; and a band run with its record
-absent and declared missing skips every case it selected and exits 3.
+declaration where no earlier step made one; a band run with its record
+absent and declared missing skips every case it selected and exits 3; and
+``tools/band_floor.py``, given that exit, logs the band's counts and the missing
+artifact before it refuses.
 
 **These run in the ``unit`` precondition gate.** A failure is an instrument
 defect, **not a model finding**: the run exits 3 and no graded case executes,
 and the module carries no priority marker, per the harness
 ``framework-rules.md`` section 3.3.
 
-Specified by ``docs/design/consumer_ci.md`` section 3.12.1.3.
+Specified by ``docs/design/consumer_ci.md`` sections 3.12.1.3 and 3.12.2.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -28,8 +30,10 @@ Specified by ``docs/design/consumer_ci.md`` section 3.12.1.3.
 #   115888  a_download_naming_no_current_upload_is_reported
 #   115889  an_absent_precondition_record_is_declared_missing
 #   115890  a_band_missing_its_precondition_record_skips_every_case
+#   115891  a_refused_band_still_reports_its_counts_and_causes
 # ------------------------------------------------------------ end of cases
 
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +43,7 @@ import yaml
 from cmn.case_steps import step
 from cmn.grouping import story
 
+from tools.band_floor import main as _band_floor
 from tools.precondition_record import main as _declare
 
 from tests.cases.artifact_download_support import (
@@ -46,6 +51,7 @@ from tests.cases.artifact_download_support import (
     fallible_downloads,
     unproduced_downloads,
     workflow_files,
+    write_declared_band_report,
 )
 from tests.cases.live_band_support import run_child_band
 from tests.cases.workflow_support import repository_root
@@ -83,6 +89,15 @@ _OLD_NAME_WORKFLOW: dict[str, Any] = {
         ]},
     },
 }
+
+# A BAND WHOSE TWO CASES SKIPPED ON A DECLARED RECORD, as the floor reports it.
+# Section 3.12.2.
+_KIND = "precondition_record"
+_PATH = "reports/preconditions.json"
+_ARTIFACT_LINE = f"missing artifact {_KIND} {_PATH}, 2 case(s) skipped for it"
+_BLOCKING_COUNTS = "2 total, 0 executed, 0 passed, 0 failed, 2 skipped"
+_LOWER_ASSESSMENT = "the band collected 2 case(s) and measured none"
+_REFUSAL = "the band's run exited 3"
 
 # A WORKFLOW HOLDING ONE DOWNLOAD THAT FAILS ITS JOB and one that does not.
 _FALLIBLE_WORKFLOW: dict[str, Any] = {
@@ -221,3 +236,45 @@ class TestMQCMissingArtifactDownloads:
 
         step(1, "find the band exiting 3 with every case it selected skipped")
         assert status == 3 and outcomes and set(outcomes) == {"skipped"}, (status, outcomes)
+
+    @story("A missing artifact skips the cases using it")
+    def MQC_CAS_UNI_115891_a_refused_band_still_reports_its_counts_and_causes(
+        self, tmp_path: Path, caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """A band whose run exited 3 logs its assessment and the artifact, then refuses.
+
+        Design: ``consumer_ci.md`` section 3.12.2.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+            caplog (pytest.LogCaptureFixture): The floor's log.
+
+        Returns:
+            None
+        """
+        report = write_declared_band_report(tmp_path, _KIND, _PATH)
+        with caplog.at_level(logging.INFO, logger="tools.band_floor"):
+            blocking = _band_floor([str(report), "--run-status=3", "--blocking"])
+        blocking_log = caplog.text
+        caplog.clear()
+        with caplog.at_level(logging.INFO, logger="tools.band_floor"):
+            lower = _band_floor([str(report), "--run-status=3"])
+        lower_log = caplog.text
+
+        step(1, "find both bands refused with exit 4 on a run that exited 3")
+        assert (blocking, lower) == (4, 4), (blocking, lower)
+
+        step(2, "find the refusal naming the status in both bands")
+        assert _REFUSAL in blocking_log and _REFUSAL in lower_log, (blocking_log, lower_log)
+
+        step(3, "find the blocking band's five counts logged before its refusal")
+        assert _BLOCKING_COUNTS in blocking_log and blocking_log.index(
+            _BLOCKING_COUNTS) < blocking_log.index(_REFUSAL), blocking_log
+
+        step(4, "find the lower band's assessment logged before its refusal")
+        assert _LOWER_ASSESSMENT in lower_log and lower_log.index(
+            _LOWER_ASSESSMENT) < lower_log.index(_REFUSAL), lower_log
+
+        step(5, "find the missing artifact named by kind and path in both bands")
+        assert _ARTIFACT_LINE in blocking_log and _ARTIFACT_LINE in lower_log, (
+            blocking_log, lower_log)
