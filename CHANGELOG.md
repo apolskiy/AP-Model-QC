@@ -40,6 +40,22 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A changed engine's carried outcomes are deleted before it is re-measured, 2026-11-17
+
+**Why.** Carried outcomes are foundation results measured against one served
+model, and they lived out their retention whatever the model did, so a band
+re-run after a provider changed the model could rest on the old model's
+foundations.
+
+**What changed.** When the version probe finds an engine's model changed, its
+dispatch job lists the repository's artifacts, `tools/stale_carriers.py` picks
+out that engine's carried outcomes from the gate and the regression run, and
+each is deleted before anything is dispatched. A failed deletion is reported in
+the run summary and the dispatch goes ahead. `consumer_ci.md` sections 3.12.1.2
+and 4.23.3 hold the design. Requirement `MQC_REQ_CAS_CI_0105` and cases
+`115885` and `115886` were added. The README states 265 requirements and 306
+preconditions.
+
 ### Every carrier is kept eighty days, so a re-run band finds it, 2026-11-17
 
 **Why.** The precondition record, the carried outcomes and a live band's spend

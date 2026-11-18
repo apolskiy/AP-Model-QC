@@ -618,9 +618,18 @@ name what was missing.
 repository**, so the figure is the owner's and not the platform's, and the
 re-run window GitHub offers falls inside it.
 
-**The ruling's second half is not built yet**: the carried outcomes end when
-the engine's served model changes, since they are foundation results measured
-against one model. It is recorded here as a gap until it is.
+**The carried outcomes also end when the engine's served model changes**,
+since they are foundation results measured against one model. Two mechanisms,
+which the owner chose together:
+
+| Mechanism | Catches | State |
+|---|---|---|
+| The version probe deletes a changed engine's carried outcomes before it dispatches | A change the weekly probe has seen | Built, section 4.23.3 |
+| The carry file records the served model version, and a band reading it under another version skips the cases resting on it | A change in the week before the probe sees it | **Not built yet**, recorded here as a gap |
+
+**The precondition record and the spend reports keep the eighty days alone.**
+The record measures the instrument, which is the same whichever model is
+graded, and a spend report measures money against the ceiling.
 
 **`MQC_CAS_UNI_115884`** reports a carrier upload in either workflow whose
 retention is not eighty days, and requires each of the three carriers to be
@@ -1310,6 +1319,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115882` | P | `a_band_that_dispatched_nothing_publishes_a_priced_total` (7.8.4) |
 | `115883` | P | `a_band_skipped_behind_its_foundations_publishes_its_total` (7.8.4) |
 | `115884` | N | `a_carrier_kept_other_than_eighty_days_is_reported` (3.12.1.2) |
+| `115885` | N | `only_the_changed_engines_carried_outcomes_are_stale` (4.23.3) |
+| `115886` | N | `a_probe_dispatching_before_pruning_carriers_is_reported` (4.23.3) |
 | ~~`115844`~~ | | ~~`a_live_band_without_the_calibration_record_is_reported`~~. **Retired 2026-11-14**: `replay -> live` left the regression run (section 7.9). `115858` replaces it. The identifier stays retired |
 | `115845` | N | `a_judge_without_its_calibration_workflow_is_reported` (7.4.5) |
 | `115846` | B | `the_samples_digest_moves_with_samples_and_not_line_endings` (7.4.5) |
@@ -1339,7 +1350,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 209 cases, 146 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 211 cases, 148 negative, 52 positive, 11 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -2722,6 +2733,38 @@ nothing.
 `MQC_CAS_UNI_115849` reads the dispatch job: it reads the state before each
 dispatch, and dispatches the changed engine's calibration where one exists.
 Requirement `MQC_REQ_CAS_CI_0090`.
+
+**A changed engine's carried outcomes are deleted before anything is
+dispatched.** Added 2026-11-17 at the project owner's ruling that a carrier is
+kept "80 days or new model shows up", whichever comes first (section
+3.12.1.2). Carried outcomes are foundation results measured against one served
+model, and a changed engine is re-recorded, so the outcomes measured before the
+change belong to another model. The dispatch job lists the repository's
+artifacts, `tools/stale_carriers.py` picks out the changed engine's carried
+outcomes, and each is deleted by its identifier.
+
+| Artifact | The probe |
+|---|---|
+| The changed engine's carried outcomes, `carry-after-<band>-<engine>-<os>` from the gate and `carry-live-live-after-<band>-<engine>` from the regression run | Deletes it, including one belonging to a run still in flight, whose foundations were measured on the old model |
+| Another engine's carried outcomes, any precondition record, spend report or report | Keeps it |
+| A listing line that is not an identifier and a name | Refuses the listing with exit 4, deleting nothing |
+
+**A failed deletion is reported and the dispatch goes ahead**, at the owner's
+ruling of the same day. The run summary names it as a harness event, and the
+changed engine is still re-measured: the carry file's served-version check of
+section 3.12.1.2 is the second mechanism keeping a band off another model's
+outcomes.
+
+**A band of a run in flight then finds no carry file.** The harness skips the
+cases resting on an uncarried foundation and runs the rest of the band
+(harness `cmn_verdict_and_cli.md` section 10.28.8). Until a band's download of
+the carry file stops failing its job, such a band fails at the download step
+instead.
+
+`MQC_CAS_UNI_115885` calls the tool with each kind of name above, and
+`MQC_CAS_UNI_115886` reads the dispatch job: the deletion runs before the first
+dispatch and its failure does not stop the dispatch. Requirement
+`MQC_REQ_CAS_CI_0105`.
 
 #### 4.23.4 A probe failure dispatches nothing
 

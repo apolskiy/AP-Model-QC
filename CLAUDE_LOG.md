@@ -9578,3 +9578,45 @@ cannot expire an artifact when a model changes, so the "new model" half could
 only be a check made on read. The owner pointed out that it can: the probe
 already holds `actions: write` and detects the change, so it can delete the
 carriers as the re-record starts. Both mechanisms are now planned.
+
+## 2026-11-17: The Probe Deletes A Changed Engine's Carried Outcomes
+
+**Why.** The owner's ruling keeps a carrier "80 days or new model shows up",
+whichever comes first. M3a built the eighty days; the carried outcomes are
+foundation results measured against one served model, and nothing ended them
+when the model changed, so a band re-run after a provider change could rest on
+the old model's foundations. A changed engine is re-recorded, so its carried
+outcomes are stale the moment the probe sees the change.
+
+**What changed.** `probe-model-version.yml`'s dispatch job checks out the
+repository and, before any dispatch, lists every page of the repository's
+artifacts with `gh api --paginate`, runs `tools/stale_carriers.py` for each
+changed engine, and deletes each identifier it prints. The tool picks the
+gate's `carry-after-<band>-<engine>-<os>` and the regression run's
+`carry-live-live-after-<band>-<engine>` and keeps every other artifact,
+including a look-alike engine's; a malformed listing line refuses with exit 4
+and prints nothing. The deletion step continues on error, and a following
+step reports a failed deletion in the run summary, so the changed engine is
+still re-measured. Design `consumer_ci.md` section 4.23.3, and section 3.12.1.2
+now tables both mechanisms with the served-version check as the remaining gap.
+Requirement `MQC_REQ_CAS_CI_0105`; cases `115885` (the tool) and `115886` (the
+dispatch job).
+
+**The owner's rulings of 2026-11-17.** A failed deletion is reported and the
+dispatch goes ahead; a run still in flight loses its carried outcomes too, its
+foundations having been measured on the old model. Until a band's download of
+the carry file stops failing its job, such a band fails at the download step,
+which the rest of M3 addresses.
+
+**Injection.** Before the change the module would not import, and with the
+tool written `115886` failed finding no pruning step. Seven defects, seven
+caught, each exiting 3: the regression run's name or the gate's matching a
+look-alike engine, a malformed line passed over, the deletion stopping the
+dispatch, only the first page read, nothing deleted, and a failed deletion
+never reported. Baseline exit 0 after restore.
+
+**Digressions the user spotted, and the fix.** None this commit. Two of mine,
+caught before staging: an alias for `step` justified by a loop the module does
+not have, removed; and a failure summary that named an unrelated code and
+credited the unbuilt served-version check, rewritten. The harness step rule
+also refused one step carrying two verifications, split into two.

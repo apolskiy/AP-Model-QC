@@ -3,14 +3,16 @@
 """Preconditions on the model version probe this repository owns and dispatches.
 
 Created: 2026-10-29
-Last updated: 2026-11-13
+Last updated: 2026-11-18
 
 Its cases read ``.github/workflows/probe-model-version.yml``. The first checks
 that the probe resolves a green harness before it decides anything and that it
 dispatches the changed engine's own scheduled caller, which has to exist for every
 rostered engine. The second checks that the dispatch reads each workflow's
 enabled state before dispatching it, and dispatches the changed engine's
-calibration where one exists. The third calls the shared
+calibration where one exists. Two more check that the changed engine's carried
+outcomes, and nothing else, are deleted before anything is dispatched, through
+``tools/stale_carriers.py``. The last calls the shared
 ``cmn.ci_gating.ungated_dispatches`` with this root, which reports any job here
 that starts a spending workflow without reading a green pairing from a job it
 needs.
@@ -39,6 +41,9 @@ Specified by ``docs/design/consumer_ci.md`` section 4.23.5.
 # TestMQCVersionProbeShape
 #   115789  the_probe_resolves_a_green_harness_before_it_dispatches
 #   115849  a_probe_dispatching_without_reading_the_state_is_reported
+# TestMQCStaleCarriers
+#   115885  only_the_changed_engines_carried_outcomes_are_stale
+#   115886  a_probe_dispatching_before_pruning_carriers_is_reported
 # TestMQCDispatchGating
 #   115790  a_dispatching_job_reading_no_green_pairing_is_reported
 # ------------------------------------------------------------ end of cases
@@ -53,6 +58,7 @@ from cmn.ci_gating import ungated_dispatches
 from cmn.config import load_engines, packaged_roster_path
 from cmn.grouping import story
 from tests.cases.workflow_support import jobs, load, needs, run_lines
+from tools.stale_carriers import main as stale_main, stale_carriers
 
 pytestmark = pytest.mark.unit
 
@@ -78,6 +84,33 @@ _ACTIVE: str = '= "active"'
 # calibration. The dispatch itself, not the filename, since the state read
 # names the file too.
 _DISPATCHED: tuple[str, ...] = ("evaluate-${engine}-scheduled.yml", "calibrate-${engine}.yml")
+
+# AN ARTIFACT LISTING AS THE DISPATCH JOB WRITES IT, one identifier and name a
+# line: the changed engine's carried outcomes from both workflows, another
+# engine's, a look-alike engine's, and the carriers and reports kept whatever
+# the model. Section 4.23.3.
+_CHANGED: str = "grok"
+_STALE: tuple[str, ...] = ("11", "12", "13", "14")
+_LISTING: str = (
+    "11 carry-after-p0-grok-ubuntu-26.04\n"
+    "12 carry-after-p1-grok-windows-latest\n"
+    "13 carry-live-live-after-p0-grok\n"
+    "14 carry-live-live-after-p1-grok\n"
+    "21 carry-after-p0-gemini-ubuntu-26.04\n"
+    "22 carry-live-live-after-p0-gemini\n"
+    "23 carry-after-p0-grokx-ubuntu-26.04\n"
+    "24 carry-live-live-after-p0-grokx\n"
+    "31 preconditions-grok\n"
+    "32 spend-grok-live-live-p0\n"
+    "33 mqc-reports-cases-grok-live-live-p0-by-claude\n"
+)
+
+# WHAT THE DISPATCH JOB'S PRUNING STEP RUNS: the tool, for each changed engine,
+# over a paginated listing, and a delete per identifier.
+_PRUNE_TOOL: str = "tools.stale_carriers"
+_PRUNE_PARTS: tuple[str, ...] = (
+    "--paginate", '--engine "${engine}"', "-X DELETE", "/actions/artifacts/",
+)
 
 
 class TestMQCVersionProbeShape:
@@ -217,6 +250,75 @@ class TestMQCVersionProbeShape:
 
         step(3, "find each dispatch made only where its own workflow is active")
         assert not unguarded, unguarded
+
+
+class TestMQCStaleCarriers:
+    """A changed engine's carried outcomes go before it is re-measured."""
+
+    @story("A carrier ends when the model does")
+    def MQC_CAS_UNI_115885_only_the_changed_engines_carried_outcomes_are_stale(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """The changed engine's carried outcomes are picked out, and nothing else.
+
+        Design: ``consumer_ci.md`` section 4.23.3.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+            capsys (pytest.CaptureFixture): Captures what the tool prints.
+
+        Returns:
+            None
+        """
+        listing = tmp_path / "artifacts.txt"
+        listing.write_text(_LISTING, encoding="utf-8")
+        broken = tmp_path / "broken.txt"
+        broken.write_text(_LISTING + "carry-live-live-after-p0-grok\n", encoding="utf-8")
+
+        step(1, "pick out the changed engine's carried outcomes from both workflows only")
+        assert stale_carriers(_LISTING, _CHANGED) == list(_STALE), stale_carriers(
+            _LISTING, _CHANGED)
+
+        step(2, "exit 0 and print one identifier per line")
+        status = stale_main(["--engine", _CHANGED, "--artifacts", str(listing)])
+        assert (status, capsys.readouterr().out.split()) == (0, list(_STALE))
+
+        step(3, "refuse a listing line that is not an identifier and a name, printing none")
+        status = stale_main(["--engine", _CHANGED, "--artifacts", str(broken)])
+        assert (status, capsys.readouterr().out) == (4, "")
+
+    @story("A carrier ends when the model does")
+    def MQC_CAS_UNI_115886_a_probe_dispatching_before_pruning_carriers_is_reported(
+        self,
+    ) -> None:
+        """The dispatch job deletes stale carriers first, and still dispatches if that fails.
+
+        Design: ``consumer_ci.md`` section 4.23.3.
+
+        Returns:
+            None
+        """
+        steps = jobs(load(_PROBE_WORKFLOW))["dispatch"].get("steps") or []
+        bodies = [str((entry or {}).get("run") or "") for entry in steps]
+        pruning = [index for index, body in enumerate(bodies) if _PRUNE_TOOL in body]
+        dispatching = [index for index, body in enumerate(bodies) if "gh workflow run" in body]
+
+        step(1, "find one step picking the changed engine's stale carriers")
+        assert len(pruning) == 1, bodies
+        prune = steps[pruning[0]]
+
+        step(2, "find it reading every page of artifacts and deleting each one it picked")
+        assert all(part in bodies[pruning[0]] for part in _PRUNE_PARTS), bodies[pruning[0]]
+
+        step(3, "find the deletion ahead of every dispatch")
+        assert dispatching and pruning[0] < min(dispatching), (pruning, dispatching)
+
+        step(4, "find a failed deletion reported and the dispatch still made")
+        reported = [
+            entry for entry in steps[pruning[0] + 1:]
+            if f"steps.{prune.get('id')}.outcome == 'failure'" in str(entry.get("if") or "")
+        ]
+        assert prune.get("continue-on-error") is True and prune.get("id") and reported, prune
 
 
 class TestMQCDispatchGating:

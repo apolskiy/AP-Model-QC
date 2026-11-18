@@ -161,12 +161,56 @@ jobs:
   # read first: an active one is dispatched, any other state is reported as
   # opted out, and an absent calibration caller dispatches nothing
   # (section 4.23.3).
+  #
+  # A CHANGED ENGINE'S CARRIED OUTCOMES GO FIRST. They are foundation results
+  # measured against the model that just changed, so a band resting on them
+  # would rest on another model's results. Every one of that engine's, from the
+  # gate and the regression run, is deleted before anything is dispatched, a run
+  # still in flight included. A FAILED DELETION IS REPORTED AND THE DISPATCH
+  # GOES AHEAD: the carry file's served-version check is the second mechanism.
+  # Sections 3.12.1.2 and 4.23.3.
   dispatch:
     name: dispatch the changed engine's scheduled regression run
     needs: [resolve, probe]
     if: needs.resolve.outputs.green == 'true' && needs.probe.outputs.changed_engines != ''
     runs-on: ubuntu-26.04
     steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Delete the changed engines' carried outcomes
+        id: prune
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHANGED: ${{ needs.probe.outputs.changed_engines }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          gh api --paginate "repos/${REPOSITORY}/actions/artifacts?per_page=100" \
+            --jq '.artifacts[] | "\(.id) \(.name)"' > artifacts.txt
+          for engine in ${CHANGED//,/ }; do
+            python -m tools.stale_carriers --engine "${engine}" --artifacts artifacts.txt > stale.txt
+            while read -r identifier; do
+              gh api -X DELETE "repos/${REPOSITORY}/actions/artifacts/${identifier}"
+            done < stale.txt
+            echo "- deleted $(wc -l < stale.txt) carried-outcome artifact(s) of ${engine}" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: Report a failed deletion
+        if: steps.prune.outcome == 'failure'
+        shell: bash
+        run: |
+          {
+            echo "## Carried outcomes not deleted"
+            echo ""
+            echo "The stale carried outcomes of the changed engines could not all"
+            echo "be deleted. This is a HARNESS event, not a model finding. The"
+            echo "changed engines are dispatched anyway (consumer_ci.md section 4.23.3)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Dispatch the changed engines
         env:
           GH_TOKEN: ${{ github.token }}
