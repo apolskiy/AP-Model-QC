@@ -9990,3 +9990,16 @@ harness moved it, so this change lands with the harness change.
 
 **Injection.** Dropping `needs: publish` from the deploy job turned `430002`
 red against a passing control, naming the generating job no deployer needs.
+
+## 2026-11-19: Commit f56ce2f1 carries the wrong message
+
+**What it says.** "The report publisher now deploys from a job of its own",
+which is the message of `3394cda0`, the commit that made that change.
+
+**What it contains.** The debug workflow's `with_prerequisites` input:
+`debug-cases-on-demand.yml`, `tests/cases/debug_support.py`, case `115904`,
+section 6.5.4, `MQC_REQ_CAS_CI_0115`. Its intended message is the one under
+"A debug run runs the named cases alone unless asked for their foundations"
+in `CHANGELOG.md`.
+
+The commit is pushed to `main` and left as it is; this entry is the record.
