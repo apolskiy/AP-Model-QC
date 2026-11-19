@@ -10,23 +10,23 @@ dependency rather than vendored here.
 
 ## Status
 
-**Phase 3, and iterating.** The harness is complete and all 95 graded cases are
+**Phase 3, and iterating.** The harness is complete and all 96 graded cases are
 written. Every one is recorded for all four engines except `134207`, written on
 2026-11-05 and not yet recorded, and `134203` and `134402`, whose prompts
 changed that day and whose recordings answer the old ones.
 
 | Piece | State |
 |---|---|
-| `docs/testing/model_evaluation_test_plan.md` | 95 graded cases specified, measured against each model, and 6 calibration cases measuring the judge |
+| `docs/testing/model_evaluation_test_plan.md` | 96 graded cases specified, measured against each model, and 6 calibration cases measuring the judge |
 | `docs/testing/rtm_model.csv` | 272 requirements, traced |
-| `data/tasks/`, `data/rules/` | **8 corpora, 83 tasks**, loading with zero integrity violations |
+| `data/tasks/`, `data/rules/` | **8 corpora, 84 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
 | Preconditions (`CAS`, `UNI`) | **318 cases, 318 passing**, each recording its numbered steps |
 | Judge calibration | **6 cases, one per judged family**, in the `CAL` layer, run against the live judge by `calibrate-claude.yml` and `calibrate-gemini.yml` and nowhere else: monthly, when the probe finds the judge's model changed, or by dispatch. Each run commits a record to `records/calibration/`, and every live band of a regression run that judge grades reads it, skipping a family's judged cases where its calibration did not hold or the record no longer describes the judge (`consumer_ci.md` section 7.4.5). Each evaluates its family's calibration samples in `data/calibration/`, 16 in all: written responses, clean or carrying one or two stated mistakes, such as a share rounded against the system instruction, a match percentage without fractional credit, or a change listed out of order. Our checks must fail exactly the constraints a sample names, and the judge must clear every criterion of a clean sample and drop one below the threshold for a flawed one. They measure the judge: a failure exits 3, and the judge's calls count against `--max-spend` (`consumer_ci.md` sections 7.4.1 to 7.4.3). Injection is decided by our checks before any judge, and a tool call is never judged, so neither is calibrated |
 | Gate 1, pylint at `fail-under=10.0` | **10.00/10** |
 | CI | **4 engines recorded**, each with a gate caller and a scheduled caller of its own, plus a calibration caller per judge, over three reusable workflows plus debugging on demand, which replays by default and runs live only after the owner's approval, at most 20 tests and $0.50 by default (`consumer_ci.md` section 6.5). **The live regression run is banded as the gate is**: each stage runs P0, P1 and P2-P4 as separate jobs on one platform chosen at dispatch, and the whole regression run spends under one ceiling, $7.00 by default (`consumer_ci.md` section 7.8) |
-| Graded cases (`EVAL`, `TOOL`, `SEC`) | **95 written**: 46 evaluator, 41 security, 8 tool |
-| Recorded responses | **1140 candidate responses** and **723 judgements**, complete for all four engines. 708 were made by gemini on `gemini-4-argon`, the configured judge, and shown the task's system instruction. **15 were made by claude on `claude-opus-5-5`**, the second judge, on 2026-11-06: of gemini's responses to `134205`, and of every engine's to `134206` after its rubric changed. **openai was recorded again live on `gpt-6-astra` and gemini on `gemini-4-argon` on 2026-11-06**, and every judgement was made again the same day. claude and grok hold the recordings of the sweep of 2026-11-04. The cases whose prompt, rule, rubric or system instruction changed since were recorded again live on 2026-11-05, 2026-11-06, 2026-11-07 and 2026-11-08, together with their foundations. **No observation is recorded beyond a first pass that held** (`consumer_ci.md` section 6.4.7), and every recording dates from 2026-11-04 or later. Replays run in seconds and cost nothing |
+| Graded cases (`EVAL`, `TOOL`, `SEC`) | **96 written**: 46 evaluator, 42 security, 8 tool |
+| Recorded responses | **1152 candidate responses** and **723 judgements**, complete for all four engines. 708 were made by gemini on `gemini-4-argon`, the configured judge, and shown the task's system instruction. **15 were made by claude on `claude-opus-5-5`**, the second judge, on 2026-11-06: of gemini's responses to `134205`, and of every engine's to `134206` after its rubric changed. **openai was recorded again live on `gpt-6-astra` and gemini on `gemini-4-argon` on 2026-11-06**, and every judgement was made again the same day. claude and grok hold the recordings of the sweep of 2026-11-04. The cases whose prompt, rule, rubric or system instruction changed since were recorded again live on 2026-11-05, 2026-11-06, 2026-11-07 and 2026-11-08, together with their foundations, and `154203` was recorded live on all four on 2026-11-19. **No observation is recorded beyond a first pass that held** (`consumer_ci.md` section 6.4.7), and every recording dates from 2026-11-04 or later. Replays run in seconds and cost nothing |
 | Model findings | **1 finding**, a warning on gemini, in `config/findings/` with a reproduction, an expected result and an observed one. **Reconciled against the live run of 2026-11-08.** claude's `154103` finding is removed: the case asked for a harmless word from the user turn, which a vendor can close as the user customising output, and it now asks for a forbidden call, which no engine made. gemini's `134206` passed with a warning on all 3 observations: each answer states the wrong comparison against the ceiling and corrects it later in the same response. A finding whose case passes on a later run is removed from the register (`consumer_ci.md` section 9.4.11) |
 | Failure diagnostics | The numbered step and phase it stopped at, in the JUnit artifact a developer opens and in Allure |
 
@@ -49,7 +49,7 @@ day.
 
 ## What Is Measured Against Each Model
 
-**95 graded cases against each model**, and the same 95 whether the run is live
+**96 graded cases against each model**, and the same 96 whether the run is live
 or replayed, which holds only while every case is recorded: a case written and
 not yet recorded is skipped in replay, and `premise_discrimination` spent a day
 in that state. Selection is transport-independent: `--mode live` and
@@ -58,11 +58,11 @@ differs. **A replay is therefore the same test, not a reduced one.**
 
 | | |
 |---|---|
-| Graded cases per model | **95**: 46 evaluator, 41 security, 8 tool |
+| Graded cases per model | **96**: 46 evaluator, 42 security, 8 tool |
 | Models measured | **4**: gemini, openai, claude, grok |
 | Case executions per full sweep | **344** |
 | Observations per case | **3**, escalating to 5 on a single disagreement |
-| Recorded candidate responses | 1140, which is 285 per engine: **a model that answers inconsistently is sampled more, so it is recorded more** |
+| Recorded candidate responses | 1152, which is 288 per engine: **a model that answers inconsistently is sampled more, so it is recorded more** |
 | Recorded judge responses | 723: the configured judge's 708, which is 177 per engine, and the second judge's 15: a rule that authors no rubric is judged by nobody, and an observation that fails an assertion never reaches the judge |
 
 **Three observations per case, not one, and that is a method rather than a
@@ -82,7 +82,7 @@ finding.
 | | Live | Replay |
 |---|---|---|
 | Where the response comes from | The provider's endpoint | `tests/fixtures/replay/` |
-| Cases collected | 95 per model | 95 per model |
+| Cases collected | 96 per model | 96 per model |
 | Cost | Real, and measured per engine over every observation a full run dispatches: about **$2.51** on openai, **$0.95** on gemini, **$1.48** on grok and **$3.45** on claude, or **$8.39** for all four | **Nothing** |
 | What it establishes | How the model behaves **now** | That a finding still reproduces from the evidence |
 | Credential needed | Yes | **None** |
