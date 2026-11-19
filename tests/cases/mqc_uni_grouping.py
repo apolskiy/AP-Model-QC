@@ -3,7 +3,7 @@
 """Unit preconditions for the grouping tree this repository's results are read by.
 
 Created: 2026-10-24
-Last updated: 2026-11-09
+Last updated: 2026-11-19
 
 This file contains six cases, five calling a harness implementation over this
 repository and one reading its workflows. ``TestMQCGroupingDeclaration`` checks that every collected
@@ -72,7 +72,7 @@ from cmn.report_categories import (
     category_problems,
     report_categories,
 )
-from cmn.workflow_standards import report_publication_gaps
+from cmn.report_publication import report_publication_gaps
 
 from tests.cases.grouping_support import published_results
 from tests.cases.workflow_support import WORKFLOWS, jobs, load

@@ -9971,3 +9971,22 @@ the harness would have read every injection as caught. The six harness
 injections of today were run that way; the system interpreter passes the case
 uninjected, so they stand. The script now runs the case uninjected first and
 counts a catch only when that control passes.
+
+## 2026-11-19: Fixed the reports' deploy racing the upload in its own job
+
+**A) What was wrong.** Four publishes failed today, among them runs
+44610248807 and 44610130885: `Found 0 artifact(s)`, then `No artifacts named
+"github-pages" were found for this workflow run`.
+
+**B) Why.** The deploy ran in the job that uploaded the site, a second after
+the upload, before the run listed the artifact.
+
+**The fix.** `publish` builds, writes the index, uploads, and states whether it
+built anything; `deploy` needs it, runs only where something was built, and
+alone holds the Pages credential. Section 4.22.2.2; `MQC_REQ_CAS_GOV_0015`
+extended. The rule and its check are the harness's (section 7.4.6, case
+`420011`); `430002` imports the check from `cmn.report_publication`, where the
+harness moved it, so this change lands with the harness change.
+
+**Injection.** Dropping `needs: publish` from the deploy job turned `430002`
+red against a passing control, naming the generating job no deployer needs.

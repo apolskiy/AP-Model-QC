@@ -68,16 +68,12 @@ jobs:
     # `branches: [main]` cannot be reached by a pull request at all.
     # `consumer_ci.md` section 4.22.2.1, checked by `MQC_CAS_UNI_430002`.
     runs-on: ubuntu-26.04
-    # ON THE JOB, so nothing else in this repository can reach the credential
-    # that writes the site. `actions: read` is what lets it read the artifacts
-    # of other runs.
+    # `actions: read` is what lets it read the artifacts of other runs. The
+    # Pages credential is the deploying job's alone.
     permissions:
-      pages: write
-      id-token: write
       actions: read
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      built: ${{ steps.build.outputs.built }}
     steps:
       - uses: actions/checkout@v5
       - name: Build one report for each engine, from this commit alone
@@ -160,7 +156,26 @@ jobs:
         if: steps.build.outputs.built != ''
         with:
           path: site
+
+  # THE DEPLOY IS A JOB OF ITS OWN, after the job that uploaded. Deployed in
+  # that job, it looked for the Pages artifact before the run listed it and
+  # found none: runs 44610248807 and 44610130885 among four on 2026-11-19.
+  # Harness `harness_ci_pipeline.md` section 7.4.6, `consumer_ci.md` section
+  # 4.22.2.2.
+  deploy:
+    name: deploy the reports
+    needs: publish
+    if: needs.publish.outputs.built != ''
+    runs-on: ubuntu-26.04
+    # ON THE JOB, so nothing else in this repository can reach the credential
+    # that writes the site.
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy them
         id: deployment
-        if: steps.build.outputs.built != ''
         uses: actions/deploy-pages@v5

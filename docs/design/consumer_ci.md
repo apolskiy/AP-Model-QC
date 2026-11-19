@@ -2666,10 +2666,32 @@ conclusion filter adds is not staleness but silence, and silence about a red
 engine is the one thing a readiness view must not do.
 
 `MQC_CAS_UNI_430002` now reports a publisher that conditions on a conclusion,
-through `cmn.workflow_standards.report_publication_gaps`, so the two
+through `cmn.report_publication.report_publication_gaps`, so the two
 repositories are held to it from one implementation.
 
 `MQC_CAS_UNI_430000` to `430002`, `MQC_REQ_CAS_GOV_0014` and `0015`.
+
+#### 4.22.2.2 The deploy is a job of its own, after the job that uploaded
+
+Added 2026-11-19. **Four publishes failed that day at the deploy**, runs
+44610248807 and 44610130885 among them: `Found 0 artifact(s)`, then
+`No artifacts named "github-pages" were found for this workflow run`. The
+deploy ran in the job that uploaded the site, a second after the upload, and
+the artifact was not yet listed for the run.
+
+**The workflow now holds two jobs.** `publish` builds the reports, writes the
+index and uploads the site, and states whether it built anything as a job
+output. `deploy` needs `publish`, runs only where something was built, and
+alone holds `pages: write`, `id-token: write` and the `github-pages`
+environment, so the job reading other runs' artifacts no longer holds the
+credential that writes the site.
+
+**No `continue-on-error` is needed on either.** The workflow holds no gate,
+so a red deploy concludes only its own run and no pairing resolver reads it
+(harness `harness_ci_pipeline.md` section 7.4.3).
+
+The rule and its check are the harness's, section 7.4.6, and
+`MQC_CAS_UNI_430002` applies them to these workflows.
 
 #### 4.22.3 The band is the root the Suites tab is navigated by
 

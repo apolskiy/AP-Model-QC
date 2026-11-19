@@ -40,6 +40,20 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### The reports deploy from a job of their own, after the job that uploaded them, 2026-11-19
+
+**Why.** Four publishes failed on 2026-11-19, runs 44610248807 and
+44610130885 among them, at a deploy that ran in the job that uploaded the site
+and found no Pages artifact listed for the run.
+
+**What changed.** `publish-report-on-merge.yml` builds and uploads in
+`publish`, which states whether it built anything, and deploys in a new
+`deploy` job that needs it and alone holds the Pages credential.
+`MQC_CAS_UNI_430002` imports the check from `cmn.report_publication`, where
+the harness moved it. `consumer_ci.md` section 4.22.2.2,
+`MQC_REQ_CAS_GOV_0015` extended. README: the harness count it quotes, 1186,
+was three cases behind the harness and reads 1189.
+
 ### A debug run runs the named cases alone unless asked for their foundations, 2026-11-19
 
 **Why.** A debug run investigates one case, and its foundations decide nothing
