@@ -244,6 +244,16 @@ spent.** A debug run is one or two cases; split a larger selection across runs.
 path in this repository. Download it and commit the recording you want as the
 case's base recording. `consumer_ci.md` section 6.5.
 
+**`observations` sets how often each case is observed.** Leave it empty for
+the roster's count. A number, such as 20 for a ticket's denominator, observes
+each selected case that many times in one run, still within `max_spend`.
+Recordings beyond the roster's count stay in the artifact as evidence and are
+not committed as base recordings (`consumer_ci.md` section 6.5.1).
+
+```
+gh workflow run debug-cases-on-demand.yml --ref main --field tests=154202 --field engine=grok --field mode=live --field observations=20
+```
+
 ---
 
 ## 3. Dispatching It
@@ -275,7 +285,7 @@ applied to cases on another.
 
 ### 3.2 From the browser
 
-Actions, then `debug-cases-on-demand`, then **Run workflow**. The same five
+Actions, then `debug-cases-on-demand`, then **Run workflow**. The same
 inputs appear as a form.
 
 The run is named for what it does, so the Actions list is readable without

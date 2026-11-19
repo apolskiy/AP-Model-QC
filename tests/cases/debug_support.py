@@ -3,19 +3,21 @@
 """Support code reading the debug workflow, for the cases that check what it may spend.
 
 Created: 2026-11-14
-Last updated: 2026-11-14
+Last updated: 2026-11-19
 
 This file contains the debug workflow's file name, its two job names, the
 environment its live job names and the limit on a live selection;
 ``debug_jobs``, the workflow's jobs; ``provider_secrets``, the provider keys a
 job references; ``environment_of``, the environment a job names;
 ``expected_environment``, the environment a job running a case live must name;
-and ``jobs_naming``, every job in every workflow naming a given environment.
+``jobs_naming``, every job in every workflow naming a given environment; and
+``pytest_steps`` and ``passes_observations``, which read whether a job passes
+the dispatch form's observation count to pytest.
 
 **Not a test module.** ``pytest.ini`` collects ``mqc_*.py``, so this name sits
 outside that pattern deliberately, as ``workflow_support.py`` does.
 
-Specified by ``docs/design/consumer_ci.md`` section 6.5.
+Specified by ``docs/design/consumer_ci.md`` sections 6.5 and 6.5.1.
 """
 
 import re
@@ -39,6 +41,12 @@ DEFAULT_LIVE_CEILING: Final[str] = "0.50"
 # copies them inside its artifact.
 RECORDINGS: Final[str] = "tests/fixtures/replay"
 ARTIFACT_RECORDINGS: Final[str] = "debug-artifacts/recordings"
+# The dispatch input setting the observation count, the environment variable
+# carrying it into a run step, and the argument that step expands, which adds
+# nothing when the input is empty.
+OBSERVATIONS_INPUT: Final[str] = "observations"
+OBSERVATIONS_VARIABLE: Final[str] = "OBSERVATIONS"
+OBSERVATIONS_ARGUMENT: Final[str] = '${OBSERVATIONS:+--observations "${OBSERVATIONS}"}'
 
 
 def debug_workflow() -> dict[str, Any]:
@@ -143,3 +151,37 @@ def step_bodies(job: dict[str, Any]) -> list[tuple[str, str]]:
         (str((step or {}).get("if") or ""), str((step or {}).get("run") or ""))
         for step in job.get("steps") or []
     ]
+
+
+def pytest_steps(job: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return the steps of a job whose run body invokes pytest.
+
+    Args:
+        job (dict): A parsed job.
+
+    Returns:
+        list: Each such step, in job order.
+    """
+    return [
+        step for step in job.get("steps") or []
+        if str((step or {}).get("run") or "").lstrip().startswith("pytest ")
+    ]
+
+
+def passes_observations(job: dict[str, Any]) -> bool:
+    """Return whether every pytest step of a job passes the observation count when set.
+
+    Args:
+        job (dict): A parsed job.
+
+    Returns:
+        bool: True when the job has a pytest step and each maps the input into
+        its environment and expands the argument in its body.
+    """
+    found = pytest_steps(job)
+    return bool(found) and all(
+        str((step.get("env") or {}).get(OBSERVATIONS_VARIABLE) or "")
+        == f"${{{{ inputs.{OBSERVATIONS_INPUT} }}}}"
+        and OBSERVATIONS_ARGUMENT in str(step.get("run") or "")
+        for step in found
+    )

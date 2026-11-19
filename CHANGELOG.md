@@ -40,6 +40,22 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A debug run can observe a case a set number of times, 2026-11-19
+
+**Why.** A finding goes to a vendor with a rate behind it, and grok's `154202`
+had failed once in five. The debug workflow could only take the roster's
+count, so a twenty-observation rerun needed four dispatches or a run outside
+CI.
+
+**What changed.** `debug-cases-on-demand.yml` has an `observations` input,
+empty by default. Both debug jobs carry it through the environment and pass
+`--observations` only when it is set, so an empty input runs the roster's
+count as before. `consumer_ci.md` section 6.5.1 holds the design and
+`model_running_jobs.md` section 2.3 the dispatch line. Requirement
+`MQC_REQ_CAS_CI_0111` and case `115897` were added. README: 271
+requirements, 317 preconditions, and the harness figure of 1179 test cases,
+which had not moved with the harness's judge-timeout cases.
+
 ### A regression run waits for its own commit's gate, and the gate never stops it, 2026-11-18
 
 **Why.** The design said a regression run waits for its engine's gate, and

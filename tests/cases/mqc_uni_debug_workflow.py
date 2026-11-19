@@ -3,21 +3,22 @@
 """Unit preconditions for what the debug workflow may spend, and on whose approval.
 
 Created: 2026-11-14
-Last updated: 2026-11-14
+Last updated: 2026-11-19
 
-This file contains ``TestMQCDebugSpending``, three cases over
+This file contains ``TestMQCDebugSpending``, four cases over
 ``debug-cases-on-demand.yml``. The first checks that a replay runs in
 ``debug_replay`` with no environment and no key, and a live run in
 ``debug_live``, which names the environment carrying the owner's approval. The
 second checks that a live run defaults to a $0.50 ceiling and is refused past
 20 requested tests, running the tool that refuses it at 20 and 21. The third
-checks that a live run keeps the recordings it wrote.
+checks that a live run keeps the recordings it wrote. The fourth checks that
+both jobs pass the dispatch form's observation count to pytest when it is set.
 
 **These run in the ``unit`` precondition gate.** A failure is an instrument
 defect, **not a model finding**: the run exits 3 and no graded case executes,
 and the module carries no priority marker.
 
-Specified by ``docs/design/consumer_ci.md`` section 6.5.
+Specified by ``docs/design/consumer_ci.md`` sections 6.5 and 6.5.1.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -27,6 +28,7 @@ Specified by ``docs/design/consumer_ci.md`` section 6.5.
 #   115853  a_debug_job_reaching_keys_without_approval_is_reported
 #   115854  a_live_debug_past_twenty_tests_is_refused
 #   115855  a_live_debug_discarding_its_recordings_is_reported
+#   115897  a_debug_run_ignoring_its_observation_count_is_reported
 # ------------------------------------------------------------ end of cases
 
 from pathlib import Path
@@ -46,11 +48,14 @@ from tests.cases.debug_support import (
     DEFAULT_LIVE_CEILING,
     LIVE_ENVIRONMENT,
     MAX_LIVE_TESTS,
+    OBSERVATIONS_ARGUMENT,
+    OBSERVATIONS_INPUT,
     RECORDINGS,
     debug_jobs,
     dispatch_inputs,
     environment_of,
     jobs_naming,
+    passes_observations,
     provider_secrets,
     step_bodies,
 )
@@ -194,3 +199,24 @@ class TestMQCDebugSpending:
         assert uploads and copying[0][0] < min(uploads), (
             f"copy at step {copying[0][0]}, uploads at {uploads}"
         )
+
+    @story("Setting the observation count")
+    def MQC_CAS_UNI_115897_a_debug_run_ignoring_its_observation_count_is_reported(
+        self,
+    ) -> None:
+        """Both debug jobs pass the dispatch form's observation count, when set, to pytest.
+
+        Design: ``consumer_ci.md`` section 6.5.1.
+
+        Returns:
+            None
+        """
+        step(1, f"read the {OBSERVATIONS_INPUT!r} dispatch input and its default")
+        declared = dispatch_inputs().get(OBSERVATIONS_INPUT)
+        assert declared is not None and str(declared.get("default")) == "", (
+            f"{OBSERVATIONS_INPUT} is declared as {declared!r}"
+        )
+
+        step(2, f"read whether each debug job's pytest step carries {OBSERVATIONS_ARGUMENT}")
+        passing = {name: passes_observations(job) for name, job in debug_jobs().items()}
+        assert passing == {DEBUG_REPLAY: True, DEBUG_LIVE: True}, passing

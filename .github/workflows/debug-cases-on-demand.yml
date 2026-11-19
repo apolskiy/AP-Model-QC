@@ -66,6 +66,14 @@ on:
         default: judged
         type: choice
         options: [judged, unjudged]
+      # EMPTY RUNS THE ROSTER'S COUNT. A number observes each case that many
+      # times, for a ticket's denominator; max_spend still bounds a live run.
+      # consumer_ci.md section 6.5.1.
+      observations:
+        description: "Observations per case. Empty runs the roster's count"
+        required: false
+        default: ""
+        type: string
 
 run-name: "DEBUG (no verdict) ${{ inputs.mode }} ${{ inputs.tests }} on ${{ inputs.case_ref || github.ref_name }}"
 
@@ -187,10 +195,14 @@ jobs:
           # rather than free text somebody types.
           SELECTION: reports/requested-tests.txt
           ENGINE: ${{ inputs.engine }}
+          # Free text, so through the environment, and expanded to nothing
+          # when empty (section 6.5.1).
+          OBSERVATIONS: ${{ inputs.observations }}
         run: |
           pytest --tests-file "${SELECTION}" \
             --engine "${ENGINE}" \
             --mode replay \
+            ${OBSERVATIONS:+--observations "${OBSERVATIONS}"} \
             ${{ inputs.judge == 'unjudged' && '--judge-mode off' || '' }} \
             --judge-on-failure \
             --out-dir debug-artifacts/ \
@@ -320,11 +332,13 @@ jobs:
           SELECTION: reports/requested-tests.txt
           ENGINE: ${{ inputs.engine }}
           MAX_SPEND: ${{ inputs.max_spend }}
+          OBSERVATIONS: ${{ inputs.observations }}
         run: |
           pytest --tests-file "${SELECTION}" \
             --max-spend "${MAX_SPEND}" \
             --engine "${ENGINE}" \
             --mode live \
+            ${OBSERVATIONS:+--observations "${OBSERVATIONS}"} \
             ${{ inputs.judge == 'unjudged' && '--judge-mode off' || '' }} \
             --judge-on-failure \
             --out-dir debug-artifacts/ \

@@ -1425,6 +1425,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115853` | N | `a_debug_job_reaching_keys_without_approval_is_reported` (6.5) |
 | `115854` | B | `a_live_debug_past_twenty_tests_is_refused` (6.5) |
 | `115855` | N | `a_live_debug_discarding_its_recordings_is_reported` (6.5) |
+| `115897` | N | `a_debug_run_ignoring_its_observation_count_is_reported` (6.5.1) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1434,7 +1435,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 221 cases, 156 negative, 53 positive, 12 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 222 cases, 157 negative, 53 positive, 12 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3498,6 +3499,33 @@ recording. It yields no verdict either way (section 6.1).
 | `115853` | `debug_replay` runs on replay with no environment and no key; `debug_live` runs on live in `debug_live`; no other job names `debug_live` and no debug job names `live` |
 | `115854` | The ceiling defaults to $0.50, `debug_live` passes `--max-entries 20`, the tool writes 20 entries and refuses 21, and the dispatch form and the summary state the limit |
 | `115855` | `debug_live` copies what it recorded into its artifact, whatever the run's outcome |
+
+#### 6.5.1 A debug run may set the observation count
+
+Added 2026-11-19 at the project owner's ruling, to rerun grok's `154202`
+twenty times before its finding is filed. **The dispatch form offers
+`observations`, empty by default.** Empty runs the roster's count, three with
+two more after a failure (section 6.4.7). A number is passed to pytest as
+`--observations` by both debug jobs, so one case is observed as often as a
+ticket's denominator needs, in one run.
+
+**The input goes through the environment** like every other free-text input
+here, and the job adds the flag only when the value is set, so an empty input
+leaves pytest's own default in place. The harness marks a run overriding the
+count as a manual selection, which a debug run already is: it yields no
+verdict either way (section 6.1).
+
+**What such a run records stays in its artifact.** Observations beyond the
+roster's count are evidence for a ticket, not a base recording, and
+`MQC_CAS_UNI_115820` reports any committed beyond a first pass that holds.
+The ceiling still applies, so twenty observations of one case are refused
+past `max_spend` rather than spent.
+
+| Case | Asserts |
+|---|---|
+| `115897` | The dispatch form offers `observations` with an empty default, and both debug jobs map it into their run step's environment and pass `--observations` only when it is set |
+
+Requirement: `MQC_REQ_CAS_CI_0111`.
 
 ## 7. The regression run, and the machinery checks that make it viable
 
