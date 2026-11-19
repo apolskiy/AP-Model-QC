@@ -24,6 +24,9 @@
 # debug_live environment, which carries the owner as required reviewer, so it
 # waits for approval, runs AT MOST 20 TESTS, defaults to a $0.50 ceiling, and
 # keeps every recording it wrote in its artifact.
+#
+# EACH JOB STATES WHAT PYTEST DID FIRST ON ITS SUMMARY, and goes red when
+# pytest stopped before running a case (consumer_ci.md section 6.5.3).
 name: debug-cases-on-demand
 
 on:
@@ -219,6 +222,16 @@ jobs:
             --out-dir debug-artifacts/ \
             --junitxml=debug-artifacts/junit-debug.xml
 
+      # WHAT PYTEST DID, FIRST ON THE SUMMARY, AND RED WHEN IT STOPPED. The
+      # pytest step continues on error, so without this a run that executed
+      # nothing reads green. consumer_ci.md section 6.5.3.
+      - name: State what pytest did
+        if: always()
+        shell: bash
+        run: |
+          python "${GITHUB_WORKSPACE}/tools/debug_outcome.py" \
+            debug-artifacts/junit-debug.xml --summary "$GITHUB_STEP_SUMMARY"
+
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -356,6 +369,15 @@ jobs:
             --judge-on-failure \
             --out-dir debug-artifacts/ \
             --junitxml=debug-artifacts/junit-debug.xml
+
+      # As debug_replay: the outcome first, and red when pytest stopped
+      # (section 6.5.3). The recordings and the artifact are kept regardless.
+      - name: State what pytest did
+        if: always()
+        shell: bash
+        run: |
+          python "${GITHUB_WORKSPACE}/tools/debug_outcome.py" \
+            debug-artifacts/junit-debug.xml --summary "$GITHUB_STEP_SUMMARY"
 
       # KEEP WHAT THIS RUN RECORDED. A live run writes its recordings and
       # judgements into the checkout, which ends with the run, so every file

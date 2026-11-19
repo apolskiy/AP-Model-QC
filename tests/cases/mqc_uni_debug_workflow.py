@@ -5,7 +5,8 @@
 Created: 2026-11-14
 Last updated: 2026-11-19
 
-This file contains ``TestMQCDebugSpending``, five cases over
+This file contains ``TestMQCDebugSpending``, five cases, and
+``TestMQCDebugOutcome``, three, over
 ``debug-cases-on-demand.yml``. The first checks that a replay runs in
 ``debug_replay`` with no environment and no key, and a live run in
 ``debug_live``, which names the environment carrying the owner's approval. The
@@ -13,13 +14,15 @@ second checks that a live run defaults to a $0.50 ceiling and is refused past
 20 requested tests, running the tool that refuses it at 20 and 21. The third
 checks that a live run keeps the recordings it wrote. The fourth and fifth
 check that both jobs pass the dispatch form's observation count and escalation
-target to pytest when each is set.
+target to pytest when each is set. ``TestMQCDebugOutcome`` runs
+``tools/debug_outcome.py`` over JUnit reports, one holding every outcome and
+three from a session that stopped, and checks that both jobs end by running it.
 
 **These run in the ``unit`` precondition gate.** A failure is an instrument
 defect, **not a model finding**: the run exits 3 and no graded case executes,
 and the module carries no priority marker.
 
-Specified by ``docs/design/consumer_ci.md`` sections 6.5, 6.5.1 and 6.5.2.
+Specified by ``docs/design/consumer_ci.md`` sections 6.5, 6.5.1, 6.5.2 and 6.5.3.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -31,6 +34,10 @@ Specified by ``docs/design/consumer_ci.md`` sections 6.5, 6.5.1 and 6.5.2.
 #   115855  a_live_debug_discarding_its_recordings_is_reported
 #   115897  a_debug_run_ignoring_its_observation_count_is_reported
 #   115900  a_debug_run_ignoring_its_escalation_target_is_reported
+# TestMQCDebugOutcome
+#   115901  a_debug_report_states_every_count
+#   115902  a_debug_run_whose_pytest_stopped_fails
+#   115903  a_debug_job_not_stating_its_outcome_is_reported
 # ------------------------------------------------------------ end of cases
 
 from pathlib import Path
@@ -39,6 +46,7 @@ import pytest
 
 from cmn.case_steps import step
 from cmn.grouping import story
+from tools.debug_outcome import main as debug_outcome
 from tools.write_test_list import main as write_test_list
 
 from tests.cases.debug_support import (
@@ -54,15 +62,19 @@ from tests.cases.debug_support import (
     MAX_LIVE_TESTS,
     OBSERVATIONS_ARGUMENT,
     OBSERVATIONS_INPUT,
+    OUTCOME_TOOL,
     RECORDINGS,
     debug_jobs,
     dispatch_inputs,
     environment_of,
     jobs_naming,
+    outcome_headline,
     passes_escalation_target,
     passes_observations,
     provider_secrets,
+    states_outcome,
     step_bodies,
+    write_junit,
 )
 
 pytestmark = pytest.mark.unit
@@ -246,3 +258,113 @@ class TestMQCDebugSpending:
         step(2, f"read whether each debug job's pytest step carries {ESCALATE_TO_ARGUMENT}")
         passing = {name: passes_escalation_target(job) for name, job in debug_jobs().items()}
         assert passing == {DEBUG_REPLAY: True, DEBUG_LIVE: True}, passing
+
+
+class TestMQCDebugOutcome:
+    """A debug run states what pytest did, and fails when pytest stopped."""
+
+    @story("Stating every count")
+    def MQC_CAS_UNI_115901_a_debug_report_states_every_count(self, tmp_path: Path) -> None:
+        """A report of five outcomes gives a headline, one line per count and exits 0.
+
+        Every case that did not pass is listed with its outcome and message.
+
+        Design: ``consumer_ci.md`` section 6.5.3.
+
+        Args:
+            tmp_path (Path): Where the report and the summary are written.
+
+        Returns:
+            None
+        """
+        report = write_junit(tmp_path / "junit.xml", [
+            '<testcase classname="a" name="held"/>',
+            '<testcase classname="a" name="warned"><properties>'
+            '<property name="mqc_outcome" value="passw"/></properties></testcase>',
+            '<testcase classname="a" name="missed"><failure message="QC_LLM_X"/></testcase>',
+            '<testcase classname="a" name="behind"><skipped message="QC_HARNESS_Y"/></testcase>',
+            '<testcase classname="a" name="crashed"><error message="failed on setup"/></testcase>',
+        ])
+        summary = tmp_path / "summary.md"
+        step(1, "state the outcome of a passed, passw, failed, skipped and broken case")
+        exit_code = debug_outcome(([str(report), "--summary", str(summary)]))
+        lines = summary.read_text(encoding="utf-8").splitlines()
+        expected = ["total: 5", "executed: 3", "passed: 1", "passw: 1", "failed: 1",
+                    "skipped: 1", "broken: 1"]
+        assert (exit_code, [line for line in expected if line not in lines]) == (0, []), (
+            exit_code, lines
+        )
+
+        step(2, "read the headline and the rows of the cases that did not pass")
+        headline = "## Outcome: FAILED, 1 failed, 1 broken, 1 passed, 1 passw, 1 skipped"
+        rows = sorted(line for line in lines if line.startswith("| ") and "Outcome" not in line)
+        assert (lines[0], rows) == (headline, [
+            "| behind | skipped | QC_HARNESS_Y |",
+            "| crashed | broken | failed on setup |",
+            "| missed | failed | QC_LLM_X |",
+        ]), lines
+
+        headlines = {
+            "a failure alone": (['<testcase classname="a" name="held"/>',
+                                 '<testcase classname="a" name="missed">'
+                                 '<failure message="QC_LLM_X"/></testcase>'],
+                                "## Outcome: FAILED, 1 failed, 1 passed"),
+            "skips alone": (['<testcase classname="a" name="behind">'
+                             '<skipped message="QC_HARNESS_Y"/></testcase>'],
+                            "## Outcome: NOTHING EXECUTED, 1 skipped"),
+            "passes alone": (['<testcase classname="a" name="held"/>'],
+                             "## Outcome: PASSED, 1 passed"),
+        }
+        for number, (label, (cases, headline)) in enumerate(headlines.items(), start=3):
+            step(number, f"read the headline of {label}")
+            stated = outcome_headline(tmp_path / str(number), cases)
+            assert stated == (0, headline), (label, stated)
+
+    @story("A stopped session")
+    def MQC_CAS_UNI_115902_a_debug_run_whose_pytest_stopped_fails(self, tmp_path: Path) -> None:
+        """An internal error, a missing report and an empty one each exit 1, saying so.
+
+        Each summary's headline says the run failed because pytest stopped, and
+        names the cause; the internal error's names the exception it ended on.
+
+        Design: ``consumer_ci.md`` section 6.5.3.
+
+        Args:
+            tmp_path (Path): Where the reports and the summaries are written.
+
+        Returns:
+            None
+        """
+        reports = {
+            "an internal error": (write_junit(tmp_path / "stopped.xml", [
+                '<testcase classname="pytest" name="internal">'
+                '<error message="internal error">Traceback\n'
+                'ValueError: QC_HARNESS_DEPENDENCY_UNMET: 1 named case(s)</error></testcase>',
+            ]), "ValueError: QC_HARNESS_DEPENDENCY_UNMET: 1 named case(s)"),
+            "a missing report": (tmp_path / "absent.xml", "no JUnit report at"),
+            "a report holding no case": (write_junit(tmp_path / "empty.xml", []),
+                                         "holds no case"),
+        }
+        headline = "## Outcome: FAILED, pytest stopped before running a case"
+        for number, (label, (report, cause)) in enumerate(reports.items(), start=1):
+            step(number, f"state the outcome of {label}")
+            summary = tmp_path / f"summary_{number}.md"
+            exit_code = debug_outcome([str(report), "--summary", str(summary)])
+            stated = summary.read_text(encoding="utf-8") if summary.exists() else ""
+            assert (exit_code, stated.startswith(headline), cause in stated) == (
+                1, True, True), (label, exit_code, stated)
+
+    @story("Every job states it")
+    def MQC_CAS_UNI_115903_a_debug_job_not_stating_its_outcome_is_reported(self) -> None:
+        """Both debug jobs run the tool straight after pytest, always, on its JUnit report.
+
+        Straight after, so the outcome is the run summary's first section.
+
+        Design: ``consumer_ci.md`` section 6.5.3.
+
+        Returns:
+            None
+        """
+        step(1, f"read whether each debug job runs {OUTCOME_TOOL} straight after pytest")
+        missing = {name: states_outcome(job) for name, job in debug_jobs().items()}
+        assert missing == {DEBUG_REPLAY: "", DEBUG_LIVE: ""}, missing

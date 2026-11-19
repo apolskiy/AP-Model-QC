@@ -1429,6 +1429,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115898` | N | `a_subprocess_inheriting_standard_input_is_reported` (harness taxonomy 14.5) |
 | `115899` | B | `a_failing_case_is_taken_to_the_escalation_target` (6.5.2) |
 | `115900` | N | `a_debug_run_ignoring_its_escalation_target_is_reported` (6.5.2) |
+| `115901` | P | `a_debug_report_states_every_count` (6.5.3) |
+| `115902` | N | `a_debug_run_whose_pytest_stopped_fails` (6.5.3) |
+| `115903` | N | `a_debug_job_not_stating_its_outcome_is_reported` (6.5.3) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1438,7 +1441,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 225 cases, 159 negative, 53 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 228 cases, 161 negative, 54 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3557,6 +3560,43 @@ artifact, as section 6.5.1 says of observations beyond the roster's count.
 | `115900` | The dispatch form offers `escalate_to` with an empty default, and both debug jobs map it into their run step's environment and pass `--escalate-to` only when it is set |
 
 Requirement: `MQC_REQ_CAS_CI_0113`.
+
+#### 6.5.3 A debug run states what pytest did, and fails when pytest stopped
+
+Added 2026-11-19. **Run 44601131326 dispatched grok's `154202` live and
+reported success having run nothing.** `154202` rests on `154103`, the
+harness refused the selection during collection with
+`QC_HARNESS_DEPENDENCY_UNMET`, and pytest wrote one `internal error`
+testcase. The pytest step carries `continue-on-error`, because a failed case
+is what a debug run is for, and the summary named the inputs and never the
+outcome, so a run that executed nothing read the same as one that passed.
+
+**Each debug job runs `tools/debug_outcome.py` straight after its pytest
+step, whatever that step did**, so the outcome is the first section on the run
+summary, above the inputs. It reads the JUnit report the pytest step wrote.
+The section opens with a headline, `Outcome: FAILED`, `PASSED` or
+`NOTHING EXECUTED` with the counts that decided it, then one labelled count
+per line: total, executed, passed, passw, failed, skipped, and broken when a
+case crashed. Every case that did not pass follows in a table with its outcome
+and message. A failed, skipped or broken case leaves the job green: the
+summary says what happened, and the run still carries no verdict (section
+6.1).
+
+**Pytest stopping fails the job.** The report missing, unreadable or holding
+no case, or holding a `collection failure` or `internal error` testcase, the
+two pytest writes for a session that stopped before running a case, exits 1.
+The headline reads `Outcome: FAILED, pytest stopped before running a case`,
+and a table gives each cause with the exception it ended on, which is also
+raised as an error annotation. Nothing was measured, and a green run would say
+otherwise.
+
+| Case | Asserts |
+|---|---|
+| `115901` | A report holding a passed, a passw, a failed, a skipped and a broken case exits 0 with the headline `FAILED`, one line per count, and a row with outcome and message for each case that did not pass; a failure alone reads `FAILED`, skips alone `NOTHING EXECUTED`, passes alone `PASSED` |
+| `115902` | A report holding an `internal error` testcase, a missing report and a report holding no case each exit 1, with the headline that pytest stopped and the cause; the internal error's names its exception |
+| `115903` | The step straight after each debug job's pytest step runs always and passes the tool the JUnit path that pytest step writes |
+
+Requirement: `MQC_REQ_CAS_CI_0114`.
 
 ## 7. The regression run, and the machinery checks that make it viable
 

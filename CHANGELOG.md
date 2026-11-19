@@ -40,6 +40,22 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A debug run states what pytest did, and goes red when pytest stopped, 2026-11-19
+
+**Why.** A live debug run of `154202` reported success having run nothing: the
+harness refused the selection during collection, because `154202` rests on
+`154103`. The pytest step continues on error and the summary named only the
+inputs, so a run that measured nothing read the same as one that passed.
+
+**What changed.** Each debug job runs `tools/debug_outcome.py` straight after
+pytest, whatever pytest did, so the outcome is the summary's first section: a
+headline, `Outcome: FAILED`, `PASSED` or `NOTHING EXECUTED`, the total,
+executed, passed, passw, failed and skipped counts, with broken when a case
+crashed, and a row with its message for every case that did not pass. When
+pytest stopped before running a case or wrote no readable report, the headline
+says so, a table gives the cause and the exception, and the job exits 1. `consumer_ci.md` section 6.5.3, `MQC_REQ_CAS_CI_0114`, cases `115901`
+to `115903`; inventory 228. README: 274 requirements, 323 preconditions.
+
 ### A debug run can take a failing case to a set number of observations, 2026-11-19
 
 **Why.** A finding's rate needs more observations than the five a failing

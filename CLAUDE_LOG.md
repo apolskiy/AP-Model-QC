@@ -9907,3 +9907,41 @@ serves both inputs. `model_running_jobs.md` section 2.3 gives
 **Digressions the user spotted, and the fix.** I proposed 20 observations
 from the start, then refusing duplicate entries in debug as well; the owner
 asked why a debug run should refuse them, and proposed this instead.
+
+## 2026-11-19: A Debug Run States What Pytest Did
+
+**Why.** Run 44601131326, grok `154202` live with `escalate_to=17`, reported
+success and sent nothing to grok. `154202` is `depends_on("154103")`, the
+harness refused the selection in collection with
+`QC_HARNESS_DEPENDENCY_UNMET`, and pytest wrote one `internal error` testcase.
+The pytest step carries `continue-on-error` and the summary stated only the
+inputs, so the run read green. The owner chose to fix this, the missing
+`with_prerequisites` input, and the two CI defects found earlier the same day.
+
+**What changed.** `tools/debug_outcome.py`, the step straight after pytest in
+both debug jobs, `if: always()`, so it is the summary's first section. A
+headline (`FAILED`, `PASSED`, `NOTHING EXECUTED`), the counts one per line,
+and a row per case that did not pass with its message; when pytest stopped, a
+headline saying so with the cause and exception in a table, and exit 1. The
+owner, mid-change, on run 44601131326: "need better printouts in debug
+summary it's not clear test failed and due to internal error"; the first
+version put plain counts at the end of the page, and this one leads with the
+outcome.
+`consumer_ci.md` section 6.5.3; `MQC_REQ_CAS_CI_0114`; `115901` to `115903`,
+with `debug_support.states_outcome` and `write_junit`. Run on the real report
+of 44601131326 it exits 1 and names the dependency refusal. README: 274
+requirements, 323 preconditions.
+
+**Failing first.** `115903` found neither job running the tool.
+
+**Injection.** passw counted as passed, the rows of unpassed cases dropped, a
+failure not making the headline `FAILED`, and skips alone read as `PASSED`
+each failed `115901`. The failure injection first survived, because the
+fixture also held a broken case, so steps for a failure alone, skips alone and
+passes alone were added. `internal error` not recognised, the exception
+dropped from the cause, and an empty report taken as ran each failed
+`115902`; the live step run on `success()` failed `115903`. Each restored.
+
+**Digressions the user spotted, and the fix.** I gave the owner a dispatch
+command for `154202` alone without checking its foundation, so the run was
+spent on approval and measured nothing. The tool now makes such a run red.

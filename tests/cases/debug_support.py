@@ -13,18 +13,24 @@ job references; ``environment_of``, the environment a job names;
 ``jobs_naming``, every job in every workflow naming a given environment; and
 ``pytest_steps``, ``passes_input``, ``passes_observations`` and
 ``passes_escalation_target``, which read whether a job passes the dispatch
-form's observation count and escalation target to pytest.
+form's observation count and escalation target to pytest; ``states_outcome``,
+which reads whether a job ends by stating what pytest did; and
+``write_junit``, which writes a JUnit report for the tool that states it; and
+``outcome_headline``, which runs that tool on such a report.
 
 **Not a test module.** ``pytest.ini`` collects ``mqc_*.py``, so this name sits
 outside that pattern deliberately, as ``workflow_support.py`` does.
 
-Specified by ``docs/design/consumer_ci.md`` sections 6.5, 6.5.1 and 6.5.2.
+Specified by ``docs/design/consumer_ci.md`` sections 6.5, 6.5.1, 6.5.2 and 6.5.3.
 """
 
 import re
+from pathlib import Path
 from typing import Any, Final
 
 import yaml
+
+from tools.debug_outcome import main as debug_outcome
 
 from tests.cases.workflow_support import WORKFLOWS, jobs, load
 
@@ -52,6 +58,10 @@ OBSERVATIONS_ARGUMENT: Final[str] = '${OBSERVATIONS:+--observations "${OBSERVATI
 ESCALATE_TO_INPUT: Final[str] = "escalate_to"
 ESCALATE_TO_VARIABLE: Final[str] = "ESCALATE_TO"
 ESCALATE_TO_ARGUMENT: Final[str] = '${ESCALATE_TO:+--escalate-to "${ESCALATE_TO}"}'
+# The tool each debug job ends with, stating what pytest did (section 6.5.3),
+# and the option naming the JUnit report a pytest step writes.
+OUTCOME_TOOL: Final[str] = "tools/debug_outcome.py"
+JUNIT_OPTION: Final[re.Pattern[str]] = re.compile(r"--junitxml[= ](\S+)")
 
 
 def debug_workflow() -> dict[str, Any]:
@@ -216,3 +226,66 @@ def passes_escalation_target(job: dict[str, Any]) -> bool:
         bool: As :func:`passes_input` for ``escalate_to``.
     """
     return passes_input(job, ESCALATE_TO_INPUT, ESCALATE_TO_VARIABLE, ESCALATE_TO_ARGUMENT)
+
+
+def states_outcome(job: dict[str, Any]) -> str:
+    """Return why a job does not state its pytest outcome first, or empty when it does.
+
+    Args:
+        job (dict): A parsed job.
+
+    Returns:
+        str: Empty when the step straight after the job's pytest step runs
+        always and passes :data:`OUTCOME_TOOL` the JUnit path that step
+        writes; otherwise what is missing.
+    """
+    found = pytest_steps(job)
+    written = JUNIT_OPTION.search(str((found[0] if found else {}).get("run") or ""))
+    if written is None:
+        return "no pytest step writing a JUnit report"
+    entries = list(job.get("steps") or [])
+    position = next(index for index, entry in enumerate(entries) if entry is found[0])
+    following = entries[position + 1] if position + 1 < len(entries) else {}
+    condition, body = str(following.get("if") or ""), str(following.get("run") or "")
+    if OUTCOME_TOOL not in body:
+        return f"the step after pytest does not run {OUTCOME_TOOL}"
+    if "always()" not in condition:
+        return f"the step after pytest runs when {condition!r}, not always"
+    if written.group(1) not in body:
+        return f"the step after pytest does not read {written.group(1)}"
+    return ""
+
+
+def write_junit(path: Path, testcases: list[str]) -> Path:
+    """Write a JUnit report holding the given testcase elements.
+
+    Args:
+        path (Path): Where to write it.
+        testcases (list[str]): Each a ``testcase`` element, as XML text.
+
+    Returns:
+        Path: The path written.
+    """
+    path.write_text(
+        '<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest">'
+        + "".join(testcases) + "</testsuite></testsuites>",
+        encoding="utf-8",
+    )
+    return path
+
+
+def outcome_headline(folder: Path, cases: list[str]) -> tuple[int, str]:
+    """Return the outcome tool's exit code and summary headline for a report of these cases.
+
+    Args:
+        folder (Path): A directory to create for the report and the summary.
+        cases (list[str]): The report's testcase elements, as XML text.
+
+    Returns:
+        tuple: The exit code and the summary's first line.
+    """
+    folder.mkdir()
+    report = write_junit(folder / "junit.xml", cases)
+    summary = folder / "summary.md"
+    exit_code = debug_outcome([str(report), "--summary", str(summary)])
+    return exit_code, summary.read_text(encoding="utf-8").splitlines()[0]
