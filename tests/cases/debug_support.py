@@ -11,13 +11,14 @@ environment its live job names and the limit on a live selection;
 job references; ``environment_of``, the environment a job names;
 ``expected_environment``, the environment a job running a case live must name;
 ``jobs_naming``, every job in every workflow naming a given environment; and
-``pytest_steps`` and ``passes_observations``, which read whether a job passes
-the dispatch form's observation count to pytest.
+``pytest_steps``, ``passes_input``, ``passes_observations`` and
+``passes_escalation_target``, which read whether a job passes the dispatch
+form's observation count and escalation target to pytest.
 
 **Not a test module.** ``pytest.ini`` collects ``mqc_*.py``, so this name sits
 outside that pattern deliberately, as ``workflow_support.py`` does.
 
-Specified by ``docs/design/consumer_ci.md`` sections 6.5 and 6.5.1.
+Specified by ``docs/design/consumer_ci.md`` sections 6.5, 6.5.1 and 6.5.2.
 """
 
 import re
@@ -47,6 +48,10 @@ ARTIFACT_RECORDINGS: Final[str] = "debug-artifacts/recordings"
 OBSERVATIONS_INPUT: Final[str] = "observations"
 OBSERVATIONS_VARIABLE: Final[str] = "OBSERVATIONS"
 OBSERVATIONS_ARGUMENT: Final[str] = '${OBSERVATIONS:+--observations "${OBSERVATIONS}"}'
+# The same three for the total a failing case escalates to (section 6.5.2).
+ESCALATE_TO_INPUT: Final[str] = "escalate_to"
+ESCALATE_TO_VARIABLE: Final[str] = "ESCALATE_TO"
+ESCALATE_TO_ARGUMENT: Final[str] = '${ESCALATE_TO:+--escalate-to "${ESCALATE_TO}"}'
 
 
 def debug_workflow() -> dict[str, Any]:
@@ -168,11 +173,14 @@ def pytest_steps(job: dict[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
-def passes_observations(job: dict[str, Any]) -> bool:
-    """Return whether every pytest step of a job passes the observation count when set.
+def passes_input(job: dict[str, Any], name: str, variable: str, argument: str) -> bool:
+    """Return whether every pytest step of a job passes a dispatch input when set.
 
     Args:
         job (dict): A parsed job.
+        name (str): The dispatch input.
+        variable (str): The environment variable carrying it into the step.
+        argument (str): The expansion adding the flag only when it is set.
 
     Returns:
         bool: True when the job has a pytest step and each maps the input into
@@ -180,8 +188,31 @@ def passes_observations(job: dict[str, Any]) -> bool:
     """
     found = pytest_steps(job)
     return bool(found) and all(
-        str((step.get("env") or {}).get(OBSERVATIONS_VARIABLE) or "")
-        == f"${{{{ inputs.{OBSERVATIONS_INPUT} }}}}"
-        and OBSERVATIONS_ARGUMENT in str(step.get("run") or "")
+        str((step.get("env") or {}).get(variable) or "") == f"${{{{ inputs.{name} }}}}"
+        and argument in str(step.get("run") or "")
         for step in found
     )
+
+
+def passes_observations(job: dict[str, Any]) -> bool:
+    """Return whether every pytest step of a job passes the observation count when set.
+
+    Args:
+        job (dict): A parsed job.
+
+    Returns:
+        bool: As :func:`passes_input` for ``observations``.
+    """
+    return passes_input(job, OBSERVATIONS_INPUT, OBSERVATIONS_VARIABLE, OBSERVATIONS_ARGUMENT)
+
+
+def passes_escalation_target(job: dict[str, Any]) -> bool:
+    """Return whether every pytest step of a job passes the escalation target when set.
+
+    Args:
+        job (dict): A parsed job.
+
+    Returns:
+        bool: As :func:`passes_input` for ``escalate_to``.
+    """
+    return passes_input(job, ESCALATE_TO_INPUT, ESCALATE_TO_VARIABLE, ESCALATE_TO_ARGUMENT)

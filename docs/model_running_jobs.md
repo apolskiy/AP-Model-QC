@@ -244,15 +244,21 @@ spent.** A debug run is one or two cases; split a larger selection across runs.
 path in this repository. Download it and commit the recording you want as the
 case's base recording. `consumer_ci.md` section 6.5.
 
-**`observations` sets how often each case is observed.** Leave it empty for
-the roster's count. A number, such as 20 for a ticket's denominator, observes
-each selected case that many times in one run, still within `max_spend`.
-Recordings beyond the roster's count stay in the artifact as evidence and are
-not committed as base recordings (`consumer_ci.md` section 6.5.1).
+**`escalate_to` measures a failure's rate.** Leave it empty and a failing case
+is taken to five observations. A number, such as 17, takes a case one of whose
+first three observations failed to that many in all; a case passing all three
+stops there, and you dispatch again. Still within `max_spend`
+(`consumer_ci.md` section 6.5.2).
 
 ```
-gh workflow run debug-cases-on-demand.yml --ref main --field tests=154202 --field engine=grok --field mode=live --field observations=20
+gh workflow run debug-cases-on-demand.yml --ref main --field tests=154202 --field engine=grok --field mode=live --field escalate_to=17
 ```
+
+**`observations` sets how often each case is observed from the start.** Leave
+it empty for the roster's count. A number observes each selected case that
+many times whether it passes or not. Recordings beyond the roster's count, from
+either input, stay in the artifact as evidence and are not committed as base
+recordings (`consumer_ci.md` section 6.5.1).
 
 ---
 

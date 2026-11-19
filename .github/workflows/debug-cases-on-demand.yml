@@ -74,6 +74,15 @@ on:
         required: false
         default: ""
         type: string
+      # EMPTY ESCALATES A FAILING CASE TO FIVE. A number takes a case one of
+      # whose first observations failed to that total; a case passing them all
+      # stops there. max_spend still bounds a live run. consumer_ci.md
+      # section 6.5.2.
+      escalate_to:
+        description: "Total observations a failing case escalates to. Empty is five"
+        required: false
+        default: ""
+        type: string
 
 run-name: "DEBUG (no verdict) ${{ inputs.mode }} ${{ inputs.tests }} on ${{ inputs.case_ref || github.ref_name }}"
 
@@ -198,11 +207,13 @@ jobs:
           # Free text, so through the environment, and expanded to nothing
           # when empty (section 6.5.1).
           OBSERVATIONS: ${{ inputs.observations }}
+          ESCALATE_TO: ${{ inputs.escalate_to }}
         run: |
           pytest --tests-file "${SELECTION}" \
             --engine "${ENGINE}" \
             --mode replay \
             ${OBSERVATIONS:+--observations "${OBSERVATIONS}"} \
+            ${ESCALATE_TO:+--escalate-to "${ESCALATE_TO}"} \
             ${{ inputs.judge == 'unjudged' && '--judge-mode off' || '' }} \
             --judge-on-failure \
             --out-dir debug-artifacts/ \
@@ -333,12 +344,14 @@ jobs:
           ENGINE: ${{ inputs.engine }}
           MAX_SPEND: ${{ inputs.max_spend }}
           OBSERVATIONS: ${{ inputs.observations }}
+          ESCALATE_TO: ${{ inputs.escalate_to }}
         run: |
           pytest --tests-file "${SELECTION}" \
             --max-spend "${MAX_SPEND}" \
             --engine "${ENGINE}" \
             --mode live \
             ${OBSERVATIONS:+--observations "${OBSERVATIONS}"} \
+            ${ESCALATE_TO:+--escalate-to "${ESCALATE_TO}"} \
             ${{ inputs.judge == 'unjudged' && '--judge-mode off' || '' }} \
             --judge-on-failure \
             --out-dir debug-artifacts/ \

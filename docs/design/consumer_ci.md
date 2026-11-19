@@ -1427,6 +1427,8 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115855` | N | `a_live_debug_discarding_its_recordings_is_reported` (6.5) |
 | `115897` | N | `a_debug_run_ignoring_its_observation_count_is_reported` (6.5.1) |
 | `115898` | N | `a_subprocess_inheriting_standard_input_is_reported` (harness taxonomy 14.5) |
+| `115899` | B | `a_failing_case_is_taken_to_the_escalation_target` (6.5.2) |
+| `115900` | N | `a_debug_run_ignoring_its_escalation_target_is_reported` (6.5.2) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1436,7 +1438,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 223 cases, 158 negative, 53 positive, 12 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 225 cases, 159 negative, 53 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3527,6 +3529,34 @@ past `max_spend` rather than spent.
 | `115897` | The dispatch form offers `observations` with an empty default, and both debug jobs map it into their run step's environment and pass `--observations` only when it is set |
 
 Requirement: `MQC_REQ_CAS_CI_0111`.
+
+#### 6.5.2 A debug run may set the total a failing case escalates to
+
+Added 2026-11-19 at the project owner's ruling, as the simpler way to measure
+grok's `154202`: "allow to customize the number of requests in case of failure
+or inconsistent responses instead of 5 up to say 20". **The dispatch form
+offers `escalate_to`, empty by default.** A case is observed three times; if
+they all pass it stops, and if any fails it is taken to `escalate_to`
+observations in all rather than to five. A run that stops clean at three is
+rerun by hand.
+
+**The loop reads the flag; the rule is the harness's.** `observe_repeatedly`
+passes `--escalate-to` to `further_observations` and to the step record, and
+decides nothing itself (harness `cmn_verdict_and_cli.md` section 4.9.2.3).
+Without the flag the escalation is to five, as section 6.4.7 states.
+
+**The input goes through the environment** and is added only when set, as
+`observations` is (section 6.5.1). The flag is a manual selector, and a debug
+run yields no verdict anyway. **The ceiling bounds it**: an escalation past
+`max_spend` is refused rather than spent. What the run records stays in its
+artifact, as section 6.5.1 says of observations beyond the roster's count.
+
+| Case | Asserts |
+|---|---|
+| `115899` | With `--escalate-to 17` the loop dispatches 17 observations of a case one of whose first three failed, numbered 0 to 16, and passes the target to the step record; three passes stop at three; without the flag a failure is taken to five |
+| `115900` | The dispatch form offers `escalate_to` with an empty default, and both debug jobs map it into their run step's environment and pass `--escalate-to` only when it is set |
+
+Requirement: `MQC_REQ_CAS_CI_0113`.
 
 ## 7. The regression run, and the machinery checks that make it viable
 

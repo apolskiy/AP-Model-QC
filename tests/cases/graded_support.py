@@ -3,7 +3,7 @@
 """Support code that dispatches and evaluates a graded case, written once for every case.
 
 Created: 2026-09-25
-Last updated: 2026-11-17
+Last updated: 2026-11-19
 
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
@@ -795,6 +795,21 @@ def observation_count(config: Any) -> int:
     return max(1, int(configured or 1))
 
 
+def escalation_target(config: Any) -> Optional[int]:
+    """Return the total a failing case escalates to, or None for the default.
+
+    Args:
+        config (Any): pytest's configuration.
+
+    Returns:
+        Optional[int]: ``--escalate-to`` when named, otherwise None, which
+        keeps the harness's escalation to five (``consumer_ci.md`` section
+        6.5.2).
+    """
+    named = int(config.getoption("--escalate-to", 0) or 0)
+    return named if named > 0 else None
+
+
 def observe_repeatedly(
     config: Any,
     task_id: str,
@@ -839,7 +854,10 @@ def observe_repeatedly(
     # the boundary in CLAUDE.md: the cases own no harness code. Design section
     # 4.9.2.2.
     # AN UNJUDGED OBSERVATION IS NO OUTCOME, and earns nothing (section 6.4.5).
-    extra = further_observations([measured_outcome(entry) for entry in results])
+    target = escalation_target(config)
+    extra = further_observations(
+        [measured_outcome(entry) for entry in results], escalate_to=target
+    )
     taken = len(results)
     results += [
         observe(config, task_id, rule_id, observation_index=taken + offset, judge=judge)
@@ -850,7 +868,8 @@ def observe_repeatedly(
     # section 9.4.3.3. Recorded only; the case is still decided by
     # `assert_consistent_pass`.
     record_remaining_steps(
-        case_for(task_id, rule_id).case_id, results, configured=configured
+        case_for(task_id, rule_id).case_id, results,
+        configured=configured, escalate_to=target,
     )
     # A PARTIALLY RECORDED CASE IS RE-RECORDED, NEVER DECIDED. Read only now,
     # every observation and escalation having run, because which judgements a

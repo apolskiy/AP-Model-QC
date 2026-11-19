@@ -3,13 +3,14 @@
 """Unit preconditions for whether the instrument measures the claim each case name makes.
 
 Created: 2026-10-01
-Last updated: 2026-11-17
+Last updated: 2026-11-19
 
-This file contains thirteen cases. ``TestMQCCasesMeasureTheirOwnClaim`` checks no task
+This file contains fourteen cases. ``TestMQCCasesMeasureTheirOwnClaim`` checks no task
 and rule pair is bound by two graded cases, no assertion turns on trailing whitespace, a
 recorded refusal states its reason, security foundations and vectors are declared as the
 design states them, and every inventory row is implemented. ``TestMQCNamedInstrument``
-checks the judge engine and observation count a run names are the ones it uses;
+checks the judge engine, observation count and escalation target a run names are the
+ones it uses;
 ``TestMQCRunLevelSession`` that one dispatch session serves a run and records its
 models; and ``TestMQCQuarantineTool`` that ``tools/quarantine.py`` writes what
 reconciling decided and refuses a date it cannot parse.
@@ -21,7 +22,7 @@ executes, and the module carries no priority marker, per the harness
 ``framework-rules.md`` section 3.3.
 
 Specified by ``docs/testing/model_evaluation_test_plan.md`` section 8.1 and
-``docs/design/consumer_ci.md`` sections 4, 4.13 and 4.13.1.
+``docs/design/consumer_ci.md`` sections 4, 4.13, 4.13.1 and 6.5.2.
 
 **Three failures of one kind, found on one day.** Four cases bound one task and
 rule pair and asserted the conjunction of its four assertions, so a red named
@@ -50,6 +51,7 @@ of the data it measures.
 # TestMQCNamedInstrument
 #   115406  the_named_judge_engine_is_the_one_that_grades
 #   115407  the_named_observation_count_is_the_one_dispatched
+#   115899  a_failing_case_is_taken_to_the_escalation_target
 # TestMQCRunLevelSession
 #   115409  one_dispatch_session_serves_a_whole_run
 #   115410  the_session_records_the_models_it_served
@@ -63,6 +65,7 @@ import json
 import re
 from datetime import date
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Final
 
 import pytest
@@ -76,6 +79,7 @@ from evaluation.assertions import run_assertions
 from ingestion.schemas import GoldenRuleSet, TaskDataSet
 from execution.dispatch import DispatchOutcome, DispatchSession
 from tools.quarantine import main as quarantine_tool, parse_as_of
+import tests.cases.graded_support as graded
 from tests.cases.graded_support import (
     repository_root,
     dispatch_session,
@@ -606,6 +610,76 @@ class TestMQCNamedInstrument:
         # count meaning the same as a configured one.
         assert further_observations([True, False, True]) == 2
         assert further_observations([True, True, True]) == 0
+
+    @story("Setting the escalation target")
+    def MQC_CAS_UNI_115899_a_failing_case_is_taken_to_the_escalation_target(
+        self, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """``--escalate-to`` takes a case one of whose first three failed to that total.
+
+        Design: ``consumer_ci.md`` section 6.5.2.
+
+        Args:
+            monkeypatch (pytest.MonkeyPatch): Replaces the dispatch with a
+                simulated observation and the step record with a capture.
+
+        Returns:
+            None
+        """
+        failing = {1}
+        targets: list[object] = []
+
+        def simulated(_config: object, _task: str, _rule: str, **keywords: object) -> object:
+            """Return an observation passing unless its index is in ``failing``.
+
+            Args:
+                _config (object): Unused.
+                _task (str): Unused.
+                _rule (str): Unused.
+                **keywords (object): ``observation_index`` and ``judge``.
+
+            Returns:
+                object: A result carrying ``passed`` and its index.
+            """
+            index = int(keywords["observation_index"])
+            return SimpleNamespace(
+                passed=index not in failing, judge_skipped_reason=None, index=index
+            )
+
+        def captured(_case: str, _results: object, **keywords: object) -> list:
+            """Record the target the loop passed to the step record.
+
+            Args:
+                _case (str): Unused.
+                _results (object): Unused.
+                **keywords (object): ``configured`` and ``escalate_to``.
+
+            Returns:
+                list: Nothing recorded.
+            """
+            targets.append(keywords.get("escalate_to"))
+            return []
+
+        monkeypatch.setattr(graded, "observe", simulated)
+        monkeypatch.setattr(graded, "record_remaining_steps", captured)
+        monkeypatch.setattr(graded, "skip_unreplayed_case", lambda _results: None)
+        monkeypatch.setattr(graded, "case_for", lambda _task, _rule: SimpleNamespace(case_id="C"))
+
+        step(1, "observe a case failing observation 1 with --escalate-to 17")
+        taken = graded.observe_repeatedly(SimulatedGradedConfig("", escalate_to=17), "T", "R")
+        assert ([entry.index for entry in taken], targets) == (list(range(17)), [17]), (
+            [entry.index for entry in taken], targets
+        )
+
+        step(2, "observe a case passing every time with --escalate-to 17")
+        failing.clear()
+        taken = graded.observe_repeatedly(SimulatedGradedConfig("", escalate_to=17), "T", "R")
+        assert len(taken) == 3, len(taken)
+
+        step(3, "observe a case failing observation 1 without the flag")
+        failing.add(1)
+        taken = graded.observe_repeatedly(SimulatedGradedConfig(""), "T", "R")
+        assert (len(taken), targets[-1]) == (5, None), (len(taken), targets)
 
 
 class TestMQCRunLevelSession:

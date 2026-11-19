@@ -3,7 +3,7 @@
 """Support code that records a graded case's steps into Allure and the log.
 
 Created: 2026-10-16
-Last updated: 2026-10-21
+Last updated: 2026-11-19
 
 This file contains ``record_observation_step``, which writes the step one observation
 is, with its pipeline phases nested beneath it, and ``record_remaining_steps``, which
@@ -21,7 +21,7 @@ Design: ``consumer_ci.md`` section 9.4.3.3, implementing harness
 """
 
 import logging
-from typing import Any, Sequence
+from typing import Any, Optional, Sequence
 
 from cmn.reporter import reporter
 from cmn.steps import CaseStep, StepOutcome, case_steps, observation_step, step_lines
@@ -49,7 +49,11 @@ def record_observation_step(
 
 
 def record_remaining_steps(
-    case_id: str, results: Sequence[Any], *, configured: int
+    case_id: str,
+    results: Sequence[Any],
+    *,
+    configured: int,
+    escalate_to: Optional[int] = None,
 ) -> list[CaseStep]:
     """Record the steps after the observations: escalation not taken, then the comparison.
 
@@ -59,11 +63,16 @@ def record_remaining_steps(
             each already recorded as its own step by ``observe``.
         configured (int): How many observations the run takes before
             escalating.
+        escalate_to (Optional[int]): The total a failing case escalates to,
+            None for the harness's default (``consumer_ci.md`` section 6.5.2).
 
     Returns:
         list[CaseStep]: The steps recorded, numbered after the observations.
     """
-    steps = case_steps([(None, result) for result in results], configured=configured)
+    steps = case_steps(
+        [(None, result) for result in results],
+        configured=configured, escalate_to=escalate_to,
+    )
     remaining = steps[len(results):]
     _record(case_id, remaining)
     return remaining

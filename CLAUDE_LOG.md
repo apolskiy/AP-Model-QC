@@ -9876,3 +9876,34 @@ twenty-observation rerun of `154202` gives that.
 README: 96 graded cases, 42 security, 84 tasks, 1152 candidate responses.
 
 **Digressions the user spotted, and the fix.** None this commit.
+
+## 2026-11-19: A Debug Run Takes A Failing Case To A Set Total
+
+**Why.** To measure grok's `154202` at more than five observations. I first
+proposed `observations=20`; the owner: "who needs that many?", then asked why
+`154202` could not be listed four times. A selection collects each case once,
+so it cannot. The owner's simpler route: "allow to customize the number of
+requests in case of failure or inconsistent responses instead of 5 up to say
+20". A case whose first three pass stops there and is rerun by hand, and the
+number is the total, which "will give us a clearer picture".
+
+**What changed.** The dispatch form's `escalate_to`, passed by both debug jobs
+as `--escalate-to` only when set. `escalation_target` in `graded_support.py`
+reads the flag, and `observe_repeatedly` passes it to `further_observations`
+and through `record_remaining_steps` to the step record; the rule is the
+harness's (`cmn_verdict_and_cli.md` section 4.9.2.3). `consumer_ci.md` section
+6.5.2; `MQC_REQ_CAS_CI_0113`; `115899` drives the loop with simulated
+observations, `115900` reads the workflow; `debug_support.passes_input` now
+serves both inputs. `model_running_jobs.md` section 2.3 gives
+`escalate_to=17`. README: 273 requirements, 320 preconditions, harness 1183.
+
+**Failing first.** `115899` dispatched indices 0 to 4 with a target of 17, and
+`115900` found no `escalate_to` input.
+
+**Injection.** The loop not passing the target to the rule failed `115899`
+(`[0, 1, 2, 3, 4]`). `debug_live` dropping the argument failed `115900`
+(`'debug_live': False`). Each restored.
+
+**Digressions the user spotted, and the fix.** I proposed 20 observations
+from the start, then refusing duplicate entries in debug as well; the owner
+asked why a debug run should refuse them, and proposed this instead.

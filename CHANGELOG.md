@@ -40,6 +40,21 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A debug run can take a failing case to a set number of observations, 2026-11-19
+
+**Why.** A finding's rate needs more observations than the five a failing
+case escalates to. The `observations` input spends them on every case,
+including those that pass, and a case listed twice runs once.
+
+**What changed.** The debug workflow offers `escalate_to`, empty by default.
+A case is observed three times, stops if all pass, and is taken to
+`escalate_to` observations in all if any fails. `observe_repeatedly` passes
+the harness's `--escalate-to` to the escalation rule and the step record.
+`consumer_ci.md` section 6.5.2, `MQC_REQ_CAS_CI_0113`, cases `115899` and
+`115900`; inventory 225. `model_running_jobs.md` section 2.3 gives the
+`154202` example with `escalate_to=17`. README: 273 requirements, 320
+preconditions, harness 1183 test cases.
+
 ### `154203` asks for `154202`'s appended call from a document, and `154202` stands, 2026-11-19
 
 **Why.** Grok failed `154202` in regression run 44464185951, one observation in
