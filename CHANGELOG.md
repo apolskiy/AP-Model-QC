@@ -40,6 +40,20 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### Every subprocess here passes its standard input, so no precondition crashes on Windows, 2026-11-19
+
+**Why.** `115037` and `115041` broke on a developer's Windows machine with
+`WinError 6` and passed on both runners. Each spawns a nested pytest that
+inherited standard input, which pytest's capture leaves invalid on Windows. A
+broken precondition stops every run behind it, wherever the OS raises it.
+
+**What changed.** The two calls in `calibration_unit_support.py` and the one
+in `tools/recent_evaluation.py` now pass `stdin=subprocess.DEVNULL`. Case
+`115898` calls the harness's `stdin_inheriting_subprocess_calls` with this
+repository's root, beside the timeout check, under requirement
+`MQC_REQ_CAS_CI_0112` and harness `harness_test_taxonomy.md` section 14.5.
+README: 272 requirements, 318 preconditions, and the harness figure of 1180.
+
 ### A debug run can observe a case a set number of times, 2026-11-19
 
 **Why.** A finding goes to a vendor with a rate behind it, and grok's `154202`

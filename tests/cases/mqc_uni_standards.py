@@ -3,12 +3,13 @@
 """Unit preconditions enforcing on this tree the code-style rules pylint cannot express.
 
 Created: 2026-09-23
-Last updated: 2026-10-30
+Last updated: 2026-11-19
 
-This file contains nineteen cases, each calling a harness checker with this repository's
+This file contains twenty cases, each calling a harness checker with this repository's
 root. They check annotations, the PEP 563 prohibition, MIT SPDX headers on code,
 documents and data, declared runbook inputs, declared file encodings, identifiers
-inside their module's block, case modules holding only cases, subprocess timeouts, the
+inside their module's block, case modules holding only cases, subprocess timeouts and
+standard input, the
 module runway, a repository named in each document's filename, the generated case
 blocks, the two derived requirements files against the declaration, every imported
 package being declared, and that this repository refuses a case collected twice, warns
@@ -52,6 +53,7 @@ less often.
 #   115795  a_collected_module_no_gate_selects_is_reported
 # TestMQCBoundedSubprocesses
 #   115712  a_subprocess_without_a_timeout_is_reported
+#   115898  a_subprocess_inheriting_standard_input_is_reported
 # TestMQCModuleRunway
 #   115715  a_module_at_the_runway_ceiling_is_reported
 #   115718  a_document_naming_no_repository_is_reported
@@ -88,6 +90,7 @@ from cmn.project_clock import local_clock_reads, project_today
 from cmn.mutation_guard import imported_harness_root
 from cmn.case_module_standards import (
     extraction_problems,
+    stdin_inheriting_subprocess_calls,
     unbounded_subprocess_calls,
     ungated_modules,
 )
@@ -481,6 +484,27 @@ class TestMQCBoundedSubprocesses:
         assert not problems, (
             f"{len(problems)} subprocess invocation(s) carry no timeout, so a "
             f"child that stalls blocks until a runner cancels the job: "
+            + "; ".join(problems)
+        )
+
+    @story("A child is given its standard input")
+    def MQC_CAS_UNI_115898_a_subprocess_inheriting_standard_input_is_reported(
+        self,
+    ) -> None:
+        """Every subprocess invocation here passes ``stdin`` or ``input``.
+
+        A child inheriting standard input under pytest's capture raises
+        ``WinError 6`` on Windows before it starts, which breaks the case.
+
+        Design: harness ``harness_test_taxonomy.md`` section 14.5.
+
+        Returns:
+            None
+        """
+        step(1, "scan this repository for subprocess calls passing neither stdin nor input")
+        problems = stdin_inheriting_subprocess_calls(Path(__file__).resolve().parents[2])
+        assert not problems, (
+            f"{len(problems)} subprocess invocation(s) inherit standard input: "
             + "; ".join(problems)
         )
 

@@ -3,7 +3,7 @@
 """Decides whether a scheduled evaluation would repeat one already made this month.
 
 Created: 2026-11-09
-Last updated: 2026-11-13
+Last updated: 2026-11-19
 
 This file contains ``redundant_by``, which returns the run whose
 ``live -> live`` stage already measured an engine inside the window, or
@@ -116,7 +116,8 @@ def _gh_api(path: str) -> dict[str, Any]:
             or returns something that is not JSON.
     """
     done = subprocess.run(["gh", "api", path], capture_output=True, text=True,
-                          encoding=_ENCODING, timeout=_TIMEOUT_SECONDS, check=False)
+                          encoding=_ENCODING, timeout=_TIMEOUT_SECONDS, check=False,
+                          stdin=subprocess.DEVNULL)
     if done.returncode != 0:
         raise ValueError(f"QC_HARNESS_DEPENDENCY_UNMET: gh api {path} exited "
                          f"{done.returncode}: {done.stderr.strip()[:200]}")

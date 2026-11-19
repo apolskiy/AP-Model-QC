@@ -3,7 +3,7 @@
 """Stand-in judges and collection probes for the calibration unit cases.
 
 Created: 2026-11-10
-Last updated: 2026-11-12
+Last updated: 2026-11-19
 
 This file contains :class:`StandInJudge`, which answers a calibration request
 with the score a rule gives its sample and keeps every request it received;
@@ -182,7 +182,7 @@ def collect_calibration(markexpr: str, *options: str) -> tuple[int, str]:
         [sys.executable, "-m", "pytest", _CALIBRATION_MODULE, "--collect-only", "-q",
          "-p", "no:randomly", "-m", markexpr, *options],
         cwd=_ROOT, capture_output=True, text=True, encoding="utf-8",
-        timeout=300, check=False,
+        timeout=300, check=False, stdin=subprocess.DEVNULL,
     )
     return finished.returncode, finished.stdout + finished.stderr
 
@@ -215,7 +215,7 @@ def publish_one_precondition(destination: Path, ceiling: str) -> PublishedRun:
          "-p", "no:randomly", "-p", "no:cacheprovider", "--max-spend", ceiling,
          f"--junitxml={report}", f"--alluredir={results}"],
         cwd=_ROOT, capture_output=True, text=True, encoding="utf-8",
-        timeout=300, check=False,
+        timeout=300, check=False, stdin=subprocess.DEVNULL,
     )
     junit: dict[str, str] = {}
     if report.is_file():

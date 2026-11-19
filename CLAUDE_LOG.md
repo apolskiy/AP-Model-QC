@@ -9789,3 +9789,42 @@ alone failed step 2 with `{'debug_replay': True, 'debug_live': False}`;
 restored.
 
 **Digressions the user spotted, and the fix.** None this commit.
+
+## 2026-11-19: No Precondition Crashes On An Inherited Standard Input
+
+**A portfolio finding, and its fix**, at the owner's ruling: "a crash, if a
+fatal error for harness and repo. Even though it may be an os bug, we inherit
+it and it stops operations. In fact this is a finding for the protfolio and so
+is the fix."
+
+**What was wrong.** The unit layer, run locally on Windows, reported
+`broken: 2, so the run exits 3`: `115037` and `115041`, each
+`OSError: [WinError 6] The handle is invalid` from `subprocess.run` in
+`calibration_unit_support.py`. Each spawns a nested pytest without `stdin`, so
+the child inherited the standard input pytest's capture leaves invalid on
+Windows. Running from Bash with standard input on `/dev/null` changed
+nothing: the capture, not the session, makes the handle invalid. Both
+runners passed, including `windows-latest` in grok run 44464185951.
+`tools/recent_evaluation.py` carried the same gap, unexercised by a case.
+
+**Ruled fatal, and the outcome stays broken.** Asked whether a caught crash
+should skip or fail: neither. A skip reads as not applicable and a fail as a
+measured outcome. Broken with `QC_HARNESS_UNANTICIPATED_EXCEPTION` and exit
+3 is what happened, and the remedy is preventing the call shape.
+
+**What changed.** The three calls pass `stdin=subprocess.DEVNULL`.
+`MQC_CAS_UNI_115898` calls the harness's new
+`stdin_inheriting_subprocess_calls` with this root, the
+one-implementation-two-callers arrangement of `115712`; harness
+`MQC_CMN_UNI_112910` calls it with the harness's, which was already clean.
+Requirement `MQC_REQ_CAS_CI_0112`; inventory 223 in `consumer_ci.md`. README
+272 requirements, 318 preconditions, harness 1180.
+
+**Injection.** Before the three calls were fixed, `115898` reported exactly
+those three, file and line; after, it passes, and `115037` and `115041` pass
+locally.
+
+**Digressions the user spotted, and the fix.** I reported the two crashes as
+predating the change and passing on CI, and left them. The owner ruled them our
+defect and fatal: a crash we inherit from the OS still stops the run. This
+entry is that fix.

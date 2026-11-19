@@ -1426,6 +1426,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115854` | B | `a_live_debug_past_twenty_tests_is_refused` (6.5) |
 | `115855` | N | `a_live_debug_discarding_its_recordings_is_reported` (6.5) |
 | `115897` | N | `a_debug_run_ignoring_its_observation_count_is_reported` (6.5.1) |
+| `115898` | N | `a_subprocess_inheriting_standard_input_is_reported` (harness taxonomy 14.5) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1435,7 +1436,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 222 cases, 157 negative, 53 positive, 12 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 223 cases, 158 negative, 53 positive, 12 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
