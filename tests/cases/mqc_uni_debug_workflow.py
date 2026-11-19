@@ -5,7 +5,7 @@
 Created: 2026-11-14
 Last updated: 2026-11-19
 
-This file contains ``TestMQCDebugSpending``, five cases, and
+This file contains ``TestMQCDebugSpending``, six cases, and
 ``TestMQCDebugOutcome``, three, over
 ``debug-cases-on-demand.yml``. The first checks that a replay runs in
 ``debug_replay`` with no environment and no key, and a live run in
@@ -14,7 +14,8 @@ second checks that a live run defaults to a $0.50 ceiling and is refused past
 20 requested tests, running the tool that refuses it at 20 and 21. The third
 checks that a live run keeps the recordings it wrote. The fourth and fifth
 check that both jobs pass the dispatch form's observation count and escalation
-target to pytest when each is set. ``TestMQCDebugOutcome`` runs
+target to pytest when each is set, and the sixth that both add
+``--with-prerequisites`` only when the boolean input asks. ``TestMQCDebugOutcome`` runs
 ``tools/debug_outcome.py`` over JUnit reports, one holding every outcome and
 three from a session that stopped, and checks that both jobs end by running it.
 
@@ -22,7 +23,7 @@ three from a session that stopped, and checks that both jobs end by running it.
 defect, **not a model finding**: the run exits 3 and no graded case executes,
 and the module carries no priority marker.
 
-Specified by ``docs/design/consumer_ci.md`` sections 6.5, 6.5.1, 6.5.2 and 6.5.3.
+Specified by ``docs/design/consumer_ci.md`` sections 6.5 and 6.5.1 to 6.5.4.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -34,6 +35,7 @@ Specified by ``docs/design/consumer_ci.md`` sections 6.5, 6.5.1, 6.5.2 and 6.5.3
 #   115855  a_live_debug_discarding_its_recordings_is_reported
 #   115897  a_debug_run_ignoring_its_observation_count_is_reported
 #   115900  a_debug_run_ignoring_its_escalation_target_is_reported
+#   115904  a_debug_run_forcing_or_ignoring_prerequisites_is_reported
 # TestMQCDebugOutcome
 #   115901  a_debug_report_states_every_count
 #   115902  a_debug_run_whose_pytest_stopped_fails
@@ -64,6 +66,7 @@ from tests.cases.debug_support import (
     OBSERVATIONS_INPUT,
     OUTCOME_TOOL,
     RECORDINGS,
+    WITH_PREREQUISITES_INPUT,
     debug_jobs,
     dispatch_inputs,
     environment_of,
@@ -71,6 +74,7 @@ from tests.cases.debug_support import (
     outcome_headline,
     passes_escalation_target,
     passes_observations,
+    passes_prerequisites_choice,
     provider_secrets,
     states_outcome,
     step_bodies,
@@ -257,6 +261,27 @@ class TestMQCDebugSpending:
 
         step(2, f"read whether each debug job's pytest step carries {ESCALATE_TO_ARGUMENT}")
         passing = {name: passes_escalation_target(job) for name, job in debug_jobs().items()}
+        assert passing == {DEBUG_REPLAY: True, DEBUG_LIVE: True}, passing
+
+    @story("Running a named case alone")
+    def MQC_CAS_UNI_115904_a_debug_run_forcing_or_ignoring_prerequisites_is_reported(
+        self,
+    ) -> None:
+        """Both debug jobs add ``--with-prerequisites`` only when the dispatch form asks.
+
+        Design: ``consumer_ci.md`` section 6.5.4.
+
+        Returns:
+            None
+        """
+        step(1, f"read the {WITH_PREREQUISITES_INPUT!r} dispatch input, a boolean off by default")
+        declared = dispatch_inputs().get(WITH_PREREQUISITES_INPUT) or {}
+        assert (declared.get("type"), declared.get("default")) == ("boolean", False), (
+            f"{WITH_PREREQUISITES_INPUT} is declared as {declared!r}"
+        )
+
+        step(2, "read whether each debug job's pytest step adds the flag only when asked")
+        passing = {name: passes_prerequisites_choice(job) for name, job in debug_jobs().items()}
         assert passing == {DEBUG_REPLAY: True, DEBUG_LIVE: True}, passing
 
 

@@ -1432,6 +1432,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115901` | P | `a_debug_report_states_every_count` (6.5.3) |
 | `115902` | N | `a_debug_run_whose_pytest_stopped_fails` (6.5.3) |
 | `115903` | N | `a_debug_job_not_stating_its_outcome_is_reported` (6.5.3) |
+| `115904` | N | `a_debug_run_forcing_or_ignoring_prerequisites_is_reported` (6.5.4) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1441,7 +1442,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 228 cases, 161 negative, 54 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 229 cases, 162 negative, 54 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3597,6 +3598,27 @@ otherwise.
 | `115903` | The step straight after each debug job's pytest step runs always and passes the tool the JUnit path that pytest step writes |
 
 Requirement: `MQC_REQ_CAS_CI_0114`.
+
+#### 6.5.4 A debug run runs the named cases alone unless asked for their foundations
+
+Added 2026-11-19 at the project owner's ruling: "run with prerequisites should
+be optional for debug". **The dispatch form offers `with_prerequisites`, a
+boolean, off by default.** Off, the run names the cases and nothing else, and
+the harness runs each without the foundations it rests on (harness
+`cmn_verdict_and_cli.md` section 7.8.2.1). On, both jobs pass
+`--with-prerequisites`, and the foundations run first in the same execution,
+each a request of its own in a live run.
+
+**The input is a fixed type, so it is expanded in the run body** the way
+`judge` is, rather than through the environment as the free-text inputs are
+(sections 6.5.1 and 6.5.2). Nothing else in either job passes the flag, so off
+means alone.
+
+| Case | Asserts |
+|---|---|
+| `115904` | The dispatch form offers `with_prerequisites` as a boolean defaulting to off, and both debug jobs' pytest steps add `--with-prerequisites` through that input's expression and nowhere else |
+
+Requirement: `MQC_REQ_CAS_CI_0115`.
 
 ## 7. The regression run, and the machinery checks that make it viable
 

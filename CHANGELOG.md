@@ -40,6 +40,19 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A debug run runs the named cases alone unless asked for their foundations, 2026-11-19
+
+**Why.** A debug run investigates one case, and its foundations decide nothing
+about why it fails; in a live run each is a request of its own. The harness now
+runs a named case without its foundations by default, so the debug form needs
+a way to ask for them when they matter.
+
+**What changed.** `debug-cases-on-demand.yml` offers `with_prerequisites`, a
+boolean off by default, and both debug jobs pass `--with-prerequisites` only
+when it is on. `consumer_ci.md` section 6.5.4, `MQC_REQ_CAS_CI_0115`, case
+`115904`; inventory 229. README: 275 requirements, 324 preconditions, and the
+harness's 1186 test cases.
+
 ### A debug run states what pytest did, and goes red when pytest stopped, 2026-11-19
 
 **Why.** A live debug run of `154202` reported success having run nothing: the

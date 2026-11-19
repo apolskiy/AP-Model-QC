@@ -58,6 +58,12 @@ OBSERVATIONS_ARGUMENT: Final[str] = '${OBSERVATIONS:+--observations "${OBSERVATI
 ESCALATE_TO_INPUT: Final[str] = "escalate_to"
 ESCALATE_TO_VARIABLE: Final[str] = "ESCALATE_TO"
 ESCALATE_TO_ARGUMENT: Final[str] = '${ESCALATE_TO:+--escalate-to "${ESCALATE_TO}"}'
+# The boolean input adding the foundations a named case rests on, and the
+# expression adding the flag only when it is on (section 6.5.4).
+WITH_PREREQUISITES_INPUT: Final[str] = "with_prerequisites"
+WITH_PREREQUISITES_ARGUMENT: Final[str] = (
+    "${{ inputs.with_prerequisites && '--with-prerequisites' || '' }}"
+)
 # The tool each debug job ends with, stating what pytest did (section 6.5.3),
 # and the option naming the JUnit report a pytest step writes.
 OUTCOME_TOOL: Final[str] = "tools/debug_outcome.py"
@@ -226,6 +232,25 @@ def passes_escalation_target(job: dict[str, Any]) -> bool:
         bool: As :func:`passes_input` for ``escalate_to``.
     """
     return passes_input(job, ESCALATE_TO_INPUT, ESCALATE_TO_VARIABLE, ESCALATE_TO_ARGUMENT)
+
+
+def passes_prerequisites_choice(job: dict[str, Any]) -> bool:
+    """Return whether every pytest step of a job adds ``--with-prerequisites`` only when asked.
+
+    Args:
+        job (dict): A parsed job.
+
+    Returns:
+        bool: True when the job has a pytest step, each expands the input's
+        expression, and none passes the flag unconditionally.
+    """
+    found = pytest_steps(job)
+    return bool(found) and all(
+        WITH_PREREQUISITES_ARGUMENT in str(step.get("run") or "")
+        and str(step.get("run") or "").replace(WITH_PREREQUISITES_ARGUMENT, "").count(
+            "--with-prerequisites") == 0
+        for step in found
+    )
 
 
 def states_outcome(job: dict[str, Any]) -> str:

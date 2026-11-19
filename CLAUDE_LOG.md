@@ -9945,3 +9945,29 @@ dropped from the cause, and an empty report taken as ran each failed
 **Digressions the user spotted, and the fix.** I gave the owner a dispatch
 command for `154202` alone without checking its foundation, so the run was
 spent on approval and measured nothing. The tool now makes such a run red.
+
+## 2026-11-19: A debug run runs the named cases alone unless asked for their foundations
+
+**Why.** The owner: "run with prerequisites should be optional for debug". The
+harness now runs a named case without its foundations by default (harness
+`cmn_verdict_and_cli.md` section 7.8.2.1), so `tests=154202` runs alone.
+
+**What changed.** `debug-cases-on-demand.yml` offers `with_prerequisites`, a
+boolean off by default, expanded in each job's pytest step as
+`${{ inputs.with_prerequisites && '--with-prerequisites' || '' }}`. A boolean
+is a fixed type, so it goes in the body as `judge` does rather than through
+the environment. Section 6.5.4, `MQC_REQ_CAS_CI_0115`, case `115904` N.
+
+**Verified by injection, each against a passing control and restored**: the
+live job ignoring the input, the input on by default, and the replay job
+passing the flag unconditionally each failed `115904`.
+
+**Digressions the user spotted, and the fix.** None from the user. Two of
+mine. The workflow was edited before `115904` was written, the wrong way round,
+so the case's failing state was shown by injection rather than by a run before
+the change. And my injection script ran pytest with whichever interpreter
+launched it and had no control run, so an interpreter that could not import
+the harness would have read every injection as caught. The six harness
+injections of today were run that way; the system interpreter passes the case
+uninjected, so they stand. The script now runs the case uninjected first and
+counts a catch only when that control passes.
