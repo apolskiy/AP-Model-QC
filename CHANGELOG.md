@@ -40,6 +40,22 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A debug run names its platform, and the judge's HTTP attempts reach the report, 2026-11-20
+
+**Why.** grok's forbidden-tool failures occur on `windows-latest` alone, and
+finding why needs the same case run on both platforms at the same pins, with
+every HTTP attempt recorded, the judge's included. The debug workflow ran on
+`ubuntu-26.04` alone, and the judge binding handed the report no attempts.
+
+**What changed.** `debug-cases-on-demand.yml` offers `os`, a choice of
+`ubuntu-26.04` and `windows-latest` defaulting to `ubuntu-26.04`; both debug
+jobs run on it, every run step runs in bash, and both summaries name the
+platform. `judge_binding` passes the judge channel's `take_wire_attempts`
+(harness `bdd480d`). `consumer_ci.md` sections 6.5.5 and 4.13.2,
+`MQC_REQ_CAS_CI_0116` and `MQC_REQ_CAS_PRE_0025`, cases `115905` and
+`115906`; inventory 231. README: 277 requirements, 326 preconditions, and the
+harness's 1209 test cases.
+
 ### The reports deploy from a job of their own, after the job that uploaded them, 2026-11-19
 
 **Why.** Four publishes failed on 2026-11-19, runs 44610248807 and

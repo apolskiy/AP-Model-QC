@@ -3,7 +3,7 @@
 """Support code that dispatches and evaluates a graded case, written once for every case.
 
 Created: 2026-09-25
-Last updated: 2026-11-19
+Last updated: 2026-11-20
 
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
@@ -493,10 +493,13 @@ def judge_binding(config: Any, candidate_engine: str) -> Any:
         plan.fill_gaps,
         (candidate_engine, float(config.getoption("--max-spend") or 0.0)),
     )
+    # THE JUDGE'S HTTP ATTEMPTS, from the channel that graded, so the report
+    # carries them beside the candidate's. Design `consumer_ci.md` section 4.13.2.
     return JudgeBinding(
         invoke=channel.invoke,
         judge_engine=channel.engine,
         candidate_engine=candidate_engine,
+        wire_attempts=channel.take_wire_attempts,
     )
 
 

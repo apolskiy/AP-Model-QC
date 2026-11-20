@@ -3,7 +3,7 @@
 """Unit preconditions for graded cases whose judge has stopped answering or did not score.
 
 Created: 2026-11-06
-Last updated: 2026-11-17
+Last updated: 2026-11-20
 
 This file contains ``TestMQCStoppedJudge``, two cases on
 ``tests.cases.graded_support`` and ``tests.cases.consistency_support``. The
@@ -70,7 +70,8 @@ class TestMQCStoppedJudge:
         monkeypatch.setattr(
             graded_support, "_channel",
             lambda *args, **kwargs: SimpleNamespace(
-                stopped=_REJECTED, engine="claude", invoke=None, args=(args, kwargs)),
+                stopped=_REJECTED, engine="claude", invoke=None, args=(args, kwargs),
+                take_wire_attempts=tuple),
         )
         monkeypatch.setattr(
             graded_support, "record_observation",

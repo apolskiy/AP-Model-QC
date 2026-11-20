@@ -1371,6 +1371,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115411` | N | `the_tool_refuses_a_date_it_cannot_parse` |
 | `115406` | P | `the_named_judge_engine_is_the_one_that_grades` |
 | `115407` | P | `the_named_observation_count_is_the_one_dispatched` |
+| `115906` | N | `a_judge_binding_dropping_its_wire_attempts_is_reported` (4.13.2) |
 | `115789` | P | `the_probe_resolves_a_green_harness_before_it_dispatches` (4.23.5) |
 | `115790` | N | `a_dispatching_job_reading_no_green_pairing_is_reported` (4.23.5) |
 | `115830` | P | `an_engine_unevaluated_in_the_window_is_evaluated` (4.18.3) |
@@ -1433,6 +1434,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115902` | N | `a_debug_run_whose_pytest_stopped_fails` (6.5.3) |
 | `115903` | N | `a_debug_job_not_stating_its_outcome_is_reported` (6.5.3) |
 | `115904` | N | `a_debug_run_forcing_or_ignoring_prerequisites_is_reported` (6.5.4) |
+| `115905` | N | `a_debug_run_off_its_chosen_platform_is_reported` (6.5.5) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1442,7 +1444,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 229 cases, 162 negative, 54 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 231 cases, 164 negative, 54 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -1798,6 +1800,30 @@ override sets the count the run begins with and
 `cmn.observations.further_observations` decides what a disagreement adds. An
 override that suppressed escalation would make a named count quietly mean
 something different from a configured one.
+
+#### 4.13.2 The judge's HTTP attempts reach the report
+
+Added 2026-11-20 at the project owner's ruling, to find why grok's
+forbidden-tool failures occur on `windows-latest` alone: "headers always on,
+all four engines, judge calls too". **The harness records every HTTP attempt
+the judge makes**, headers redacted, and hands them to the report through
+`JudgeBinding.wire_attempts`, a callable the binding's owner supplies (harness
+`tier2_execution.md` section 7.15). The harness cannot reach the channel this
+repository builds, so the binding is the only route.
+
+**`judge_binding` passes the channel's `take_wire_attempts` with its
+`invoke`**, so the attempts come from the channel that graded. A withheld
+judge builds no channel and passes none, and its report carries no judge
+attempts, which is correct because nothing was asked.
+
+**`main` takes the harness at `main`**, so no pin moves: the field exists from
+harness commit `bdd480d` on.
+
+| Case | Asserts |
+|---|---|
+| `115906` | A bound judge's `wire_attempts` is the `take_wire_attempts` of the channel whose `invoke` it carries, and returns a tuple; a withheld binding carries none |
+
+Requirement: `MQC_REQ_CAS_PRE_0025`.
 
 ### 4.14 Confirming a quarantine entry, which is the only thing that can
 
@@ -3641,6 +3667,34 @@ means alone.
 | `115904` | The dispatch form offers `with_prerequisites` as a boolean defaulting to off, and both debug jobs' pytest steps add `--with-prerequisites` through that input's expression and nowhere else |
 
 Requirement: `MQC_REQ_CAS_CI_0115`.
+
+#### 6.5.5 A debug run names the platform it runs on
+
+Added 2026-11-20 at the project owner's ruling. **What is wrong:** grok's
+forbidden-tool failures occur on `windows-latest` alone, and the debug
+workflow could run a case only on `ubuntu-26.04`, so the same case at the same
+pins could not be compared across the two platforms. **The dispatch form
+offers `os`, a choice of the gate's two platforms, `ubuntu-26.04` and
+`windows-latest`, defaulting to `ubuntu-26.04`.** Both debug jobs run on it.
+A fixed list keeps free text out of `runs-on`, and the two are the platforms
+the gate runs on (section 7.8.3).
+
+**Every run step in both jobs runs in bash.** A Windows runner's default shell
+is PowerShell, and the run bodies are bash: `${OBSERVATIONS:+...}`, a
+backslash continuing a line, and a `cp` keeping each file's directories. The workflow declares bash as
+its default for run steps, so a step added later inherits it rather than
+breaking on Windows alone.
+
+**Both summaries name the platform**, so two runs being compared say which
+was which without opening their logs. The harness also records the runner's
+OS, Python and SDK versions in each run's provenance (harness
+`cmn_verdict_and_cli.md` section 5.6.5).
+
+| Case | Asserts |
+|---|---|
+| `115905` | The dispatch form offers `os` as a choice of `ubuntu-26.04` and `windows-latest` defaulting to `ubuntu-26.04`; both debug jobs run on `${{ inputs.os }}`; every run step in both jobs runs in bash; both summaries name the platform |
+
+Requirement: `MQC_REQ_CAS_CI_0116`.
 
 ## 7. The regression run, and the machinery checks that make it viable
 

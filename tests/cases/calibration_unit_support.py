@@ -3,7 +3,7 @@
 """Stand-in judges and collection probes for the calibration unit cases.
 
 Created: 2026-11-10
-Last updated: 2026-11-19
+Last updated: 2026-11-20
 
 This file contains :class:`StandInJudge`, which answers a calibration request
 with the score a rule gives its sample and keeps every request it received;
@@ -363,6 +363,14 @@ class StandInChannel:
             LookupError: Always.
         """
         raise LookupError(f"the stand-in channel was asked {request!r}")
+
+    def take_wire_attempts(self) -> tuple:
+        """Return the HTTP attempts made, which are none, since nothing is asked.
+
+        Returns:
+            tuple: Always empty.
+        """
+        return ()
 
 
 class StoppedJudge:

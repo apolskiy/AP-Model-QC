@@ -10003,3 +10003,53 @@ section 6.5.4, `MQC_REQ_CAS_CI_0115`. Its intended message is the one under
 in `CHANGELOG.md`.
 
 The commit is pushed to `main` and left as it is; this entry is the record.
+
+## 2026-11-20: A debug run names its platform, and the judge's HTTP attempts reach the report
+
+**Why.** grok's forbidden-tool failures occur on `windows-latest` alone. The
+owner: "I do not want to file anything since this appears only on requests
+from windows boxes, may be we missed some OS specificity", and "At some point
+we will need to run windows test vs ubuntu test for the same test case and
+see". The harness now records every HTTP attempt, headers redacted, and the
+runner's fingerprint (harness `bdd480d`, its gate green on both platforms).
+This repository had two gaps: the debug workflow ran on `ubuntu-26.04` alone,
+and `judge_binding` handed the report none of the judge's attempts.
+
+**What changed.**
+- `debug-cases-on-demand.yml` offers `os`, a choice of `ubuntu-26.04` and
+  `windows-latest` defaulting to `ubuntu-26.04`, as the owner chose; both jobs
+  run on `${{ inputs.os }}`.
+- The workflow declares bash as the default shell for run steps, because a
+  Windows runner's default is PowerShell and the run bodies are bash. Without
+  it, the pytest step's `${OBSERVATIONS:+...}` would break on Windows alone.
+- Both summaries and the run name state the platform.
+- `judge_binding` passes `wire_attempts=channel.take_wire_attempts`.
+- Section 6.5.5, `MQC_REQ_CAS_CI_0116`, case `115905` N. Section 4.13.2,
+  `MQC_REQ_CAS_PRE_0025`, case `115906` N, in a module of its own because
+  `mqc_uni_instrument.py` stands at 874 lines.
+- The pin needed no move: `main` takes the harness at `main`.
+
+**Three stand-in judge channels lacked `take_wire_attempts`**, in
+`calibration_unit_support.py`, `mqc_uni_stopped_judge.py` and
+`partial_recording_support.py`, so `115039`, `115815` and `115875` broke. Each
+stand-in now carries it, returning no attempts, matching the real channel's
+interface.
+
+**Verified by injection, against a passing control for each case, every file
+restored byte for byte: 8 of 8 caught.**
+
+| Injection | Case | Result |
+|---|---|---|
+| The binding drops `wire_attempts` | `115906` | Failed |
+| The binding hands an empty taker | `115906` | Failed |
+| `os` defaults to `windows-latest` | `115905` | Failed |
+| `os` offers `macos-latest` too | `115905` | Failed |
+| `debug_replay` pinned to `ubuntu-26.04` | `115905` | Failed |
+| `debug_live` pinned to `ubuntu-26.04` | `115905` | Failed |
+| The bash default removed | `115905` | Failed |
+| The live summary drops the platform | `115905` | Failed |
+
+**Digressions the user spotted, and the fix.** None from the user. One of
+mine: the first injection run had no control, which the 2026-11-19 entry
+above rules out. It was rerun with both cases run uninjected first, and both
+passed.

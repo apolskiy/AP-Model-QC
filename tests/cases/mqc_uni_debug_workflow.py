@@ -3,9 +3,9 @@
 """Unit preconditions for what the debug workflow may spend, and on whose approval.
 
 Created: 2026-11-14
-Last updated: 2026-11-19
+Last updated: 2026-11-20
 
-This file contains ``TestMQCDebugSpending``, six cases, and
+This file contains ``TestMQCDebugSpending``, seven cases, and
 ``TestMQCDebugOutcome``, three, over
 ``debug-cases-on-demand.yml``. The first checks that a replay runs in
 ``debug_replay`` with no environment and no key, and a live run in
@@ -15,7 +15,9 @@ second checks that a live run defaults to a $0.50 ceiling and is refused past
 checks that a live run keeps the recordings it wrote. The fourth and fifth
 check that both jobs pass the dispatch form's observation count and escalation
 target to pytest when each is set, and the sixth that both add
-``--with-prerequisites`` only when the boolean input asks. ``TestMQCDebugOutcome`` runs
+``--with-prerequisites`` only when the boolean input asks. The seventh checks
+that both run on the platform the dispatch form names, every step in bash,
+and name it on their summaries. ``TestMQCDebugOutcome`` runs
 ``tools/debug_outcome.py`` over JUnit reports, one holding every outcome and
 three from a session that stopped, and checks that both jobs end by running it.
 
@@ -23,7 +25,7 @@ three from a session that stopped, and checks that both jobs end by running it.
 defect, **not a model finding**: the run exits 3 and no graded case executes,
 and the module carries no priority marker.
 
-Specified by ``docs/design/consumer_ci.md`` sections 6.5 and 6.5.1 to 6.5.4.
+Specified by ``docs/design/consumer_ci.md`` sections 6.5 and 6.5.1 to 6.5.5.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -36,6 +38,7 @@ Specified by ``docs/design/consumer_ci.md`` sections 6.5 and 6.5.1 to 6.5.4.
 #   115897  a_debug_run_ignoring_its_observation_count_is_reported
 #   115900  a_debug_run_ignoring_its_escalation_target_is_reported
 #   115904  a_debug_run_forcing_or_ignoring_prerequisites_is_reported
+#   115905  a_debug_run_off_its_chosen_platform_is_reported
 # TestMQCDebugOutcome
 #   115901  a_debug_report_states_every_count
 #   115902  a_debug_run_whose_pytest_stopped_fails
@@ -64,6 +67,10 @@ from tests.cases.debug_support import (
     MAX_LIVE_TESTS,
     OBSERVATIONS_ARGUMENT,
     OBSERVATIONS_INPUT,
+    OS_CHOICES,
+    OS_DEFAULT,
+    OS_EXPRESSION,
+    OS_INPUT,
     OUTCOME_TOOL,
     RECORDINGS,
     WITH_PREREQUISITES_INPUT,
@@ -71,6 +78,7 @@ from tests.cases.debug_support import (
     dispatch_inputs,
     environment_of,
     jobs_naming,
+    non_bash_steps,
     outcome_headline,
     passes_escalation_target,
     passes_observations,
@@ -78,6 +86,7 @@ from tests.cases.debug_support import (
     provider_secrets,
     states_outcome,
     step_bodies,
+    summary_names_platform,
     write_junit,
 )
 
@@ -283,6 +292,33 @@ class TestMQCDebugSpending:
         step(2, "read whether each debug job's pytest step adds the flag only when asked")
         passing = {name: passes_prerequisites_choice(job) for name, job in debug_jobs().items()}
         assert passing == {DEBUG_REPLAY: True, DEBUG_LIVE: True}, passing
+
+    @story("Choosing the platform")
+    def MQC_CAS_UNI_115905_a_debug_run_off_its_chosen_platform_is_reported(self) -> None:
+        """Both debug jobs run on the platform the dispatch form names, in bash, and say so.
+
+        Design: ``consumer_ci.md`` section 6.5.5.
+
+        Returns:
+            None
+        """
+        step(1, f"read the {OS_INPUT!r} dispatch input, a choice of {OS_CHOICES}")
+        declared = dispatch_inputs().get(OS_INPUT) or {}
+        assert (declared.get("type"), declared.get("options"), declared.get("default")) == (
+            "choice", OS_CHOICES, OS_DEFAULT), f"{OS_INPUT} is declared as {declared!r}"
+
+        found = debug_jobs()
+        step(2, f"read whether each debug job runs on {OS_EXPRESSION}")
+        platforms = {name: str(job.get("runs-on")) for name, job in found.items()}
+        assert platforms == {DEBUG_REPLAY: OS_EXPRESSION, DEBUG_LIVE: OS_EXPRESSION}, platforms
+
+        step(3, "find the run steps of each debug job that would not run in bash")
+        outside = {name: non_bash_steps(job) for name, job in found.items()}
+        assert outside == {DEBUG_REPLAY: [], DEBUG_LIVE: []}, outside
+
+        step(4, "read whether each debug job's summary names the platform")
+        named = {name: summary_names_platform(job) for name, job in found.items()}
+        assert named == {DEBUG_REPLAY: True, DEBUG_LIVE: True}, named
 
 
 class TestMQCDebugOutcome:

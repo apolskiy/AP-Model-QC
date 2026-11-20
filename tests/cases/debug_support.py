@@ -3,7 +3,7 @@
 """Support code reading the debug workflow, for the cases that check what it may spend.
 
 Created: 2026-11-14
-Last updated: 2026-11-19
+Last updated: 2026-11-20
 
 This file contains the debug workflow's file name, its two job names, the
 environment its live job names and the limit on a live selection;
@@ -14,14 +14,16 @@ job references; ``environment_of``, the environment a job names;
 ``pytest_steps``, ``passes_input``, ``passes_observations`` and
 ``passes_escalation_target``, which read whether a job passes the dispatch
 form's observation count and escalation target to pytest; ``states_outcome``,
-which reads whether a job ends by stating what pytest did; and
+which reads whether a job ends by stating what pytest did;
+``non_bash_steps`` and ``summary_names_platform``, which read whether a job
+runs every step in bash and names its platform on its summary;
 ``write_junit``, which writes a JUnit report for the tool that states it; and
 ``outcome_headline``, which runs that tool on such a report.
 
 **Not a test module.** ``pytest.ini`` collects ``mqc_*.py``, so this name sits
 outside that pattern deliberately, as ``workflow_support.py`` does.
 
-Specified by ``docs/design/consumer_ci.md`` sections 6.5, 6.5.1, 6.5.2 and 6.5.3.
+Specified by ``docs/design/consumer_ci.md`` sections 6.5 and 6.5.1 to 6.5.5.
 """
 
 import re
@@ -68,6 +70,13 @@ WITH_PREREQUISITES_ARGUMENT: Final[str] = (
 # and the option naming the JUnit report a pytest step writes.
 OUTCOME_TOOL: Final[str] = "tools/debug_outcome.py"
 JUNIT_OPTION: Final[re.Pattern[str]] = re.compile(r"--junitxml[= ](\S+)")
+# The input naming the platform, the platforms it offers, which are the
+# gate's two, its default, and the expression each debug job runs on
+# (section 6.5.5).
+OS_INPUT: Final[str] = "os"
+OS_CHOICES: Final[list[str]] = ["ubuntu-26.04", "windows-latest"]
+OS_DEFAULT: Final[str] = "ubuntu-26.04"
+OS_EXPRESSION: Final[str] = "${{ inputs.os }}"
 
 
 def debug_workflow() -> dict[str, Any]:
@@ -279,6 +288,51 @@ def states_outcome(job: dict[str, Any]) -> str:
     if written.group(1) not in body:
         return f"the step after pytest does not read {written.group(1)}"
     return ""
+
+
+def non_bash_steps(job: dict[str, Any]) -> list[str]:
+    """Return the run steps of a debug job that would not run in bash.
+
+    A step runs in bash when it says so, or when it names no shell and the
+    workflow or the job declares bash as the default for run steps.
+
+    Args:
+        job (dict): A parsed job of the debug workflow.
+
+    Returns:
+        list: The name, or the body's first line, of each such step.
+    """
+    defaults = [
+        str(((holder.get("defaults") or {}).get("run") or {}).get("shell") or "")
+        for holder in (job, debug_workflow())
+    ]
+    default = next((shell for shell in defaults if shell), "")
+    return [
+        str(entry.get("name") or str(entry.get("run")).splitlines()[0])
+        for entry in job.get("steps") or []
+        if entry.get("run") is not None and str(entry.get("shell") or default) != "bash"
+    ]
+
+
+def summary_names_platform(job: dict[str, Any]) -> bool:
+    """Return whether a job's summary step names the platform the run took.
+
+    Args:
+        job (dict): A parsed job.
+
+    Returns:
+        bool: True when a step writing the summary maps the ``os`` input into
+        its environment and writes that variable.
+    """
+    for entry in job.get("steps") or []:
+        body = str(entry.get("run") or "")
+        if "GITHUB_STEP_SUMMARY" not in body or OUTCOME_TOOL in body:
+            continue
+        carried = [name for name, value in (entry.get("env") or {}).items()
+                   if str(value) == OS_EXPRESSION]
+        if any(f"${{{name}}}" in body for name in carried):
+            return True
+    return False
 
 
 def write_junit(path: Path, testcases: list[str]) -> Path:

@@ -3,7 +3,7 @@
 """Support code for the preconditions that observe a case with its judge and records replaced.
 
 Created: 2026-11-17
-Last updated: 2026-11-17
+Last updated: 2026-11-20
 
 This file contains ``isolate_observation``, which replaces the judge channel
 and the observation records of ``graded_support`` with doubles, collecting what
@@ -52,7 +52,8 @@ def isolate_observation(monkeypatch: pytest.MonkeyPatch, recorded: list[Any]) ->
     monkeypatch.setattr(
         graded_support, "_channel",
         lambda *args, **kwargs: SimpleNamespace(
-            stopped=None, engine="claude", invoke=None, args=(args, kwargs)),
+            stopped=None, engine="claude", invoke=None, args=(args, kwargs),
+            take_wire_attempts=tuple),
     )
     monkeypatch.setattr(
         graded_support, "record_observation",

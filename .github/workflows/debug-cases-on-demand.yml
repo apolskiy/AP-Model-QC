@@ -27,6 +27,9 @@
 #
 # EACH JOB STATES WHAT PYTEST DID FIRST ON ITS SUMMARY, and goes red when
 # pytest stopped before running a case (consumer_ci.md section 6.5.3).
+#
+# EITHER OF THE GATE'S PLATFORMS, chosen on the form, so a case failing on one
+# alone runs on both at the same pins (consumer_ci.md section 6.5.5).
 name: debug-cases-on-demand
 
 on:
@@ -94,8 +97,17 @@ on:
         required: false
         default: false
         type: boolean
+      # THE GATE'S TWO PLATFORMS, A FIXED LIST, so free text never reaches
+      # runs-on, and the same case at the same pins runs on either.
+      # consumer_ci.md section 6.5.5.
+      os:
+        description: "Platform the run takes: the gate's two"
+        required: false
+        default: ubuntu-26.04
+        type: choice
+        options: [ubuntu-26.04, windows-latest]
 
-run-name: "DEBUG (no verdict) ${{ inputs.mode }} ${{ inputs.tests }} on ${{ inputs.case_ref || github.ref_name }}"
+run-name: "DEBUG (no verdict) ${{ inputs.mode }} ${{ inputs.tests }} on ${{ inputs.case_ref || github.ref_name }}, ${{ inputs.os }}"
 
 permissions:
   contents: read
@@ -104,11 +116,19 @@ permissions:
 env:
   PYTHON_VERSION: "3.14"
 
+# BASH FOR EVERY RUN STEP. A Windows runner's default shell is PowerShell, and
+# these bodies are bash: ${VAR:+...}, a backslash continuing a line, and
+# cp --parents. Declared once so a step added later inherits it.
+# consumer_ci.md section 6.5.5.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   debug_replay:
     name: debug, replay
     if: inputs.mode == 'replay'
-    runs-on: ubuntu-26.04
+    runs-on: ${{ inputs.os }}
     # NO ENVIRONMENT AND NO KEY. Both sides replay, so nothing here can spend,
     # and a branch is debugged without anybody's approval.
     steps:
@@ -260,6 +280,7 @@ jobs:
           PIN_SOURCE: ${{ steps.pin.outputs.source }}
           TESTS_REQUESTED: ${{ steps.resolve.outputs.count }}
           ENGINE: ${{ inputs.engine }}
+          PLATFORM: ${{ inputs.os }}
         run: |
           {
             echo "# Case debug run, replay"
@@ -273,6 +294,7 @@ jobs:
             echo "| Harness | ${HARNESS_SHA} (${PIN_SOURCE}) |"
             echo "| Tests requested | ${TESTS_REQUESTED} |"
             echo "| Engine, mode | ${ENGINE}, replay |"
+            echo "| Platform | ${PLATFORM} |"
             echo "| Judged on failure | yes |"
             echo ""
             echo "### Reading the rubric on a failed case"
@@ -293,7 +315,7 @@ jobs:
   debug_live:
     name: debug, live, at most 20 tests, after approval
     if: inputs.mode == 'live'
-    runs-on: ubuntu-26.04
+    runs-on: ${{ inputs.os }}
     # WAITS FOR APPROVAL. debug_live carries the owner as required reviewer and
     # admits any branch, because a debug run checks out case_ref; `live`, which
     # the regression run names, admits main alone and asks nobody.
@@ -424,6 +446,7 @@ jobs:
           TESTS_REQUESTED: ${{ steps.resolve.outputs.count }}
           ENGINE: ${{ inputs.engine }}
           MAX_SPEND: ${{ inputs.max_spend }}
+          PLATFORM: ${{ inputs.os }}
         run: |
           {
             echo "# Case debug run, live"
@@ -440,6 +463,7 @@ jobs:
             echo "| Harness | ${HARNESS_SHA} (${PIN_SOURCE}) |"
             echo "| Tests requested | ${TESTS_REQUESTED} of at most 20 |"
             echo "| Engine, mode | ${ENGINE}, live |"
+            echo "| Platform | ${PLATFORM} |"
             echo "| Ceiling | \$${MAX_SPEND} |"
             echo "| Judged on failure | yes |"
             echo ""
