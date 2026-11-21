@@ -3,23 +3,25 @@
 """Unit preconditions for graded cases whose judge has stopped answering or did not score.
 
 Created: 2026-11-06
-Last updated: 2026-11-20
+Last updated: 2026-11-21
 
-This file contains ``TestMQCStoppedJudge``, two cases on
-``tests.cases.graded_support`` and ``tests.cases.consistency_support``. The
-first checks that a judged case skips with the judge's code before its
-candidate is dispatched when the judge channel has stopped, and that a withheld
-judge or a rule carrying no rubric is not skipped for it. The second checks
-that an observation whose judgement was unavailable earns no further
-observation and reports the judge's own code, in its record and when its case
-concludes.
+This file contains ``TestMQCStoppedJudge``, five cases on
+``tests.cases.graded_support`` and ``tests.cases.consistency_support``. They
+check that a judged case skips with the judge's code before its candidate is
+dispatched when the judge channel has stopped, and that a withheld judge is not
+skipped for it; that an observation whose judgement was unavailable earns no
+further observation and reports the judge's own code, in its record and when
+its case concludes; that a case with no rubric skips too once the judge has
+stopped, the job having ended; that each skip reason carries the failure's
+status, request identifier and provider's message; and that a run whose job
+ended exits 3 whatever else passed.
 
 A judge that rejects every request otherwise lets a live run buy responses
-nobody can score and reports a missing fixture in place of the judge's code. A
-failure here is an instrument defect, not a model finding.
+toward a result already failing, and reports a missing fixture in place of the
+judge's code. A failure here is an instrument defect, not a model finding.
 
 Specified by ``docs/design/consumer_ci.md`` section 6.4.5 and harness
-``tier2_execution.md`` section 8.3.3.
+``tier2_execution.md`` sections 8.3.3 and 8.3.4.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -28,26 +30,45 @@ Specified by ``docs/design/consumer_ci.md`` section 6.4.5 and harness
 # TestMQCStoppedJudge
 #   115814  a_stopped_judge_skips_a_judged_case_before_its_dispatch
 #   115815  an_unjudged_observation_earns_nothing_and_keeps_its_code
+#   115907  a_stopped_judge_skips_a_case_with_no_rubric_too
+#   115908  an_ended_job_skips_naming_the_failure_and_its_message
+#   115909  a_job_ended_on_a_failure_exits_3_whatever_else_passed
 # ------------------------------------------------------------ end of cases
 
+import dataclasses
 from types import SimpleNamespace
 from typing import Any
 
 import pytest
 
+from cmn import ended_job
 from cmn.case_steps import step
+from execution.dispatch import CircuitBreakerTripped, DispatchOutcome
 
 from tests.cases import graded_support
 from tests.cases.consistency_support import assert_consistent_pass, unmeasured_code
 from tests.cases.graded_support import case_for, judge_stopped, observe, observe_repeatedly
-from tests.cases.instrument_support import SimulatedGradedConfig, dispatch_outcome
+from tests.cases.instrument_support import (
+    SimulatedDispatchConfig, SimulatedGradedConfig, dispatch_outcome,
+)
 from tests.cases.partial_recording_support import isolate_observation
+from tests.cases.stopped_judge_support import refuse_dispatch, skip_reason_of, stopped_channel
 
 pytestmark = pytest.mark.unit
 
 _TASK: str = "MQC_TASK_gnd_tolerance_permitted"
 _RULE: str = "MQC_RULE_gnd_tolerance_permitted"
 _REJECTED: str = "QC_HARNESS_REQUEST_REJECTED"
+
+# WHAT A FAILURE'S DETAIL CARRIES after its code and role (harness
+# `tier2_execution.md` section 7.15.6).
+_TRACE: str = (
+    "status 400, request-id req_wire_400, date Sat, 21 Nov 2026 05:01:45 GMT: "
+    "Your credit balance is too low to access the API."
+)
+
+# AN ENGINE NO OTHER CASE NAMES, so the cached session this case ends is its own.
+_ENDED_ENGINE: str = "mqc-115909-engine"
 
 
 class TestMQCStoppedJudge:
@@ -122,17 +143,6 @@ class TestMQCStoppedJudge:
         with pytest.raises(LookupError, match="dispatched"):
             observe(withheld, _TASK, _RULE)
 
-        step(6, "observe a rule carrying no rubric")
-        shipped = case_for(_TASK, _RULE)
-        monkeypatch.setattr(
-            graded_support, "case_for",
-            lambda task_id, rule_id: SimpleNamespace(
-                case_id=shipped.case_id, task_id=task_id, rule_id=rule_id,
-                golden_rules=SimpleNamespace(rubric=None)),
-        )
-        with pytest.raises(LookupError, match="dispatched"):
-            observe(judged, _TASK, _RULE)
-
     def MQC_CAS_UNI_115815_an_unjudged_observation_earns_nothing_and_keeps_its_code(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
@@ -183,3 +193,94 @@ class TestMQCStoppedJudge:
         )
         with pytest.raises(pytest.skip.Exception, match=_REJECTED):
             assert_consistent_pass(results)
+
+    def MQC_CAS_UNI_115907_a_stopped_judge_skips_a_case_with_no_rubric_too(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """After the judge stops, a case with no rubric skips with its code and is not sent.
+
+        Design: ``consumer_ci.md`` section 6.4.5.
+
+        Args:
+            monkeypatch (pytest.MonkeyPatch): pytest's patcher.
+
+        Returns:
+            None
+        """
+        stopped_channel(monkeypatch, _REJECTED, "")
+        refuse_dispatch(monkeypatch)
+        shipped = case_for(_TASK, _RULE)
+        unjudged = dataclasses.replace(
+            shipped, golden_rules=dataclasses.replace(shipped.golden_rules, rubric=None)
+        )
+        monkeypatch.setattr(graded_support, "case_for", lambda task_id, rule_id: unjudged)
+
+        step(1, "observe a rule carrying no rubric after the judge stopped")
+        assert _REJECTED in skip_reason_of(SimulatedGradedConfig("claude"), _TASK, _RULE), (
+            "the skip did not name the judge's code"
+        )
+
+    def MQC_CAS_UNI_115908_an_ended_job_skips_naming_the_failure_and_its_message(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A skip reason carries the failure's code, status, request id and message.
+
+        Design: ``consumer_ci.md`` section 6.4.5.
+
+        Args:
+            monkeypatch (pytest.MonkeyPatch): pytest's patcher.
+
+        Returns:
+            None
+        """
+        judge_detail = f"{_REJECTED}: judge claude, {_TRACE}"
+        candidate_detail = f"{_REJECTED}: candidate gemini, {_TRACE}"
+
+        step(1, "observe a judged case after the judge stopped")
+        stopped_channel(monkeypatch, _REJECTED, judge_detail)
+        refuse_dispatch(monkeypatch)
+        assert judge_detail in skip_reason_of(SimulatedGradedConfig("claude"), _TASK, _RULE), (
+            "the skip did not carry what the judge's provider said"
+        )
+
+        step(2, "observe a case whose dispatch the ended job skipped")
+        isolate_observation(monkeypatch, [])
+        monkeypatch.setattr(
+            graded_support, "dispatch_case",
+            lambda *args, **kwargs: SimpleNamespace(
+                taxonomy_code=_REJECTED, failure_detail=candidate_detail, response=None,
+                missing_artifact=None, engine="gemini", mode="live"),
+        )
+        assert candidate_detail in skip_reason_of(
+            SimulatedGradedConfig("claude"), _TASK, _RULE
+        ), (
+            "the skip did not carry what the candidate's provider said"
+        )
+
+    def MQC_CAS_UNI_115909_a_job_ended_on_a_failure_exits_3_whatever_else_passed(
+        self,
+    ) -> None:
+        """The run's session, ended by an auth error, makes a passing run exit 3.
+
+        Design: ``consumer_ci.md`` section 6.4.5.
+
+        Returns:
+            None
+        """
+        step(1, "find the harness reading an ended job")
+        assert hasattr(ended_job, "refuse_ended_job"), "the harness reads no ended job"
+
+        step(2, "end the run's session on an auth error")
+        config = SimulatedDispatchConfig(_ENDED_ENGINE)
+        session = graded_support.dispatch_session(config)
+        with pytest.raises(CircuitBreakerTripped):
+            session.note_outcome(DispatchOutcome(
+                case_id="MQC_TASK_a::MQC_RULE_r", engine=_ENDED_ENGINE, mode="live",
+                duration_ms=1, duration_kind="measured", attempts=1,
+                rate_limit_encounters=0, taxonomy_code="QC_HARNESS_AUTH_ERROR",
+            ))
+
+        step(3, "finish a run that otherwise passed")
+        finishing = SimpleNamespace(config=config, exitstatus=0)
+        ended_job.refuse_ended_job(finishing)
+        assert finishing.exitstatus == 3, finishing.exitstatus

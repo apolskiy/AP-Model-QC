@@ -752,7 +752,7 @@ had lapsed, so an expired entry kept its case out of the run. **Why:** expiry
 was read only by the harness verdict's V5, after the run, and nothing at
 collection read it.
 
-`graded_support.held_cases` asks the harness which entries are in force
+`quarantine_support.held_cases` asks the harness which entries are in force
 (`cmn.quarantine.in_force_cases`, harness `cmn_verdict_and_cli.md` section
 4.6.15) on the project's UTC date and for the run engine's rostered model,
 which is the form `tools/quarantine.py` stamps as `observed_model`, and
@@ -1435,6 +1435,9 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115903` | N | `a_debug_job_not_stating_its_outcome_is_reported` (6.5.3) |
 | `115904` | N | `a_debug_run_forcing_or_ignoring_prerequisites_is_reported` (6.5.4) |
 | `115905` | N | `a_debug_run_off_its_chosen_platform_is_reported` (6.5.5) |
+| `115907` | N | `a_stopped_judge_skips_a_case_with_no_rubric_too` (6.4.5) |
+| `115908` | P | `an_ended_job_skips_naming_the_failure_and_its_message` (6.4.5) |
+| `115909` | N | `a_job_ended_on_a_failure_exits_3_whatever_else_passed` (6.4.5) |
 | `115791` | P | `the_harness_failure_lister_is_reachable_from_this_repository` (4.24.1) |
 | `115793` | N | `a_finding_whose_case_skipped_is_not_resolved_upstream` (9.4.9) |
 | ~~`115794`~~ | | ~~`a_withdrawn_finding_is_not_resolved_upstream`~~. **Retired 2026-11-06** with `withdrawn` (section 9.4.11). The identifier stays retired |
@@ -1444,7 +1447,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 231 cases, 164 negative, 54 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 234 cases, 166 negative, 55 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,
@@ -3441,15 +3444,48 @@ three places.
 | `observe_repeatedly`, escalation | An observation whose judgement was unavailable or withheld is passed to the harness rule as no outcome rather than a failure, so it earns no further observation (harness `cmn_verdict_and_cli.md` section 4.9.2.2.1) |
 | The code an unjudged observation reports | **The judge's own code**, the first harness code the result carries. Until this section a provider code read as `QC_HARNESS_PARSER_ERROR` when a case concluded, and the observation record carried the first code of any family, which is an assertion's when a check failed before the judge was asked |
 
-**A rule carrying no rubric is untouched.** The deterministic families bind no
-judge, so a stopped judge cannot skip them, and a run judging nothing never asks
+**A rule carrying no rubric was untouched until 2026-11-21**, when the section
+below made a stopped judge end the job. A run judging nothing still never asks
 whether the judge has stopped.
 
 `MQC_CAS_UNI_115814` asserts the skip before dispatch, with the judge's code
-and an `environmental` record, and that a withheld judge and a rule with no
-rubric are not skipped. `MQC_CAS_UNI_115815` asserts that unmeasured
+and an `environmental` record, and that a withheld judge is not skipped. `MQC_CAS_UNI_115815` asserts that unmeasured
 observations earn no escalation and that an unjudged observation reports the
 judge's code, both in its record and when the case concludes.
+
+##### A repeated candidate failure or a stopped judge ends the job
+
+Added 2026-11-21 at the project owner's rulings. On the engine under
+evaluation: "skip works, if eval engine reports an error. if same error is
+reported say 2-3 times, might as well skip everything and terminate the job
+and investigate, especially if it's an outage." On the judge: "judge error,
+while judge may not be available, we can still do non-judged deterministic
+cases, on the other hand that carries extra cost. with known failing results,
+so that makes sense", and "if there is a judge outage we can rerun against
+another judge." Harness `tier2_execution.md` section 8.3.4 states the rule.
+
+**What was wrong.** In gemini run 44866727298 the claude judge answered 400 at
+05:01:45 GMT, an exhausted credit balance. This section skipped each judged
+case after it, 44 of them, each skip reason reading "the judge stopped
+answering earlier in this run" with nothing the provider said, and **went on
+dispatching every case with no rubric**, 26 of which passed. The run was red
+on the skips regardless, and its summary said "cause not described here".
+
+| Holds | How |
+|---|---|
+| **A stopped judge ends the job** | Every case after the stop skips without dispatching, a case with no rubric included. Its result would stand, but the judged skips already fail the run, so each further candidate request buys nothing the verdict can use. The rerun can go to another judge |
+| **The candidate's breaker ends the job** | On the same code three cases running, or five failures running (harness section 8.3.4), and every case after it skips the same way |
+| The skip reason says why | It names the code, the status, the provider's request identifier and its message (harness section 7.15.6) |
+| **The job exits 3** | It did not run its selection, so nothing it passed is a verdict. Its summary leads with the failure that ended it |
+
+**An HTTP failure names no party** (harness section 7.15.6). The cases it
+skips reach no finding, since only a failure is one, and the investigation
+starts from the summary line.
+
+`MQC_CAS_UNI_115907` asserts a case with no rubric skips after the stop,
+without dispatching. `115908` asserts the skip reason carries the failure's
+code, status, request identifier and message. `115909` asserts an ended job
+exits 3 although cases before the end passed.
 
 #### 6.4.6 An answer that corrected itself is recorded passw, and filed as a warning
 

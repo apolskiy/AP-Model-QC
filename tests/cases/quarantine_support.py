@@ -3,9 +3,12 @@
 """Support code dropping quarantined cases at collection, so no band runs or counts them.
 
 Created: 2026-11-15
-Last updated: 2026-11-16
+Last updated: 2026-11-21
 
-This file contains ``quarantine_deselection``, which splits collected items
+This file contains ``held_cases`` and ``quarantined_cases``, which read which
+quarantine entries are in force for an engine and for the run's engine, moved
+here from ``graded_support.py`` on 2026-11-21 when that module passed its
+900-line runway; ``quarantine_deselection``, which splits collected items
 into those kept and those whose corpus case the run's engine has quarantined,
 ``deselect_quarantined_cases``, which ``conftest.py`` calls at collection
 to set every held case aside as a foundation and drop the held cases this band
@@ -35,6 +38,7 @@ Specified by harness ``cmn_verdict_and_cli.md`` section 4.6.14 and
 import ast
 import logging
 from datetime import date
+from functools import lru_cache
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Mapping
@@ -42,11 +46,14 @@ from typing import Any, Mapping
 import yaml
 
 from cmn.dependencies import set_aside_foundations, set_aside_foundations_of
-from cmn.pytest_support import case_identifier
+from cmn.project_clock import project_today
+from cmn.pytest_support import case_identifier, rostered_model
+from cmn.quarantine import QUARANTINE_WINDOW_DAYS, in_force_cases
+from cmn.quarantine_file import load_quarantine_for
 from ingestion.cases import build_case_id
 
 from tests.cases import suite_support
-from tests.cases.graded_support import quarantined_cases
+from tests.cases.graded_support import repository_root
 
 logger = logging.getLogger(__name__)
 
@@ -338,3 +345,56 @@ def deselect_quarantined_cases(config: Any, items: list[Any], root: Path) -> int
             len(dropped), ", ".join(str(getattr(item, "name", "")) for item in dropped),
         )
     return len(dropped)
+
+
+def held_cases(config_dir: Path, engine: str, as_of: date, model: str) -> frozenset[str]:
+    """Return the case identifiers whose quarantine entry is in force for one engine.
+
+    Design: ``consumer_ci.md`` section 3.12.2.
+
+    Args:
+        config_dir (Path): The directory holding ``quarantine/<engine>.yaml``.
+        engine (str): Which engine this run measures.
+        as_of (date): The date the windows are read on.
+        model (str): The engine's rostered model, the form ``observed_model``
+            is stamped in.
+
+    Returns:
+        frozenset[str]: The identifiers, empty where nothing is in force.
+    """
+    return in_force_cases(
+        load_quarantine_for(config_dir, engine), as_of, model, QUARANTINE_WINDOW_DAYS,
+    )
+
+
+@lru_cache(maxsize=8)
+def _quarantine_for(engine: str) -> frozenset[str]:
+    """Return the case identifiers held out of this run for one engine.
+
+    **Cached, because every observation asks.** The file does not change
+    within a run, and reading it per observation would read it hundreds of
+    times.
+
+    Args:
+        engine (str): Which engine this run measures.
+
+    Returns:
+        frozenset[str]: The identifiers, empty where no entry is in force.
+    """
+    if not engine:
+        return frozenset()
+    return held_cases(
+        repository_root() / "config", engine, project_today(), rostered_model(engine)
+    )
+
+
+def quarantined_cases(config: Any) -> frozenset[str]:
+    """Return what this invocation treats as quarantined.
+
+    Args:
+        config (Any): pytest's configuration, for the engine.
+
+    Returns:
+        frozenset[str]: The quarantined case identifiers.
+    """
+    return _quarantine_for(str(config.getoption("--engine") or ""))

@@ -40,6 +40,29 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A stopped judge or a repeated candidate failure ends the job, and each skip says what the provider said, 2026-11-21
+
+**Why.** A judge that stopped answering skipped only the judged cases, so a run
+went on buying responses toward a result already failing, where a rerun against
+another judge is the remedy. A skip named only the harness code, never the
+status, the request id or the provider's message, so a skipped case could not
+be told apart from another with the same code.
+
+**What changed.**
+- Once the judge stops, `graded_support.observe` skips every later case
+  without dispatching it, a rule carrying no rubric included.
+- Each skip reason carries the failure's code, status, request id and the
+  provider's message.
+- `conftest.py` calls the harness's `refuse_ended_job`, so a run whose job
+  ended exits 3 whatever passed before it. Its summary leads with the failure
+  that ended the job.
+- `held_cases` and `quarantined_cases` moved to `quarantine_support.py` when
+  `graded_support.py` passed its 900-line runway.
+- **Figures that moved:**
+  - preconditions: 326 to 329;
+  - requirements: 277 to 278;
+  - the harness's cases: 1209 to 1227.
+
 ### A debug run names its platform, and the judge's HTTP attempts reach the report, 2026-11-20
 
 **Why.** grok's forbidden-tool failures occur on `windows-latest` alone, and

@@ -3,7 +3,7 @@
 """pytest configuration for the case repository.
 
 Created: 2026-09-22
-Last updated: 2026-11-17
+Last updated: 2026-11-21
 
 This file contains the pytest hooks for the case suite. They declare the
 execution flags, record what the run was invoked with, adopt the carried
@@ -59,6 +59,7 @@ from cmn.calibration_runs import deselect_unrequested_calibration
 from cmn.broken import broken_count, broken_detail_lines, mark_broken, refuse_broken
 from cmn.config import load_env_file, warn_orphan_credentials
 from cmn.emission import begin_case, publish_result
+from cmn.ended_job import ended_job_lines, refuse_ended_job
 from cmn.missing_artifact import (
     label_missing_artifact_skip,
     refuse_missing_artifacts,
@@ -443,6 +444,9 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     # AND A MISSING ARTIFACT IS A TEST OR ENVIRONMENT BUG, never a model
     # finding, so the run exits 3 (design section 9.4.5).
     refuse_missing_artifacts(session)
+    # AND A JOB ENDED ON A FAILURE, a repeated candidate failure or a stopped
+    # judge, exits 3 whatever passed before it (design section 6.4.5).
+    refuse_ended_job(session)
     # LAST, after the refusals that raise the exit status: only a session that
     # exits 0 vouches for its preconditions (harness design section 7.1.4).
     publish_preconditions_record(session, os.environ)
@@ -502,5 +506,7 @@ def pytest_terminal_summary(
     questions = importlib.import_module(
         "tests.cases.quarantine_support"
     ).foundation_questions()
-    for line in [*questions, *lines, *broken_detail_lines(stats)]:
+    # AN ENDED JOB LEADS, being where the investigation starts (harness
+    # `tier2_execution.md` section 8.3.4).
+    for line in [*ended_job_lines(config), *questions, *lines, *broken_detail_lines(stats)]:
         terminalreporter.write_line(line)

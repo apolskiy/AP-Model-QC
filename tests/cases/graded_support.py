@@ -3,7 +3,7 @@
 """Support code that dispatches and evaluates a graded case, written once for every case.
 
 Created: 2026-09-25
-Last updated: 2026-11-20
+Last updated: 2026-11-21
 
 This file contains ``observe``, which dispatches one shipped case, evaluates the
 response with the harness's ``evaluate_observation`` and records it, and
@@ -11,9 +11,10 @@ response with the harness's ``evaluate_observation`` and records it, and
 corpus readers (``shipped_corpus``, ``corpus_root``, ``shipped_cases``, ``case_for``,
 ``graded_case``, ``task_material``),
 the run's plans (``dispatch_plan``, ``dispatch_session``, ``judgement_plan``,
-``judge_binding``), ``judge_stopped``, ``held_cases`` and ``quarantined_cases``,
-which read which quarantine entries are in force, and the suite
-readers ``case_rules_from_suite`` and ``case_families_from_suite``. The fields
+``judge_binding``), ``judge_stopped`` and ``judge_stop``, which read whether
+the judge stopped and what its provider said, and the suite readers
+``case_rules_from_suite`` and ``case_families_from_suite``. Which quarantine
+entries are in force is read in ``quarantine_support``. The fields
 an observation records are built in ``observation_records``.
 
 **Every graded case calls ``observe_repeatedly``** and hands the results to
@@ -35,7 +36,6 @@ decides, and a case cannot quietly spend quota.
 """
 
 import logging
-from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Final, Optional
@@ -44,7 +44,8 @@ import pytest
 
 from cmn.observations import further_observations
 from cmn.steps import entering
-from cmn.pytest_support import corpus_selection, rostered_model
+from cmn.pytest_support import corpus_selection
+from cmn.ended_job import watch_job
 from cmn.config import (
     load_engines,
     packaged_config_root,
@@ -59,8 +60,6 @@ from cmn.missing_artifact import (
 from cmn.observations import assemble_observation
 from cmn.options import resolve_judge_mode
 from cmn.pricing import load_price_table
-from cmn.quarantine import QUARANTINE_WINDOW_DAYS, in_force_cases
-from cmn.quarantine_file import load_quarantine_for
 from cmn.prerequisites import record_rule_set_hash
 from cmn.project_clock import project_today
 from evaluation.isolation import UnauthoredMaterial
@@ -296,10 +295,14 @@ def dispatch_session(config: Any) -> DispatchSession:
     Returns:
         DispatchSession: The run's session.
     """
-    return _session(
+    session = _session(
         str(config.getoption("--engine") or ""),
         float(config.getoption("--max-spend") or 0.0),
     )
+    # WATCHED, so the run's finish exits 3 where its job ended (harness
+    # `tier2_execution.md` section 8.3.4).
+    watch_job(config, session)
+    return session
 
 
 def run_session(engine: str, ceiling: float) -> DispatchSession:
@@ -517,11 +520,28 @@ def judge_stopped(config: Any, candidate_engine: str) -> Optional[str]:
     Returns:
         Optional[str]: The harness code the judge channel stopped on.
     """
+    return judge_stop(config, candidate_engine)[0]
+
+
+def judge_stop(config: Any, candidate_engine: str) -> tuple[Optional[str], str]:
+    """Return the code this run's judge stopped on, and what its provider said.
+
+    Design: ``consumer_ci.md`` section 6.4.5, harness ``tier2_execution.md``
+    sections 7.15.6 and 8.3.3.
+
+    Args:
+        config (Any): pytest's configuration.
+        candidate_engine (str): Which engine produced what is graded.
+
+    Returns:
+        tuple: The code, or None while the judge answers or is withheld; and
+        the failure's detail, empty where the channel states none.
+    """
     requested = resolve_judge_mode(
         config.getoption("--mode"), config.getoption("--judge-mode") or ""
     )
     if requested == _JUDGE_OFF:
-        return None
+        return None, ""
     plan = judgement_plan(config, candidate_engine)
     channel = _channel(
         str(config.getoption("--judge-engine") or ""),
@@ -531,7 +551,7 @@ def judge_stopped(config: Any, candidate_engine: str) -> Optional[str]:
         plan.fill_gaps,
         (candidate_engine, float(config.getoption("--max-spend") or 0.0)),
     )
-    return getattr(channel, "stopped", None)
+    return getattr(channel, "stopped", None), str(getattr(channel, "stopped_detail", "") or "")
 
 
 def judging_requested(config: Any) -> bool:
@@ -592,13 +612,12 @@ def observe(
     # at collection, so it is neither dispatched nor counted (harness
     # `cmn_verdict_and_cli.md` section 4.6.14).
 
-    # A JUDGE THAT STOPPED ANSWERING SKIPS A JUDGED CASE BEFORE ITS DISPATCH,
-    # so a live run buys no response nobody can score (section 6.4.5). Asked
-    # only for a rule carrying a rubric, the deterministic families binding no
-    # judge.
-    stopped = (
-        judge_stopped(config, config.getoption("--engine"))
-        if judge is None and case.golden_rules.rubric is not None else None
+    # A JUDGE THAT STOPPED ANSWERING ENDS THE JOB, so every later case skips
+    # before its dispatch, a rule carrying no rubric included: a rerun goes to
+    # another judge, and buying responses toward a result already failing is
+    # cost with nothing to show (section 6.4.5).
+    stopped, stop_detail = (
+        judge_stop(config, config.getoption("--engine")) if judge is None else (None, "")
     )
     if stopped:
         record_observation(
@@ -610,8 +629,8 @@ def observe(
             None,
         )
         pytest.skip(
-            f"{stopped}: the judge stopped answering earlier in this run, so "
-            f"{case.case_id} was not dispatched"
+            f"{stop_detail or stopped}; the judge stopped answering earlier in this "
+            f"run, so {case.case_id} was not dispatched"
         )
 
     # LOGGED ON ENTRY, because the ledger below is computed from a result and a
@@ -660,8 +679,11 @@ def observe(
         # (design section 9.4.5).
         if getattr(outcome, "missing_artifact", None) is not None:
             raise_missing_artifact(outcome.missing_artifact)
+        # THE SKIP SAYS WHAT CAME BACK: status, request id and the provider's
+        # message after the code (harness `tier2_execution.md` section 7.15.6).
         pytest.skip(
-            f"{outcome.taxonomy_code}: {case.case_id} produced no measurement"
+            f"{getattr(outcome, 'failure_detail', '') or outcome.taxonomy_code}; "
+            f"{case.case_id} produced no measurement"
         )
 
     task = case.task
@@ -719,59 +741,6 @@ def observe(
         result,
     )
     return result
-
-
-def held_cases(config_dir: Path, engine: str, as_of: date, model: str) -> frozenset[str]:
-    """Return the case identifiers whose quarantine entry is in force for one engine.
-
-    Design: ``consumer_ci.md`` section 3.12.2.
-
-    Args:
-        config_dir (Path): The directory holding ``quarantine/<engine>.yaml``.
-        engine (str): Which engine this run measures.
-        as_of (date): The date the windows are read on.
-        model (str): The engine's rostered model, the form ``observed_model``
-            is stamped in.
-
-    Returns:
-        frozenset[str]: The identifiers, empty where nothing is in force.
-    """
-    return in_force_cases(
-        load_quarantine_for(config_dir, engine), as_of, model, QUARANTINE_WINDOW_DAYS,
-    )
-
-
-@lru_cache(maxsize=8)
-def _quarantine_for(engine: str) -> frozenset[str]:
-    """Return the case identifiers held out of this run for one engine.
-
-    **Cached, because every observation asks.** The file does not change
-    within a run, and reading it per observation would read it hundreds of
-    times.
-
-    Args:
-        engine (str): Which engine this run measures.
-
-    Returns:
-        frozenset[str]: The identifiers, empty where no entry is in force.
-    """
-    if not engine:
-        return frozenset()
-    return held_cases(
-        repository_root() / "config", engine, project_today(), rostered_model(engine)
-    )
-
-
-def quarantined_cases(config: Any) -> frozenset[str]:
-    """Return what this invocation treats as quarantined.
-
-    Args:
-        config (Any): pytest's configuration, for the engine.
-
-    Returns:
-        frozenset[str]: The quarantined case identifiers.
-    """
-    return _quarantine_for(str(config.getoption("--engine") or ""))
 
 
 def observation_count(config: Any) -> int:

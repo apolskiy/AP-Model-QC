@@ -3,7 +3,7 @@
 """Unit preconditions on the support code that calibrates the judge, one family at a time.
 
 Created: 2026-11-10
-Last updated: 2026-11-13
+Last updated: 2026-11-21
 
 This file contains ``TestMQCCalibrationSupport``, twelve cases on
 ``tests/cases/calibration_support.py`` and the samples it reads. They check
@@ -335,6 +335,9 @@ class TestMQCCalibrationSupport:
             "candidate_spend_usd": "0.0000", "judge_spend_usd": "0.0000",
             "total_spend_usd": "0.0000", "max_spend_usd": "1.5000",
             "unpriced_models": "none",
+            # A FAILED CALL IS COUNTED, NOT ASSUMED FREE (harness
+            # `tier2_execution.md` section 7.7.3).
+            "candidate_failed_attempts": "0", "judge_failed_attempts": "0",
         }
 
         assert published.status == 0, published.output[-2000:]

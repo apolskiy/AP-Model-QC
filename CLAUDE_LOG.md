@@ -10053,3 +10053,43 @@ restored byte for byte: 8 of 8 caught.**
 mine: the first injection run had no control, which the 2026-11-19 entry
 above rules out. It was rerun with both cases run uninjected first, and both
 passed.
+
+## 2026-11-21: A stopped judge or an ended job skips every later case, naming what the provider said
+
+**A) What was wrong.** In gemini run 44866727298 the judge's 400 stopped it,
+and the 44 judged cases after it each skipped with "the judge stopped answering
+earlier in this run" and nothing else. The 26 cases with no rubric kept running
+and buying candidate requests toward a run already red. A run whose job ended
+could still exit 0.
+
+**B) Why it happened.** `graded_support.observe` exempted a rule with no rubric
+from the judge stop, the skip messages carried the code alone, and nothing read
+the harness's job end at session finish.
+
+**Owner rulings, 2026-11-21:** the same error two or three times ends the job
+for investigation; a judge stop ends it too, "because if there is a judge outage
+we can rerun against another judge". The full record is in the harness
+`CLAUDE_LOG.md` entry of the same date.
+
+**What changed.**
+
+| Change | Where |
+|---|---|
+| A stopped judge skips every later case, no rubric included, naming the judge's failure and message | `tests/cases/graded_support.py` |
+| A harness skip names the candidate's failure detail | Same |
+| The run's session is watched, and the finish exits 3 once its job ended | `graded_support.dispatch_session`, `conftest.py` |
+| The summary leads with the failure that ended the job | `conftest.py` |
+| The quarantine lookup moved out at the 900-line runway | `tests/cases/quarantine_support.py` |
+| Cases 115907 to 115909, with their helpers | `tests/cases/mqc_uni_stopped_judge.py`, `stopped_judge_support.py` |
+
+**Injections, each applied alone and restored, every control passing
+uninjected first:** the no-rubric exemption restored (115907 failed), the judge
+and candidate skips without the message (115908 failed for each), the session
+not watched and the finish not refusing (115909 failed for each).
+
+**Digressions the user spotted, and the fix.** None recorded for this
+iteration.
+
+Verified after the last change: lint exit 0. Unit exit 0: 329 total, 329
+executed, 329 passed, 0 failed, 0 skipped. No graded run: nothing here changed
+a case's prompt, rule or rubric.

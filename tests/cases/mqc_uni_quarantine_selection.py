@@ -3,7 +3,7 @@
 """Unit preconditions for which quarantined cases a run holds out: those in force.
 
 Created: 2026-11-15
-Last updated: 2026-11-15
+Last updated: 2026-11-21
 
 This file contains ``TestMQCQuarantineSelection``, five cases. A case whose
 entry was extended is deselected; a case whose entry expired by its window or
@@ -42,8 +42,9 @@ from cmn.quarantine import QUARANTINE_WINDOW_DAYS, QuarantineEntry
 from cmn.quarantine_file import load_quarantine_for
 from ingestion.cases import build_case_id
 
-from tests.cases.graded_support import held_cases
-from tests.cases.quarantine_support import dropped_names, file_entry, write_quarantine_file
+from tests.cases.quarantine_support import (
+    dropped_names, file_entry, held_cases, write_quarantine_file,
+)
 from tests.cases.workflow_support import repository_root
 from tools.quarantine import render
 
@@ -111,7 +112,7 @@ class TestMQCQuarantineSelection:
         expired = held_cases(tmp_path / "lapsed", _ENGINE, _AS_OF, _MODEL)
         within = held_cases(tmp_path / "within", _ENGINE, _AS_OF, _MODEL)
         source = ast.parse(
-            (repository_root() / "tests/cases/graded_support.py").read_text(encoding="utf-8")
+            (repository_root() / "tests/cases/quarantine_support.py").read_text(encoding="utf-8")
         )
         reader = next(
             node for node in source.body
