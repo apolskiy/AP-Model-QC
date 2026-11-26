@@ -10206,3 +10206,44 @@ engines, then a full replay per engine. Until then the recorded `154510` and
 Verified after the last change: lint exit 0. Unit exit 0: 331 total, 331
 executed, 331 passed, 0 failed, 0 skipped. No P0, P1, P2-P4 or audit rows:
 no graded run was made.
+
+## 2026-11-26: A band the environment stopped reads as not measured, never below its floor
+
+**What was wrong.** On grok run 45741266912 the judge reached gemini's monthly
+spending cap, 24 of 70 P2-P4 cases skipped, and `tools/band_floor.py` printed
+"the band is below its floor: 45 of 70 selected passed (64.3%)". That is a
+statement about the model, made about a run that measured 46 cases. The next
+grok run, 45857114093, nothing changed but the cap, read 68 of 70. The owner's
+ruling: "Overall pass vs fail huge difference", and the harness and the band
+line both have to say when the environment stopped a run.
+
+**The rule, `consumer_ci.md` section 3.12.2.** An environmental skip is any
+`QC_HARNESS_` skip except an unmet foundation, which is a result one layer up,
+and a quarantine, which is a known finding. A band below its floor is below it
+only if it stays below with its environmental skips counted as passes.
+Otherwise the line reads "the band was not measured", names how many cases the
+environment skipped and on which codes, and exits 4, refused. A blocking band
+whose only shortfall is environmental skips reads the same. A skip still
+counts as not passed, so neither band can clear on one.
+
+**Case.** `115912`, requirement `MQC_REQ_CAS_CI_0118`. Its seven steps cover
+24 spent-credit skips of 70 (refused, not measured, the count and the code
+named), failures alone below the floor, unmet-foundation skips still below,
+and the blocking band both ways. Before the implementation it failed at step
+1, reading "below its floor ... 64.3%". `write_coded_report` in
+`live_band_support.py` writes a report whose skips carry messages.
+
+**Injections**: no environmental skip recognised, `115912` failed at step 1,
+CAUGHT. Every skip read as environmental, unmet foundations included, it failed
+at steps 1 and 5, CAUGHT. Uninjected control: 3 of 3 in the module.
+
+**The harness half** codes the cap as `QC_HARNESS_CREDIT_EXHAUSTED` and ends
+the job on its first case (harness CLAUDE_LOG, same date).
+
+**Still owed.** The debug live runs of the nine changed cases, one engine at a
+time, judged by gemini, then their recordings committed and a full replay per
+engine. Gemini `134503` still has no result.
+
+Verified after the last change: lint exit 0. Unit exit 0: 332 total, 332
+executed, 332 passed, 0 failed, 0 skipped. No P0, P1, P2-P4 or audit rows:
+no graded run was made.

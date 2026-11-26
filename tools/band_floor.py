@@ -3,11 +3,12 @@
 """The band check, which decides from a band's JUnit XML whether that band passed.
 
 Created: 2026-10-01
-Last updated: 2026-11-18
+Last updated: 2026-11-26
 
 This file contains ``assess``, which compares a lower-priority band's pass rate
 against the project's pass floor, ``assess_blocking``, which requires a release
-blocking band to have measured and passed every case it selected,
+blocking band to have measured and passed every case it selected, each
+reporting a band the environment's skips took below its floor as not measured,
 ``run_status_problem``, which says whether the status the band's run reported
 leaves a rate worth reading, and ``main``, the command line they run behind.
 Skips are explained by cause, each missing artifact is named by kind and path,
@@ -54,7 +55,9 @@ from pathlib import Path
 from typing import Final, Optional
 from xml.etree import ElementTree
 
-from cmn.band_summary import _QUARANTINE_SKIP, skip_detail_lines
+from cmn.band_summary import (
+    _DEPENDENCY_SKIP, _QUARANTINE_SKIP, _code_in, skip_detail_lines,
+)
 from cmn.quarantine_file import load_quarantine_for
 from cmn.verdict import Thresholds
 from cmn.threshold_domain import check_rate
@@ -212,6 +215,12 @@ def assess_blocking(
     # section 7.1). What a blocking band answers for is in `consumer_ci.md`
     # section 3.12.2, and a failing line names its cause because the cause is
     # what a reader acts on.
+    # SKIPS THE ENVIRONMENT CAUSED, AND NOTHING ELSE, ARE NOT MEASURED. A
+    # failure or a skip behind a failed foundation is below the blocking floor
+    # (design section 3.12.2).
+    environmental = _environmental_skips(report) if skipped and not failures else []
+    if environmental and len(environmental) == skipped:
+        return _EXIT_REFUSED, _not_measured(environmental, selected, detail)
     if failures or skipped:
         return _EXIT_BELOW_FLOOR, f"{detail}\nbelow the blocking floor"
     return _EXIT_GREEN, detail
@@ -305,8 +314,76 @@ def assess(report: Path, floor: Optional[float] = None) -> tuple[int, str]:
         f"{skips} skipped, floor {required:.0%}"
     )
     if rate < required:
-        return _EXIT_BELOW_FLOOR, f"the band is below its floor: {detail}"
+        return _below_floor(report, passed, total, required, detail)
     return _EXIT_GREEN, f"the band cleared its floor: {detail}"
+
+
+def _below_floor(
+    report: Path, passed: int, total: int, required: float, detail: str
+) -> tuple[int, str]:
+    """Return the outcome of a band whose rate is below its floor.
+
+    **Below the floor only where the measured cases put it there.** Counting
+    the environment's skips as passes, a band that clears was not measured,
+    and saying so is not a statement about the model (design section 3.12.2).
+
+    Args:
+        report (Path): The band's JUnit XML.
+        passed (int): The cases that passed.
+        total (int): The cases the band selected.
+        required (float): The floor.
+        detail (str): The band's counts.
+
+    Returns:
+        tuple: ``4`` and the not-measured line, or ``1`` and the below-floor line.
+    """
+    environmental = _environmental_skips(report)
+    if environmental and (passed + len(environmental)) / total >= required:
+        return _EXIT_REFUSED, _not_measured(environmental, total, detail)
+    return _EXIT_BELOW_FLOOR, f"the band is below its floor: {detail}"
+
+
+def _environmental_skips(report: Path) -> list[str]:
+    """Return the code of each skip the environment caused, one per skipped case.
+
+    **Environmental is every harness skip but two**: an unmet foundation, which
+    is a result one layer up, and a quarantine, which is a known finding.
+    Design: ``consumer_ci.md`` section 3.12.2.
+
+    Args:
+        report (Path): The band's JUnit XML, already read once.
+
+    Returns:
+        list[str]: The codes, in report order.
+    """
+    codes: list[str] = []
+    for case in ElementTree.parse(report).iter("testcase"):
+        skipped = case.find("skipped")
+        if skipped is None:
+            continue
+        code = _code_in(str(skipped.get("message", "")))
+        if code.startswith("QC_HARNESS_") and code not in (_DEPENDENCY_SKIP, _QUARANTINE_SKIP):
+            codes.append(code)
+    return codes
+
+
+def _not_measured(environmental: list[str], total: int, detail: str) -> str:
+    """State a band the environment's skips took below its floor.
+
+    Args:
+        environmental (list[str]): The environmental skips' codes.
+        total (int): The cases the band selected.
+        detail (str): The band's counts.
+
+    Returns:
+        str: The line naming how many cases the environment skipped and on
+        which codes, then the counts.
+    """
+    named = ", ".join(sorted(set(environmental)))
+    return (
+        f"the band was not measured: the environment skipped {len(environmental)} "
+        f"of {total} selected cases on {named}\n{detail}"
+    )
 
 
 def _missing_artifacts(report: Path) -> list[str]:

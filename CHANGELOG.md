@@ -40,6 +40,27 @@ Versioning begins at the first release this corpus publishes as a measured
 baseline. Until then changes accumulate here rather than under a version number,
 because nothing has been released to carry one.
 
+### A band the environment stopped reads as not measured, never below its floor, 2026-11-26
+
+**Why.** Grok run 45741266912's judge reached gemini's monthly spending cap,
+24 of 70 P2-P4 cases skipped, and the band line read "below its floor: 45 of
+70 selected passed (64.3%)", a statement about the model. The next grok run,
+nothing changed, read 68 of 70.
+
+**What changed.**
+- `tools/band_floor.py` reports a band as below its floor only where it stays
+  below counting its environmental skips as passes: every harness skip except
+  an unmet foundation and a quarantine. Otherwise the line reads "the band was
+  not measured", naming how many cases the environment skipped and on which
+  codes, and the band refuses, exit 4. A blocking band skipped only by the
+  environment reads the same. A skip still counts as not passed.
+- The harness now codes the spending cap as `QC_HARNESS_CREDIT_EXHAUSTED` and
+  ends the job on its first case (harness `tier2_execution.md` section 8.6.5).
+- Case `115912`, requirement `MQC_REQ_CAS_CI_0118`, `consumer_ci.md` section
+  3.12.2. The requirements traced move from 280 to 281. The preconditions move
+  from 329 to 330, and the README's harness figure, last set at 1227, reads
+  1234.
+
 ### The eight no-quote cases reach their checks and their judge whatever the screen finds, 2026-11-24
 
 **Why.** Gemini run 45074815599 had two answers to `154510` and `154513`

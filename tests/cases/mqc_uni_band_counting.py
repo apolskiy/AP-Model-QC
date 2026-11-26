@@ -3,13 +3,14 @@
 """Unit preconditions for what a band counts: every skip, and no quarantined case.
 
 Created: 2026-11-15
-Last updated: 2026-11-15
+Last updated: 2026-11-26
 
-This file contains ``TestMQCBandCounting``, two cases. ``tools/band_floor.py``
+This file contains ``TestMQCBandCounting``, three cases. ``tools/band_floor.py``
 counts a P2-P4 skip as not passed against the band's selected cases, as the
-blocking bands already do; and a quarantined case is deselected at
-collection, at every priority, so it is neither run nor counted and no band
-report carries it.
+blocking bands already do; a quarantined case is deselected at collection, at
+every priority, so it is neither run nor counted and no band report carries
+it; and a band the environment's skips took below its floor is reported as not
+measured, while one its measured cases took below it is below its floor.
 
 **These run in the ``unit`` precondition gate.** A failure is an instrument
 defect, **not a model finding**, and the module carries no priority marker,
@@ -25,6 +26,7 @@ Specified by ``docs/design/consumer_ci.md`` section 3.12.2 and harness
 # TestMQCBandCounting
 #   115863  a_lower_band_excluding_its_skips_is_reported
 #   115864  a_quarantined_case_collected_is_reported
+#   115912  a_band_the_environment_stopped_is_not_below_its_floor
 # ------------------------------------------------------------ end of cases
 
 import ast
@@ -37,16 +39,26 @@ from cmn.case_steps import step
 from cmn.grouping import story
 from ingestion.cases import build_case_id
 
-from tests.cases.live_band_support import write_floor_report
+from tests.cases.live_band_support import write_coded_report, write_floor_report
 from tests.cases.quarantine_support import quarantine_deselection
 from tests.cases.workflow_support import repository_root
-from tools.band_floor import assess
+from tools.band_floor import assess, assess_blocking
 
 pytestmark = pytest.mark.unit
 
 _GREEN = 0
 _BELOW_FLOOR = 1
+_REFUSED = 4
 _FLOOR = 0.90
+
+# THE SKIPS OF GROK RUN 45741266912 after its judge's spending cap, and a skip
+# behind a failed foundation, which is a result one layer up and not the
+# environment (section 3.12.2).
+_SPENT_SKIP = (
+    "QC_HARNESS_CREDIT_EXHAUSTED: judge gemini, status 429: Your project has "
+    "exceeded its monthly spending cap."
+)
+_UNMET_SKIP = "QC_HARNESS_DEPENDENCY_UNMET: a foundation did not hold"
 
 # THE HOOK CONFTEST CALLS TO DROP A QUARANTINED CASE. Section 4.6.14.
 _DESELECTOR = "deselect_quarantined_cases"
@@ -118,3 +130,55 @@ class TestMQCBandCounting:
 
         step(3, f"find conftest.py calling {_DESELECTOR} at collection")
         assert _DESELECTOR in called, sorted(name for name in called if name)
+
+    @story("A skip is not a pass")
+    def MQC_CAS_UNI_115912_a_band_the_environment_stopped_is_not_below_its_floor(
+        self, tmp_path: Path,
+    ) -> None:
+        """A rate the environment took below the floor is not measured; one the model took is below.
+
+        Design: ``consumer_ci.md`` section 3.12.2.
+
+        Args:
+            tmp_path (Path): pytest's temporary directory.
+
+        Returns:
+            None
+        """
+        spent = [_SPENT_SKIP] * 24
+        stopped = assess(write_coded_report(tmp_path / "spent", 45, 1, spent), _FLOOR)
+        model = assess(
+            write_coded_report(tmp_path / "model", 60, 8, [_SPENT_SKIP] * 2), _FLOOR
+        )
+        unmet = assess(
+            write_coded_report(tmp_path / "unmet", 60, 0, [_UNMET_SKIP] * 10), _FLOOR
+        )
+        blocking_spent = assess_blocking(
+            write_coded_report(tmp_path / "blocking_spent", 19, 0, [_SPENT_SKIP])
+        )
+        blocking_failed = assess_blocking(
+            write_coded_report(tmp_path / "blocking_failed", 19, 1, [])
+        )
+
+        step(1, "find 24 spent-credit skips of 70 refusing rather than failing")
+        assert stopped[0] == _REFUSED, stopped
+
+        step(2, "find the line saying not measured and never below its floor")
+        assert "not measured" in stopped[1] and "below its floor" not in stopped[1], stopped
+
+        step(3, "find the line naming how many cases the environment skipped and the code")
+        assert "24 of 70" in stopped[1] and "QC_HARNESS_CREDIT_EXHAUSTED" in stopped[1], stopped
+
+        step(4, "find a band its failures alone take below the floor still below it")
+        assert model[0] == _BELOW_FLOOR and "below its floor" in model[1], model
+
+        step(5, "find skips behind an unmet foundation still counting toward below")
+        assert unmet[0] == _BELOW_FLOOR and "below its floor" in unmet[1], unmet
+
+        step(6, "find a blocking band skipped only by the environment not measured")
+        assert blocking_spent[0] == _REFUSED and "not measured" in blocking_spent[1], (
+            blocking_spent
+        )
+
+        step(7, "find a blocking band with a failure still below the blocking floor")
+        assert blocking_failed[0] == _BELOW_FLOOR, blocking_failed

@@ -744,6 +744,31 @@ quarantined case does not execute and does not count. The paragraphs below
 dated 2026-10-07 and 2026-10-08 built quarantine as a skip that the band then
 counted, and are corrected by this one where they disagree with it.
 
+##### A band the environment stopped is not measured, so it is not below its floor
+
+Added 2026-11-26 at the project owner's ruling, from grok run 45741266912: its
+judge's spending cap ended the P2-P4 job, 24 of 70 cases skipped, and the line
+read "the band is below its floor: 45 of 70 selected passed (64.3%)". The
+next grok run, nothing changed, read 68 of 70.
+
+**A skip still counts as not passed**, and this changes no denominator. What it
+changes is what a rate below the floor is called. A skip whose code is a
+harness failure other than an unmet foundation or a quarantine is
+**environmental**: a rate limit, spent credit, an unreachable provider, a
+timeout, a missing artifact. The model was not asked.
+
+| The band, counting environmental skips as passes | The floor line | Exit |
+|---|---|---|
+| Still below the floor | Below its floor, a statement about the model | 1 |
+| At or above the floor | **Not measured**, naming how many cases the environment skipped and on which codes | 4 |
+| Below the floor with no environmental skip | Below its floor, as before | 1 |
+
+**So a band is below its floor only where the cases that were measured put it
+there.** A blocking band takes the same rule: a failure or a skip behind a
+failed foundation is below the blocking floor, and environmental skips alone
+are not measured. Harness `tier2_execution.md` section 8.6.5 carries the
+spent-credit code that made the case. `MQC_CAS_UNI_115912` asserts it.
+
 ##### Only an entry in force holds its case out
 
 Added 2026-11-15. **What was wrong:** collection deselected the case of every
@@ -1430,6 +1455,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115898` | N | `a_subprocess_inheriting_standard_input_is_reported` (harness taxonomy 14.5) |
 | `115899` | B | `a_failing_case_is_taken_to_the_escalation_target` (6.5.2) |
 | `115900` | N | `a_debug_run_ignoring_its_escalation_target_is_reported` (6.5.2) |
+| `115912` | B | `a_band_the_environment_stopped_is_not_below_its_floor` (3.12.2) |
 | `115901` | P | `a_debug_report_states_every_count` (6.5.3) |
 | `115902` | N | `a_debug_run_whose_pytest_stopped_fails` (6.5.3) |
 | `115903` | N | `a_debug_job_not_stating_its_outcome_is_reported` (6.5.3) |
@@ -1447,7 +1473,7 @@ Identifiers come from the `CAS` block, 10401-10499, partitioned in the harness
 | `115823` | P | `a_failure_measured_passw_is_replaced_by_a_fresh_warning` (9.4.11) |
 | `115824` | N | `no_finding_is_withdrawn_held_or_written_to_a_holding_list` (9.4.11) |
 
-**Inventory: 234 cases, 166 negative, 55 positive, 13 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
+**Inventory: 235 cases, 166 negative, 55 positive, 14 boundary.** Counted from the rows. **The stated figure drifted to 52 against 48 rows during 2026-10-05**, because five cases were added with the count incremented and no row written, and nothing here compares the two: the harness has `MQC_CMN_UNI_112203` for exactly this and the case repository had no equivalent. **Closed 2026-10-09**: the comparison moved into `cmn.document_standards.inventory_count_problems` and `MQC_CAS_UNI_115723` calls it with this repository's design directory, which is the one-implementation-two-callers arrangement every other shared standard here uses. Counted from the rows on 2026-10-03, when the stated figure was wrong on three of its four numbers: nothing checks this one, only the README equivalent.
 
 **The missing check cost something, found 2026-10-08 and resolved 2026-10-10.**
 Five identifiers in this table were each bound to **two** different behaviours,

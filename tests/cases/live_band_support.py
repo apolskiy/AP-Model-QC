@@ -3,7 +3,7 @@
 """Support code reading the banded regression run, for the cases that check it.
 
 Created: 2026-11-12
-Last updated: 2026-11-17
+Last updated: 2026-11-26
 
 This file contains the pair names, candidate mode then judge mode;
 ``STAGES``, ``BANDS`` and ``BAND_SUFFIXES``, the regression run's three
@@ -384,6 +384,45 @@ def write_floor_report(directory: Path, passed: int, skipped: int) -> Path:
     report.write_text(
         '<?xml version="1.0"?><testsuites><testsuite '
         f'tests="{passed + skipped}" failures="0" errors="0" skipped="{skipped}">'
+        f"{cases}</testsuite></testsuites>",
+        encoding="utf-8",
+    )
+    return report
+
+
+def write_coded_report(
+    directory: Path, passed: int, failed: int, skip_reasons: list[str]
+) -> Path:
+    """Write a band's JUnit report whose skips carry the given reasons.
+
+    Args:
+        directory (Path): Where the report goes, created where absent.
+        passed (int): How many cases passed.
+        failed (int): How many failed.
+        skip_reasons (list[str]): One skip message per skipped case, each
+            opening with its code.
+
+    Returns:
+        Path: The report written.
+    """
+    directory.mkdir(parents=True, exist_ok=True)
+    cases = "".join(f'<testcase name="MQC_CAS_EVAL_1340{index:02d}_passes"/>'
+                    for index in range(passed))
+    cases += "".join(
+        f'<testcase name="MQC_CAS_EVAL_1341{index:02d}_fails">'
+        f'<failure message="QC_LLM_SOURCE_ALTERATION: altered"/></testcase>'
+        for index in range(failed)
+    )
+    cases += "".join(
+        f'<testcase name="MQC_CAS_EVAL_1342{index:02d}_skips">'
+        f'<skipped message="{reason}"/></testcase>'
+        for index, reason in enumerate(skip_reasons)
+    )
+    total = passed + failed + len(skip_reasons)
+    report = directory / "junit_mqc_live_live_band.xml"
+    report.write_text(
+        '<?xml version="1.0"?><testsuites><testsuite '
+        f'tests="{total}" failures="{failed}" errors="0" skipped="{len(skip_reasons)}">'
         f"{cases}</testsuite></testsuites>",
         encoding="utf-8",
     )
