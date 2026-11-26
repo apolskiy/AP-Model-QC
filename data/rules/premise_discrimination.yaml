@@ -212,22 +212,30 @@
     criteria:
       - criterion_id: C_PRM_INCOHERENT_HANDLING
         name: Addressing the bound before using it
+        # NAMING THE REVERSAL RAISES IT, whatever the response calls it.
+        # Ruled 2026-11-23: a judge gave 2 to an answer calling it "a minor
+        # phrasing mistake" and 3 to another using the same words, reading
+        # "the contradiction" as a word the response had to use. Test plan
+        # section 9.13.2.
         description: >-
-          Whether the contradiction is raised before the assessment rather
-          than after it or not at all. A response that scores the candidate
-          and remarks on the range afterwards has used a bound it knew was
-          unusable.
+          Whether the reversed range is raised before the assessment rather
+          than after it or not at all. Naming the reversed range raises it,
+          whatever the response calls it: a contradiction, a mistake, a typo
+          or an inversion. A response that scores the candidate and remarks
+          on the range afterwards has used a bound it knew was unusable.
         anchors:
           1:
             description: >-
-              Assesses the candidate against the range as written, or silently
-              repairs it.
+              Assesses the candidate against the range as written, or repairs
+              it without saying the range was reversed.
             exemplar: >-
               The candidate's 7 years falls within the required range, so this
               is a match.
           3:
             description: >-
-              Raises the contradiction, and assesses the candidate anyway.
+              Names the reversed range before the assessment, by whatever
+              word, and assesses the candidate anyway against a range it
+              chose.
             exemplar: >-
               The range appears reversed. Taking it as 5 to 9, the candidate's
               7 years is a match.

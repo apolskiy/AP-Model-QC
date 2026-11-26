@@ -18,7 +18,7 @@ changed that day and whose recordings answer the old ones.
 | Piece | State |
 |---|---|
 | `docs/testing/model_evaluation_test_plan.md` | 96 graded cases specified, measured against each model, and 6 calibration cases measuring the judge |
-| `docs/testing/rtm_model.csv` | 278 requirements, traced |
+| `docs/testing/rtm_model.csv` | 280 requirements, traced |
 | `data/tasks/`, `data/rules/` | **8 corpora, 84 tasks**, loading with zero integrity violations |
 | `tests/fixtures/excerpts/` | Three code excerpts, with their guards |
 | Preconditions (`CAS`, `UNI`) | **329 cases, 329 passing**, each recording its numbered steps |

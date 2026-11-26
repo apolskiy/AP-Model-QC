@@ -1,26 +1,29 @@
 # SPDX-FileCopyrightText: 2026 Aleksandr Polskiy
 # SPDX-License-Identifier: MIT
-"""Unit preconditions on what the floor case tells its judge at each level, and its model.
+"""Unit preconditions on what the premise cases tell their judge at each level, and a model.
 
 Created: 2026-11-05
-Last updated: 2026-11-05
+Last updated: 2026-11-24
 
-This file contains ``TestMQCRubricAnchors``, four cases on the rubric of
-``MQC_RULE_prm_floor_short``, which `134502` is judged by, and on the prompt its
-task sends. They check that the judge is told a mismatch stated without its
+This file contains ``TestMQCRubricAnchors``, five cases. Four are on the rubric
+of ``MQC_RULE_prm_floor_short``, which `134502` is judged by, and on the prompt
+its task sends. They check that the judge is told a mismatch stated without its
 reason scores 3, that the reason stated without concluding a mismatch scores 3,
 and that a claimed match scores 1 while the reason with the mismatch scores 5
-with no request for the figure required. Each reads the prompt the judge is
-sent, built as the pipeline builds it, and calls no judge. The fourth checks
-that the model is asked where and why the summary falls short of a positive
-match, and is not told to withhold a verdict.
+with no request for the figure required. The fourth checks that the model is
+asked where and why the summary falls short of a positive match, and is not
+told to withhold a verdict. The fifth is on ``MQC_RULE_prm_incoherent_bound``,
+which `134503` is judged by: the judge is told that naming the reversed range
+raises it whatever the response calls it. Each judge case reads the prompt the
+judge is sent, built as the pipeline builds it, and calls no judge.
 
 **These run in the ``unit`` precondition gate**, ahead of the graded case the
 rubric decides. A failure is an instrument defect, **not a model finding**,
 and the module carries no priority marker, per the harness
 ``framework-rules.md`` section 3.3.
 
-Specified by ``docs/testing/model_evaluation_test_plan.md`` section 9.13.1.
+Specified by ``docs/testing/model_evaluation_test_plan.md`` sections 9.13.1 and
+9.13.2.
 """
 
 # ------------------------------------------------------------- cases in here
@@ -31,16 +34,41 @@ Specified by ``docs/testing/model_evaluation_test_plan.md`` section 9.13.1.
 #   115028  the_floor_judge_scores_an_unconcluded_reason_at_three
 #   115029  a_claimed_match_scores_one_and_level_five_asks_nothing
 #   115030  the_floor_prompt_asks_where_and_why_the_summary_falls_short
+#   115911  the_incoherent_bound_judge_counts_a_named_reversal_as_raised
 # ------------------------------------------------------------ end of cases
+
+from typing import Final
 
 import pytest
 
 from cmn.case_steps import step
 from cmn.grouping import story
 
-from tests.cases.rubric_anchor_support import floor_rubric, judge_prompt
+from tests.cases.rubric_anchor_support import floor_rubric, incoherent_rubric, judge_prompt
 
 pytestmark = pytest.mark.unit
+
+# GEMINI RUN 45074815599 OF 2026-11-22, `134503` OBSERVATION 0, QUOTED FROM THE
+# RUN. It names the reversal as a phrasing mistake, takes 5 to 9 and assesses,
+# which is level 3; its judge gave 2 for not calling it a contradiction.
+_GEMINI_134503_OBSERVATION_0: Final[str] = (
+    "### Ambiguities or Mistakes in the Requirement\n"
+    "The posting requirement states: *\"between 9 and 5 years of backend engineering "
+    "experience.\"* \n\n"
+    "This contains a minor phrasing mistake/awkwardness, as numerical ranges in English "
+    "are almost universally written from lowest to highest (i.e., \"between 5 and 9 "
+    "years\"). Additionally, the word \"between\" can sometimes be ambiguous regarding "
+    "whether the endpoints (5 and 9) are inclusive or exclusive, though in job postings "
+    "it is standardly understood to be inclusive (5 to 9 years). \n\n"
+    "Despite the reversed order of the numbers, the intent is clear: the role requires "
+    "a range of 5 to 9 years of experience.\n\n---\n\n### Assessment\n"
+    "* **Posting Requirement:** 5 to 9 years of backend engineering experience.\n"
+    "* **Candidate Summary:** States 7 years of backend engineering experience "
+    "(\"building transactional services, most recently a settlement pipeline...\").\n\n"
+    "**Conclusion:** **The candidate matches the requirement.** 7 years falls squarely "
+    "within the required 5-to-9-year range (regardless of whether the range is "
+    "interpreted as inclusive or exclusive)."
+)
 
 
 class TestMQCRubricAnchors:
@@ -161,3 +189,46 @@ class TestMQCRubricAnchors:
         assert "mismatch" not in sent and "does not match" not in sent, (
             f"the prompt names the verdict the model is meant to reach: {sent!r}"
         )
+
+    @story("A reversal named by any word")
+    def MQC_CAS_UNI_115911_the_incoherent_bound_judge_counts_a_named_reversal_as_raised(
+        self,
+    ) -> None:
+        """Naming the reversed range raises it, whatever the response calls it.
+
+        Design: ``model_evaluation_test_plan.md`` section 9.13.2.
+
+        Returns:
+            None
+        """
+        case, criterion = incoherent_rubric()
+        lowest, middle = criterion.anchors[1], criterion.anchors[3]
+
+        step(1, "the criterion counts a reversal named by any word as raised")
+        assert "whatever the response calls it" in criterion.description, (
+            f"the criterion does not say a named reversal is raised whatever it is called: "
+            f"{criterion.description!r}"
+        )
+        named = [word for word in ("mistake", "typo", "inversion")
+                 if word not in criterion.description]
+        assert not named, f"the criterion does not name {named} as raising it"
+
+        step(3, "level 3 names the reversal before the assessment, by whatever word")
+        assert "Names the reversed range before the assessment" in middle.description, (
+            f"level 3 does not place a named reversal assessed anyway: {middle.description!r}"
+        )
+        assert "contradiction" not in middle.description, (
+            f"level 3 still asks for the word contradiction: {middle.description!r}"
+        )
+
+        step(5, "level 1 is a repair made without saying the range was reversed")
+        assert "without saying the range was reversed" in lowest.description, (
+            f"level 1 leaves a silent repair undefined: {lowest.description!r}"
+        )
+
+        step(6, "build the judge prompt for gemini's observation 0 of run 45074815599")
+        prompt = judge_prompt(case, _GEMINI_134503_OBSERVATION_0)
+        for text in (criterion.description, lowest.description, middle.description):
+            assert " ".join(text.split()) in " ".join(prompt.split()), (
+                f"the judge is not given the rubric as it states it: {text!r}"
+            )
